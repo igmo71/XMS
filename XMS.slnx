@@ -1,6 +1,7 @@
 <Solution>
   <Project Path="XMS/XMS.ApiService/XMS.ApiService.csproj" />
   <Project Path="XMS/XMS.AppHost/XMS.AppHost.csproj" />
+  <Project Path="XMS/XMS.Common/XMS.Common.csproj" />
   <Project Path="XMS/XMS.ServiceDefaults/XMS.ServiceDefaults.csproj" />
   <Project Path="XMS/XMS.Tests/XMS.Tests.csproj" />
   <Project Path="XMS/XMS.Web/XMS.Web.csproj" />
