@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\XMS\XMS.Common\XMS.Common.csproj" />
     <ProjectReference Include="..\..\XMS\XMS.ServiceDefaults\XMS.ServiceDefaults.csproj" />
   </ItemGroup>
 

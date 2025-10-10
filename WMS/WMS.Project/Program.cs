@@ -1,4 +1,3 @@
-
 namespace WMS.Project;
 
 public class Program
