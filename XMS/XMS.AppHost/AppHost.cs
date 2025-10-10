@@ -13,4 +13,6 @@ builder.AddProject<Projects.XMS_Web>("webfrontend")
     .WithReference(apiService)
     .WaitFor(apiService);
 
+builder.AddProject<Projects.WMS_Project>("wms-project");
+
 builder.Build().Run();

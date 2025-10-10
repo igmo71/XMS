@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="WMS/WMS.Project/WMS.Project.csproj" />
   <Project Path="XMS/XMS.ApiService/XMS.ApiService.csproj" />
   <Project Path="XMS/XMS.AppHost/XMS.AppHost.csproj" />
   <Project Path="XMS/XMS.Common/XMS.Common.csproj" />

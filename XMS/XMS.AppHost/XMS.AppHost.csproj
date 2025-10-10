@@ -11,6 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\WMS\WMS.Project\WMS.Project.csproj" />
     <ProjectReference Include="..\XMS.ApiService\XMS.ApiService.csproj" />
     <ProjectReference Include="..\XMS.Web\XMS.Web.csproj" />
   </ItemGroup>
