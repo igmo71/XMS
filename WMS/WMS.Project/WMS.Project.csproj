@@ -15,4 +15,9 @@
     <ProjectReference Include="..\..\XMS\XMS.ServiceDefaults\XMS.ServiceDefaults.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Storage\" />
+    <Folder Include="Outbound\" />
+  </ItemGroup>
+
 </Project>

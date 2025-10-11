@@ -2,5 +2,5 @@
 
 public interface IHasNumber
 {
-    string Number { get; set; }
+    string Number { get; }
 }

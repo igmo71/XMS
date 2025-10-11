@@ -1,8 +1,10 @@
-﻿namespace XMS.Common.SharedKernel;
+﻿using XMS.Common.SharedKernel.Abstractions;
 
-public sealed record Error(int Id, string Name, string? Description = null) : EnumRecord(Id, Name, Description)
+namespace XMS.Common.SharedKernel;
+
+public sealed record Error(int Id, string Name, string? Description = null) : IState
 {
-    public override Error WithDescription(string description) => this with { Description = description };
+    public IState WithDescription(string description) => this with { Description = description };
 
     public static readonly Error None = new(0, string.Empty);
     public static readonly Error Unauthorized = new(401, "Unauthorized");

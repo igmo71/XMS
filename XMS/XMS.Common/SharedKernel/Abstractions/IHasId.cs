@@ -1,6 +1,6 @@
 ﻿namespace XMS.Common.SharedKernel.Abstractions;
 
-public interface IEntity<TId>
+public interface IHasId<TId>
 {
     TId Id { get; }
 }

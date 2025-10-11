@@ -1,10 +1,10 @@
-﻿using XMS.Common.SharedKernel;
+﻿using XMS.Common.SharedKernel.Abstractions;
 
 namespace WMS.Project.Core.Domain;
 
-public record UnitOfMeasureType(int Id, string Name, string? Description = null) : EnumRecord(Id, Name, Description)
+public record UnitOfMeasureType(int Id, string Name, string? Description = null) : IState
 {
-    public override UnitOfMeasureType WithDescription(string description) => this with { Description = description };
+    public IState WithDescription(string description) => this with { Description = description };
 
     public static readonly UnitOfMeasureType Base = new(0, "Base");
     public static readonly UnitOfMeasureType Alt = new(1, "Alt");

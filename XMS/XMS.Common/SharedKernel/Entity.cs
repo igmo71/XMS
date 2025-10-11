@@ -2,7 +2,7 @@
 
 namespace XMS.Common.SharedKernel;
 
-public abstract class Entity : IEntity<Guid>
+public abstract class Entity : IHasId<Guid>
 {
     public Guid Id { get; protected set; }
 
