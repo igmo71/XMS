@@ -3,7 +3,7 @@ using XMS.Common.SharedKernel.Abstractions;
 
 namespace WMS.Project.Core.Domain;
 
-public class Packaging : Entity, IHaveCode, IHaveName
+public class Packaging : Entity, IHasCode, IHasName
 {
     public string Code { get; private set; } = default!; // "BOX100" or "CASE10KG" (catalog code)
     public string Name { get; private set; } = default!;
@@ -32,7 +32,7 @@ public class Packaging : Entity, IHaveCode, IHaveName
     public Packaging(string code, string name, Guid skuId, Guid uomId, decimal unitsPerBaseUom, int level, Dimensions dimensions, Guid? parentId = null)
     {
         Code = code ?? throw new ArgumentNullException(nameof(code));
-        Name = name;
+        Name = name ?? string.Empty;
         SkuId = skuId;
         UomId = uomId;
         FactorPerBaseUom = unitsPerBaseUom;

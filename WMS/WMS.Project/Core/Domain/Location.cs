@@ -3,7 +3,7 @@ using XMS.Common.SharedKernel.Abstractions;
 
 namespace WMS.Project.Core.Domain;
 
-public class Location : Entity, IHaveCode
+public class Location : Entity, IHasCode
 {
     public string Code { get; private set; } = default!;
 

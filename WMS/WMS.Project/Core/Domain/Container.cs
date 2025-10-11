@@ -3,7 +3,7 @@ using XMS.Common.SharedKernel.Abstractions;
 
 namespace WMS.Project.Core.Domain;
 
-public class Container : Entity, IHaveCode// LPM (License Plate Management)
+public class Container : Entity, IHasCode// LPM (License Plate Management)
 {
     public string Code { get; private set; } = default!; // visible LPN number (e.g., LPN12345)
 

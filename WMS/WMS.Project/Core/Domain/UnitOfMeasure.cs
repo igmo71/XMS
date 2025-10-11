@@ -3,7 +3,7 @@ using XMS.Common.SharedKernel.Abstractions;
 
 namespace WMS.Project.Core.Domain;
 
-public class UnitOfMeasure : Entity, IHaveCode, IHaveName
+public class UnitOfMeasure : Entity, IHasCode, IHasName
 {
     public string Code { get; private set; } = default!; // "PCS", "KG", "BOX"
     public string Name { get; private set; } = default!;
@@ -16,7 +16,7 @@ public class UnitOfMeasure : Entity, IHaveCode, IHaveName
     public UnitOfMeasure(string code, string name, string? description, UnitOfMeasureType type)
     {
         Code = code ?? throw new ArgumentNullException(nameof(code));
-        Name = name;
+        Name = name ?? string.Empty;
         Description = description;
         Type = type;
     }

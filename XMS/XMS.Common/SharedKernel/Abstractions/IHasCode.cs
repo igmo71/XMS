@@ -1,6 +1,6 @@
 ﻿namespace XMS.Common.SharedKernel.Abstractions;
 
-public interface IHaveCode
+public interface IHasCode
 {
     string Code { get; }
 }

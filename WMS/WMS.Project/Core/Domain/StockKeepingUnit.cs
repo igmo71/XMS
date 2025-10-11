@@ -3,7 +3,7 @@ using XMS.Common.SharedKernel.Abstractions;
 
 namespace WMS.Project.Core.Domain;
 
-public class StockKeepingUnit : Entity, IHaveCode, IHaveName
+public class StockKeepingUnit : Entity, IHasCode, IHasName
 {
     public string Code { get; private set; } = default!;
     public string Name { get; private set; } = default!;
@@ -23,7 +23,7 @@ public class StockKeepingUnit : Entity, IHaveCode, IHaveName
     public StockKeepingUnit(string code, string name, Guid baseUomId, Dimensions dimensions)
     {
         Code = code ?? throw new ArgumentNullException(nameof(code));
-        Name = name;
+        Name = name ?? string.Empty;
         BaseUomId = baseUomId;
         Dimensions = dimensions;
     }

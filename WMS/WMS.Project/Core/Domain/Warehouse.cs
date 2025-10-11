@@ -3,7 +3,7 @@ using XMS.Common.SharedKernel.Abstractions;
 
 namespace WMS.Project.Core.Domain;
 
-public class Warehouse : Entity, IHaveCode, IHaveName
+public class Warehouse : Entity, IHasCode, IHasName
 {
     public string Code { get; private set; } = default!;
     public string Name { get; private set; } = default!;
@@ -17,6 +17,6 @@ public class Warehouse : Entity, IHaveCode, IHaveName
     public Warehouse(string code, string name)
     {
         Code = code ?? throw new ArgumentNullException(nameof(code));
-        Name = name;
+        Name = name ?? string.Empty;
     }
 }

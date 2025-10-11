@@ -1,6 +1,6 @@
 ﻿namespace XMS.Common.SharedKernel.Abstractions;
 
-public interface IHaveName
+public interface IHasName
 {
     string Name { get; }
 }
