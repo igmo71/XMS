@@ -16,4 +16,10 @@
     <PackageReference Include="MudBlazor" Version="9.0.0-preview.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Integration\AD\" />
+    <Folder Include="Integration\OneS\Ut\Domain\" />
+    <Folder Include="Integration\OneS\Ut\Application\" />
+  </ItemGroup>
+
 </Project>
