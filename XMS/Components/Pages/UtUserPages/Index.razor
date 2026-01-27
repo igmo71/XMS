@@ -1,0 +1,28 @@
+﻿@page "/ut-users"
+
+@using XMS.Integration.OneS.Abstractions
+@using XMS.Integration.OneS.Ut.Domain
+@inject IUtService Service
+
+<MudDataGrid Items="@Items" Dense="true" Filterable="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h5">Пользователи 1С УТ</MudText>
+    </ToolBarContent>
+    <Columns>
+        <PropertyColumn Property="x => x.Description" />
+        <PropertyColumn Property="x => x.DeletionMark" />
+        <PropertyColumn Property="x => x.Ref_Key" />
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="Catalog_Пользователи" />
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+	private IEnumerable<Catalog_Пользователи> Items = [];
+
+	protected override async Task OnInitializedAsync()
+	{
+		Items = await Service.GetCatalogAsinc();
+	}
+}

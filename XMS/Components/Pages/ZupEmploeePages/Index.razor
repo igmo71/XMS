@@ -1,0 +1,30 @@
+﻿@page "/zup-emploees"
+
+@using XMS.Integration.OneS.Abstractions
+@using XMS.Integration.OneS.Zup.Domain
+@inject IZupService Service
+
+<MudDataGrid Items="@Items" Dense="true" Filterable="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h5">Сотрудники 1С ЗУП</MudText>
+    </ToolBarContent>
+    <Columns>
+        <PropertyColumn Property="x => x.Code" Title="Code" />
+        <PropertyColumn Property="x => x.Description" />
+        <PropertyColumn Property="x => x.DeletionMark" />
+        <PropertyColumn Property="x => x.ВАрхиве" />
+        <PropertyColumn Property="x => x.Ref_Key" />
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="Catalog_Сотрудники" />
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+    private IEnumerable<Catalog_Сотрудники> Items = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        Items = await Service.GetCatalogAsinc();
+    }
+}

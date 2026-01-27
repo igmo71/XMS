@@ -1,0 +1,33 @@
+﻿@page "/ad-users"
+
+@using XMS.Integration.AD.Application
+@using XMS.Integration.AD.Domain
+@inject IAdService Service
+
+<MudDataGrid Items="@Items" Dense="true" Filterable="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h5">AD Users</MudText>
+    </ToolBarContent>
+    <Columns>
+        <PropertyColumn Property="x => x.Name" />
+        <PropertyColumn Property="x => x.Title" />
+        <PropertyColumn Property="x => x.Login" />
+        <PropertyColumn Property="x => x.Department" />
+        <PropertyColumn Property="x => x.Enabled" />
+        <PropertyColumn Property="x => x.DistinguishedName" />
+        <PropertyColumn Property="x => x.Manager" />
+        @* <PropertyColumn Property="x => x.Sid" /> *@
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="AdUser" />
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+    private IEnumerable<AdUser> Items = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        Items = await Service.GetUsersAsync();
+    }
+}

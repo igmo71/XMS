@@ -5,6 +5,8 @@ using MudBlazor.Services;
 using XMS.Components;
 using XMS.Components.Account;
 using XMS.Data;
+using XMS.Integration.AD;
+using XMS.Integration.OneS;
 
 namespace XMS
 {
@@ -46,6 +48,10 @@ namespace XMS
                 .AddDefaultTokenProviders();
 
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+
+            builder.Services.AddOneSServices(builder.Configuration);
+
+            builder.Services.AddAdSServices(builder.Configuration);
 
             var app = builder.Build();
 

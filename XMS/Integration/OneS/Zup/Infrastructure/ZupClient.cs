@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
 
-namespace XMS.Integration.OneS.Buh.Infrastructure
+namespace XMS.Integration.OneS.Zup.Infrastructure
 {
-    public class BuhClient(HttpClient httpClient, IOptions<BuhClientConfig> options)
+    public class ZupClient(HttpClient httpClient, IOptions<ZupClientConfig> options)
     {
-        private readonly BuhClientConfig _clientConfig = options.Value;
+        private readonly ZupClientConfig _clientConfig = options.Value;
 
         public Task<TValue?> GetValue<TValue>(string? uri)
         {
