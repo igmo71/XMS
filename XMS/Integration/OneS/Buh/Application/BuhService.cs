@@ -6,7 +6,7 @@ namespace XMS.Integration.OneS.Buh.Application
 {
     public class BuhService(BuhClient client) : IBuhService
     {
-        public async Task<Catalog_Сотрудники[]> GetCatalogAsinc()
+        public async Task<Catalog_Сотрудники[]> GetCatalog_Сотрудники()
         {
             var result = await client.GetValue<RootObject<Catalog_Сотрудники>>(Catalog_Сотрудники.Uri);
 
