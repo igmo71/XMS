@@ -2,12 +2,11 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
+using MudBlazor.Translations;
 using XMS.Components;
 using XMS.Components.Account;
 using XMS.Data;
 using XMS.Integration;
-using XMS.Integration.AD;
-using XMS.Integration.OneS;
 using XMS.Modules;
 
 namespace XMS
@@ -20,6 +19,7 @@ namespace XMS
 
             // Add services to the container.
             builder.Services.AddMudServices();
+            builder.Services.AddMudTranslations();
 
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
