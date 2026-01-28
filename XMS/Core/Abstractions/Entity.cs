@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace XMS.SharedKernel.Abstractions
+namespace XMS.Core.Abstractions
 {
     public abstract class Entity : IHasId<Guid>
     {
-        public Guid Id { get; protected set; }
+        public Guid Id { get; init; } = Guid.CreateVersion7();
     }
 }

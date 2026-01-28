@@ -4,6 +4,6 @@ namespace XMS.Integration.OneS.Abstractions
 {
     public interface IUtService
     {
-        Task<Catalog_Пользователи[]> GetCatalog_Пользователи();
+        Task<Catalog_Пользователи[]> GetCatalog_Пользователи(CancellationToken ct = default);
     }
 }

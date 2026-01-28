@@ -16,8 +16,4 @@
     <PackageReference Include="MudBlazor" Version="9.0.0-preview.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Modules\Employees\Application\" />
-  </ItemGroup>
-
 </Project>

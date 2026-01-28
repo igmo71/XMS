@@ -5,7 +5,7 @@ namespace XMS.Integration.AD
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddAdSServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddAdServices(this IServiceCollection services, IConfiguration configuration)
         {
             var configSection = configuration.GetSection(nameof(AdClientConfig));
 

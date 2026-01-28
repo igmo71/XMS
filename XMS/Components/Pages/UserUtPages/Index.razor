@@ -1,0 +1,105 @@
+﻿@page "/users-ut"
+
+@using XMS.Modules.Employees.Abstractions
+@using XMS.Modules.Employees.Domain
+@inject IUserUtService Service
+@inject ISnackbar Snackbar
+
+<MudDataGrid Items="@_items" Dense="true" Filterable="true" Loading="_isLoading">
+	<ToolBarContent>
+		<MudText Typo="Typo.h5">Пользователи 1С УТ</MudText>
+		<MudSpacer />
+		<MudButton OnClick="ReloadUsers" Color="Color.Primary" Variant="Variant.Filled">
+			@if (_isReloading)
+			{
+				<MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" Color="Color.Inherit" />
+				<MudText Class="ms-2">Синхронизация...</MudText>
+			}
+			else
+			{
+				<MudIcon Icon="@Icons.Material.Filled.Sync" Class="me-2" />
+				<MudText>Обновить из 1С</MudText>
+			}
+		</MudButton>
+	</ToolBarContent>
+	<Columns>
+		<PropertyColumn Property="x => x.Id" />
+		<PropertyColumn Property="x => x.Name" Title="ФИО" />
+		<PropertyColumn Property="x => x.DeletionMark" Title="Пометка удаления">
+			<CellTemplate>
+				<MudChip T="string"
+						 Color="@(context.Item.DeletionMark ? Color.Error : Color.Success)"
+						 Size="Size.Small"
+						 Variant="Variant.Text">
+					@(context.Item.DeletionMark ? "Удален" : "Активен")
+				</MudChip>
+			</CellTemplate>
+		</PropertyColumn>
+	</Columns>
+	<LoadingContent>
+		<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
+			Загрузка из БД...
+		</MudAlert>
+	</LoadingContent>
+	<NoRecordsContent>
+		<MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center" Class="mx-3">
+			Пользователи не найдены. Нажмите "Обновить", чтобы загрузить данные.
+		</MudAlert>
+	</NoRecordsContent>
+	<PagerContent>
+		<MudDataGridPager T="UserUt" />
+	</PagerContent>
+</MudDataGrid>
+
+@code {
+	private IEnumerable<UserUt> _items = [];
+	private bool _isLoading = true;
+	private bool _isReloading = false;
+
+	protected override async Task OnInitializedAsync()
+	{
+		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomEnd;
+		await LoadDataFromDb();
+	}
+
+	private async Task LoadDataFromDb()
+	{
+		_isLoading = true;
+		try
+		{
+			await Task.Delay(1000);
+
+			_items = await Service.GetListAsync();
+		}
+		finally
+		{
+			_isLoading = false;
+		}
+	}
+
+	private async Task ReloadUsers()
+	{
+		_isReloading = true;
+		try
+		{
+
+			Snackbar.Add("Начало синхронизации с 1С...", Severity.Info);
+
+			await Task.Delay(1000);
+
+			await Service.ReloadListAsync();
+
+			Snackbar.Add("Данные успешно синхронизированы с 1С", Severity.Success);
+
+			await LoadDataFromDb();
+		}
+		catch (Exception ex)
+		{
+			Snackbar.Add($"Ошибка при обмене с 1С: {ex.Message}", Severity.Error);
+		}
+		finally
+		{
+			_isReloading = false;
+		}
+	}
+}

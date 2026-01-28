@@ -8,7 +8,7 @@ namespace XMS.Integration
         public static IServiceCollection AddIntegrationSServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddOneSServices(configuration);
-            services.AddAdSServices(configuration);
+            services.AddAdServices(configuration);
 
             return services;
         }

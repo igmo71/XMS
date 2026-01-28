@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using XMS.SharedKernel.Abstractions;
+using XMS.Core.Abstractions;
 
 namespace XMS.Modules.Employees.Infrastructure.EntityConfigurations
 {

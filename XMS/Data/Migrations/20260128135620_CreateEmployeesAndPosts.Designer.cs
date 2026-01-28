@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using XMS.Data;
 
@@ -11,9 +12,11 @@ using XMS.Data;
 namespace XMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260128135620_CreateEmployeesAndPosts")]
+    partial class CreateEmployeesAndPosts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -242,76 +245,10 @@ namespace XMS.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Modules.Employees.Domain.City", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Cities");
-                });
-
-            modelBuilder.Entity("XMS.Modules.Employees.Domain.CostItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CostItems");
-                });
-
-            modelBuilder.Entity("XMS.Modules.Employees.Domain.Department", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Departments");
-                });
-
             modelBuilder.Entity("XMS.Modules.Employees.Domain.Employee", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CostItemId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("DepartmentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("EmployeeBuhId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("EmployeeZupId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("LocationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
@@ -320,103 +257,14 @@ namespace XMS.Migrations
                         .HasColumnType("nvarchar(150)");
 
                     b.Property<Guid?>("PostId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UserAdId")
-                        .HasColumnType("nvarchar(45)");
-
-                    b.Property<Guid?>("UserUtId")
+                        .HasMaxLength(36)
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CityId");
-
-                    b.HasIndex("CostItemId");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("EmployeeBuhId");
-
-                    b.HasIndex("EmployeeZupId");
-
-                    b.HasIndex("LocationId");
 
                     b.HasIndex("PostId");
 
-                    b.HasIndex("UserAdId");
-
-                    b.HasIndex("UserUtId");
-
                     b.ToTable("Employees");
-                });
-
-            modelBuilder.Entity("XMS.Modules.Employees.Domain.EmployeeBuh", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("Archived")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<bool>("DeletionMark")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EmployeesBuh");
-                });
-
-            modelBuilder.Entity("XMS.Modules.Employees.Domain.EmployeeZup", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("Archived")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
-
-                    b.Property<bool>("DeletionMark")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EmployeesZup");
-                });
-
-            modelBuilder.Entity("XMS.Modules.Employees.Domain.Location", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Locations");
                 });
 
             modelBuilder.Entity("XMS.Modules.Employees.Domain.Post", b =>
@@ -433,64 +281,6 @@ namespace XMS.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Posts");
-                });
-
-            modelBuilder.Entity("XMS.Modules.Employees.Domain.UserAd", b =>
-                {
-                    b.Property<string>("Sid")
-                        .HasMaxLength(45)
-                        .HasColumnType("nvarchar(45)");
-
-                    b.Property<string>("Department")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("DistinguishedName")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Login")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("Manager")
-                        .HasMaxLength(45)
-                        .HasColumnType("nvarchar(45)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("Title")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.HasKey("Sid");
-
-                    b.ToTable("UsersAd");
-                });
-
-            modelBuilder.Entity("XMS.Modules.Employees.Domain.UserUt", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("DeletionMark")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UsersUt");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -597,59 +387,11 @@ namespace XMS.Migrations
 
             modelBuilder.Entity("XMS.Modules.Employees.Domain.Employee", b =>
                 {
-                    b.HasOne("XMS.Modules.Employees.Domain.City", "City")
-                        .WithMany()
-                        .HasForeignKey("CityId");
-
-                    b.HasOne("XMS.Modules.Employees.Domain.CostItem", "CostItem")
-                        .WithMany()
-                        .HasForeignKey("CostItemId");
-
-                    b.HasOne("XMS.Modules.Employees.Domain.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId");
-
-                    b.HasOne("XMS.Modules.Employees.Domain.EmployeeBuh", "EmployeeBuh")
-                        .WithMany()
-                        .HasForeignKey("EmployeeBuhId");
-
-                    b.HasOne("XMS.Modules.Employees.Domain.EmployeeZup", "EmployeeZup")
-                        .WithMany()
-                        .HasForeignKey("EmployeeZupId");
-
-                    b.HasOne("XMS.Modules.Employees.Domain.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId");
-
                     b.HasOne("XMS.Modules.Employees.Domain.Post", "Post")
                         .WithMany()
                         .HasForeignKey("PostId");
 
-                    b.HasOne("XMS.Modules.Employees.Domain.UserAd", "UserAd")
-                        .WithMany()
-                        .HasForeignKey("UserAdId");
-
-                    b.HasOne("XMS.Modules.Employees.Domain.UserUt", "UserUt")
-                        .WithMany()
-                        .HasForeignKey("UserUtId");
-
-                    b.Navigation("City");
-
-                    b.Navigation("CostItem");
-
-                    b.Navigation("Department");
-
-                    b.Navigation("EmployeeBuh");
-
-                    b.Navigation("EmployeeZup");
-
-                    b.Navigation("Location");
-
                     b.Navigation("Post");
-
-                    b.Navigation("UserAd");
-
-                    b.Navigation("UserUt");
                 });
 #pragma warning restore 612, 618
         }

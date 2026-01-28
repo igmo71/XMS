@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using XMS.SharedKernel.Abstractions;
+using XMS.Core.Abstractions;
 
 namespace XMS.Modules.Employees.Domain
 {
-    public class Post : Entity, IHasName
+    public class Post : NamedEntity
     {
-        [MaxLength(AppSettings.MaxLength.NAME)]
-        public string Name { get; set; } = string.Empty;
     }
 }

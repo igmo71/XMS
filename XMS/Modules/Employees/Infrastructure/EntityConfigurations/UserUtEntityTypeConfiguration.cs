@@ -3,9 +3,9 @@ using XMS.Modules.Employees.Domain;
 
 namespace XMS.Modules.Employees.Infrastructure.EntityConfigurations
 {
-    public class PostEntityTypeConfiguration : BaseNamedEntityTypeConfiguration<Post>
+    public class UserUtEntityTypeConfiguration : BaseNamedEntityTypeConfiguration<UserUt>
     {
-        public override void Configure(EntityTypeBuilder<Post> builder)
+        public override void Configure(EntityTypeBuilder<UserUt> builder)
         {
             base.Configure(builder);
         }
