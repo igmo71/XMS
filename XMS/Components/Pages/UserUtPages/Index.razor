@@ -68,8 +68,6 @@
 		_isLoading = true;
 		try
 		{
-			await Task.Delay(1000);
-
 			_items = await Service.GetListAsync();
 		}
 		finally
@@ -85,8 +83,6 @@
 		{
 
 			Snackbar.Add("Начало синхронизации с 1С...", Severity.Info);
-
-			await Task.Delay(1000);
 
 			await Service.ReloadListAsync();
 

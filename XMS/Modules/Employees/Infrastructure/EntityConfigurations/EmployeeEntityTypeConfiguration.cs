@@ -9,7 +9,7 @@ namespace XMS.Modules.Employees.Infrastructure.EntityConfigurations
         {
             base.Configure(builder);
 
-            builder.HasOne(x => x.Post).WithMany().HasForeignKey(x => x.PostId);
+            builder.HasOne(x => x.JobTitle).WithMany().HasForeignKey(x => x.JobTitleId);
             builder.HasOne(x => x.Department).WithMany().HasForeignKey(x => x.DepartmentId); 
             builder.HasOne(x => x.Location).WithMany().HasForeignKey(x => x.LocationId);
             builder.HasOne(x => x.City).WithMany().HasForeignKey(x => x.CityId);

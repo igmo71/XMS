@@ -13,6 +13,8 @@ namespace XMS.Modules.Employees
             services.AddScoped<IEmployeeBuhService, EmployeeBuhService>();
             services.AddScoped<IEmployeeZupService, EmployeeZupService>();
             services.AddScoped<IJobTitleService, JobTitleService>();
+            services.AddScoped<ICityService, CityService>();
+            services.AddScoped<ILocationService, LocationService>();
 
             return services;
         }
