@@ -13,6 +13,7 @@
 				 Filterable="true"
 				 CommittedItemChanges="@CommittedItemChanges"
 				 Bordered="true" Striped="true" Hover="true" Dense="true"
+				 Loading="@_isLoading"
 				 EditMode="DataGridEditMode.Form"
 				 EditTrigger="DataGridEditTrigger.Manual">
 		<ToolBarContent>
@@ -33,6 +34,16 @@
 				</CellTemplate>
 			</TemplateColumn>
 		</Columns>
+		<LoadingContent>
+			<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
+				Загрузка из БД...
+			</MudAlert>
+		</LoadingContent>
+		<NoRecordsContent>
+			<MudText Typo="Typo.h6" Align="Align.Center" Class="pa-4">
+				Здесь пока ничего нет. Нажмите "Добавить", чтобы создать первый!
+			</MudText>
+		</NoRecordsContent>
 		<PagerContent>
 			<MudDataGridPager T="City" />
 		</PagerContent>
@@ -43,6 +54,8 @@
 	private readonly CancellationTokenSource _cts = new();
 	private IReadOnlyList<City> _items = [];
 	private MudDataGrid<City> _itemGrid = default!;
+	private bool _isLoading = true;
+	private bool _isProcessing;
 
 	protected async override Task OnInitializedAsync()
 	{
@@ -51,7 +64,15 @@
 
 	private async Task LoadDataFromDbAsync()
 	{
-		_items = await Service.GetListAsync(_cts.Token);
+		_isLoading = true;
+		try
+		{
+			_items = await Service.GetListAsync(_cts.Token);
+		}
+		finally
+		{
+			_isLoading = false;
+		}
 	}
 
 	private async Task NewItemAsync()
@@ -63,22 +84,47 @@
 
 	private async Task CommittedItemChanges(City item)
 	{
-		if (item.Id == Guid.Empty)
-			await Service.CreateAsync(item);
-		else
-			await Service.UpdateAsync(item);
+		try
+		{
+			if (!_items.Any(x => x.Id == item.Id))
+				await Service.CreateAsync(item);
+			else
+				await Service.UpdateAsync(item);
 
-		await LoadDataFromDbAsync();
+			Snackbar.Add($"Успешно сохранено: {item.Name}", Severity.Success);
 
+			await LoadDataFromDbAsync();
+		}
+		catch (Exception ex)
+		{
+			Snackbar.Add($"Ошибка при сохранении {item.Name}: {ex.Message}", Severity.Error);
+		}
 	}
 
 	private async Task DeleteItemAsync(City item)
 	{
+		if (_isProcessing) return;
+
 		if (await ConfirmDeleteItemAsync(item))
 		{
-			await Service.DeleteAsync(item.Id);
+			try
+			{
+				_isProcessing = true;
 
-			await LoadDataFromDbAsync();
+				await Service.DeleteAsync(item.Id);
+
+				await LoadDataFromDbAsync();
+
+				Snackbar.Add($"Успешно удалено: {item.Name}", Severity.Success);
+			}
+			catch (Exception ex)
+			{
+				Snackbar.Add($"Ошибка при удалении {item.Name}: {ex.Message}", Severity.Error);
+			}
+			finally
+			{
+				_isProcessing = false;
+			}
 		}
 	}
 
@@ -97,7 +143,7 @@
 
 		var result = await dialog.Result;
 
-		return result?.Data is bool == true;
+		return result is { Canceled: false };
 	}
 
 	public void Dispose()

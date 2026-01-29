@@ -2,7 +2,7 @@
 
 namespace XMS.Modules.Employees.Abstractions
 {
-    public interface IJobTitleService : ICrudService<JobTitle>
+    public interface IDepartmentService : ICrudService<Department>
     {
     }
 }

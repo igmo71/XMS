@@ -32,7 +32,7 @@ namespace XMS.Modules.Employees.Application
         public async Task UpdateAsync(City item, CancellationToken ct = default)
         {
             var existing = await dbContext.Cities.FindAsync([item.Id], ct)
-                ?? throw new KeyNotFoundException($"Post with ID {item.Id} not found");
+                ?? throw new KeyNotFoundException($"City with ID {item.Id} not found");
             dbContext.Entry(existing).CurrentValues.SetValues(item);
             await dbContext.SaveChangesAsync(ct);
         }

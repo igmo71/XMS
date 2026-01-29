@@ -2,7 +2,10 @@
 
 namespace XMS.Modules.Employees.Domain
 {
-    public class CostItem : NamedEntity
+    public class CostItem : NamedEntity, IHasParent<CostItem>, IHasChildren<CostItem>
     {
+        public Guid? ParentId { get; set; }
+        public CostItem? Parent { get; set; }
+        public virtual ICollection<CostItem> Children { get; set; } = [];
     }
 }
