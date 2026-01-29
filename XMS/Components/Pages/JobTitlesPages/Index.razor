@@ -1,0 +1,108 @@
+﻿@page "/jobTitles"
+@using XMS.Components.Common
+@using XMS.Modules.Employees.Abstractions
+@using XMS.Modules.Employees.Domain
+@implements IDisposable
+@inject IJobTitleService Service
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudGrid xs="12" sm="6" md="4" Class="ms-1 mt-2">
+	<MudDataGrid @ref="_itemGrid" T="JobTitle" Items="@_items"
+				 ReadOnly="false"
+				 Filterable="true"
+				 CommittedItemChanges="@CommittedItemChanges"
+				 Bordered="true" Striped="true" Hover="true" Dense="true"
+				 EditMode="DataGridEditMode.Form"
+				 EditTrigger="DataGridEditTrigger.Manual">
+		<ToolBarContent>
+			<MudText Typo="Typo.h4">Должности</MudText>
+			<MudSpacer />
+			<MudButtonGroup Class="ma-0 pa-0" Color="Color.Primary" Variant="Variant.Filled">
+				<MudButton OnClick="NewItemAsync" StartIcon="@Icons.Material.Filled.Add">
+					Добавить
+				</MudButton>
+			</MudButtonGroup>
+		</ToolBarContent>
+		<Columns>
+			<MudBlazor.PropertyColumn Property="x => x.Name" Title="Наименование" />
+			<TemplateColumn CellClass="d-flex justify-between">
+				<CellTemplate>
+					<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@context.Actions.StartEditingItemAsync" />
+					<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Secondary" OnClick="@(() => DeleteItemAsync(context.Item))" />
+				</CellTemplate>
+			</TemplateColumn>
+		</Columns>
+		<PagerContent>
+			<MudDataGridPager T="JobTitle" />
+		</PagerContent>
+	</MudDataGrid>
+</MudGrid>
+
+@code {
+	private readonly CancellationTokenSource _cts = new();
+	private IReadOnlyList<JobTitle> _items = [];
+	private MudDataGrid<JobTitle> _itemGrid = default!;
+
+	protected async override Task OnInitializedAsync()
+	{
+		await LoadDataFromDbAsync();
+	}
+
+	private async Task LoadDataFromDbAsync()
+	{
+		_items = await Service.GetListAsync(_cts.Token);
+	}
+
+	private async Task NewItemAsync()
+	{
+		var item = new JobTitle();
+
+		await _itemGrid.SetEditingItemAsync(item);
+	}
+
+	private async Task CommittedItemChanges(JobTitle item)
+	{
+		if (item.Id == Guid.Empty)
+			await Service.CreateAsync(item);
+		else
+			await Service.UpdateAsync(item);
+
+		await LoadDataFromDbAsync();
+
+	}
+
+	private async Task DeleteItemAsync(JobTitle item)
+	{
+		if (await ConfirmDeleteItemAsync(item))
+		{
+			await Service.DeleteAsync(item.Id);
+
+			await LoadDataFromDbAsync();
+		}
+	}
+
+	private async Task<bool> ConfirmDeleteItemAsync(JobTitle item)
+	{
+		var parameters = new DialogParameters<ConfirmDialog>
+		{
+			{ x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}' навсегда?" },
+			{ x => x.ButtonText, "Да, удалить" },
+			{ x => x.ButtonColor, Color.Error }
+		};
+
+		var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+		var dialog = await DialogService.ShowAsync<ConfirmDialog>("Удаление", parameters, options);
+
+		var result = await dialog.Result;
+
+		return result?.Data is bool == true;
+	}
+
+	public void Dispose()
+	{
+		_cts.Cancel();
+		_cts.Dispose();
+	}
+}

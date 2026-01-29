@@ -7,7 +7,7 @@ namespace XMS.Data
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
     {
         public DbSet<Employee> Employees { get; set; }
-        public DbSet<Post> Posts { get; set; }
+        public DbSet<JobTitle> JobTitles { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<City> Cities { get; set; }

@@ -3,7 +3,7 @@ using XMS.Core.Abstractions;
 
 namespace XMS.Modules.Employees.Domain
 {
-    public class Post : NamedEntity
+    public class JobTitle : NamedEntity
     {
     }
 }

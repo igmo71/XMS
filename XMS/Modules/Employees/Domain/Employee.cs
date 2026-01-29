@@ -5,7 +5,7 @@ namespace XMS.Modules.Employees.Domain
     public class Employee : NamedEntity
     {
         public Guid? PostId { get; set; }
-        public Post? Post { get; set; }
+        public JobTitle? Post { get; set; }
 
         public Guid? DepartmentId { get; set; }
         public Department? Department { get; set; }

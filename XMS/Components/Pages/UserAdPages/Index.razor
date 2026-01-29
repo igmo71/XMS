@@ -10,7 +10,7 @@
 		<MudText Typo="Typo.h5">Пользователи AD</MudText>
 		<MudSpacer />
 		<MudSpacer />
-		<MudButton OnClick="ReloadDataFromAd" Color="Color.Primary" Variant="Variant.Filled">
+		<MudButton OnClick="ReloadDataFromAdAsync" Color="Color.Primary" Variant="Variant.Filled">
 			@if (_isReloading)
 			{
 				<MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" Color="Color.Inherit" />
@@ -65,10 +65,10 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		await LoadDataFromDb();
+		await LoadDataFromDbAsync();
 	}
 
-	private async Task LoadDataFromDb()
+	private async Task LoadDataFromDbAsync()
 	{
 		_isLoading = true;
 		try
@@ -83,7 +83,7 @@
 		}
 	}
 
-	private async Task ReloadDataFromAd()
+	private async Task ReloadDataFromAdAsync()
 	{
 		_isReloading = true;
 		try
@@ -97,7 +97,7 @@
 
 			Snackbar.Add("Данные успешно синхронизированы с AD", Severity.Success);
 
-			await LoadDataFromDb();
+			await LoadDataFromDbAsync();
 		}
 		catch (Exception ex)
 		{

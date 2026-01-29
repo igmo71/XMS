@@ -285,7 +285,12 @@ namespace XMS.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
 
                     b.ToTable("Departments");
                 });
@@ -403,6 +408,22 @@ namespace XMS.Migrations
                     b.ToTable("EmployeesZup");
                 });
 
+            modelBuilder.Entity("XMS.Modules.Employees.Domain.JobTitle", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("JobTitles");
+                });
+
             modelBuilder.Entity("XMS.Modules.Employees.Domain.Location", b =>
                 {
                     b.Property<Guid>("Id")
@@ -417,22 +438,6 @@ namespace XMS.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Locations");
-                });
-
-            modelBuilder.Entity("XMS.Modules.Employees.Domain.Post", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("XMS.Modules.Employees.Domain.UserAd", b =>
@@ -595,6 +600,15 @@ namespace XMS.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("XMS.Modules.Employees.Domain.Department", b =>
+                {
+                    b.HasOne("XMS.Modules.Employees.Domain.Department", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId");
+
+                    b.Navigation("Parent");
+                });
+
             modelBuilder.Entity("XMS.Modules.Employees.Domain.Employee", b =>
                 {
                     b.HasOne("XMS.Modules.Employees.Domain.City", "City")
@@ -621,7 +635,7 @@ namespace XMS.Migrations
                         .WithMany()
                         .HasForeignKey("LocationId");
 
-                    b.HasOne("XMS.Modules.Employees.Domain.Post", "Post")
+                    b.HasOne("XMS.Modules.Employees.Domain.JobTitle", "Post")
                         .WithMany()
                         .HasForeignKey("PostId");
 
@@ -650,6 +664,11 @@ namespace XMS.Migrations
                     b.Navigation("UserAd");
 
                     b.Navigation("UserUt");
+                });
+
+            modelBuilder.Entity("XMS.Modules.Employees.Domain.Department", b =>
+                {
+                    b.Navigation("Children");
                 });
 #pragma warning restore 612, 618
         }
