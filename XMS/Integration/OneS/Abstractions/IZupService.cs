@@ -4,6 +4,6 @@ namespace XMS.Integration.OneS.Abstractions
 {
     public interface IZupService
     {
-        Task<Catalog_Сотрудники[]> GetCatalog_Сотрудники();
+        Task<Catalog_Сотрудники[]> GetCatalog_Сотрудники(CancellationToken ct = default);
     }
 }

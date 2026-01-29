@@ -6,11 +6,11 @@
 @inject ISnackbar Snackbar
 
 <MudDataGrid Items="@_items" Dense="true" Filterable="true" Loading="_isLoading">
-    <ToolBarContent>
-        <MudText Typo="Typo.h5">Сотрудники 1С Бух</MudText>
+	<ToolBarContent>
+		<MudText Typo="Typo.h5">Сотрудники 1С Бух</MudText>
 		<MudSpacer />
 		<MudSpacer />
-		<MudButton OnClick="ReloadUsers" Color="Color.Primary" Variant="Variant.Filled">
+		<MudButton OnClick="ReloadDataFromOneS" Color="Color.Primary" Variant="Variant.Filled">
 			@if (_isReloading)
 			{
 				<MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" Color="Color.Inherit" />
@@ -23,11 +23,11 @@
 			}
 		</MudButton>
 		<MudSpacer />
-    </ToolBarContent>
+	</ToolBarContent>
 	<Columns>
 		<PropertyColumn Property="x => x.Id" />
 		<PropertyColumn Property="x => x.Name" Title="ФИО" />
-        <PropertyColumn Property="x => x.Code" Title="Code" />
+		<PropertyColumn Property="x => x.Code" Title="Code" />
 		<PropertyColumn Property="x => x.DeletionMark" Title="Пометка удаления">
 			<CellTemplate>
 				<MudChip T="string"
@@ -38,7 +38,7 @@
 				</MudChip>
 			</CellTemplate>
 		</PropertyColumn>
-        <PropertyColumn Property="x => x.Archived" Title="В архиве" >
+		<PropertyColumn Property="x => x.Archived" Title="В архиве">
 			<CellTemplate>
 				<MudChip T="string"
 						 Color="@(context.Item.Archived ? Color.Error : Color.Success)"
@@ -47,8 +47,8 @@
 					@(context.Item.Archived ? "В архиве" : "Активен")
 				</MudChip>
 			</CellTemplate>
-			</PropertyColumn>
-    </Columns>
+		</PropertyColumn>
+	</Columns>
 	<LoadingContent>
 		<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
 			Загрузка из БД...
@@ -59,19 +59,19 @@
 			Пользователи не найдены. Нажмите "Обновить", чтобы загрузить данные.
 		</MudAlert>
 	</NoRecordsContent>
-    <PagerContent>
-        <MudDataGridPager T="EmployeeBuh" />
-    </PagerContent>
+	<PagerContent>
+		<MudDataGridPager T="EmployeeBuh" />
+	</PagerContent>
 </MudDataGrid>
 
 @code {
-    private IEnumerable<EmployeeBuh> _items	= [];
-    private bool _isLoading = true;
-    private bool _isReloading = false;
+	private IEnumerable<EmployeeBuh> _items = [];
+	private bool _isLoading = true;
+	private bool _isReloading = false;
 
 	protected override async Task OnInitializedAsync()
 	{
-        await LoadDataFromDb();
+		await LoadDataFromDb();
 	}
 
 	private async Task LoadDataFromDb()
@@ -89,7 +89,7 @@
 		}
 	}
 
-	private async Task ReloadUsers()
+	private async Task ReloadDataFromOneS()
 	{
 		_isReloading = true;
 		try
