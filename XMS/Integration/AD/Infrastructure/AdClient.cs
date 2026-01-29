@@ -6,9 +6,9 @@ namespace XMS.Integration.AD.Infrastructure
     public class AdClient(HttpClient httpClient, IOptions<AdClientConfig> options)
     {
         private readonly AdClientConfig clientConfig = options.Value;
-        public Task<AdUser[]?> GetUsers()
+        public Task<UserAd[]?> GetUsersAsync(CancellationToken ct = default)
         {
-            return httpClient.GetFromJsonAsync<AdUser[]>(clientConfig.AdUsers);
+            return httpClient.GetFromJsonAsync<UserAd[]>(clientConfig.AdUsers);
         }
     }
 }

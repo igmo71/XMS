@@ -1,33 +1,111 @@
 ﻿@page "/users-ad"
 
-@using XMS.Integration.AD.Application
-@using XMS.Integration.AD.Domain
-@inject IAdService Service
+@using XMS.Modules.Employees.Abstractions
+@using XMS.Modules.Employees.Domain
+@inject IUserAdService Service
+@inject ISnackbar Snackbar
 
-<MudDataGrid Items="@Items" Dense="true" Filterable="true">
-    <ToolBarContent>
-        <MudText Typo="Typo.h5">AD Users</MudText>
-    </ToolBarContent>
-    <Columns>
-        <PropertyColumn Property="x => x.Name" />
-        <PropertyColumn Property="x => x.Title" />
-        <PropertyColumn Property="x => x.Login" />
-        <PropertyColumn Property="x => x.Department" />
-        <PropertyColumn Property="x => x.Enabled" />
-        <PropertyColumn Property="x => x.DistinguishedName" />
-        <PropertyColumn Property="x => x.Manager" />
-        @* <PropertyColumn Property="x => x.Sid" /> *@
-    </Columns>
-    <PagerContent>
-        <MudDataGridPager T="AdUser" />
-    </PagerContent>
+<MudDataGrid Items="@_items" Dense="true" Filterable="true" Loading="_isLoading">
+	<ToolBarContent>
+		<MudText Typo="Typo.h5">Пользователи AD</MudText>
+		<MudSpacer />
+		<MudSpacer />
+		<MudButton OnClick="ReloadDataFromAd" Color="Color.Primary" Variant="Variant.Filled">
+			@if (_isReloading)
+			{
+				<MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" Color="Color.Inherit" />
+				<MudText Class="ms-2">Синхронизация...</MudText>
+			}
+			else
+			{
+				<MudIcon Icon="@Icons.Material.Filled.Sync" Class="me-2" />
+				<MudText>Обновить из AD</MudText>
+			}
+		</MudButton>
+		<MudSpacer />
+	</ToolBarContent>
+	<Columns>
+		<PropertyColumn Property="x => x.Name" />
+		<PropertyColumn Property="x => x.Title" />
+		<PropertyColumn Property="x => x.Login" />
+		<PropertyColumn Property="x => x.Department" />
+		<PropertyColumn Property="x => x.Enabled">
+			<CellTemplate>
+				<MudChip T="string"
+						 Color="@(context.Item.Enabled ? Color.Success : Color.Error)"
+						 Size="Size.Small"
+						 Variant="Variant.Text">
+					@(context.Item.Enabled ? "Активен" : "Неактивен")
+				</MudChip>
+			</CellTemplate>
+		</PropertyColumn>
+		<PropertyColumn Property="x => x.DistinguishedName" />
+		<PropertyColumn Property="x => x.Manager" />
+		@* <PropertyColumn Property="x => x.Sid" /> *@
+	</Columns>
+	<LoadingContent>
+		<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
+			Загрузка из БД...
+		</MudAlert>
+	</LoadingContent>
+	<NoRecordsContent>
+		<MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center" Class="mx-3">
+			Пользователи не найдены. Нажмите "Обновить", чтобы загрузить данные.
+		</MudAlert>
+	</NoRecordsContent>
+	<PagerContent>
+		<MudDataGridPager T="UserAd" />
+	</PagerContent>
 </MudDataGrid>
 
 @code {
-    private IEnumerable<AdUser> Items = [];
+	private IEnumerable<UserAd> _items = [];
+	private bool _isLoading = true;
+	private bool _isReloading = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        Items = await Service.GetUsersAsync();
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadDataFromDb();
+	}
+
+	private async Task LoadDataFromDb()
+	{
+		_isLoading = true;
+		try
+		{
+			await Task.Delay(1000);
+
+			_items = await Service.GetListAsync();
+		}
+		finally
+		{
+			_isLoading = false;
+		}
+	}
+
+	private async Task ReloadDataFromAd()
+	{
+		_isReloading = true;
+		try
+		{
+
+			Snackbar.Add("Начало синхронизации с AD...", Severity.Info);
+
+			await Task.Delay(1000);
+
+			await Service.ReloadListAsync();
+
+			Snackbar.Add("Данные успешно синхронизированы с AD", Severity.Success);
+
+			await LoadDataFromDb();
+		}
+		catch (Exception ex)
+		{
+			Snackbar.Add($"Ошибка при обмене с AD: {ex.Message}", Severity.Error);
+		}
+		finally
+		{
+			_isReloading = false;
+		}
+	}
 }

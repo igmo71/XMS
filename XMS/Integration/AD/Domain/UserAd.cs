@@ -2,7 +2,7 @@
 
 namespace XMS.Integration.AD.Domain
 {
-    public class AdUser
+    public class UserAd
     {
         public string? Sid { get; set; }
         public string? Name { get; set; }

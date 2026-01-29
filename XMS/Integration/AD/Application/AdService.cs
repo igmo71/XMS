@@ -5,14 +5,14 @@ namespace XMS.Integration.AD.Application
 {
     public interface IAdService
     {
-        Task<AdUser[]> GetUsersAsync();
+        Task<UserAd[]> GetUsersAsync(CancellationToken ct = default);
     }
 
     public class AdService(AdClient client) : IAdService
     {
-        public async Task<AdUser[]> GetUsersAsync()
+        public async Task<UserAd[]> GetUsersAsync(CancellationToken ct = default)
         {
-            var result = await client.GetUsers();
+            var result = await client.GetUsersAsync(ct);
 
             return result ?? [];
         }
