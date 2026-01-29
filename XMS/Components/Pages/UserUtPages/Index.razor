@@ -9,6 +9,7 @@
 	<ToolBarContent>
 		<MudText Typo="Typo.h5">Пользователи 1С УТ</MudText>
 		<MudSpacer />
+		<MudSpacer />
 		<MudButton OnClick="ReloadUsers" Color="Color.Primary" Variant="Variant.Filled">
 			@if (_isReloading)
 			{
@@ -21,6 +22,7 @@
 				<MudText>Обновить из 1С</MudText>
 			}
 		</MudButton>
+		<MudSpacer />
 	</ToolBarContent>
 	<Columns>
 		<PropertyColumn Property="x => x.Id" />
@@ -57,8 +59,7 @@
 	private bool _isReloading = false;
 
 	protected override async Task OnInitializedAsync()
-	{
-		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomEnd;
+	{		
 		await LoadDataFromDb();
 	}
 

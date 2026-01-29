@@ -6,9 +6,9 @@ namespace XMS.Integration.OneS.Ut.Infrastructure
     {
         private readonly UtClientConfig _clientConfig = options.Value;
 
-        public Task<TValue?> GetValue<TValue>(string? uri)
+        public Task<TValue?> GetValueAsync<TValue>(string? uri, CancellationToken ct = default)
         {
-            return httpClient.GetFromJsonAsync<TValue>($"{_clientConfig.ServiceUri}/{uri}");
+            return httpClient.GetFromJsonAsync<TValue>($"{_clientConfig.ServiceUri}/{uri}", ct);
         }
     }
 }

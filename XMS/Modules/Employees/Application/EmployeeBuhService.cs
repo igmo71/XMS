@@ -1,0 +1,61 @@
+﻿using Microsoft.EntityFrameworkCore;
+using XMS.Data;
+using XMS.Integration.OneS.Abstractions;
+using XMS.Modules.Employees.Abstractions;
+using XMS.Modules.Employees.Domain;
+
+namespace XMS.Modules.Employees.Application
+{
+    public class EmployeeBuhService(IBuhService buhService, ApplicationDbContext dbContext) : IEmployeeBuhService
+    {
+        public async Task<IReadOnlyList<EmployeeBuh>> GetListAsync(CancellationToken ct = default)
+        {
+            return await dbContext.EmployeesBuh
+                .AsNoTracking()
+                .ToListAsync(ct);
+        }
+
+        public async Task<IReadOnlyList<EmployeeBuh>> LoadListAsync(CancellationToken ct = default)
+        {
+            var rawData = await buhService.GetCatalog_Сотрудники(ct);
+
+            return rawData.Select(x => new EmployeeBuh
+            {
+                Id = x.Ref_Key,
+                Name = x.Description ?? string.Empty,
+                DeletionMark = x.DeletionMark,
+                Code = x.Code,
+                Archived = x.ВАрхиве
+            }).ToList();
+        }
+
+        public async Task ReloadListAsync(CancellationToken ct = default)
+        {
+            var list = await LoadListAsync(ct);
+            await SaveListAsync(list, ct);
+        }
+
+        public async Task SaveListAsync(IReadOnlyList<EmployeeBuh> list, CancellationToken ct = default)
+        {
+            var incomingIds = list.Select(x => x.Id).ToList();
+
+            var existingList = await dbContext.EmployeesBuh.Where(x => incomingIds.Contains(x.Id)).ToListAsync(ct);
+
+            var existingEntities = existingList.ToDictionary(x => x.Id);
+
+            foreach (var incoming in list)
+            {
+                if (existingEntities.TryGetValue(incoming.Id, out var existing))
+                {
+                    dbContext.Entry(existing).CurrentValues.SetValues(incoming);
+                }
+                else
+                {
+                    dbContext.EmployeesBuh.Add(incoming);
+                }
+            }
+
+            await dbContext.SaveChangesAsync(ct);
+        }
+    }
+}

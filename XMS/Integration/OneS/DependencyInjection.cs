@@ -1,4 +1,6 @@
-﻿using System.Net.Http.Headers;
+﻿using Microsoft.AspNetCore.Mvc.Formatters;
+using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Text;
 using XMS.Integration.OneS.Abstractions;
 using XMS.Integration.OneS.Buh.Application;
@@ -38,8 +40,9 @@ namespace XMS.Integration.OneS
             services.AddHttpClient<BuhClient>(client =>
             {
                 client.BaseAddress = new Uri(config.BaseAddress);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AppSettings.AuthSchemes.Basic,
                     Convert.ToBase64String(Encoding.UTF8.GetBytes($"{config.UserName}:{config.Password}")));
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
 
             });
 
@@ -58,8 +61,9 @@ namespace XMS.Integration.OneS
             services.AddHttpClient<ZupClient>(client =>
             {
                 client.BaseAddress = new Uri(config.BaseAddress);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AppSettings.AuthSchemes.Basic,
                     Convert.ToBase64String(Encoding.UTF8.GetBytes($"{config.UserName}:{config.Password}")));
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
 
             });
 
@@ -78,8 +82,9 @@ namespace XMS.Integration.OneS
             services.AddHttpClient<UtClient>(client =>
             {
                 client.BaseAddress = new Uri(config.BaseAddress);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AppSettings.AuthSchemes.Basic,
                     Convert.ToBase64String(Encoding.UTF8.GetBytes($"{config.UserName}:{config.Password}")));
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
 
             });
 
