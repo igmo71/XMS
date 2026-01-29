@@ -5,7 +5,7 @@
 @inject IEmployeeBuhService Service
 @inject ISnackbar Snackbar
 
-<MudDataGrid Items="@_items" Dense="true" Filterable="true">
+<MudDataGrid Items="@_items" Dense="true" Filterable="true" Loading="_isLoading">
     <ToolBarContent>
         <MudText Typo="Typo.h5">Сотрудники 1С Бух</MudText>
 		<MudSpacer />
@@ -65,8 +65,7 @@
 </MudDataGrid>
 
 @code {
-    private IEnumerable<EmployeeBuh> _items
-	= [];
+    private IEnumerable<EmployeeBuh> _items	= [];
     private bool _isLoading = true;
     private bool _isReloading = false;
 

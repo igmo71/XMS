@@ -8,7 +8,7 @@ namespace XMS.Integration.OneS.Buh.Application
     {
         public async Task<Catalog_Сотрудники[]> GetCatalog_Сотрудники(CancellationToken ct = default)
         {
-            var result = await client.GetValue<RootObject<Catalog_Сотрудники>>(Catalog_Сотрудники.Uri);
+            var result = await client.GetValueAsync<RootObject<Catalog_Сотрудники>>(Catalog_Сотрудники.Uri, ct);
 
             return result?.Value ?? [];
         }
