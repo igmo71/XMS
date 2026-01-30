@@ -6,13 +6,12 @@
 <MudDataGrid @ref="_employeeGrid" T="Employee" Items="@_employees"
 			 Loading="@_isLoading"
 			 Bordered="true" Dense="true" Striped="true" Hover="true"
-			 Filterable="true" FilterMode="DataGridFilterMode.Simple"
+			 Filterable="true" FilterMode="DataGridFilterMode.Simple" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
 			 SortMode="SortMode.Single"
 			 ReadOnly="@(!_isEditingGrid)"
 			 Groupable="true"
 			 ColumnResizeMode="ResizeMode.Container"
-			 EditMode="DataGridEditMode.Form"
-			 EditTrigger="@DataGridEditTrigger.OnRowClick"
+			 EditMode="DataGridEditMode.Form" EditTrigger="@DataGridEditTrigger.OnRowClick"
 			 CommittedItemChanges="@CommittedItemChanges"
 			 QuickFilter="QuickFilter"
 			 DragDropColumnReordering="true"
@@ -26,7 +25,7 @@
 			Добавить
 		</MudButton>
 		<MudSpacer />
-		<MudTextField @bind-Value="_searchString" Placeholder="ФИО, Должность или Статья затрат" Adornment="Adornment.Start" Immediate="true"
+		<MudTextField @bind-Value="_searchString" Placeholder="ФИО, Должность" Adornment="Adornment.Start" Immediate="true"
 					  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Clearable="true"></MudTextField>
 		<MudSpacer />
 	</ToolBarContent>
@@ -35,7 +34,7 @@
 			<EditTemplate>
 				<MudGrid style="min-width: 500px">
 					<MudItem xs="12">
-						<MudTextField @bind-Value="context.Item.Name"
+						<MudTextField @bind-Value="context.Item.Name" 
 									  Label="Ввод ФИО"
 									  Variant="Variant.Outlined"
 									  Required="true"
@@ -57,7 +56,7 @@
 						   Dense="true">
 					@foreach (var item in _jobTitles)
 					{
-						<MudSelectItem Value="item.Id">@item.Name</MudSelectItem>
+						<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
 					}
 
 				</MudSelect>
@@ -71,7 +70,7 @@
 								 SearchFunc="SearchDepartment"
 								 Variant="Variant.Outlined"
 								 Label="Поиск Отдела (в Схеме предприятия)"
-								 Required="true"
+								 Required="false"
 								 RequiredError="Нужно выбрать отдел"
 								 Clearable="true"
 								 Dense="true"
@@ -88,14 +87,14 @@
 			<EditTemplate>
 				<MudSelect @bind-Value="context.Item.CityId"
 						   Label="Выберите Город"
-						   Required="true"
+						   Required="false"
 						   RequiredError="Нужно выбрать город"
 						   Variant="Variant.Outlined"
 						   Clearable="true"
 						   Dense="true">
 					@foreach (var item in _cities)
 					{
-						<MudSelectItem Value="item.Id">@item.Name</MudSelectItem>
+						<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
 					}
 				</MudSelect>
 			</EditTemplate>
@@ -104,14 +103,14 @@
 			<EditTemplate>
 				<MudSelect @bind-Value="context.Item.LocationId"
 						   Label="Выбор Локации"
-						   Required="true"
+						   Required="false"
 						   RequiredError="Нужно выбрать локацию"
 						   Variant="Variant.Outlined"
 						   Clearable="true"
 						   Dense="true">
 					@foreach (var item in _locations)
 					{
-						<MudSelectItem Value="item.Id">@item.Name</MudSelectItem>
+						<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
 					}
 
 				</MudSelect>
@@ -227,7 +226,7 @@
 	</LoadingContent>
 	<NoRecordsContent>
 		<MudText Typo="Typo.h6" Align="Align.Start" Class="pa-4">
-			Здесь пока ничего нет. Вкличите редактирование и нажмите "Добавить", чтобы создать первый!
+			Здесь пока ничего нет. Включите редактирование и нажмите "Добавить", чтобы создать первый!
 		</MudText>
 	</NoRecordsContent>
 	<PagerContent>

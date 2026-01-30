@@ -32,8 +32,6 @@ namespace XMS.Components.Pages.EmployeePages
 
         private MudDataGrid<Employee> _employeeGrid = default!;
 
-        private List<string> _events = new();
-
         private string? _searchString;
         private bool _isLoading;
         private bool _isEditingGrid;
