@@ -258,22 +258,6 @@ namespace XMS.Migrations
                     b.ToTable("Cities");
                 });
 
-            modelBuilder.Entity("XMS.Modules.Employees.Domain.CostItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CostItems");
-                });
-
             modelBuilder.Entity("XMS.Modules.Employees.Domain.Department", b =>
                 {
                     b.Property<Guid>("Id")
@@ -304,9 +288,6 @@ namespace XMS.Migrations
                     b.Property<Guid?>("CityId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("CostItemId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("DepartmentId")
                         .HasColumnType("uniqueidentifier");
 
@@ -316,6 +297,9 @@ namespace XMS.Migrations
                     b.Property<Guid?>("EmployeeZupId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("JobTitleId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("LocationId")
                         .HasColumnType("uniqueidentifier");
 
@@ -323,9 +307,6 @@ namespace XMS.Migrations
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
-
-                    b.Property<Guid?>("PostId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserAdId")
                         .HasColumnType("nvarchar(45)");
@@ -337,17 +318,15 @@ namespace XMS.Migrations
 
                     b.HasIndex("CityId");
 
-                    b.HasIndex("CostItemId");
-
                     b.HasIndex("DepartmentId");
 
                     b.HasIndex("EmployeeBuhId");
 
                     b.HasIndex("EmployeeZupId");
 
-                    b.HasIndex("LocationId");
+                    b.HasIndex("JobTitleId");
 
-                    b.HasIndex("PostId");
+                    b.HasIndex("LocationId");
 
                     b.HasIndex("UserAdId");
 
@@ -604,7 +583,8 @@ namespace XMS.Migrations
                 {
                     b.HasOne("XMS.Modules.Employees.Domain.Department", "Parent")
                         .WithMany("Children")
-                        .HasForeignKey("ParentId");
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Parent");
                 });
@@ -614,10 +594,6 @@ namespace XMS.Migrations
                     b.HasOne("XMS.Modules.Employees.Domain.City", "City")
                         .WithMany()
                         .HasForeignKey("CityId");
-
-                    b.HasOne("XMS.Modules.Employees.Domain.CostItem", "CostItem")
-                        .WithMany()
-                        .HasForeignKey("CostItemId");
 
                     b.HasOne("XMS.Modules.Employees.Domain.Department", "Department")
                         .WithMany()
@@ -631,13 +607,13 @@ namespace XMS.Migrations
                         .WithMany()
                         .HasForeignKey("EmployeeZupId");
 
+                    b.HasOne("XMS.Modules.Employees.Domain.JobTitle", "JobTitle")
+                        .WithMany()
+                        .HasForeignKey("JobTitleId");
+
                     b.HasOne("XMS.Modules.Employees.Domain.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId");
-
-                    b.HasOne("XMS.Modules.Employees.Domain.JobTitle", "Post")
-                        .WithMany()
-                        .HasForeignKey("PostId");
 
                     b.HasOne("XMS.Modules.Employees.Domain.UserAd", "UserAd")
                         .WithMany()
@@ -649,17 +625,15 @@ namespace XMS.Migrations
 
                     b.Navigation("City");
 
-                    b.Navigation("CostItem");
-
                     b.Navigation("Department");
 
                     b.Navigation("EmployeeBuh");
 
                     b.Navigation("EmployeeZup");
 
-                    b.Navigation("Location");
+                    b.Navigation("JobTitle");
 
-                    b.Navigation("Post");
+                    b.Navigation("Location");
 
                     b.Navigation("UserAd");
 

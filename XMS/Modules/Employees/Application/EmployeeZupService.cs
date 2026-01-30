@@ -6,10 +6,11 @@ using XMS.Modules.Employees.Domain;
 
 namespace XMS.Modules.Employees.Application
 {
-    public class EmployeeZupService(IZupService zupService, ApplicationDbContext dbContext) : IEmployeeZupService
+    public class EmployeeZupService(IZupService zupService, IDbContextFactory<ApplicationDbContext> dbFactory) : IEmployeeZupService
     {
         public async Task<IReadOnlyList<EmployeeZup>> GetListAsync(CancellationToken ct = default)
         {
+            using var dbContext = dbFactory.CreateDbContext();
             return await dbContext.EmployeesZup
                 .AsNoTracking()
                 .ToListAsync(ct);
@@ -37,6 +38,8 @@ namespace XMS.Modules.Employees.Application
 
         public async Task SaveListAsync(IReadOnlyList<EmployeeZup> list, CancellationToken ct = default)
         {
+            using var dbContext = dbFactory.CreateDbContext();
+
             var incomingIds = list.Select(x => x.Id).ToList();
 
             var existingList = await dbContext.EmployeesZup.Where(x => incomingIds.Contains(x.Id)).ToListAsync(ct);

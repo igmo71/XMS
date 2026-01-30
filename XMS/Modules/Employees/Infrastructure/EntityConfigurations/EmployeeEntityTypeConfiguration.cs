@@ -13,7 +13,7 @@ namespace XMS.Modules.Employees.Infrastructure.EntityConfigurations
             builder.HasOne(x => x.Department).WithMany().HasForeignKey(x => x.DepartmentId); 
             builder.HasOne(x => x.Location).WithMany().HasForeignKey(x => x.LocationId);
             builder.HasOne(x => x.City).WithMany().HasForeignKey(x => x.CityId);
-            builder.HasOne(x => x.CostItem).WithMany().HasForeignKey(x => x.CostItemId);
+            //builder.HasOne(x => x.CostItem).WithMany().HasForeignKey(x => x.CostItemId);
             builder.HasOne(x => x.UserAd).WithMany().HasForeignKey(x => x.UserAdId).HasPrincipalKey(x => x.Sid);
             builder.HasOne(x => x.UserUt).WithMany().HasForeignKey(x => x.UserUtId);
             builder.HasOne(x => x.EmployeeBuh).WithMany().HasForeignKey(x => x.EmployeeBuhId);

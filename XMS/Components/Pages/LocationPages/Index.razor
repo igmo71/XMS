@@ -54,7 +54,7 @@
 	private readonly CancellationTokenSource _cts = new();
 	private IReadOnlyList<Location> _items = [];
 	private MudDataGrid<Location> _itemGrid = default!;
-	private bool _isLoading = true;
+	private bool _isLoading;
 	private bool _isProcessing;
 
 	protected async override Task OnInitializedAsync()
@@ -67,7 +67,6 @@
 		_isLoading = true;
 		try
 		{
-			await Task.Delay(1000);
 			_items = await Service.GetListAsync(_cts.Token);
 		}
 		finally

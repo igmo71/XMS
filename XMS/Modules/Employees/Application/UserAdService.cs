@@ -6,10 +6,11 @@ using XMS.Modules.Employees.Domain;
 
 namespace XMS.Modules.Employees.Application
 {
-    public class UserAdService(IAdService adService, ApplicationDbContext dbContext) : IUserAdService
+    public class UserAdService(IAdService adService, IDbContextFactory<ApplicationDbContext> dbFactory) : IUserAdService
     {
         public async Task<IReadOnlyList<UserAd>> GetListAsync(CancellationToken ct = default)
         {
+            using var dbContext = dbFactory.CreateDbContext();
             return await dbContext.UsersAd
                 .AsNoTracking()
                 .ToListAsync(ct);
@@ -40,6 +41,8 @@ namespace XMS.Modules.Employees.Application
 
         public async Task SaveListAsync(IReadOnlyList<UserAd> list, CancellationToken ct = default)
         {
+            using var dbContext = dbFactory.CreateDbContext();
+
             var incomingIds = list.Select(x => x.Sid).ToList();
 
             var existingList = await dbContext.UsersAd.Where(x => incomingIds.Contains(x.Sid)).ToListAsync(ct);

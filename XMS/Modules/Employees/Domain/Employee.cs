@@ -16,8 +16,8 @@ namespace XMS.Modules.Employees.Domain
         public Guid? LocationId { get; set; }
         public Location? Location { get; set; }
 
-        public Guid? CostItemId { get; set; }
-        public CostItem? CostItem { get; set; }
+        //public Guid? CostItemId { get; set; }
+        //public CostItem? CostItem { get; set; }
 
         public string? UserAdId { get; set; }
         public UserAd? UserAd { get; set; }

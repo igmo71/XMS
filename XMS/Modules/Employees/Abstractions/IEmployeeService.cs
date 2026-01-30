@@ -1,6 +1,8 @@
-﻿namespace XMS.Modules.Employees.Abstractions
+﻿using XMS.Modules.Employees.Domain;
+
+namespace XMS.Modules.Employees.Abstractions
 {
-    public interface IEmployeeService
+    public interface IEmployeeService : ICrudService<Employee>
     {
     }
 }

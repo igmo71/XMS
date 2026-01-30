@@ -6,10 +6,11 @@ using XMS.Modules.Employees.Domain;
 
 namespace XMS.Modules.Employees.Application
 {
-    public class EmployeeBuhService(IBuhService buhService, ApplicationDbContext dbContext) : IEmployeeBuhService
+    public class EmployeeBuhService(IBuhService buhService, IDbContextFactory<ApplicationDbContext> dbFactory) : IEmployeeBuhService
     {
         public async Task<IReadOnlyList<EmployeeBuh>> GetListAsync(CancellationToken ct = default)
         {
+            using var dbContext = dbFactory.CreateDbContext();
             return await dbContext.EmployeesBuh
                 .AsNoTracking()
                 .ToListAsync(ct);
@@ -37,6 +38,7 @@ namespace XMS.Modules.Employees.Application
 
         public async Task SaveListAsync(IReadOnlyList<EmployeeBuh> list, CancellationToken ct = default)
         {
+            using var dbContext = dbFactory.CreateDbContext();
             var incomingIds = list.Select(x => x.Id).ToList();
 
             var existingList = await dbContext.EmployeesBuh.Where(x => incomingIds.Contains(x.Id)).ToListAsync(ct);

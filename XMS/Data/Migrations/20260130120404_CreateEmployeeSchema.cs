@@ -24,18 +24,6 @@ namespace XMS.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CostItems",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CostItems", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Departments",
                 columns: table => new
                 {
@@ -50,7 +38,8 @@ namespace XMS.Migrations
                         name: "FK_Departments_Departments_ParentId",
                         column: x => x.ParentId,
                         principalTable: "Departments",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -143,11 +132,10 @@ namespace XMS.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    JobTitleId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     DepartmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CityId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CostItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserAdId = table.Column<string>(type: "nvarchar(45)", nullable: true),
                     UserUtId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     EmployeeBuhId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -161,11 +149,6 @@ namespace XMS.Migrations
                         name: "FK_Employees_Cities_CityId",
                         column: x => x.CityId,
                         principalTable: "Cities",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Employees_CostItems_CostItemId",
-                        column: x => x.CostItemId,
-                        principalTable: "CostItems",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Employees_Departments_DepartmentId",
@@ -183,8 +166,8 @@ namespace XMS.Migrations
                         principalTable: "EmployeesZup",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Employees_JobTitles_PostId",
-                        column: x => x.PostId,
+                        name: "FK_Employees_JobTitles_JobTitleId",
+                        column: x => x.JobTitleId,
                         principalTable: "JobTitles",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -215,11 +198,6 @@ namespace XMS.Migrations
                 column: "CityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Employees_CostItemId",
-                table: "Employees",
-                column: "CostItemId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Employees_DepartmentId",
                 table: "Employees",
                 column: "DepartmentId");
@@ -235,14 +213,14 @@ namespace XMS.Migrations
                 column: "EmployeeZupId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Employees_JobTitleId",
+                table: "Employees",
+                column: "JobTitleId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Employees_LocationId",
                 table: "Employees",
                 column: "LocationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Employees_PostId",
-                table: "Employees",
-                column: "PostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Employees_UserAdId",
@@ -263,9 +241,6 @@ namespace XMS.Migrations
 
             migrationBuilder.DropTable(
                 name: "Cities");
-
-            migrationBuilder.DropTable(
-                name: "CostItems");
 
             migrationBuilder.DropTable(
                 name: "Departments");

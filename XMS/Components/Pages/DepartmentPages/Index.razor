@@ -1,0 +1,85 @@
+﻿@page "/departments"
+
+@using XMS.Components.Common
+@using XMS.Modules.Employees.Abstractions
+@using XMS.Modules.Employees.Domain
+@inject IDepartmentService Service;
+
+<MudStack>
+	<MudPaper Class="pa-4" Width="600px">
+		<MudStack Row="true">
+			<MudText Typo="Typo.h4">Схема предприятия</MudText>
+			<MudSpacer />
+			@if (_expandedAll)
+			{
+				<MudFab Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Material.Filled.VerticalAlignCenter" OnClick="CollapseAll" title="Свернуть все" />
+			}
+			else
+			{
+				<MudFab Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Expand" OnClick="ExpandAll" title="Развернуть все" />
+			}
+		</MudStack>
+	</MudPaper>
+
+	<MudPaper Width="600px" Elevation="0" Outlined="true">
+		<MudTreeView Items="_treeItems" T="Department">
+			<ItemTemplate Context="item">
+				<MudTreeViewItem @bind-Expanded="@item.Expanded"
+								 Items="@item.Children"
+								 Value="@item.Value"
+								 Text="@item.Value?.Name"
+								 Icon="@GetIcon(item)" />
+			</ItemTemplate>
+		</MudTreeView>
+	</MudPaper>
+</MudStack>
+
+@code {
+
+	private readonly CancellationTokenSource _cts = new();
+	private List<Department> _flatList = new();
+	private List<TreeItemData<Department>> _treeItems = new();
+	private bool _expandedAll;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var departments = await Service.GetListAsync(_cts.Token);
+
+		_treeItems = BuildTree(departments, null);
+	}
+
+	private List<TreeItemData<Department>> BuildTree(IEnumerable<Department> allDeps, Guid? parentId)
+	{
+		return allDeps
+			.Where(d => d.ParentId == parentId)
+			.Select(d => new TreeItemData<Department>
+			{
+				Value = d,
+				Text = d.Name,
+				Expanded = false, // Начальное состояние
+				Icon = Icons.Material.Filled.Category,
+				// Рекурсивно загружаем детей
+				Children = BuildTree(allDeps, d.Id)
+			})
+			.ToList();
+	}
+
+	private void ExpandAll()
+	{
+		_treeItems.SetExpansion(true);
+		_expandedAll = true;
+	}
+	private void CollapseAll()
+	{
+		_treeItems.SetExpansion(false);
+		_expandedAll = false;
+	}
+
+	private string GetIcon(ITreeItemData<Department> item)
+	{
+		if (item.HasChildren)
+			return item.Expanded ? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder;
+
+		return Icons.Material.Filled.Category;
+	}
+}

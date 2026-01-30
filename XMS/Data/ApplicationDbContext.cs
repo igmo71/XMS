@@ -11,7 +11,7 @@ namespace XMS.Data
         public DbSet<Department> Departments { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<City> Cities { get; set; }
-        public DbSet<CostItem> CostItems { get; set; }
+        //public DbSet<CostItem> CostItems { get; set; }
         public DbSet<UserAd> UsersAd { get; set; }
         public DbSet<UserUt> UsersUt { get; set; }
         public DbSet<EmployeeBuh> EmployeesBuh { get; set; }

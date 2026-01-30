@@ -15,6 +15,7 @@ namespace XMS.Modules.Employees
             services.AddScoped<IJobTitleService, JobTitleService>();
             services.AddScoped<ICityService, CityService>();
             services.AddScoped<ILocationService, LocationService>();
+            services.AddScoped<IDepartmentService, DepartmentService>();
 
             return services;
         }

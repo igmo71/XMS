@@ -5,9 +5,10 @@
 @inject IUserAdService Service
 @inject ISnackbar Snackbar
 
-<MudDataGrid Items="@_items" Dense="true" Filterable="true" Loading="_isLoading">
+<MudDataGrid Items="@_items" Dense="true" Filterable="true" 
+	Loading="@_isLoading">
 	<ToolBarContent>
-		<MudText Typo="Typo.h5">Пользователи AD</MudText>
+		<MudText Typo="Typo.h4">Пользователи AD</MudText>
 		<MudSpacer />
 		<MudSpacer />
 		<MudButton OnClick="ReloadDataFromAdAsync" Color="Color.Primary" Variant="Variant.Filled">
@@ -60,8 +61,8 @@
 
 @code {
 	private IEnumerable<UserAd> _items = [];
-	private bool _isLoading = true;
-	private bool _isReloading = false;
+	private bool _isLoading;
+	private bool _isReloading;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -70,11 +71,11 @@
 
 	private async Task LoadDataFromDbAsync()
 	{
+		if (_isLoading) return;
+
 		_isLoading = true;
 		try
 		{
-			await Task.Delay(1000);
-
 			_items = await Service.GetListAsync();
 		}
 		finally
@@ -90,8 +91,6 @@
 		{
 
 			Snackbar.Add("Начало синхронизации с AD...", Severity.Info);
-
-			await Task.Delay(1000);
 
 			await Service.ReloadListAsync();
 

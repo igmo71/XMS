@@ -5,9 +5,10 @@
 @inject IEmployeeZupService Service
 @inject ISnackbar Snackbar
 
-<MudDataGrid Items="@_items" Dense="true" Filterable="true" Loading="_isLoading">
+<MudDataGrid Items="@_items" Dense="true" Filterable="true" 
+	Loading="@_isLoading">
 	<ToolBarContent>
-		<MudText Typo="Typo.h5">Сотрудники 1С ЗУП</MudText>
+		<MudText Typo="Typo.h4">Сотрудники 1С ЗУП</MudText>
 		<MudSpacer />
 		<MudSpacer />
 		<MudButton OnClick="ReloadDataFromOneSAsync" Color="Color.Primary" Variant="Variant.Filled">
@@ -66,8 +67,8 @@
 
 @code {
 	private IEnumerable<EmployeeZup> _items = [];
-	private bool _isLoading = true;
-	private bool _isReloading = false;
+	private bool _isLoading;
+	private bool _isReloading;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -76,6 +77,8 @@
 
 	private async Task LoadDataFromDbAsync()
 	{
+		if (_isLoading) return;
+
 		_isLoading = true;
 		try
 		{

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Formatters;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
 using XMS.Integration.OneS.Abstractions;
@@ -16,76 +15,38 @@ namespace XMS.Integration.OneS
     {
         public static IServiceCollection AddOneSServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddBuhClient(configuration);
-            services.AddSingleton<IBuhService, BuhService>();
+            services.AddOneSClient<UtClient, UtClientConfig>(configuration);
+            services.AddOneSClient<BuhClient, BuhClientConfig>(configuration);
+            services.AddOneSClient<ZupClient, ZupClientConfig>(configuration);
 
-            services.AddZupClient(configuration);
-            services.AddSingleton<IZupService, ZupService>();
-
-            services.AddUtClient(configuration);
-            services.AddSingleton<IUtService, UtService>();
-
-            return services;
-        }
-
-        public static IServiceCollection AddBuhClient(this IServiceCollection services, IConfiguration configuration)
-        {
-            var configurationSection = configuration.GetSection(nameof(BuhClientConfig));
-
-            services.Configure<BuhClientConfig>(configurationSection);
-
-            var config = configurationSection.Get<BuhClientConfig>()
-                ?? throw new InvalidOperationException("BuhClientConfig not found");
-
-            services.AddHttpClient<BuhClient>(client =>
-            {
-                client.BaseAddress = new Uri(config.BaseAddress);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AppSettings.AuthSchemes.Basic,
-                    Convert.ToBase64String(Encoding.UTF8.GetBytes($"{config.UserName}:{config.Password}")));
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-
-            });
+            services.AddScoped<IUtService, UtService>();
+            services.AddScoped<IBuhService, BuhService>();
+            services.AddScoped<IZupService, ZupService>();
 
             return services;
         }
 
-        public static IServiceCollection AddZupClient(this IServiceCollection services, IConfiguration configuration)
+        private static IServiceCollection AddOneSClient<TClient, TConfig>(this IServiceCollection services, IConfiguration configuration)
+            where TClient : class
+            where TConfig : OneSClientConfig
         {
-            var configSection = configuration.GetSection(nameof(ZupClientConfig));
+            var sectionName = typeof(TConfig).Name;
+            var configSection = configuration.GetSection(sectionName);
 
-            services.Configure<ZupClientConfig>(configSection);
+            services.Configure<TConfig>(configSection);
 
-            var config = configSection.Get<ZupClientConfig>()
-                ?? throw new InvalidOperationException("ZupClientConfig not found");
+            var config = configSection.Get<TConfig>()
+                ?? throw new InvalidOperationException($"{sectionName} not found in configuration");
 
-            services.AddHttpClient<ZupClient>(client =>
+            services.AddHttpClient<TClient>(client =>
             {
                 client.BaseAddress = new Uri(config.BaseAddress);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AppSettings.AuthSchemes.Basic,
-                    Convert.ToBase64String(Encoding.UTF8.GetBytes($"{config.UserName}:{config.Password}")));
+
+                var authToken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{config.UserName}:{config.Password}"));
+
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authToken);
+
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-
-            });
-
-            return services;
-        }
-
-        public static IServiceCollection AddUtClient(this IServiceCollection services, IConfiguration configuration)
-        {
-            var configurationSection = configuration.GetSection(nameof(UtClientConfig));
-
-            services.Configure<UtClientConfig>(configurationSection);
-
-            var config = configurationSection.Get<UtClientConfig>()
-                ?? throw new InvalidOperationException("UtClientConfig not found");
-
-            services.AddHttpClient<UtClient>(client =>
-            {
-                client.BaseAddress = new Uri(config.BaseAddress);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(AppSettings.AuthSchemes.Basic,
-                    Convert.ToBase64String(Encoding.UTF8.GetBytes($"{config.UserName}:{config.Password}")));
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
-
             });
 
             return services;
