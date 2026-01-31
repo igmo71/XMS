@@ -6,49 +6,50 @@
 @inject ICityService Service
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
-
-<MudGrid xs="12" sm="6" md="4" Class="ms-1 mt-2">
-	<MudDataGrid @ref="_itemGrid" T="City" Items="@_items"
-				 ReadOnly="false"
-				 Filterable="true"
-				 CommittedItemChanges="@CommittedItemChanges"
-				 Bordered="true" Striped="true" Hover="true" Dense="true"
-				 Loading="@_isLoading"
-				 EditMode="DataGridEditMode.Form"
-				 EditTrigger="DataGridEditTrigger.Manual">
-		<ToolBarContent>
-			<MudText Typo="Typo.h4">Города</MudText>
-			<MudSpacer />
-			<MudButtonGroup Class="ma-0 pa-0" Color="Color.Primary" Variant="Variant.Filled">
-				<MudButton OnClick="NewItemAsync" StartIcon="@Icons.Material.Filled.Add">
-					Добавить
-				</MudButton>
-			</MudButtonGroup>
-		</ToolBarContent>
-		<Columns>
-			<MudBlazor.PropertyColumn Property="x => x.Name" Title="Наименование" />
-			<TemplateColumn CellClass="d-flex justify-between">
-				<CellTemplate>
-					<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@context.Actions.StartEditingItemAsync" />
-					<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Secondary" OnClick="@(() => DeleteItemAsync(context.Item))" />
-				</CellTemplate>
-			</TemplateColumn>
-		</Columns>
-		<LoadingContent>
-			<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
-				Загрузка из БД...
-			</MudAlert>
-		</LoadingContent>
-		<NoRecordsContent>
-			<MudText Typo="Typo.h6" Align="Align.Center" Class="pa-4">
-				Здесь пока ничего нет. Нажмите "Добавить", чтобы создать первый!
-			</MudText>
-		</NoRecordsContent>
-		<PagerContent>
-			<MudDataGridPager T="City" />
-		</PagerContent>
-	</MudDataGrid>
-</MudGrid>
+<MudContainer MaxWidth="MaxWidth.Large">
+	<MudGrid xs="12" sm="6" md="4" Class="ms-1 mt-2">
+		<MudDataGrid @ref="_itemGrid" T="City" Items="@_items"
+					 ReadOnly="false"
+					 Filterable="true"
+					 CommittedItemChanges="@CommittedItemChanges"
+					 Bordered="true" Striped="true" Hover="true" Dense="true"
+					 Loading="@_isLoading"
+					 EditMode="DataGridEditMode.Form"
+					 EditTrigger="DataGridEditTrigger.Manual">
+			<ToolBarContent>
+				<MudText Typo="Typo.h4">Города</MudText>
+				<MudSpacer />
+				<MudButtonGroup Class="ma-0 pa-0" Color="Color.Primary" Variant="Variant.Filled">
+					<MudButton OnClick="NewItemAsync" StartIcon="@Icons.Material.Filled.Add">
+						Добавить
+					</MudButton>
+				</MudButtonGroup>
+			</ToolBarContent>
+			<Columns>
+				<MudBlazor.PropertyColumn Property="x => x.Name" Title="Наименование" />
+				<TemplateColumn CellClass="d-flex justify-between">
+					<CellTemplate>
+						<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@context.Actions.StartEditingItemAsync" />
+						<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Secondary" OnClick="@(() => DeleteItemAsync(context.Item))" />
+					</CellTemplate>
+				</TemplateColumn>
+			</Columns>
+			<LoadingContent>
+				<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
+					Загрузка из БД...
+				</MudAlert>
+			</LoadingContent>
+			<NoRecordsContent>
+				<MudText Typo="Typo.h6" Align="Align.Center" Class="pa-4">
+					Здесь пока ничего нет. Нажмите "Добавить", чтобы создать первый!
+				</MudText>
+			</NoRecordsContent>
+			<PagerContent>
+				<MudDataGridPager T="City" />
+			</PagerContent>
+		</MudDataGrid>
+	</MudGrid>
+</MudContainer>
 
 @code {
 	private readonly CancellationTokenSource _cts = new();

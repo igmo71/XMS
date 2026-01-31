@@ -5,59 +5,61 @@
 @inject IUserAdService Service
 @inject ISnackbar Snackbar
 
-<MudDataGrid Items="@_items" Dense="true" Filterable="true" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
-	Loading="@_isLoading">
-	<ToolBarContent>
-		<MudText Typo="Typo.h4">Пользователи AD</MudText>
-		<MudSpacer />
-		<MudSpacer />
-		<MudButton OnClick="ReloadDataFromAdAsync" Color="Color.Primary" Variant="Variant.Filled">
-			@if (_isReloading)
-			{
-				<MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" Color="Color.Inherit" />
-				<MudText Class="ms-2">Синхронизация...</MudText>
-			}
-			else
-			{
-				<MudIcon Icon="@Icons.Material.Filled.Sync" Class="me-2" />
-				<MudText>Обновить из AD</MudText>
-			}
-		</MudButton>
-		<MudSpacer />
-	</ToolBarContent>
-	<Columns>
-		<PropertyColumn Property="x => x.Name" />
-		<PropertyColumn Property="x => x.Title" />
-		<PropertyColumn Property="x => x.Login" />
-		<PropertyColumn Property="x => x.Department" />
-		<PropertyColumn Property="x => x.Enabled">
-			<CellTemplate>
-				<MudChip T="string"
-						 Color="@(context.Item.Enabled ? Color.Success : Color.Error)"
-						 Size="Size.Small"
-						 Variant="Variant.Text">
-					@(context.Item.Enabled ? "Активен" : "Неактивен")
-				</MudChip>
-			</CellTemplate>
-		</PropertyColumn>
-		<PropertyColumn Property="x => x.DistinguishedName" />
-		<PropertyColumn Property="x => x.Manager" />
-		@* <PropertyColumn Property="x => x.Sid" /> *@
-	</Columns>
-	<LoadingContent>
-		<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
-			Загрузка из БД...
-		</MudAlert>
-	</LoadingContent>
-	<NoRecordsContent>
-		<MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center" Class="mx-3">
-			Пользователи не найдены. Нажмите "Обновить", чтобы загрузить данные.
-		</MudAlert>
-	</NoRecordsContent>
-	<PagerContent>
-		<MudDataGridPager T="UserAd" />
-	</PagerContent>
-</MudDataGrid>
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+	<MudDataGrid Items="@_items" Dense="true" Filterable="true" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+				 Loading="@_isLoading">
+		<ToolBarContent>
+			<MudText Typo="Typo.h4">Пользователи AD</MudText>
+			<MudSpacer />
+			<MudSpacer />
+			<MudButton OnClick="ReloadDataFromAdAsync" Color="Color.Primary" Variant="Variant.Filled">
+				@if (_isReloading)
+				{
+					<MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" Color="Color.Inherit" />
+					<MudText Class="ms-2">Синхронизация...</MudText>
+				}
+				else
+				{
+					<MudIcon Icon="@Icons.Material.Filled.Sync" Class="me-2" />
+					<MudText>Обновить из AD</MudText>
+				}
+			</MudButton>
+			<MudSpacer />
+		</ToolBarContent>
+		<Columns>
+			<PropertyColumn Property="x => x.Name" />
+			<PropertyColumn Property="x => x.Title" />
+			<PropertyColumn Property="x => x.Login" />
+			<PropertyColumn Property="x => x.Department" />
+			<PropertyColumn Property="x => x.Enabled">
+				<CellTemplate>
+					<MudChip T="string"
+							 Color="@(context.Item.Enabled ? Color.Success : Color.Error)"
+							 Size="Size.Small"
+							 Variant="Variant.Text">
+						@(context.Item.Enabled ? "Активен" : "Неактивен")
+					</MudChip>
+				</CellTemplate>
+			</PropertyColumn>
+			<PropertyColumn Property="x => x.DistinguishedName" />
+			<PropertyColumn Property="x => x.Manager" />
+			@* <PropertyColumn Property="x => x.Sid" /> *@
+		</Columns>
+		<LoadingContent>
+			<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
+				Загрузка из БД...
+			</MudAlert>
+		</LoadingContent>
+		<NoRecordsContent>
+			<MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center" Class="mx-3">
+				Пользователи не найдены. Нажмите "Обновить", чтобы загрузить данные.
+			</MudAlert>
+		</NoRecordsContent>
+		<PagerContent>
+			<MudDataGridPager T="UserAd" />
+		</PagerContent>
+	</MudDataGrid>
+</MudContainer>
 
 @code {
 	private IEnumerable<UserAd> _items = [];

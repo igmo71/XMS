@@ -4,35 +4,36 @@
 @using XMS.Modules.Employees.Abstractions
 @using XMS.Modules.Employees.Domain
 @inject IDepartmentService Service;
+<MudContainer MaxWidth="MaxWidth.Large">
+	<MudStack>
+		<MudPaper Class="pa-4" Width="600px">
+			<MudStack Row="true">
+				<MudText Typo="Typo.h4">Схема предприятия</MudText>
+				<MudSpacer />
+				@if (_expandedAll)
+				{
+					<MudFab Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Material.Filled.VerticalAlignCenter" OnClick="CollapseAll" title="Свернуть все" />
+				}
+				else
+				{
+					<MudFab Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Expand" OnClick="ExpandAll" title="Развернуть все" />
+				}
+			</MudStack>
+		</MudPaper>
 
-<MudStack>
-	<MudPaper Class="pa-4" Width="600px">
-		<MudStack Row="true">
-			<MudText Typo="Typo.h4">Схема предприятия</MudText>
-			<MudSpacer />
-			@if (_expandedAll)
-			{
-				<MudFab Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Material.Filled.VerticalAlignCenter" OnClick="CollapseAll" title="Свернуть все" />
-			}
-			else
-			{
-				<MudFab Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Expand" OnClick="ExpandAll" title="Развернуть все" />
-			}
-		</MudStack>
-	</MudPaper>
-
-	<MudPaper Width="600px" Elevation="0" Outlined="true">
-		<MudTreeView Items="_treeItems" T="Department">
-			<ItemTemplate Context="item">
-				<MudTreeViewItem @bind-Expanded="@item.Expanded"
-								 Items="@item.Children"
-								 Value="@item.Value"
-								 Text="@item.Value?.Name"
-								 Icon="@GetIcon(item)" />
-			</ItemTemplate>
-		</MudTreeView>
-	</MudPaper>
-</MudStack>
+		<MudPaper Width="600px" Elevation="0" Outlined="true">
+			<MudTreeView Items="_treeItems" T="Department">
+				<ItemTemplate Context="item">
+					<MudTreeViewItem @bind-Expanded="@item.Expanded"
+									 Items="@item.Children"
+									 Value="@item.Value"
+									 Text="@item.Value?.Name"
+									 Icon="@GetIcon(item)" />
+				</ItemTemplate>
+			</MudTreeView>
+		</MudPaper>
+	</MudStack>
+</MudContainer>
 
 @code {
 
