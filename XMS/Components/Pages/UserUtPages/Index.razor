@@ -5,7 +5,7 @@
 @inject IUserUtService Service
 @inject ISnackbar Snackbar
 
-<MudDataGrid Items="@_items" Dense="true" Filterable="true" 
+<MudDataGrid Items="@_items" Dense="true" Filterable="true" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
 	Loading="@_isLoading">
 	<ToolBarContent>
 		<MudText Typo="Typo.h4">Пользователи 1С УТ</MudText>
