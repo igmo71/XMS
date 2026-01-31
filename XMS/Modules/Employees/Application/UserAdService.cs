@@ -13,6 +13,7 @@ namespace XMS.Modules.Employees.Application
             using var dbContext = dbFactory.CreateDbContext();
             return await dbContext.UsersAd
                 .AsNoTracking()
+                .OrderBy(x => x.Name)
                 .ToListAsync(ct);
         }
 

@@ -51,9 +51,17 @@ namespace XMS.Modules.Employees.Application
         public async Task UpdateAsync(Employee item, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
+
             var existing = await dbContext.Employees.FindAsync([item.Id], ct)
                 ?? throw new KeyNotFoundException($"City with ID {item.Id} not found");
+            
             dbContext.Entry(existing).CurrentValues.SetValues(item);
+            
+            existing.EmployeeBuhId = item.EmployeeBuh?.Id;
+            existing.EmployeeZupId = item.EmployeeZup?.Id;
+            existing.UserUtId = item.UserUt?.Id;
+            existing.UserAdId = item.UserAd?.Sid;
+            
             await dbContext.SaveChangesAsync(ct);
         }
     }

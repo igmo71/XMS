@@ -34,7 +34,7 @@
 			<EditTemplate>
 				<MudGrid style="min-width: 500px">
 					<MudItem xs="12">
-						<MudTextField @bind-Value="context.Item.Name" 
+						<MudTextField @bind-Value="context.Item.Name"
 									  Label="Ввод ФИО"
 									  Variant="Variant.Outlined"
 									  Required="true"
@@ -64,14 +64,31 @@
 		</PropertyColumn>
 		<PropertyColumn Property="x => x.Department == null ? string.Empty : x.Department.Name" Title="Отдел">
 			<EditTemplate>
+				<MudSelect @bind-Value="context.Item.DepartmentId"
+						   Label="Выбор Отдела"
+						   Required="false"
+						   RequiredError="Нужно выбрать отдел"
+						   RelativeWidth="DropdownWidth.Ignore"
+						   Variant="Variant.Outlined"
+						   Clearable="true"
+						   Dense="true">
+					@foreach (var item in _departments)
+					{
+						<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
+					}
+
+				</MudSelect>
+			</EditTemplate>
+		</PropertyColumn>
+		@* <PropertyColumn Property="x => x.Department == null ? string.Empty : x.Department.Name" Title="Отдел">
+			<EditTemplate>
 				<MudAutocomplete @bind-Value="context.Item.Department"
 								 T="Department"
 								 ToStringFunc="CleanName"
 								 SearchFunc="SearchDepartment"
 								 Variant="Variant.Outlined"
 								 Label="Поиск Отдела (в Схеме предприятия)"
-								 Required="false"
-								 RequiredError="Нужно выбрать отдел"
+								 Required="false" RequiredError="Нужно выбрать отдел"
 								 Clearable="true"
 								 Dense="true"
 								 RelativeWidth="DropdownWidth.Ignore">
@@ -82,7 +99,7 @@
 					</ItemTemplate>
 				</MudAutocomplete>
 			</EditTemplate>
-		</PropertyColumn>
+		</PropertyColumn> *@
 		<PropertyColumn Property="x => x.City == null ? string.Empty : x.City.Name" Title="Город">
 			<EditTemplate>
 				<MudSelect @bind-Value="context.Item.CityId"
