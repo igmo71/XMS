@@ -13,22 +13,22 @@ namespace XMS.Components.Pages.EmployeePages
         [Inject] public IDepartmentService DepartmentService { get; set; } = default!;
         [Inject] public ICityService CityService { get; set; } = default!;
         [Inject] public ILocationService LocationService { get; set; } = default!;
-        //[Inject] public ICostItemService CostItemService { get; set; } = default!;
         [Inject] public IUserAdService UserAdService { get; set; } = default!;
         [Inject] public IUserUtService UserUtService { get; set; } = default!;
         [Inject] public IEmployeeBuhService EmployeeBuhService { get; set; } = default!;
         [Inject] public IEmployeeZupService EmployeeZupService { get; set; } = default!;
+        //[Inject] public ICostItemService CostItemService { get; set; } = default!;
 
         private IReadOnlyList<Employee> _employees = [];
         private IReadOnlyList<JobTitle> _jobTitles = [];
         private IReadOnlyList<City> _cities = [];
         private IReadOnlyList<Location> _locations = [];
-        private IReadOnlyList<CostItem> _costItems = [];
         private IReadOnlyList<Department> _departments = [];
         private IReadOnlyList<UserUt> _usersUt = [];
         private IReadOnlyList<EmployeeBuh> _employeesBuh = []  ;
         private IReadOnlyList<EmployeeZup> _employeesZup = [];
         private IReadOnlyList<UserAd> _usersAd = [];
+        //private IReadOnlyList<CostItem> _costItems = [];
 
         private MudDataGrid<Employee> _employeeGrid = default!;
 
@@ -93,18 +93,18 @@ namespace XMS.Components.Pages.EmployeePages
             await _employeeGrid.CancelEditingItemAsync();
         }
 
-        private Task<IEnumerable<Department>> SearchDepartment(string value, CancellationToken token)
-        {
-            if (_departments is null)
-                return Task.FromResult(Enumerable.Empty<Department>());
+        //private Task<IEnumerable<Department>> SearchDepartment(string value, CancellationToken token)
+        //{
+        //    if (_departments is null)
+        //        return Task.FromResult(Enumerable.Empty<Department>());
 
-            if (string.IsNullOrEmpty(value))
-                return Task.FromResult(_departments.AsEnumerable());
+        //    if (string.IsNullOrEmpty(value))
+        //        return Task.FromResult(_departments.AsEnumerable());
 
-            return Task.FromResult(_departments
-                .Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
-                .ToList().AsEnumerable());
-        }
+        //    return Task.FromResult(_departments
+        //        .Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+        //        .ToList().AsEnumerable());
+        //}
 
         private Task<IEnumerable<UserUt>> SearchUserUt(string value, CancellationToken token)
         {
@@ -158,13 +158,28 @@ namespace XMS.Components.Pages.EmployeePages
                 .ToList().AsEnumerable());
         }
 
-        private string CleanName<T>(T? item) where T : IHasName
-        {
-            if (item == null || string.IsNullOrEmpty(item.Name))
-                return string.Empty;
 
-            return item.Name.TrimStart('└', '─', '-', ' ', '\u00A0');
+
+        private Task<IEnumerable<Employee>> SearchEmployee(string value, CancellationToken token)
+        {
+            if (_employees is null)
+                return Task.FromResult(Enumerable.Empty<Employee>());
+
+            if (string.IsNullOrEmpty(value))
+                return Task.FromResult(_employees.AsEnumerable());
+
+            return Task.FromResult(_employees
+                .Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+                .ToList().AsEnumerable());
         }
+
+        //private static string CleanName<T>(T? item) where T : IHasName
+        //{
+        //    if (item == null || string.IsNullOrEmpty(item.Name))
+        //        return string.Empty;
+
+        //    return item.Name.TrimStart('└', '─', '-', ' ', '\u00A0');
+        //}
 
         private void ToggleEditingGrid(bool args)
         {
@@ -182,8 +197,8 @@ namespace XMS.Components.Pages.EmployeePages
             if (!string.IsNullOrEmpty(e.JobTitle?.Name) && e.JobTitle.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
                 return true;
 
-            //if (!string.IsNullOrEmpty(e.CostItem?.Name) && e.CostItem.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
-            //    return true;
+            if (!string.IsNullOrEmpty(e.Department?.Name) && e.Department.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
 
             return false;
         };

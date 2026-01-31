@@ -23,4 +23,9 @@ namespace XMS.Core.Abstractions
     {
         ICollection<TDescendant> Children { get; set; }
     }
+
+    public interface ITreeNode<T> : IHasParent<T>, IHasChildren<T>
+    where T : class
+    {
+    }
 }

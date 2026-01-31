@@ -2,7 +2,7 @@
 
 namespace XMS.Modules.Employees.Domain
 {
-    public class CostItem : NamedEntity, IHasParent<CostItem>, IHasChildren<CostItem>
+    public class CostItem : NamedEntity, ITreeNode<CostItem>
     {
         public Guid? ParentId { get; set; }
         public CostItem? Parent { get; set; }

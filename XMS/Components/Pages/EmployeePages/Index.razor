@@ -25,7 +25,7 @@
 			Добавить
 		</MudButton>
 		<MudSpacer />
-		<MudTextField @bind-Value="_searchString" Placeholder="ФИО, Должность" Adornment="Adornment.Start" Immediate="true"
+		<MudTextField @bind-Value="_searchString" Placeholder="ФИО, Должность или Отдел" Adornment="Adornment.Start" Immediate="true"
 					  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Clearable="true"></MudTextField>
 		<MudSpacer />
 	</ToolBarContent>
@@ -208,7 +208,7 @@
 								 ToStringFunc="@(e => e == null ? string.Empty : e.Name)"
 								 SearchFunc="SearchUserAd"
 								 Variant="Variant.Outlined"
-								 Label="Поиск пользователя AD"
+								 Label="Поиск Пользователя AD"
 								 Clearable="true"
 								 Dense="true"
 								 RelativeWidth="DropdownWidth.Ignore">
@@ -220,10 +220,44 @@
 				</MudAutocomplete>
 			</EditTemplate>
 		</PropertyColumn>
-		@* <PropertyColumn Property="x => x.OperationManager == null ? string.Empty : x.OperationManager.Name" Title="Оперативный руководитель" Required="false">
-
+		<PropertyColumn Property="x => x.OperationManager == null ? string.Empty : x.OperationManager.Name" Title="Оперативный Руководитель" Required="false">
+			<EditTemplate>
+				<MudAutocomplete @bind-Value="context.Item.OperationManager" FullWidth="true"
+								 T="Employee"
+								 ToStringFunc="@(e => e == null ? string.Empty : e.Name)"
+								 SearchFunc="SearchEmployee"
+								 Variant="Variant.Outlined"
+								 Label="Поиск Оперативного Руководителя"
+								 Clearable="true"
+								 Dense="true"
+								 RelativeWidth="DropdownWidth.Ignore">
+					<ItemTemplate Context="item">
+						<MudText Typo="Typo.body2" Style="white-space:nowrap">
+							@item.Name
+						</MudText>
+					</ItemTemplate>
+				</MudAutocomplete>
+			</EditTemplate>
 		</PropertyColumn>
-		<PropertyColumn Property="x => x.LocationManager == null ? string.Empty : x.LocationManager.Name" Title="Руководитель Локации" Required="false" /> *@
+		<PropertyColumn Property="x => x.LocationManager == null ? string.Empty : x.LocationManager.Name" Title="Руководитель Локации" Required="false" >
+			<EditTemplate>
+				<MudAutocomplete @bind-Value="context.Item.LocationManager" FullWidth="true"
+								 T="Employee"
+								 ToStringFunc="@(e => e == null ? string.Empty : e.Name)"
+								 SearchFunc="SearchEmployee"
+								 Variant="Variant.Outlined"
+								 Label="Поиск Руководителя Локации"
+								 Clearable="true"
+								 Dense="true"
+								 RelativeWidth="DropdownWidth.Ignore">
+					<ItemTemplate Context="item">
+						<MudText Typo="Typo.body2" Style="white-space:nowrap">
+							@item.Name
+						</MudText>
+					</ItemTemplate>
+				</MudAutocomplete>
+			</EditTemplate>
+			</PropertyColumn>
 		<TemplateColumn Hidden="@(!_isEditingGrid)">
 			<CellTemplate>
 				<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Secondary" OnClick="@(() => DeleteItem(context.Item))" />

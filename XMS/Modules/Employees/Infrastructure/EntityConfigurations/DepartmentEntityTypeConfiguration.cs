@@ -10,10 +10,7 @@ namespace XMS.Modules.Employees.Infrastructure.EntityConfigurations
         {
             base.Configure(builder);
 
-            builder.HasOne(x => x.Parent)
-                .WithMany(x => x.Children)
-                .HasForeignKey(x => x.ParentId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(x => x.Parent).WithMany(x => x.Children).HasForeignKey(x => x.ParentId).OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
