@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using XMS.Core;
 using XMS.Data;
 using XMS.Integration.AD.Application;
 using XMS.Modules.Employees.Abstractions;
@@ -6,7 +7,7 @@ using XMS.Modules.Employees.Domain;
 
 namespace XMS.Modules.Employees.Application
 {
-    public class UserAdService(IAdService adService, IDbContextFactory<ApplicationDbContext> dbFactory) : IUserAdService
+    public class UserAdService(IAdService adService, IDbContextFactory<ApplicationDbContext> dbFactory) : ServiceBase, IUserAdService
     {
         public async Task<IReadOnlyList<UserAd>> GetListAsync(CancellationToken ct = default)
         {
@@ -19,6 +20,8 @@ namespace XMS.Modules.Employees.Application
 
         public async Task<IReadOnlyList<UserAd>> LoadListAsync(CancellationToken ct = default)
         {
+            using var activity = StartActivity();
+
             var rawData = await adService.GetUsersAsync(ct);
 
             return rawData.Select(x => new UserAd
@@ -36,12 +39,17 @@ namespace XMS.Modules.Employees.Application
 
         public async Task ReloadListAsync(CancellationToken ct = default)
         {
+            using var activity = StartActivity();
+
             var list = await LoadListAsync(ct);
+
             await SaveListAsync(list, ct);
         }
 
         public async Task SaveListAsync(IReadOnlyList<UserAd> list, CancellationToken ct = default)
         {
+            using var activity = StartActivity();
+
             using var dbContext = dbFactory.CreateDbContext();
 
             var incomingIds = list.Select(x => x.Sid).ToList();

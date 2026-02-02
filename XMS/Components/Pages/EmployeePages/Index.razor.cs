@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using XMS.Core.Abstractions;
 using XMS.Modules.Employees.Abstractions;
 using XMS.Modules.Employees.Domain;
 
@@ -25,7 +24,7 @@ namespace XMS.Components.Pages.EmployeePages
         private IReadOnlyList<Location> _locations = [];
         private IReadOnlyList<Department> _departments = [];
         private IReadOnlyList<UserUt> _usersUt = [];
-        private IReadOnlyList<EmployeeBuh> _employeesBuh = []  ;
+        private IReadOnlyList<EmployeeBuh> _employeesBuh = [];
         private IReadOnlyList<EmployeeZup> _employeesZup = [];
         private IReadOnlyList<UserAd> _usersAd = [];
         //private IReadOnlyList<CostItem> _costItems = [];
@@ -72,7 +71,8 @@ namespace XMS.Components.Pages.EmployeePages
         private async Task LoadCities() => _cities = await CityService.GetListAsync();
         private async Task LoadLocations() => _locations = await LocationService.GetListAsync();
         private async Task LoadUsersUt() => _usersUt = await UserUtService.GetListAsync();
-        private async Task LoadUsersAd() => _usersAd = await UserAdService.LoadListAsync();
+        //private async Task LoadUsersAd() => _usersAd = await UserAdService.LoadListAsync();
+        private async Task LoadUsersAd() => _usersAd = await UserAdService.GetListAsync();
         private async Task LoadEmploeesBuh() => _employeesBuh = await EmployeeBuhService.GetListAsync();
         private async Task LoadEmploeesZup() => _employeesZup = await EmployeeZupService.GetListAsync();
 

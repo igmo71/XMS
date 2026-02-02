@@ -3,8 +3,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using MudBlazor.Translations;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using Serilog;
 using XMS.Components;
 using XMS.Components.Account;
+using XMS.Core;
 using XMS.Data;
 using XMS.Integration;
 using XMS.Modules;
@@ -16,6 +21,34 @@ namespace XMS
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Host.UseSerilog((context, services, configuration) =>
+            {
+                configuration
+                    .ReadFrom.Configuration(context.Configuration)
+                    .ReadFrom.Services(services);
+            });
+
+            builder.Services.AddOpenTelemetry()
+                .ConfigureResource(resource =>
+                {
+                    resource.AddService(AppTelemetry.ServiceName);
+                    resource.AddAttributes(new Dictionary<string, object> { ["Application"] = "XMS" });
+                })
+                .WithTracing(tracing => tracing
+                    .SetSampler(new AppTraceSampler())
+                    .AddSource(AppTelemetry.SourceName)
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddSqlClientInstrumentation()
+                    //.AddEntityFrameworkCoreInstrumentation()
+                    .AddOtlpExporter(options =>
+                    {
+                        //options.Endpoint = new Uri("http://vm-igmo-dev:5341/ingest/otlp/v1/traces");
+                        var endpoint = new Uri($"{builder.Configuration["Serilog:WriteTo:1:Args:serverUrl"]}/ingest/otlp/v1/traces");
+                        options.Endpoint = (endpoint);
+                        options.Protocol = OtlpExportProtocol.HttpProtobuf;
+                    }));
 
             // Add services to the container.
             builder.Services.AddMudServices();
@@ -75,6 +108,7 @@ namespace XMS
             app.UseAntiforgery();
 
             app.MapStaticAssets();
+            app.UseSerilogRequestLogging();
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
 
