@@ -1,6 +1,6 @@
 ﻿namespace XMS.Core.Abstractions
 {
-    public abstract class Entity : IHasId<Guid>
+    public abstract class BaseEntity : IHasId<Guid>
     {
         public Guid Id { get; init; }
     }

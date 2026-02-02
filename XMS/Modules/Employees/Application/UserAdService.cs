@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XMS.Core;
+using XMS.Core.Abstractions;
 using XMS.Data;
 using XMS.Integration.AD.Application;
 using XMS.Modules.Employees.Abstractions;
@@ -7,7 +7,7 @@ using XMS.Modules.Employees.Domain;
 
 namespace XMS.Modules.Employees.Application
 {
-    public class UserAdService(IAdService adService, IDbContextFactory<ApplicationDbContext> dbFactory) : ServiceBase, IUserAdService
+    public class UserAdService(IAdService adService, IDbContextFactory<ApplicationDbContext> dbFactory) : BaseService, IUserAdService
     {
         public async Task<IReadOnlyList<UserAd>> GetListAsync(CancellationToken ct = default)
         {

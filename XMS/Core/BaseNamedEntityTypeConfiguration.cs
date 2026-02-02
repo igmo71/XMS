@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Core.Abstractions;
 
-namespace XMS.Modules.Employees.Infrastructure.EntityConfigurations
+namespace XMS.Core
 {
-    public class BaseNamedEntityTypeConfiguration<T> : BaseEntityTypeConfiguration<T> where T : Entity, IHasName
+    public class BaseNamedEntityTypeConfiguration<T> : BaseEntityTypeConfiguration<T> where T : BaseEntity, IHasName
     {
         public override void Configure(EntityTypeBuilder<T> builder)
         {

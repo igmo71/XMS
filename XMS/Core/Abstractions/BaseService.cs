@@ -1,13 +1,13 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace XMS.Core
+namespace XMS.Core.Abstractions
 {
-    public abstract class ServiceBase
+    public abstract class BaseService
     {
         protected readonly string _className;
 
-        protected ServiceBase()
+        protected BaseService()
         {
             _className = GetType().Name;
         }

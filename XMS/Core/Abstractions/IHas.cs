@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using XMS.Modules.Employees.Domain;
-
-namespace XMS.Core.Abstractions
+﻿namespace XMS.Core.Abstractions
 {
     public interface IHasId<out TId>
     {
@@ -22,10 +19,5 @@ namespace XMS.Core.Abstractions
     public interface IHasChildren<TDescendant>
     {
         ICollection<TDescendant> Children { get; set; }
-    }
-
-    public interface ITreeNode<T> : IHasParent<T>, IHasChildren<T>
-    where T : class
-    {
-    }
+    }   
 }

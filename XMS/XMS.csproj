@@ -35,6 +35,8 @@
 
   <ItemGroup>
     <Folder Include="Core\Extensions\" />
+    <Folder Include="Modules\Costs\Abstractions\" />
+    <Folder Include="Modules\Costs\Application\" />
   </ItemGroup>
 
 </Project>

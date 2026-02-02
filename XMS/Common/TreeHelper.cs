@@ -4,7 +4,7 @@ namespace XMS.Common
 {
     public class TreeHelper
     {
-        public static List<T> BuildFlattenedTree<T>(IReadOnlyList<T> items) where T : Entity, IHasParent<T>, IHasName, new()
+        public static List<T> BuildFlattenedTree<T>(IReadOnlyList<T> items) where T : BaseEntity, IHasParent<T>, IHasName, new()
         {
             var result = new List<T>();
 
