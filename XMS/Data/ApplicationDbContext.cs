@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using XMS.Modules.Costs.Domain;
 using XMS.Modules.Employees.Domain;
 
 namespace XMS.Data
@@ -11,11 +12,15 @@ namespace XMS.Data
         public DbSet<Department> Departments { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<City> Cities { get; set; }
-        //public DbSet<CostItem> CostItems { get; set; }
         public DbSet<UserAd> UsersAd { get; set; }
         public DbSet<UserUt> UsersUt { get; set; }
         public DbSet<EmployeeBuh> EmployeesBuh { get; set; }
         public DbSet<EmployeeZup> EmployeesZup { get; set; }
+
+
+        public DbSet<CostCategory> CostCategories { get; set; }
+        public DbSet<CostItem> CostItems { get; set; }
+        public DbSet<CostCategoryItem> CostCategoryItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

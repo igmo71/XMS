@@ -1,9 +1,10 @@
-﻿@page "/departments"
+﻿@page "/costitems"
 
 @using XMS.Components.Common
-@using XMS.Modules.Employees.Abstractions
-@using XMS.Modules.Employees.Domain
-@inject IDepartmentService Service;
+@using XMS.Modules.Costs.Abstractions
+@using XMS.Modules.Costs.Domain
+@inject ICostService CostService
+
 <MudContainer MaxWidth="MaxWidth.Large">
 	<MudStack>
 		<MudPaper Class="pa-4" Width="600px">
@@ -22,7 +23,7 @@
 		</MudPaper>
 
 		<MudPaper Width="600px" Elevation="0" Outlined="true">
-			<MudTreeView Items="_treeItems" T="Department">
+			<MudTreeView Items="_treeItems" T="CostCategory">
 				<ItemTemplate Context="item">
 					<MudTreeViewItem @bind-Expanded="@item.Expanded"
 									 Items="@item.Children"
@@ -36,34 +37,16 @@
 </MudContainer>
 
 @code {
-
 	private readonly CancellationTokenSource _cts = new();
-	//private List<Department> _flatList = new();
-	private List<TreeItemData<Department>> _treeItems = new();
+	private List<TreeItemData<CostCategory>> _treeItems = new();
 	private bool _expandedAll;
 
-	protected override async Task OnInitializedAsync()
-	{
-		var departments = await Service.GetListAsync(_cts.Token);
+    protected override async Task OnInitializedAsync()
+    {
+        var categories = await CostService.GetCategoryTreeAsync();
 
-		_treeItems = BuildTree(departments, null);
-	}
-
-	private List<TreeItemData<Department>> BuildTree(IEnumerable<Department> allDeps, Guid? parentId)
-	{
-		return allDeps
-			.Where(d => d.ParentId == parentId)
-			.Select(d => new TreeItemData<Department>
-			{
-				Value = d,
-				Text = d.Name,
-				Expanded = false, // Начальное состояние
-				Icon = Icons.Material.Filled.Category,
-				// Рекурсивно загружаем детей
-				Children = BuildTree(allDeps, d.Id)
-			})
-			.ToList();
-	}
+        _treeItems = TreeHelper.BuildTree(categories, null);
+    }
 
 	private void ExpandAll()
 	{
@@ -76,11 +59,13 @@
 		_expandedAll = false;
 	}
 
-	private string GetIcon(ITreeItemData<Department> item)
+	private string GetIcon(ITreeItemData<CostCategory> item)
 	{
 		if (item.HasChildren)
 			return item.Expanded ? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder;
 
 		return Icons.Material.Filled.Category;
 	}
+    
+    
 }
