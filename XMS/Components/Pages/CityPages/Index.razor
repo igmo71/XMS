@@ -6,6 +6,7 @@
 @inject ICityService Service
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
+
 <MudContainer MaxWidth="MaxWidth.Large">
 	<MudGrid xs="12" sm="6" md="4" Class="ms-1 mt-2">
 		<MudDataGrid @ref="_itemGrid" T="City" Items="@_items"

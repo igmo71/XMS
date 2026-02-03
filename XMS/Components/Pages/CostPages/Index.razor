@@ -3,13 +3,17 @@
 @using XMS.Components.Common
 @using XMS.Modules.Costs.Abstractions
 @using XMS.Modules.Costs.Domain
-@inject ICostService CostService
+@implements IDisposable
+@inject ICostCategoryService CategoryService
+@inject ICostItemService ItemService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
-<MudContainer MaxWidth="MaxWidth.Large">
-	<MudStack>
-		<MudPaper Class="pa-4" Width="600px">
-			<MudStack Row="true">
-				<MudText Typo="Typo.h4">Схема предприятия</MudText>
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+	<MudStack Row="true">
+		<MudPaper Width="600px" Elevation="0" Outlined="true">
+			<MudPickerToolbar>
+				<MudText Typo="Typo.h5">Категории и Статьи Затрат</MudText>
 				<MudSpacer />
 				@if (_expandedAll)
 				{
@@ -19,53 +23,258 @@
 				{
 					<MudFab Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Expand" OnClick="ExpandAll" title="Развернуть все" />
 				}
-			</MudStack>
-		</MudPaper>
+				<MudSpacer />
+			</MudPickerToolbar>
+			<MudTreeView Items="_costTree">
+				<ItemTemplate Context="node">
 
-		<MudPaper Width="600px" Elevation="0" Outlined="true">
-			<MudTreeView Items="_treeItems" T="CostCategory">
-				<ItemTemplate Context="item">
-					<MudTreeViewItem @bind-Expanded="@item.Expanded"
-									 Items="@item.Children"
-									 Value="@item.Value"
-									 Text="@item.Value?.Name"
-									 Icon="@GetIcon(item)" />
+					<MudTreeViewItem @bind-Expanded="@node.Expanded"
+									 Items="@node.Children"
+									 Value="@node.Value">
+						<Content>
+							<MudTreeViewItemToggleButton @bind-Expanded="@node.Expanded" Visible="@node.HasChildren" />
+							<div class="d-flex align-center">
+								@if (node.Value is CostCategory category)
+								{
+									<MudIcon Icon="@(node.Expanded? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder)" Class="mr-2" Size="Size.Small" Title="Категория Затрат" />
+									<MudText>@category.Name</MudText>
+								}
+								else if (node.Value is CostItem costItem)
+								{
+									<MudIcon Icon="@Icons.Material.Filled.InsertDriveFile" Class="mr-2" Size="Size.Small" Title="Статья Затрат" />
+									<MudText Typo="Typo.body2">@costItem.Name</MudText>
+								}
+							</div>
+						</Content>
+
+					</MudTreeViewItem>
 				</ItemTemplate>
 			</MudTreeView>
 		</MudPaper>
+
+		<MudPaper Width="600px" Elevation="0" Outlined="true">
+			<MudDataGrid @ref="_itemGrid" Items="@_items" T="CostItem"
+						 ReadOnly="false"
+						 Filterable="true"
+						 CommittedItemChanges="@CommittedItemChanges"
+						 Bordered="true" Striped="true" Hover="true" Dense="true"
+						 Loading="@_isLoading"
+						 EditMode="DataGridEditMode.Form"
+						 EditTrigger="DataGridEditTrigger.Manual">
+				<ToolBarContent>
+					<MudStack Row="true" Class="pt-5">
+						<MudText Typo="Typo.h5">Статьи Затрат</MudText>
+						<MudSpacer />
+						<MudButtonGroup Class="ma-0 pa-0" Color="Color.Primary" Variant="Variant.Filled">
+							<MudButton OnClick="NewItemAsync" StartIcon="@Icons.Material.Filled.Add">
+								Добавить
+							</MudButton>
+						</MudButtonGroup>
+					</MudStack>
+				</ToolBarContent>
+				<Columns>
+					<PropertyColumn Property="x => x.Name" Title="Наименование" />
+					<TemplateColumn>
+						@* <EditTemplate>
+							<MudSelect @bind-Value="context.Item.Categories" Label="Выбор Категории Статьи Затрат"
+									   Required="false"
+									   RequiredError="Нужно выбрать категорию"
+									   RelativeWidth="DropdownWidth.Ignore"
+									   Variant="Variant.Outlined"
+									   Clearable="true"
+									   Dense="true">
+								@foreach (var item in _categoriesFlattenedTree)
+								{
+									<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
+								}
+							</MudSelect>
+						</EditTemplate> *@
+					</TemplateColumn>
+					<TemplateColumn CellClass="d-flex justify-between">
+						<CellTemplate>
+							<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@context.Actions.StartEditingItemAsync" />
+							<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Secondary" OnClick="@(() => DeleteItemAsync(context.Item))" />
+						</CellTemplate>
+					</TemplateColumn>
+				</Columns>
+				<LoadingContent>
+					<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
+						Загрузка из БД...
+					</MudAlert>
+				</LoadingContent>
+				<NoRecordsContent>
+					<MudText Typo="Typo.h6" Align="Align.Center" Class="pa-4">
+						Здесь пока ничего нет. Нажмите "Добавить", чтобы создать первый!
+					</MudText>
+				</NoRecordsContent>
+				<PagerContent>
+					<MudDataGridPager T="CostItem" />
+				</PagerContent>
+			</MudDataGrid>
+		</MudPaper>
+
 	</MudStack>
 </MudContainer>
 
 @code {
 	private readonly CancellationTokenSource _cts = new();
-	private List<TreeItemData<CostCategory>> _treeItems = new();
+	private MudDataGrid<CostItem> _itemGrid = default!;
+	private IReadOnlyList<CostCategory> _categoriesFullList = [];
+	private IReadOnlyList<CostCategory> _categoriesList = [];
+	private IReadOnlyList<CostCategory> _categoriesFlattenedTree = [];
+	private IReadOnlyList<CostItem> _items = [];
+	private IReadOnlyList<TreeItemData<object?>> _costTree = [];
 	private bool _expandedAll;
+	private bool _isLoading;
+	private bool _isProcessing;
 
-    protected override async Task OnInitializedAsync()
-    {
-        var categories = await CostService.GetCategoryTreeAsync();
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadDataFromDbAsync();
+	}
 
-        _treeItems = TreeHelper.BuildTree(categories, null);
-    }
+	private async Task LoadDataFromDbAsync()
+	{
+		if (_isLoading) return;
+
+		_isLoading = true;
+		try
+		{
+			_categoriesList = await CategoryService.GetListAsync(_cts.Token);
+			_categoriesFullList = await CategoryService.GetFullListAsync(_cts.Token);
+
+			_costTree = MapToTree(_categoriesFullList, null);
+
+			_items = await ItemService.GetListAsync(_cts.Token);
+
+			_categoriesFlattenedTree = TreeHelper.BuildFlattenedTree<CostCategory>(_categoriesList);
+		}
+		finally
+		{
+			_isLoading = false;
+		}
+	}
+		
+	private List<TreeItemData<object?>> MapToTree(IEnumerable<CostCategory> categories, Guid? parentId)
+	{
+		var nodes = new List<TreeItemData<object?>>();
+		foreach (var cat in categories.Where(e => e.ParentId == parentId))
+		{
+			var childrenList = new List<TreeItemData<object?>>();
+
+			if (cat.Children.Any())
+			{
+				childrenList.AddRange(MapToTree(categories, cat.Id));
+			}
+
+			if (cat.Items?.Any() == true)
+			{
+				foreach (var costItem in cat.Items)
+				{
+					childrenList.Add(new TreeItemData<object?>
+					{
+						Value = costItem
+					});
+				}
+			}
+
+			var node = new TreeItemData<object?>
+			{
+				Value = cat,
+				Expanded = false,
+				Children = childrenList
+			};
+
+			nodes.Add(node);
+		}
+		return nodes;
+	}
 
 	private void ExpandAll()
 	{
-		_treeItems.SetExpansion(true);
+		_costTree.SetExpansion(true);
 		_expandedAll = true;
 	}
 	private void CollapseAll()
 	{
-		_treeItems.SetExpansion(false);
+		_costTree.SetExpansion(false);
 		_expandedAll = false;
 	}
 
-	private string GetIcon(ITreeItemData<CostCategory> item)
+	private async Task NewItemAsync(MouseEventArgs args)
 	{
-		if (item.HasChildren)
-			return item.Expanded ? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder;
+		var item = new CostItem();
 
-		return Icons.Material.Filled.Category;
+		await _itemGrid.SetEditingItemAsync(item);
 	}
-    
-    
+
+	private async Task CommittedItemChanges(CostItem item)
+	{
+		try
+		{
+			if (!_items.Any(x => x.Id == item.Id))
+				await ItemService.CreateAsync(item);
+			else
+				await ItemService.UpdateAsync(item);
+
+			Snackbar.Add($"Успешно сохранено: {item.Name}", Severity.Success);
+
+			await LoadDataFromDbAsync();
+		}
+		catch (Exception ex)
+		{
+			Snackbar.Add($"Ошибка при сохранении {item.Name}: {ex.Message}", Severity.Error);
+		}
+	}
+
+	private async Task DeleteItemAsync(CostItem item)
+	{
+		if (_isProcessing) return;
+
+		if (await ConfirmDeleteItemAsync(item))
+		{
+			try
+			{
+				_isProcessing = true;
+
+				await ItemService.DeleteAsync(item.Id);
+
+				await LoadDataFromDbAsync();
+
+				Snackbar.Add($"Успешно удалено: {item.Name}", Severity.Success);
+			}
+			catch (Exception ex)
+			{
+				Snackbar.Add($"Ошибка при удалении {item.Name}: {ex.Message}", Severity.Error);
+			}
+			finally
+			{
+				_isProcessing = false;
+			}
+		}
+	}
+
+	private async Task<bool> ConfirmDeleteItemAsync(CostItem item)
+	{
+		var parameters = new DialogParameters<ConfirmDialog>
+		{
+			{ x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}' навсегда?" },
+			{ x => x.ButtonText, "Да, удалить" },
+			{ x => x.ButtonColor, Color.Error }
+		};
+
+		var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+		var dialog = await DialogService.ShowAsync<ConfirmDialog>("Удаление", parameters, options);
+
+		var result = await dialog.Result;
+
+		return result is { Canceled: false };
+	}
+
+	public void Dispose()
+	{
+		_cts.Cancel();
+		_cts.Dispose();
+	}
 }

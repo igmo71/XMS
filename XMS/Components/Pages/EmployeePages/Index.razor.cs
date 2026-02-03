@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using XMS.Components.Common;
 using XMS.Modules.Employees.Abstractions;
 using XMS.Modules.Employees.Domain;
 
@@ -67,11 +68,15 @@ namespace XMS.Components.Pages.EmployeePages
 
         private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync();
         private async Task LoadJobTitles() => _jobTitles = await JobTitleService.GetListAsync();
-        private async Task LoadDepartments() => _departments = await DepartmentService.GetFlattenedListAsync();
+        private async Task LoadDepartments()
+        {
+            var list = await DepartmentService.GetListAsync();
+            _departments = TreeHelper.BuildFlattenedTree(list);
+        }
+
         private async Task LoadCities() => _cities = await CityService.GetListAsync();
         private async Task LoadLocations() => _locations = await LocationService.GetListAsync();
         private async Task LoadUsersUt() => _usersUt = await UserUtService.GetListAsync();
-        //private async Task LoadUsersAd() => _usersAd = await UserAdService.LoadListAsync();
         private async Task LoadUsersAd() => _usersAd = await UserAdService.GetListAsync();
         private async Task LoadEmploeesBuh() => _employeesBuh = await EmployeeBuhService.GetListAsync();
         private async Task LoadEmploeesZup() => _employeesZup = await EmployeeZupService.GetListAsync();
@@ -172,14 +177,6 @@ namespace XMS.Components.Pages.EmployeePages
                 .Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
                 .ToList().AsEnumerable());
         }
-
-        //private static string CleanName<T>(T? item) where T : IHasName
-        //{
-        //    if (item == null || string.IsNullOrEmpty(item.Name))
-        //        return string.Empty;
-
-        //    return item.Name.TrimStart('└', '─', '-', ' ', '\u00A0');
-        //}
 
         private void ToggleEditingGrid(bool args)
         {

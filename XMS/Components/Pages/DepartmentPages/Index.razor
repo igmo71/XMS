@@ -38,7 +38,6 @@
 @code {
 
 	private readonly CancellationTokenSource _cts = new();
-	//private List<Department> _flatList = new();
 	private List<TreeItemData<Department>> _treeItems = new();
 	private bool _expandedAll;
 
@@ -46,23 +45,7 @@
 	{
 		var departments = await Service.GetListAsync(_cts.Token);
 
-		_treeItems = BuildTree(departments, null);
-	}
-
-	private List<TreeItemData<Department>> BuildTree(IEnumerable<Department> allDeps, Guid? parentId)
-	{
-		return allDeps
-			.Where(d => d.ParentId == parentId)
-			.Select(d => new TreeItemData<Department>
-			{
-				Value = d,
-				Text = d.Name,
-				Expanded = false, // Начальное состояние
-				Icon = Icons.Material.Filled.Category,
-				// Рекурсивно загружаем детей
-				Children = BuildTree(allDeps, d.Id)
-			})
-			.ToList();
+		_treeItems = TreeHelper.BuildTree(departments, null);
 	}
 
 	private void ExpandAll()
@@ -81,6 +64,6 @@
 		if (item.HasChildren)
 			return item.Expanded ? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder;
 
-		return Icons.Material.Filled.Category;
+		return Icons.Material.Filled.CorporateFare;
 	}
 }

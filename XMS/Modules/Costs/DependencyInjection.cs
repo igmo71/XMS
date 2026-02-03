@@ -7,7 +7,8 @@ namespace XMS.Modules.Costs
     {
         public static IServiceCollection AddCostsModule(this IServiceCollection services)
         {
-            services.AddScoped<ICostService, CostService>();
+            services.AddScoped<ICostCategoryService, CostCategoryService>();
+            services.AddScoped<ICostItemService, CostItemService>();
 
             return services;
         }

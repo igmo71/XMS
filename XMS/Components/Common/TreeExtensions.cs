@@ -18,16 +18,16 @@ namespace XMS.Components.Common
             }
         }
 
-        public static void FlattenAndExecute<T>(this IEnumerable<ITreeItemData<T>> items, Action<TreeItemData<T>> action)
-        {
-            foreach (var item in items)
-            {
-                if (item is TreeItemData<T> node)
-                {
-                    action(node);
-                    node.Children?.FlattenAndExecute(action);
-                }
-            }
-        }       
+        //public static void FlattenAndExecute<T>(this IEnumerable<ITreeItemData<T>> items, Action<TreeItemData<T>> action)
+        //{
+        //    foreach (var item in items)
+        //    {
+        //        if (item is TreeItemData<T> node)
+        //        {
+        //            action(node);
+        //            node.Children?.FlattenAndExecute(action);
+        //        }
+        //    }
+        //}       
     }
 }

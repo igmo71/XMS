@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XMS.Common;
 using XMS.Data;
 using XMS.Modules.Employees.Abstractions;
 using XMS.Modules.Employees.Domain;
@@ -45,31 +44,6 @@ namespace XMS.Modules.Employees.Application
                 ?? throw new KeyNotFoundException($"Department with ID {item.Id} not found");
             dbContext.Entry(existing).CurrentValues.SetValues(item);
             await dbContext.SaveChangesAsync(ct);
-        }
-
-        public async Task<IReadOnlyList<Department>> GetFlattenedListAsync(CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
-            var list = await GetListAsync(ct);
-
-            var result = TreeHelper.BuildFlattenedTree(list);
-
-            return result;
-        }
-
-        public async Task<IReadOnlyList<Department>> GetFullTreeAsync(CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
-            // 1. Загружаем ВСЕ департаменты в память. 
-            // EF Core автоматически заполнит свойства Children и Parent, так как он отслеживает зависимости (Identity Resolution).
-            var allDepartments = await dbContext.Departments
-                .AsNoTracking() // Для скорости, если только просмотр
-                .ToListAsync(ct);
-
-            // 2. Возвращаем только корневые элементы (у которых нет ParentId)
-            var result =  allDepartments.Where(d => d.ParentId == null).ToList();
-
-            return result;
         }
     }
 }

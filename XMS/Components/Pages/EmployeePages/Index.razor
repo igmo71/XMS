@@ -1,10 +1,11 @@
 ﻿@page "/employees"
+@using System.Globalization
 @using XMS.Modules.Employees.Domain
 
 <PageTitle>Сотрудники</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge">
-	<MudDataGrid @ref="_employeeGrid" T="Employee" Items="@_employees"
+	<MudDataGrid @ref="_employeeGrid" T="Employee" Items="@_employees" Culture="@(new CultureInfo("ru-RU", false))"
 				 Loading="@_isLoading"
 				 Bordered="true" Dense="true" Striped="true" Hover="true"
 				 Filterable="true" FilterMode="DataGridFilterMode.Simple" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
