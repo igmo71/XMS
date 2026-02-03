@@ -1,0 +1,59 @@
+﻿@using XMS.Modules.Costs.Domain
+<MudDialog>
+	<TitleContent>
+		<MudText Typo="Typo.h6">
+			<MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3 mb-n1" />
+			@MudDialog.Title
+		</MudText>
+	</TitleContent>
+	<DialogContent>
+		<MudForm @ref="_form">
+			<MudTextField T="string" Label="Родительская Категория" @bind-Value="@Parent.Name" ReadOnly="true" />
+			<MudTextField T="string" Label="Наименование" @bind-Value="Model.Name" Required="true" />
+			<MudSelect T="CostItem"
+					   Label="Статьи затрат"
+					   MultiSelection="true"
+					   ToStringFunc="@(e => e == null ? string.Empty : e.Name)"
+					   @bind-SelectedValues="_selectedItems">
+				@foreach (var item in AllAvailableItems)
+				{
+					<MudSelectItem Value="@item">@item.Name</MudSelectItem>
+				}
+			</MudSelect>
+		</MudForm>
+	</DialogContent>
+	<DialogActions>
+		<MudButton OnClick="Cancel">Отмена</MudButton>
+		<MudButton Color="Color.Primary" OnClick="Submit">Сохранить</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+	[Parameter] public CostCategory Model { get; set; } = new();
+	[Parameter] public CostCategory Parent { get; set; } = new();
+	[Parameter] public IEnumerable<CostItem> AllAvailableItems { get; set; } = [];
+	private MudForm _form = default!;
+	private IEnumerable<CostItem> _selectedItems = new HashSet<CostItem>();
+
+	protected override void OnInitialized()
+	{
+		if (Model.Items != null)
+		{
+			_selectedItems = new HashSet<CostItem>(Model.Items);
+		}
+	}
+
+	private void Cancel() => MudDialog.Cancel();
+
+	private async Task Submit()
+	{
+		if (_form.IsValid)
+		{
+			Model.Items = _selectedItems.ToList();
+			Model.Parent = Parent;
+
+			MudDialog.Close(DialogResult.Ok(Model));
+		}
+	}
+}

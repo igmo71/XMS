@@ -36,8 +36,17 @@
 							<div class="d-flex align-center">
 								@if (node.Value is CostCategory category)
 								{
-									<MudIcon Icon="@(node.Expanded? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder)" Class="mr-2" Size="Size.Small" Title="Категория Затрат" />
+									<MudIcon Icon="@(node.Expanded? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder)" Class="mr-2" Title="Категория Затрат" />
 									<MudText>@category.Name</MudText>
+									<MudMenu Icon="@Icons.Material.Filled.MoreVert"
+											 AriaLabel="Open user menu">
+										<MudMenuItem Label="Добавить вложенную категорию" Icon="@Icons.Material.Filled.CreateNewFolder" OnClick="() => NewCategoryAsync(node.Value)" />
+										<MudMenuItem Label="Изменить эту категорию" Icon="@Icons.Material.Filled.Edit" OnClick="() => EditCategoryAsync(node.Value)" />
+										<MudMenuItem Label="Удалить эту категорию" Icon="@Icons.Material.Filled.Delete" />
+										<MudDivider />
+										<MudMenuItem Label="Добавить Статью Затрат" Icon="@Icons.Material.Filled.InsertDriveFile" />
+									</MudMenu>
+
 								}
 								else if (node.Value is CostItem costItem)
 								{
@@ -141,6 +150,7 @@
 		try
 		{
 			_categoriesList = await CategoryService.GetListAsync(_cts.Token);
+
 			_categoriesFullList = await CategoryService.GetFullListAsync(_cts.Token);
 
 			_costTree = MapToTree(_categoriesFullList, null);
@@ -154,7 +164,7 @@
 			_isLoading = false;
 		}
 	}
-		
+
 	private List<TreeItemData<object?>> MapToTree(IEnumerable<CostCategory> categories, Guid? parentId)
 	{
 		var nodes = new List<TreeItemData<object?>>();
@@ -276,5 +286,64 @@
 	{
 		_cts.Cancel();
 		_cts.Dispose();
+	}
+
+	private async Task NewCategoryAsync(object? value)
+	{
+		if (value is CostCategory parent)
+			await OpenEditDialog(null, parent);
+	}
+
+	private async Task EditCategoryAsync(object? value)
+	{
+		if (value is CostCategory item)
+			await OpenEditDialog(item, _categoriesList.FirstOrDefault(e => e.Id == item.ParentId));
+	}
+
+	private async Task OpenEditDialog(CostCategory? category = null, CostCategory? parent = null)
+	{
+		// Если category == null — это создание новой подкатегории
+		var parameters = new DialogParameters<CategoryDialog>
+	{
+		{ x => x.Model, category ?? new CostCategory() },
+		{ x => x.Parent, parent},
+		{ x => x.AllAvailableItems, _items }
+	};
+
+		var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+		var dialog = await DialogService.ShowAsync<CategoryDialog>(
+			category == null ? "Создание категории" : "Редактирование",
+			parameters,
+			options);
+
+		var result = await dialog.Result;
+
+		if (!result?.Canceled == true)
+		{
+			if (result?.Data is CostCategory costCategory)
+				try
+				{
+
+					if (!_categoriesList.Any(e => e.Id == costCategory.Id))
+					{
+						// Create
+						Snackbar.Add($"Создаем Категорию: {costCategory.Name}", Severity.Normal);
+					}
+					else
+					{
+						// Update
+						Snackbar.Add($"Изменяем Категорию: {costCategory.Name}", Severity.Normal);
+					}
+
+					Snackbar.Add($"Успешно сохранено: {costCategory.Name}", Severity.Success);
+
+					await LoadDataFromDbAsync();
+				}
+				catch (Exception ex)
+				{
+					Snackbar.Add($"Ошибка при сохранении {costCategory.Name}: {ex.Message}", Severity.Error);
+				}
+
+		}
 	}
 }
