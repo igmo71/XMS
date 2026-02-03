@@ -8,12 +8,12 @@
 	</TitleContent>
 	<DialogContent>
 		<MudForm @ref="_form">
-			<MudTextField T="string" Label="Родительская Категория" @bind-Value="@Parent.Name" ReadOnly="true" />
+			<MudTextField T="string" Label="Родительская Категория" @bind-Value="@Parent?.Name" ReadOnly="true" />
 			<MudTextField T="string" Label="Наименование" @bind-Value="Model.Name" Required="true" />
 			<MudSelect T="CostItem"
 					   Label="Статьи затрат"
 					   MultiSelection="true"
-					   AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.BottomRight"
+					   AnchorOrigin="Origin.TopCenter" TransformOrigin="Origin.BottomCenter"
 					   ToStringFunc="@(e => e == null ? string.Empty : e.Name)"
 					   @bind-SelectedValues="_selectedItems">
 				@foreach (var item in AllAvailableItems)
@@ -32,7 +32,7 @@
 @code {
 	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 	[Parameter] public CostCategory Model { get; set; } = new();
-	[Parameter] public CostCategory Parent { get; set; } = new();
+	[Parameter] public CostCategory? Parent { get; set; } = new();
 	[Parameter] public IEnumerable<CostItem> AllAvailableItems { get; set; } = [];
 	private MudForm _form = default!;
 	private IEnumerable<CostItem> _selectedItems = new HashSet<CostItem>();
@@ -41,7 +41,11 @@
 	{
 		if (Model.Items != null)
 		{
-			_selectedItems = new HashSet<CostItem>(Model.Items);
+			var selectedIds = Model.Items.Select(x => x.Id).ToHashSet();
+
+			_selectedItems = AllAvailableItems
+				.Where(x => selectedIds.Contains(x.Id))
+				.ToList();
 		}
 	}
 

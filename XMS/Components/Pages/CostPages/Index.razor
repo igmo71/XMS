@@ -39,6 +39,8 @@
 									<MudIcon Icon="@(node.Expanded? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder)" Class="mr-2" Title="Категория Затрат" />
 									<MudText>@category.Name</MudText>
 									<MudMenu Icon="@Icons.Material.Filled.MoreVert"
+											 AnchorOrigin="Origin.TopRight"
+											 TransformOrigin="Origin.TopLeft"
 											 AriaLabel="Open user menu">
 										<MudMenuItem Label="Добавить вложенную категорию" Icon="@Icons.Material.Filled.CreateNewFolder" OnClick="() => NewCategoryAsync(node.Value)" />
 										<MudMenuItem Label="Изменить эту категорию" Icon="@Icons.Material.Filled.Edit" OnClick="() => EditCategoryAsync(node.Value)" />
