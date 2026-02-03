@@ -302,7 +302,6 @@
 
 	private async Task OpenEditDialog(CostCategory? category = null, CostCategory? parent = null)
 	{
-		// Если category == null — это создание новой подкатегории
 		var parameters = new DialogParameters<CategoryDialog>
 	{
 		{ x => x.Model, category ?? new CostCategory() },

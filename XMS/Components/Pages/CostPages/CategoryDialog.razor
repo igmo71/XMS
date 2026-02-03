@@ -13,6 +13,7 @@
 			<MudSelect T="CostItem"
 					   Label="Статьи затрат"
 					   MultiSelection="true"
+					   AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.BottomRight"
 					   ToStringFunc="@(e => e == null ? string.Empty : e.Name)"
 					   @bind-SelectedValues="_selectedItems">
 				@foreach (var item in AllAvailableItems)
