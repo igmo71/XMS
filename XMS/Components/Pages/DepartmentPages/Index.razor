@@ -22,7 +22,7 @@
 		</MudPaper>
 
 		<MudPaper Width="600px" Elevation="0" Outlined="true">
-			<MudTreeView Items="_treeItems" T="Department">
+			<MudTreeView Items="_treeItems" T="Department" Dense="true">
 				<ItemTemplate Context="item">
 					<MudTreeViewItem @bind-Expanded="@item.Expanded"
 									 Items="@item.Children"

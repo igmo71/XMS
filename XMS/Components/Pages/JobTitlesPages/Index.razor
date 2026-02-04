@@ -61,10 +61,10 @@
 
 	protected async override Task OnInitializedAsync()
 	{
-		await LoadDataFromDbAsync();
+		await LoadDataAsync();
 	}
 
-	private async Task LoadDataFromDbAsync()
+	private async Task LoadDataAsync()
 	{
 		if (_isLoading) return;
 
@@ -97,7 +97,7 @@
 
 			Snackbar.Add($"Успешно сохранено: {item.Name}", Severity.Success);
 
-			await LoadDataFromDbAsync();
+			await LoadDataAsync();
 		}
 		catch (Exception ex)
 		{
@@ -117,7 +117,7 @@
 
 				await Service.DeleteAsync(item.Id);
 
-				await LoadDataFromDbAsync();
+				await LoadDataAsync();
 
 				Snackbar.Add($"Успешно удалено: {item.Name}", Severity.Success);
 			}

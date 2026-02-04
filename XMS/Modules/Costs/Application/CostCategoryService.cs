@@ -3,6 +3,7 @@ using XMS.Components.Common;
 using XMS.Data;
 using XMS.Modules.Costs.Abstractions;
 using XMS.Modules.Costs.Domain;
+using static MudBlazor.CategoryTypes;
 
 namespace XMS.Modules.Costs.Application
 {
@@ -54,6 +55,7 @@ namespace XMS.Modules.Costs.Application
             using var dbContext = dbFactory.CreateDbContext();
             var list = dbContext.CostCategories
             .AsNoTracking()
+            .Include(e => e.Parent)
             .Include(e => e.Children)
             .Include(e => e.Items)
             .OrderBy(x => x.Name)
@@ -68,6 +70,20 @@ namespace XMS.Modules.Costs.Application
             var existing = await dbContext.CostCategories.FindAsync([item.Id], ct)
                 ?? throw new KeyNotFoundException($"CostCategory with ID {item.Id} not found");
             dbContext.Entry(existing).CurrentValues.SetValues(item);
+            await dbContext.SaveChangesAsync(ct);
+        }
+
+        public async Task CreareOrUpdateAsync(CostCategory item, CancellationToken ct)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var existing = dbContext.CostCategories.FirstOrDefault(e => e.Id == item.Id);
+
+            if(existing is null)
+                dbContext.CostCategories.Add(item);
+            else
+                dbContext.Entry(existing).CurrentValues.SetValues(item);
+
             await dbContext.SaveChangesAsync(ct);
         }
     }

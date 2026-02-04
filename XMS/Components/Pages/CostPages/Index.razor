@@ -1,13 +1,5 @@
 ﻿@page "/costitems"
-
-@using XMS.Components.Common
-@using XMS.Modules.Costs.Abstractions
 @using XMS.Modules.Costs.Domain
-@implements IDisposable
-@inject ICostCategoryService CategoryService
-@inject ICostItemService ItemService
-@inject IDialogService DialogService
-@inject ISnackbar Snackbar
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge">
 	<MudStack Row="true">
@@ -25,7 +17,7 @@
 				}
 				<MudSpacer />
 			</MudPickerToolbar>
-			<MudTreeView Items="_costTree">
+			<MudTreeView Items="_costTree" Dense="true">
 				<ItemTemplate Context="node">
 
 					<MudTreeViewItem @bind-Expanded="@node.Expanded"
@@ -39,9 +31,10 @@
 									<MudIcon Icon="@(node.Expanded? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder)" Class="mr-2" Title="Категория Затрат" />
 									<MudText>@category.Name</MudText>
 									<MudMenu Icon="@Icons.Material.Filled.MoreVert"
+											 Size="Size.Small"
 											 AnchorOrigin="Origin.TopRight"
 											 TransformOrigin="Origin.TopLeft"
-											 AriaLabel="Open user menu">
+											 AriaLabel="Open menu">
 										<MudMenuItem Label="Добавить вложенную категорию" Icon="@Icons.Material.Filled.CreateNewFolder" OnClick="() => NewCategoryAsync(node.Value)" />
 										<MudMenuItem Label="Изменить эту категорию" Icon="@Icons.Material.Filled.Edit" OnClick="() => EditCategoryAsync(node.Value)" />
 										<MudMenuItem Label="Удалить эту категорию" Icon="@Icons.Material.Filled.Delete" />
@@ -127,224 +120,3 @@
 	</MudStack>
 </MudContainer>
 
-@code {
-	private readonly CancellationTokenSource _cts = new();
-	private MudDataGrid<CostItem> _itemGrid = default!;
-	private IReadOnlyList<CostCategory> _categoriesFullList = [];
-	private IReadOnlyList<CostCategory> _categoriesList = [];
-	private IReadOnlyList<CostCategory> _categoriesFlattenedTree = [];
-	private IReadOnlyList<CostItem> _items = [];
-	private IReadOnlyList<TreeItemData<object?>> _costTree = [];
-	private bool _expandedAll;
-	private bool _isLoading;
-	private bool _isProcessing;
-
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadDataFromDbAsync();
-	}
-
-	private async Task LoadDataFromDbAsync()
-	{
-		if (_isLoading) return;
-
-		_isLoading = true;
-		try
-		{
-			_categoriesList = await CategoryService.GetListAsync(_cts.Token);
-
-			_categoriesFullList = await CategoryService.GetFullListAsync(_cts.Token);
-
-			_costTree = MapToTree(_categoriesFullList, null);
-
-			_items = await ItemService.GetListAsync(_cts.Token);
-
-			_categoriesFlattenedTree = TreeHelper.BuildFlattenedTree<CostCategory>(_categoriesList);
-		}
-		finally
-		{
-			_isLoading = false;
-		}
-	}
-
-	private List<TreeItemData<object?>> MapToTree(IEnumerable<CostCategory> categories, Guid? parentId)
-	{
-		var nodes = new List<TreeItemData<object?>>();
-		foreach (var cat in categories.Where(e => e.ParentId == parentId))
-		{
-			var childrenList = new List<TreeItemData<object?>>();
-
-			if (cat.Children.Any())
-			{
-				childrenList.AddRange(MapToTree(categories, cat.Id));
-			}
-
-			if (cat.Items?.Any() == true)
-			{
-				foreach (var costItem in cat.Items)
-				{
-					childrenList.Add(new TreeItemData<object?>
-					{
-						Value = costItem
-					});
-				}
-			}
-
-			var node = new TreeItemData<object?>
-			{
-				Value = cat,
-				Expanded = false,
-				Children = childrenList
-			};
-
-			nodes.Add(node);
-		}
-		return nodes;
-	}
-
-	private void ExpandAll()
-	{
-		_costTree.SetExpansion(true);
-		_expandedAll = true;
-	}
-	private void CollapseAll()
-	{
-		_costTree.SetExpansion(false);
-		_expandedAll = false;
-	}
-
-	private async Task NewItemAsync(MouseEventArgs args)
-	{
-		var item = new CostItem();
-
-		await _itemGrid.SetEditingItemAsync(item);
-	}
-
-	private async Task CommittedItemChanges(CostItem item)
-	{
-		try
-		{
-			if (!_items.Any(x => x.Id == item.Id))
-				await ItemService.CreateAsync(item);
-			else
-				await ItemService.UpdateAsync(item);
-
-			Snackbar.Add($"Успешно сохранено: {item.Name}", Severity.Success);
-
-			await LoadDataFromDbAsync();
-		}
-		catch (Exception ex)
-		{
-			Snackbar.Add($"Ошибка при сохранении {item.Name}: {ex.Message}", Severity.Error);
-		}
-	}
-
-	private async Task DeleteItemAsync(CostItem item)
-	{
-		if (_isProcessing) return;
-
-		if (await ConfirmDeleteItemAsync(item))
-		{
-			try
-			{
-				_isProcessing = true;
-
-				await ItemService.DeleteAsync(item.Id);
-
-				await LoadDataFromDbAsync();
-
-				Snackbar.Add($"Успешно удалено: {item.Name}", Severity.Success);
-			}
-			catch (Exception ex)
-			{
-				Snackbar.Add($"Ошибка при удалении {item.Name}: {ex.Message}", Severity.Error);
-			}
-			finally
-			{
-				_isProcessing = false;
-			}
-		}
-	}
-
-	private async Task<bool> ConfirmDeleteItemAsync(CostItem item)
-	{
-		var parameters = new DialogParameters<ConfirmDialog>
-		{
-			{ x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}' навсегда?" },
-			{ x => x.ButtonText, "Да, удалить" },
-			{ x => x.ButtonColor, Color.Error }
-		};
-
-		var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
-
-		var dialog = await DialogService.ShowAsync<ConfirmDialog>("Удаление", parameters, options);
-
-		var result = await dialog.Result;
-
-		return result is { Canceled: false };
-	}
-
-	public void Dispose()
-	{
-		_cts.Cancel();
-		_cts.Dispose();
-	}
-
-	private async Task NewCategoryAsync(object? value)
-	{
-		if (value is CostCategory parent)
-			await OpenEditDialog(null, parent);
-	}
-
-	private async Task EditCategoryAsync(object? value)
-	{
-		if (value is CostCategory item)
-			await OpenEditDialog(item, _categoriesList.FirstOrDefault(e => e.Id == item.ParentId));
-	}
-
-	private async Task OpenEditDialog(CostCategory? category = null, CostCategory? parent = null)
-	{
-		var parameters = new DialogParameters<CategoryDialog>
-	{
-		{ x => x.Model, category ?? new CostCategory() },
-		{ x => x.Parent, parent},
-		{ x => x.AllAvailableItems, _items }
-	};
-
-		var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-		var dialog = await DialogService.ShowAsync<CategoryDialog>(
-			category == null ? "Создание категории" : "Редактирование",
-			parameters,
-			options);
-
-		var result = await dialog.Result;
-
-		if (!result?.Canceled == true)
-		{
-			if (result?.Data is CostCategory costCategory)
-				try
-				{
-
-					if (!_categoriesList.Any(e => e.Id == costCategory.Id))
-					{
-						// Create
-						Snackbar.Add($"Создаем Категорию: {costCategory.Name}", Severity.Normal);
-					}
-					else
-					{
-						// Update
-						Snackbar.Add($"Изменяем Категорию: {costCategory.Name}", Severity.Normal);
-					}
-
-					Snackbar.Add($"Успешно сохранено: {costCategory.Name}", Severity.Success);
-
-					await LoadDataFromDbAsync();
-				}
-				catch (Exception ex)
-				{
-					Snackbar.Add($"Ошибка при сохранении {costCategory.Name}: {ex.Message}", Severity.Error);
-				}
-
-		}
-	}
-}

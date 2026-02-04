@@ -68,10 +68,10 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		await LoadDataFromDbAsync();
+		await LoadDataAsync();
 	}
 
-	private async Task LoadDataFromDbAsync()
+	private async Task LoadDataAsync()
 	{
 		if (_isLoading) return;
 
@@ -98,7 +98,7 @@
 
 			Snackbar.Add("Данные успешно синхронизированы с AD", Severity.Success);
 
-			await LoadDataFromDbAsync();
+			await LoadDataAsync();
 		}
 		catch (Exception ex)
 		{

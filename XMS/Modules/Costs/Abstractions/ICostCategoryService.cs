@@ -7,5 +7,6 @@ namespace XMS.Modules.Costs.Abstractions
     {
         Task<IReadOnlyList<CostCategory>> GetFlattenedListAsync(CancellationToken ct = default);
         Task<IReadOnlyList<CostCategory>> GetFullListAsync(CancellationToken ct = default);
+        Task CreareOrUpdateAsync(CostCategory item, CancellationToken ct);
     }
 }

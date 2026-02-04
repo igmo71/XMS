@@ -17,7 +17,8 @@ namespace XMS.Components.Pages.EmployeePages
         [Inject] public IUserUtService UserUtService { get; set; } = default!;
         [Inject] public IEmployeeBuhService EmployeeBuhService { get; set; } = default!;
         [Inject] public IEmployeeZupService EmployeeZupService { get; set; } = default!;
-        //[Inject] public ICostItemService CostItemService { get; set; } = default!;
+        [Inject] public IDialogService DialogService { get; set; } = default!;
+        [Inject] public ISnackbar Snackbar { get; set; } = default!;
 
         private IReadOnlyList<Employee> _employees = [];
         private IReadOnlyList<JobTitle> _jobTitles = [];
@@ -34,6 +35,7 @@ namespace XMS.Components.Pages.EmployeePages
 
         private string? _searchString;
         private bool _isLoading;
+        private bool _isProcessing;
         private bool _isEditingGrid;
 
         protected override async Task OnInitializedAsync()
@@ -88,28 +90,50 @@ namespace XMS.Components.Pages.EmployeePages
 
         private async Task DeleteItem(Employee item)
         {
-            if (_employees is null)
-                return;
+            if (_isProcessing) return;
 
-            await EmployeeService.DeleteAsync(item.Id);
+            if (await ConfirmDeleteItemAsync(item))
+            {
+                try
+                {
+                    _isProcessing = true;
 
-            await LoadEmployees();
+                    await EmployeeService.DeleteAsync(item.Id);
+
+                    await LoadEmployees();
+
+                    Snackbar.Add($"Успешно удалено: {item.Name}", Severity.Success);
+                }
+                catch (Exception ex)
+                {
+                    Snackbar.Add($"Ошибка при удалении {item.Name}: {ex.Message}", Severity.Error);
+                }
+                finally
+                {
+                    _isProcessing = false;
+                }
+            }
 
             await _employeeGrid.CancelEditingItemAsync();
         }
 
-        //private Task<IEnumerable<Department>> SearchDepartment(string value, CancellationToken token)
-        //{
-        //    if (_departments is null)
-        //        return Task.FromResult(Enumerable.Empty<Department>());
+        private async Task<bool> ConfirmDeleteItemAsync(Employee item)
+        {
+            var parameters = new DialogParameters<ConfirmDialog>
+            {
+                { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}' навсегда?" },
+                { x => x.ButtonText, "Да, удалить" },
+                { x => x.ButtonColor, Color.Error }
+            };
 
-        //    if (string.IsNullOrEmpty(value))
-        //        return Task.FromResult(_departments.AsEnumerable());
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
 
-        //    return Task.FromResult(_departments
-        //        .Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
-        //        .ToList().AsEnumerable());
-        //}
+            var dialog = await DialogService.ShowAsync<ConfirmDialog>("Удаление", parameters, options);
+
+            var result = await dialog.Result;
+
+            return result is { Canceled: false };
+        }
 
         private Task<IEnumerable<UserUt>> SearchUserUt(string value, CancellationToken token)
         {
