@@ -216,7 +216,8 @@ namespace XMS.Components.Pages.CostPages
             var parameters = new DialogParameters<CategoryDialog>
             {
                 { x => x.Model, category },
-                { x => x.AllItems, _items }
+                { x => x.AllItems, _items },
+                {x => x.CategoriesFlattenedTree, _categoriesFlattenedTree }
             };
 
             var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };

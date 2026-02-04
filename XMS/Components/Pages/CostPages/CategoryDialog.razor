@@ -8,8 +8,24 @@
 	</TitleContent>
 	<DialogContent>
 		<MudForm @ref="_form">
-			<MudTextField T="string" Label="Родительская Категория" @bind-Value="@Model.Parent?.Name" ReadOnly="true" />
-			<MudTextField T="string" Label="Наименование" @bind-Value="Model.Name" Required="true" />
+			<MudSelect @bind-Value="Model.ParentId"
+					   Label="Родительской Категории"
+					   Required="false"
+					   RequiredError="Нужно выбрать Категорию"
+					   RelativeWidth="DropdownWidth.Ignore"
+					   Variant="Variant.Outlined"
+					   Clearable="true"
+					   Dense="true">
+				@foreach (var item in CategoriesFlattenedTree)
+				{
+					<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
+				}
+
+			</MudSelect>
+			<MudTextField @bind-Value="Model.Name" T="string"
+						  Label="Наименование"
+						  Required="true"
+						  RequiredError="Нужно ввести Наименование" />
 			<MudSelect T="CostItem"
 					   Label="Статьи затрат"
 					   MultiSelection="true"
@@ -33,6 +49,7 @@
 @code {
 	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 	[Parameter] public CostCategory Model { get; set; } = new();
+	[Parameter] public IEnumerable<CostCategory> CategoriesFlattenedTree { get; set; } = [];
 	[Parameter] public IEnumerable<CostItem> AllItems { get; set; } = [];
 	private MudForm _form = default!;
 	private IEnumerable<CostItem> _selectedItems = new HashSet<CostItem>();

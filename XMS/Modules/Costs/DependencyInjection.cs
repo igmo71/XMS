@@ -9,6 +9,7 @@ namespace XMS.Modules.Costs
         {
             services.AddScoped<ICostCategoryService, CostCategoryService>();
             services.AddScoped<ICostItemService, CostItemService>();
+            services.AddScoped<ICostCategoryItemService, CostCategoryItemService>();
 
             return services;
         }

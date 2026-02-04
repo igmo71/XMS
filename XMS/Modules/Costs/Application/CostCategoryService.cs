@@ -3,11 +3,10 @@ using XMS.Components.Common;
 using XMS.Data;
 using XMS.Modules.Costs.Abstractions;
 using XMS.Modules.Costs.Domain;
-using static MudBlazor.CategoryTypes;
 
 namespace XMS.Modules.Costs.Application
 {
-    public class CostCategoryService(IDbContextFactory<ApplicationDbContext> dbFactory) : ICostCategoryService
+    public class CostCategoryService(IDbContextFactory<ApplicationDbContext> dbFactory, ICostCategoryItemService costCategoryItemService) : ICostCategoryService
     {
         public async Task CreateAsync(CostCategory item, CancellationToken ct = default)
         {
@@ -64,25 +63,30 @@ namespace XMS.Modules.Costs.Application
             return list;
         }
 
-        public async Task UpdateAsync(CostCategory item, CancellationToken ct = default)
+        public async Task UpdateAsync(CostCategory value, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
-            var existing = await dbContext.CostCategories.FindAsync([item.Id], ct)
-                ?? throw new KeyNotFoundException($"CostCategory with ID {item.Id} not found");
-            dbContext.Entry(existing).CurrentValues.SetValues(item);
+            var existing = await dbContext.CostCategories.FindAsync([value.Id], ct)
+                ?? throw new KeyNotFoundException($"CostCategory with ID {value.Id} not found");
+            dbContext.Entry(existing).CurrentValues.SetValues(value);
             await dbContext.SaveChangesAsync(ct);
         }
 
-        public async Task CreareOrUpdateAsync(CostCategory item, CancellationToken ct)
+        public async Task CreareOrUpdateAsync(CostCategory value, CancellationToken ct)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var existing = dbContext.CostCategories.FirstOrDefault(e => e.Id == item.Id);
+            var existing = dbContext.CostCategories.FirstOrDefault(e => e.Id == value.Id);
 
-            if(existing is null)
-                dbContext.CostCategories.Add(item);
+            if (existing is null)
+            {
+                var entity = dbContext.CostCategories.Add(new() { Name = value.Name, ParentId = value.ParentId }).Entity;
+            }
             else
-                dbContext.Entry(existing).CurrentValues.SetValues(item);
+                dbContext.Entry(existing).CurrentValues.SetValues(value);
+
+
+            await costCategoryItemService.UpdateByCategoryAsync(value, ct);
 
             await dbContext.SaveChangesAsync(ct);
         }
