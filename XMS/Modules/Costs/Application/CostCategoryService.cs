@@ -1,17 +1,37 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XMS.Components.Common;
 using XMS.Data;
 using XMS.Modules.Costs.Abstractions;
 using XMS.Modules.Costs.Domain;
 
 namespace XMS.Modules.Costs.Application
 {
-    public class CostCategoryService(IDbContextFactory<ApplicationDbContext> dbFactory, ICostCategoryItemService costCategoryItemService) : ICostCategoryService
+    public class CostCategoryService(
+        IDbContextFactory<ApplicationDbContext> dbFactory,
+        ICostCategoryItemService costCategoryItemService) : ICostCategoryService
     {
-        public async Task CreateAsync(CostCategory item, CancellationToken ct = default)
+
+        public async Task CreateOrUpdateAsync(CostCategory category, CancellationToken ct)
         {
             using var dbContext = dbFactory.CreateDbContext();
-            dbContext.CostCategories.Add(item);
+
+            var existingCategory = dbContext.CostCategories.FirstOrDefault(e => e.Id == category.Id);
+
+            Guid? newId = null;
+
+            if (existingCategory is null)
+            {
+                newId = dbContext.CostCategories.Add(new()
+                {
+                    Name = category.Name,
+                    ParentId = category.ParentId
+                }).Entity.Id;
+            }
+            else
+                dbContext.Entry(existingCategory).CurrentValues.SetValues(category);
+
+
+            await costCategoryItemService.UpdateByCategoryAsync(newId ?? category.Id, category.Items ?? [], dbContext, ct);
+
             await dbContext.SaveChangesAsync(ct);
         }
 
@@ -23,28 +43,11 @@ namespace XMS.Modules.Costs.Application
                 .ExecuteDeleteAsync(ct);
         }
 
-        public async Task<CostCategory?> GetByIdAsync(Guid id, CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
-            return await dbContext.CostCategories.FindAsync([id], ct);
-        }
-
-        public async Task<IReadOnlyList<CostCategory>> GetFlattenedListAsync(CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
-            var list = await GetListAsync(ct);
-
-            var result = TreeHelper.BuildFlattenedTree(list);
-
-            return result;
-        }
-
         public async Task<IReadOnlyList<CostCategory>> GetListAsync(CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
             return await dbContext.CostCategories
             .AsNoTracking()
-            //.Include(e => e.Items)
             .OrderBy(x => x.Name)
             .ToListAsync(ct);
         }
@@ -61,34 +64,6 @@ namespace XMS.Modules.Costs.Application
             .ToList();
 
             return list;
-        }
-
-        public async Task UpdateAsync(CostCategory value, CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
-            var existing = await dbContext.CostCategories.FindAsync([value.Id], ct)
-                ?? throw new KeyNotFoundException($"CostCategory with ID {value.Id} not found");
-            dbContext.Entry(existing).CurrentValues.SetValues(value);
-            await dbContext.SaveChangesAsync(ct);
-        }
-
-        public async Task CreareOrUpdateAsync(CostCategory value, CancellationToken ct)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
-
-            var existing = dbContext.CostCategories.FirstOrDefault(e => e.Id == value.Id);
-
-            if (existing is null)
-            {
-                var entity = dbContext.CostCategories.Add(new() { Name = value.Name, ParentId = value.ParentId }).Entity;
-            }
-            else
-                dbContext.Entry(existing).CurrentValues.SetValues(value);
-
-
-            await costCategoryItemService.UpdateByCategoryAsync(value, ct);
-
-            await dbContext.SaveChangesAsync(ct);
         }
     }
 }

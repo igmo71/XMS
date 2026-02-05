@@ -13,12 +13,12 @@ namespace XMS.Modules.Costs.Infrastructure
             builder.HasOne(e => e.Category)
                 .WithMany(e => e.CategoryItems) 
                 .HasForeignKey(e => e.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(e => e.Item)
                 .WithMany(e => e.CategoryItems) 
                 .HasForeignKey(e => e.ItemId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

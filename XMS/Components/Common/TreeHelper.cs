@@ -16,7 +16,7 @@ namespace XMS.Components.Common
                     Expanded = false,
                     Icon = Icons.Material.Filled.Category,
                     Children = BuildTree(allItems, d.Id)
-                })
+                })                
                 .ToList();
         }
 

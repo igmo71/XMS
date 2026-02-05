@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using XMS.Components.Common;
+using XMS.Core.Abstractions;
 using XMS.Modules.Costs.Abstractions;
 using XMS.Modules.Costs.Domain;
 
@@ -41,9 +42,9 @@ namespace XMS.Components.Pages.CostPages
 
                 _categoriesList = await CategoryService.GetListAsync(_cts.Token);
 
-                _categoriesFullList = await CategoryService.GetFullListAsync(_cts.Token);
-
                 _categoriesFlattenedTree = TreeHelper.BuildFlattenedTree(_categoriesList);
+
+                _categoriesFullList = await CategoryService.GetFullListAsync(_cts.Token);
 
                 _costTree = BuildTree(_categoriesFullList, null);
             }
@@ -55,35 +56,29 @@ namespace XMS.Components.Pages.CostPages
 
         private static List<TreeItemData<object?>> BuildTree(IEnumerable<CostCategory> categories, Guid? parentId)
         {
+            var lookup = categories.OrderBy(e => e.Name).ToLookup(e => e.ParentId);
+            return BuildTreeRecursive(lookup, parentId);
+        }
+
+        private static List<TreeItemData<object?>> BuildTreeRecursive(ILookup<Guid?, CostCategory> lookup, Guid? parentId)
+        {
             var nodes = new List<TreeItemData<object?>>();
-            foreach (var cat in categories.Where(e => e.ParentId == parentId))
+
+            foreach (var category in lookup[parentId])
             {
-                var childrenList = new List<TreeItemData<object?>>();
+                var childrenList = BuildTreeRecursive(lookup, category.Id);
 
-                if (cat.Children.Count != 0)
+                if (category.Items?.Count > 0)
                 {
-                    childrenList.AddRange(BuildTree(categories, cat.Id));
+                    childrenList.AddRange(category.Items.OrderBy(e => e.Name).Select(e => new TreeItemData<object?> { Value = e }));
                 }
 
-                if (cat.Items?.Any() == true)
+                nodes.Add(new TreeItemData<object?>
                 {
-                    foreach (var costItem in cat.Items)
-                    {
-                        childrenList.Add(new TreeItemData<object?>
-                        {
-                            Value = costItem
-                        });
-                    }
-                }
-
-                var node = new TreeItemData<object?>
-                {
-                    Value = cat,
-                    Expanded = false,
-                    Children = childrenList
-                };
-
-                nodes.Add(node);
+                    Value = category,
+                    Children = childrenList,
+                    Expanded = false
+                });
             }
             return nodes;
         }
@@ -154,24 +149,6 @@ namespace XMS.Components.Pages.CostPages
             }
         }
 
-        private async Task<bool> ConfirmDeleteItemAsync(CostItem item)
-        {
-            var parameters = new DialogParameters<ConfirmDialog>
-            {
-                { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}' навсегда?" },
-                { x => x.ButtonText, "Да, удалить" },
-                { x => x.ButtonColor, Color.Error }
-            };
-
-            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
-
-            var dialog = await DialogService.ShowAsync<ConfirmDialog>("Удаление", parameters, options);
-
-            var result = await dialog.Result;
-
-            return result is { Canceled: false };
-        }
-
         // CostCategory Operations //
 
         private async Task NewCategoryAsync(object? value)
@@ -179,8 +156,7 @@ namespace XMS.Components.Pages.CostPages
             if (value is CostCategory parent)
                 await CreareOrUpdateCategory(new CostCategory
                 {
-                    ParentId = parent.Id,
-                    Parent = parent
+                    ParentId = parent.Id
                 });
         }
 
@@ -198,7 +174,7 @@ namespace XMS.Components.Pages.CostPages
             {
                 try
                 {
-                    await CategoryService.CreareOrUpdateAsync(costCategory, _cts.Token);
+                    await CategoryService.CreateOrUpdateAsync(costCategory, _cts.Token);
 
                     await LoadDataAsync();
 
@@ -207,6 +183,8 @@ namespace XMS.Components.Pages.CostPages
                 catch (Exception ex)
                 {
                     Snackbar.Add($"Ошибка при сохранении {costCategory.Name}: {ex.Message}", Severity.Error);
+
+                    throw;
                 }
             }
         }
@@ -229,7 +207,58 @@ namespace XMS.Components.Pages.CostPages
             return await dialog.Result;
         }
 
+        private async Task DeleteCategoryAsync(object? value)
+        {
+            if (_isProcessing) return;
+
+            if (value is CostCategory category)
+            {
+                if (await ConfirmDeleteItemAsync(category))
+                {
+                    try
+                    {
+                        _isProcessing = true;
+
+                        await CategoryService.DeleteAsync(category.Id);
+
+                        await LoadDataAsync();
+
+                        Snackbar.Add($"Успешно удалено: {category.Name}", Severity.Success);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex.Message.Contains("SAME TABLE REFERENCE"))
+                            Snackbar.Add($"Ошибка при удалении {category.Name}: Категория содержит другие категории", Severity.Error);
+                        else
+                            Snackbar.Add($"Ошибка при удалении {category.Name}: {ex.Message}", Severity.Error);
+                    }
+                    finally
+                    {
+                        _isProcessing = false;
+                    }
+                }
+            }
+        }
+
         ////
+
+        private async Task<bool> ConfirmDeleteItemAsync<T>(T item) where T : IHasName
+        {
+            var parameters = new DialogParameters<ConfirmDialog>
+            {
+                { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}' навсегда?" },
+                { x => x.ButtonText, "Да, удалить" },
+                { x => x.ButtonColor, Color.Error }
+            };
+
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+            var dialog = await DialogService.ShowAsync<ConfirmDialog>("Удаление", parameters, options);
+
+            var result = await dialog.Result;
+
+            return result is { Canceled: false };
+        }
 
         public void Dispose()
         {

@@ -37,21 +37,22 @@
 											 Size="Size.Small"
 											 AnchorOrigin="Origin.TopRight"
 											 TransformOrigin="Origin.TopLeft"
+											 Dense="true"
 											 AriaLabel="Open menu">
 										<MudMenuItem Label="Добавить Категорию" Icon="@Icons.Material.Filled.CreateNewFolder" OnClick="() => NewCategoryAsync(node.Value)" />
 										@if (node.Value is CostCategory costCategory && costCategory.ParentId is not null)
 										{
 											<MudMenuItem Label="Изменить эту Категорию" Icon="@Icons.Material.Filled.Edit" OnClick="() => EditCategoryAsync(node.Value)" />
-											<MudMenuItem Label="Удалить эту Категорию" Icon="@Icons.Material.Filled.Delete" />
+											<MudMenuItem Label="Удалить эту Категорию" Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteCategoryAsync(node.Value)" />
 										}
 										<MudDivider />
-										<MudMenuItem Label="Добавить Статью Затрат" Icon="@Icons.Material.Filled.InsertDriveFile" />
+										<MudMenuItem Label="Добавить Статью Затрат" Icon="@Icons.Material.Filled.Description" />
 									</MudMenu>
 
 								}
 								else if (node.Value is CostItem costItem)
 								{
-									<MudIcon Icon="@Icons.Material.Filled.InsertDriveFile"
+									<MudIcon Icon="@Icons.Material.Filled.Description"
 											 Size="Size.Small"
 											 Class="mr-2"
 											 Title="Статья Затрат" />

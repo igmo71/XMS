@@ -3,10 +3,11 @@ using XMS.Modules.Employees.Abstractions;
 
 namespace XMS.Modules.Costs.Abstractions
 {
-    public interface ICostCategoryService : ICrudService<CostCategory>
+    public interface ICostCategoryService
     {
-        Task<IReadOnlyList<CostCategory>> GetFlattenedListAsync(CancellationToken ct = default);
+        Task CreateOrUpdateAsync(CostCategory value, CancellationToken ct = default);
+        Task DeleteAsync(Guid id, CancellationToken ct = default);
+        Task<IReadOnlyList<CostCategory>> GetListAsync(CancellationToken ct = default);
         Task<IReadOnlyList<CostCategory>> GetFullListAsync(CancellationToken ct = default);
-        Task CreareOrUpdateAsync(CostCategory item, CancellationToken ct);
     }
 }
