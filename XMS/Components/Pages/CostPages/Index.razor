@@ -17,14 +17,17 @@
 				}
 				<MudSpacer />
 			</MudPickerToolbar>
-			<MudTreeView Items="_costTree" Dense="true">
+			<MudTreeView Items="_costTree" T="object" Dense="true">
 				<ItemTemplate Context="node">
-
-					<MudTreeViewItem @bind-Expanded="@node.Expanded"
+					<MudTreeViewItem Expanded="@node.Expanded"
+									 ExpandedChanged="@((expanded) => ExpandedChanged(node, expanded))"
 									 Items="@node.Children"
 									 Value="@node.Value">
 						<Content>
-							<MudTreeViewItemToggleButton @bind-Expanded="@node.Expanded" Visible="@node.HasChildren" />
+							<MudTreeViewItemToggleButton 
+								Expanded="@node.Expanded" 
+								Visible="@node.HasChildren" 
+								ExpandedChanged="@((expanded) => ExpandedChanged(node, expanded))" />
 							<div class="d-flex align-center">
 								@if (node.Value is CostCategory category)
 								{

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using XMS.Components.Common;
@@ -14,21 +15,23 @@ namespace XMS.Components.Pages.CostPages
         [Inject] public ICostItemService ItemService { get; set; } = default!;
         [Inject] public IDialogService DialogService { get; set; } = default!;
         [Inject] public ISnackbar Snackbar { get; set; } = default!;
+        [Inject] private ProtectedSessionStorage SessionStorage { get; set; } = default!;
 
         private readonly CancellationTokenSource _cts = new();
         private MudDataGrid<CostItem> _itemGrid = default!;
         private IReadOnlyList<CostItem> _itemList = [];
         private IReadOnlyList<CostCategory> _categoryList = [];
-        private IReadOnlyList<CostCategory> _categoriesFullList = [];        
+        private IReadOnlyList<CostCategory> _categoriesFullList = [];
         private IReadOnlyList<TreeItemData<object?>> _costTree = [];
         private bool _expandedAll;
         private bool _isLoading;
         private bool _isProcessing;
+        private HashSet<Guid> _expandedCategoryIds = [];
 
-        protected override async Task OnInitializedAsync()
-        {
-            await LoadDataAsync();
-        }
+        //protected override async Task OnInitializedAsync()
+        //{
+        //    await LoadDataAsync();
+        //}
 
         private async Task LoadDataAsync()
         {
@@ -51,13 +54,44 @@ namespace XMS.Components.Pages.CostPages
             }
         }
 
-        private static List<TreeItemData<object?>> BuildTree(IEnumerable<CostCategory> categories, Guid? parentId)
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await LoadStateAsync();
+                StateHasChanged();
+            }
+        }
+
+        private async Task LoadStateAsync()
+        {
+            var result = await SessionStorage.GetAsync<HashSet<Guid>>(nameof(_expandedCategoryIds));
+            _expandedCategoryIds = result.Success ? (result.Value ?? []) : [];
+            await LoadDataAsync();
+        }
+
+        private async Task ExpandedChanged(ITreeItemData<object?> node, bool expanded)
+        {
+            node.Expanded = expanded;
+
+            if (node.Value is CostCategory category)
+            {
+                if (expanded)
+                    _expandedCategoryIds.Add(category.Id);
+                else
+                    _expandedCategoryIds.Remove(category.Id);
+
+                await SessionStorage.SetAsync(nameof(_expandedCategoryIds), _expandedCategoryIds);
+            }
+        }
+
+        private List<TreeItemData<object?>> BuildTree(IEnumerable<CostCategory> categories, Guid? parentId)
         {
             var lookup = categories.OrderBy(e => e.Name).ToLookup(e => e.ParentId);
             return BuildTreeRecursive(lookup, parentId);
         }
 
-        private static List<TreeItemData<object?>> BuildTreeRecursive(ILookup<Guid?, CostCategory> lookup, Guid? parentId)
+        private List<TreeItemData<object?>> BuildTreeRecursive(ILookup<Guid?, CostCategory> lookup, Guid? parentId)
         {
             var nodes = new List<TreeItemData<object?>>();
 
@@ -74,7 +108,7 @@ namespace XMS.Components.Pages.CostPages
                 {
                     Value = category,
                     Children = childrenList,
-                    Expanded = false
+                    Expanded = _expandedCategoryIds.Contains(category.Id)
                 });
             }
             return nodes;
