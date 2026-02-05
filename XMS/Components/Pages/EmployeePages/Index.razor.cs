@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using XMS.Components.Common;
+using XMS.Modules.Departments.Abstractions;
+using XMS.Modules.Departments.Domain;
 using XMS.Modules.Employees.Abstractions;
 using XMS.Modules.Employees.Domain;
 

@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Core;
-using XMS.Modules.Employees.Domain;
+using XMS.Modules.Departments.Domain;
 
-namespace XMS.Modules.Employees.Infrastructure.EntityConfigurations
+namespace XMS.Modules.Departments.Infrastructure
 {
     public class DepartmentEntityTypeConfiguration : BaseNamedEntityTypeConfiguration<Department>
     {

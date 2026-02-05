@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using XMS.Modules.Costs.Domain;
+using XMS.Modules.Departments.Domain;
 using XMS.Modules.Employees.Domain;
 
 namespace XMS.Data

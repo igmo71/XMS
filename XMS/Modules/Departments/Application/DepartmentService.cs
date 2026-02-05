@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using XMS.Data;
-using XMS.Modules.Employees.Abstractions;
-using XMS.Modules.Employees.Domain;
+using XMS.Modules.Departments.Abstractions;
+using XMS.Modules.Departments.Domain;
 
-namespace XMS.Modules.Employees.Application
+namespace XMS.Modules.Departments.Application
 {
     public class DepartmentService(IDbContextFactory<ApplicationDbContext> dbFactory) : IDepartmentService
     {

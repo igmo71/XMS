@@ -1,6 +1,6 @@
 ﻿using XMS.Core.Abstractions;
 
-namespace XMS.Modules.Employees.Domain
+namespace XMS.Modules.Departments.Domain
 {
     public class Department : NamedEntity, ITreeNode<Department>
     {

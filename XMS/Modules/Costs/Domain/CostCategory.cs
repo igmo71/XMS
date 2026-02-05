@@ -1,4 +1,6 @@
 ﻿using XMS.Core.Abstractions;
+using XMS.Modules.Departments.Domain;
+using XMS.Modules.Employees.Domain;
 
 namespace XMS.Modules.Costs.Domain
 {
@@ -13,5 +15,11 @@ namespace XMS.Modules.Costs.Domain
         public ICollection<CostItem>? Items { get; set; } = [];
 
         public ICollection<CostCategoryItem>? CategoryItems { get; set; } = [];
+
+        //public Guid? DepartmentId { get; set; }
+        //public Department? Department { get; set; }
+
+        //public Guid? EmployeeId { get; set; }
+        //public Employee? Employee { get; set; }
     }
 }

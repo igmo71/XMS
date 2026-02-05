@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using MudBlazor.Services;
 using MudBlazor.Translations;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
+using System.Globalization;
 using XMS.Components;
 using XMS.Components.Account;
 using XMS.Core;
@@ -20,6 +22,10 @@ namespace XMS
     {
         public static void Main(string[] args)
         {
+            var culture = new CultureInfo("ru-RU");
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Host.UseSerilog((context, services, configuration) =>
