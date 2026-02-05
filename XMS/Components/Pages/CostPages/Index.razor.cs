@@ -17,10 +17,9 @@ namespace XMS.Components.Pages.CostPages
 
         private readonly CancellationTokenSource _cts = new();
         private MudDataGrid<CostItem> _itemGrid = default!;
-        private IReadOnlyList<CostItem> _items = [];
-        private IReadOnlyList<CostCategory> _categoriesList = [];
-        private IReadOnlyList<CostCategory> _categoriesFullList = [];
-        private IReadOnlyList<CostCategory> _categoriesFlattenedTree = [];
+        private IReadOnlyList<CostItem> _itemList = [];
+        private IReadOnlyList<CostCategory> _categoryList = [];
+        private IReadOnlyList<CostCategory> _categoriesFullList = [];        
         private IReadOnlyList<TreeItemData<object?>> _costTree = [];
         private bool _expandedAll;
         private bool _isLoading;
@@ -38,11 +37,9 @@ namespace XMS.Components.Pages.CostPages
             _isLoading = true;
             try
             {
-                _items = await ItemService.GetListAsync(_cts.Token);
+                _itemList = await ItemService.GetListAsync(_cts.Token);
 
-                _categoriesList = await CategoryService.GetListAsync(_cts.Token);
-
-                _categoriesFlattenedTree = TreeHelper.BuildFlattenedTree(_categoriesList);
+                _categoryList = await CategoryService.GetListAsync(_cts.Token);
 
                 _categoriesFullList = await CategoryService.GetFullListAsync(_cts.Token);
 
@@ -107,7 +104,7 @@ namespace XMS.Components.Pages.CostPages
         {
             try
             {
-                if (!_items.Any(x => x.Id == item.Id))
+                if (!_itemList.Any(x => x.Id == item.Id))
                     await ItemService.CreateAsync(item);
                 else
                     await ItemService.UpdateAsync(item);
@@ -193,9 +190,9 @@ namespace XMS.Components.Pages.CostPages
         {
             var parameters = new DialogParameters<CategoryDialog>
             {
-                { x => x.Model, category },
-                { x => x.AllItems, _items },
-                {x => x.CategoriesFlattenedTree, _categoriesFlattenedTree }
+                { x => x.Category, category },
+                { x => x.ItemList, _itemList },
+                {x => x.CategoryList, _categoryList }
             };
 
             var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };

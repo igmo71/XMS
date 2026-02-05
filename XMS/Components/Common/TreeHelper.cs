@@ -1,5 +1,6 @@
 ﻿using MudBlazor;
 using XMS.Core.Abstractions;
+using XMS.Modules.Costs.Domain;
 
 namespace XMS.Components.Common
 {
@@ -20,7 +21,7 @@ namespace XMS.Components.Common
                 .ToList();
         }
 
-        public static List<T> BuildFlattenedTree<T>(IReadOnlyList<T> items) where T : BaseEntity, IHasParent<T>, IHasName, new()
+        public static List<T> BuildFlattenedTree<T>(IEnumerable<T> items) where T : BaseEntity, IHasParent<T>, IHasName, new()
         {
             var result = new List<T>();
 
@@ -48,6 +49,29 @@ namespace XMS.Components.Common
             Build(null, 0);
 
             return result;
+        }
+
+        public static HashSet<Guid> GetForbiddenParentIds(CostCategory currentCategory, IEnumerable<CostCategory> allCategories)
+        {
+            var forbiddenIds = new HashSet<Guid>();
+            if (currentCategory.Id == Guid.Empty) return forbiddenIds;
+
+            forbiddenIds.Add(currentCategory.Id);
+
+            // Собираем всех потомков рекурсивно
+            var lookup = allCategories.ToLookup(x => x.ParentId);
+            AddChildrenToForbiddenList(currentCategory.Id, lookup, forbiddenIds);
+
+            return forbiddenIds;
+        }
+
+        private static void AddChildrenToForbiddenList(Guid parentId, ILookup<Guid?, CostCategory> lookup, HashSet<Guid> forbiddenIds)
+        {
+            foreach (var child in lookup[parentId])
+            {
+                forbiddenIds.Add(child.Id);
+                AddChildrenToForbiddenList(child.Id, lookup, forbiddenIds);
+            }
         }
     }
 }
