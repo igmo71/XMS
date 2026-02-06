@@ -233,7 +233,6 @@ namespace XMS.Components.Pages.EmployeePages
             else
                 await EmployeeService.UpdateAsync(item);
 
-
             await LoadEmployees();
         }
     }

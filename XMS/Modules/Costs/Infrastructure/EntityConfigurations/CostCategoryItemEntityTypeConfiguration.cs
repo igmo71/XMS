@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Modules.Costs.Domain;
 
-namespace XMS.Modules.Costs.Infrastructure
+namespace XMS.Modules.Costs.Infrastructure.EntityConfigurations
 {
     public class CostCategoryItemEntityTypeConfiguration : IEntityTypeConfiguration<CostCategoryItem>
     {

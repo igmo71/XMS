@@ -14,6 +14,26 @@ namespace XMS.Modules.Employees.Application
             await dbContext.SaveChangesAsync(ct);
         }
 
+        public async Task UpdateAsync(Employee item, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var existing = await dbContext.Employees.FindAsync([item.Id], ct)
+                ?? throw new KeyNotFoundException($"City with ID {item.Id} not found");
+
+            dbContext.Entry(existing).CurrentValues.SetValues(item);
+
+            existing.EmployeeBuhId = item.EmployeeBuh?.Id;
+            existing.EmployeeZupId = item.EmployeeZup?.Id;
+            existing.UserUtId = item.UserUt?.Id;
+            existing.UserAdId = item.UserAd?.Sid;
+            existing.OperationManagerId = item.OperationManager?.Id;
+            existing.LocationManagerId = item.LocationManager?.Id;
+
+
+            await dbContext.SaveChangesAsync(ct);
+        }
+
         public async Task DeleteAsync(Guid id, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
@@ -46,26 +66,6 @@ namespace XMS.Modules.Employees.Application
             //.Include(e => e.CostItem)
             .OrderBy(x => x.Name)
             .ToListAsync(ct);
-        }
-
-        public async Task UpdateAsync(Employee item, CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
-
-            var existing = await dbContext.Employees.FindAsync([item.Id], ct)
-                ?? throw new KeyNotFoundException($"City with ID {item.Id} not found");
-            
-            dbContext.Entry(existing).CurrentValues.SetValues(item);
-            
-            existing.EmployeeBuhId = item.EmployeeBuh?.Id;
-            existing.EmployeeZupId = item.EmployeeZup?.Id;
-            existing.UserUtId = item.UserUt?.Id;
-            existing.UserAdId = item.UserAd?.Sid;
-            existing.OperationManagerId = item.OperationManager?.Id;
-            existing.LocationManagerId = item.LocationManager?.Id;
-
-
-            await dbContext.SaveChangesAsync(ct);
         }
     }
 }

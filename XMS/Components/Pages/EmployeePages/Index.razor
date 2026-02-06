@@ -87,27 +87,7 @@
 
 					</MudSelect>
 				</EditTemplate>
-			</PropertyColumn>
-			@* <PropertyColumn Property="x => x.Department == null ? string.Empty : x.Department.Name" Title="Отдел">
-			<EditTemplate>
-				<MudAutocomplete @bind-Value="context.Item.Department"
-								 T="Department"
-								 ToStringFunc="CleanName"
-								 SearchFunc="SearchDepartment"
-								 Variant="Variant.Outlined"
-								 Label="Поиск Отдела (в Схеме предприятия)"
-								 Required="false" RequiredError="Нужно выбрать отдел"
-								 Clearable="true"
-								 Dense="true"
-								 RelativeWidth="DropdownWidth.Ignore">
-					<ItemTemplate Context="item">
-						<MudText Typo="Typo.body2" Style="white-space:nowrap">
-							@item.Name
-						</MudText>
-					</ItemTemplate>
-				</MudAutocomplete>
-			</EditTemplate>
-		</PropertyColumn> *@
+			</PropertyColumn>			
 			<PropertyColumn Property="x => x.City == null ? string.Empty : x.City.Name" Title="Город">
 				<EditTemplate>
 					<MudSelect @bind-Value="context.Item.CityId"

@@ -16,18 +16,6 @@ namespace XMS.Components.Common
                     node.Children?.SetExpansion(expanded);
                 }
             }
-        }
-
-        //public static void FlattenAndExecute<T>(this IEnumerable<ITreeItemData<T>> items, Action<TreeItemData<T>> action)
-        //{
-        //    foreach (var item in items)
-        //    {
-        //        if (item is TreeItemData<T> node)
-        //        {
-        //            action(node);
-        //            node.Children?.FlattenAndExecute(action);
-        //        }
-        //    }
-        //}       
+        }   
     }
 }

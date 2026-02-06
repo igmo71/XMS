@@ -1,5 +1,7 @@
 ﻿@using XMS.Components.Common
 @using XMS.Modules.Costs.Domain
+@using XMS.Modules.Departments.Domain
+@using XMS.Modules.Employees.Domain
 <MudDialog>
 	<TitleContent>
 		<MudText Typo="Typo.h6">
@@ -9,8 +11,13 @@
 	</TitleContent>
 	<DialogContent>
 		<MudForm @ref="_form">
+			<MudTextField @bind-Value="Category.Name" T="string"
+						  Label="Ввод Наименования"
+						  Required="true"
+						  RequiredError="Нужно ввести Наименование" 
+						  Variant="Variant.Outlined" />
 			<MudSelect @bind-Value="Category.ParentId"
-					   Label="Родительской Категории"
+					   Label="Выбор Родительской Категории"
 					   Required="false"
 					   RequiredError="Нужно выбрать Категорию"
 					   RelativeWidth="DropdownWidth.Ignore"
@@ -21,23 +28,49 @@
 				{
 					<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
 				}
-			</MudSelect>
-			<MudTextField @bind-Value="Category.Name" T="string"
-						  Label="Наименование"
-						  Required="true"
-						  RequiredError="Нужно ввести Наименование" />
-			<MudSelect T="CostItem"
-					   Label="Статьи затрат"
+			</MudSelect>			
+			<MudSelect @bind-SelectedValues="_selectedItems" T="CostItem"
+					   Label="Выбор Статьи затрат"
 					   MultiSelection="true"
 					   AnchorOrigin="Origin.TopCenter"
 					   TransformOrigin="Origin.BottomCenter"
 					   ToStringFunc="@(e => e == null ? string.Empty : e.Name)"
-					   @bind-SelectedValues="_selectedItems">
+					   Variant="Variant.Outlined"
+					   Clearable="true"
+					   Dense="true">
 				@foreach (var item in ItemList)
 				{
 					<MudSelectItem Value="@item">@item.Name</MudSelectItem>
 				}
 			</MudSelect>
+			<MudSelect @bind-Value="Category.DepartmentId"
+					   Label="Выбор Отдела"
+					   Required="false"
+					   RequiredError="Нужно выбрать отдел"
+					   RelativeWidth="DropdownWidth.Ignore"
+					   Variant="Variant.Outlined"
+					   Clearable="true"
+					   Dense="true">
+				@foreach (var item in _departmentsFlattenedTree)
+				{
+					<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
+				}
+			</MudSelect>
+			<MudAutocomplete @bind-Value="Category.Employee"
+									 T="Employee"
+									 ToStringFunc="@(e => e == null ? string.Empty : $"{e.Name}" )"
+									 SearchFunc="SearcEmployee"
+									 Variant="Variant.Outlined"
+									 Label="Подбор Сотрудника"
+									 Clearable="true"
+									 Dense="true"
+							 RelativeWidth="DropdownWidth.Ignore">
+				<ItemTemplate Context="item">
+					<MudText Typo="Typo.body2" Style="white-space:nowrap">
+						@item.Name
+					</MudText>
+				</ItemTemplate>
+			</MudAutocomplete>
 		</MudForm>
 	</DialogContent>
 	<DialogActions>
@@ -51,20 +84,22 @@
 	[Parameter] public CostCategory Category { get; set; } = new();
 	[Parameter] public IEnumerable<CostCategory> CategoryList { get; set; } = [];
 	[Parameter] public IEnumerable<CostItem> ItemList { get; set; } = [];
+	[Parameter] public IEnumerable<Department> Departments { get; set; } = [];
+	[Parameter] public IEnumerable<Employee> Employees { get; set; } = [];
+
 	private MudForm _form = default!;
-	private IEnumerable<CostCategory> _categoriesFlattenedTree = [];
+
 	private IEnumerable<CostItem> _selectedItems = [];
+	private IEnumerable<CostCategory> _categoriesFlattenedTree = [];
+	private IEnumerable<Department> _departmentsFlattenedTree = [];
 
 	protected override void OnInitialized()
 	{
 		var forbiddenCaregoryIds = TreeHelper.GetForbiddenParentIds(Category, CategoryList);
-
-		var availableCoategories = CategoryList
-			.Where(e => !forbiddenCaregoryIds.Contains(e.Id))
-			// .OrderBy(Edge => Edge.Name)
-			.ToList();
-
+		var availableCoategories = CategoryList.Where(e => !forbiddenCaregoryIds.Contains(e.Id)).ToList();
 		_categoriesFlattenedTree = TreeHelper.BuildFlattenedTree(availableCoategories);
+
+		_departmentsFlattenedTree = TreeHelper.BuildFlattenedTree(Departments);
 
 
 		if (Category.Items != null)
@@ -88,5 +123,17 @@
 
 			MudDialog.Close(DialogResult.Ok(Category));
 		}
+	}
+	private Task<IEnumerable<Employee>> SearcEmployee(string value, CancellationToken token)
+	{
+		if (Employees is null)
+			return Task.FromResult(Enumerable.Empty<Employee>());
+
+		if (string.IsNullOrEmpty(value))
+			return Task.FromResult(Employees.AsEnumerable());
+
+		return Task.FromResult(Employees
+			.Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+			.ToList().AsEnumerable());
 	}
 }

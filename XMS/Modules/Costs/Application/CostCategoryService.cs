@@ -9,28 +9,29 @@ namespace XMS.Modules.Costs.Application
         IDbContextFactory<ApplicationDbContext> dbFactory,
         ICostCategoryItemService costCategoryItemService) : ICostCategoryService
     {
-
-        public async Task CreateOrUpdateAsync(CostCategory category, CancellationToken ct)
+        public async Task CreateAsync(CostCategory item, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var existingCategory = dbContext.CostCategories.FirstOrDefault(e => e.Id == category.Id);
+            await costCategoryItemService.UpdateByCategoryAsync(item, dbContext, ct);
 
-            Guid? newId = null;
+            item.ClearNavigationProperties().ClearCollections();
 
-            if (existingCategory is null)
-            {
-                newId = dbContext.CostCategories.Add(new()
-                {
-                    Name = category.Name,
-                    ParentId = category.ParentId
-                }).Entity.Id;
-            }
-            else
-                dbContext.Entry(existingCategory).CurrentValues.SetValues(category);
+            dbContext.CostCategories.Add(item);
 
+            await dbContext.SaveChangesAsync(ct);
+        }
 
-            await costCategoryItemService.UpdateByCategoryAsync(newId ?? category.Id, category.Items ?? [], dbContext, ct);
+        public async Task UpdateAsync(CostCategory item, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var existing = await dbContext.CostCategories.FindAsync([item.Id], ct)
+                ?? throw new KeyNotFoundException($"CostCategory with ID {item.Id} not found");
+
+            dbContext.Entry(existing).CurrentValues.SetValues(item);
+
+            await costCategoryItemService.UpdateByCategoryAsync(item, dbContext, ct);
 
             await dbContext.SaveChangesAsync(ct);
         }
@@ -43,6 +44,11 @@ namespace XMS.Modules.Costs.Application
                 .ExecuteDeleteAsync(ct);
         }
 
+        public Task<CostCategory?> GetByIdAsync(Guid id, CancellationToken ct = default)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<IReadOnlyList<CostCategory>> GetListAsync(CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
@@ -52,7 +58,7 @@ namespace XMS.Modules.Costs.Application
             .ToListAsync(ct);
         }
 
-        public async Task<IReadOnlyList<CostCategory>> GetFullListAsync(CancellationToken ct = default)
+        public async Task<IReadOnlyList<CostCategory>> GetListIncludingNavigationPropertiesAsync(CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
             var list = dbContext.CostCategories
@@ -60,6 +66,8 @@ namespace XMS.Modules.Costs.Application
             .Include(e => e.Parent)
             .Include(e => e.Children)
             .Include(e => e.Items)
+            .Include(e => e.Department)
+            .Include(e => e.Employee)
             .OrderBy(x => x.Name)
             .ToList();
 

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Core;
 using XMS.Modules.Departments.Domain;
 
-namespace XMS.Modules.Departments.Infrastructure
+namespace XMS.Modules.Departments.Infrastructure.EntityConfigurations
 {
     public class DepartmentEntityTypeConfiguration : BaseNamedEntityTypeConfiguration<Department>
     {

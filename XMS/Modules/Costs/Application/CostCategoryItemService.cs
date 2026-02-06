@@ -16,27 +16,27 @@ namespace XMS.Modules.Costs.Application
                 ExecuteDeleteAsync(ct);
         }
 
-        public async Task UpdateByCategoryAsync(Guid categoryId, ICollection<CostItem> costItems, ApplicationDbContext? masterDbContext, CancellationToken ct = default)
+        public async Task UpdateByCategoryAsync(CostCategory costCategory, ApplicationDbContext? masterDbContext, CancellationToken ct = default)
         {
             if (masterDbContext != null)
             {
-                await ExecuteUpdateLogic(categoryId, costItems, masterDbContext, ct);
+                await ExecuteUpdateLogic(costCategory, masterDbContext, ct);
             }
             else
             {
                 using var dbContext = dbFactory.CreateDbContext();
-                await ExecuteUpdateLogic(categoryId, costItems, dbContext, ct);
+                await ExecuteUpdateLogic(costCategory, dbContext, ct);
                 await dbContext.SaveChangesAsync(ct);
             }
         }
 
-        private static async Task ExecuteUpdateLogic(Guid categoryId, ICollection<CostItem> costItems, ApplicationDbContext dbContext, CancellationToken ct)
+        private static async Task ExecuteUpdateLogic(CostCategory costCategory, ApplicationDbContext dbContext, CancellationToken ct)
         {
             var existingValues = await dbContext.CostCategoryItems
-                .Where(x => x.CategoryId == categoryId)
+                .Where(x => x.CategoryId == costCategory.Id)
                 .ToListAsync(ct);
 
-            var selectedItemIds = costItems.Select(e => e.Id).ToHashSet();
+            var selectedItemIds = costCategory.Items?.Select(e => e.Id).ToHashSet();
             var existingsItemIds = existingValues.Select(e => e.ItemId).ToHashSet();
 
             var toRemove = existingValues
@@ -45,11 +45,11 @@ namespace XMS.Modules.Costs.Application
             if (toRemove.Count > 0)
                 dbContext.CostCategoryItems.RemoveRange(toRemove);
 
-            var toAdd = costItems
+            var toAdd = costCategory.Items?
                 .Where(e => !existingsItemIds.Contains(e.Id))
-                .Select(e => new CostCategoryItem { CategoryId = categoryId, ItemId = e.Id })
+                .Select(e => new CostCategoryItem { CategoryId = costCategory.Id, ItemId = e.Id })
                 .ToList();
-            if (toAdd.Count > 0)
+            if (toAdd?.Count > 0)
                 await dbContext.CostCategoryItems.AddRangeAsync(toAdd, ct);
         }
     }

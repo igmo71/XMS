@@ -2,7 +2,7 @@
 using XMS.Core;
 using CostItem = XMS.Modules.Costs.Domain.CostItem;
 
-namespace XMS.Modules.Costs.Infrastructure
+namespace XMS.Modules.Costs.Infrastructure.EntityConfigurations
 {
     public class CostItemEntityTypeConfiguration : BaseNamedEntityTypeConfiguration<CostItem>
     {

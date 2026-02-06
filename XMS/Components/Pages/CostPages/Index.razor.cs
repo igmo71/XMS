@@ -6,6 +6,10 @@ using XMS.Components.Common;
 using XMS.Core.Abstractions;
 using XMS.Modules.Costs.Abstractions;
 using XMS.Modules.Costs.Domain;
+using XMS.Modules.Departments.Abstractions;
+using XMS.Modules.Departments.Domain;
+using XMS.Modules.Employees.Abstractions;
+using XMS.Modules.Employees.Domain;
 
 namespace XMS.Components.Pages.CostPages
 {
@@ -13,6 +17,8 @@ namespace XMS.Components.Pages.CostPages
     {
         [Inject] public ICostCategoryService CategoryService { get; set; } = default!;
         [Inject] public ICostItemService ItemService { get; set; } = default!;
+        [Inject] public IDepartmentService DepartmentService { get; set; } = default!;
+        [Inject] public IEmployeeService EmployeeService { get; set; } = default!;
         [Inject] public IDialogService DialogService { get; set; } = default!;
         [Inject] public ISnackbar Snackbar { get; set; } = default!;
         [Inject] private ProtectedSessionStorage SessionStorage { get; set; } = default!;
@@ -21,17 +27,37 @@ namespace XMS.Components.Pages.CostPages
         private MudDataGrid<CostItem> _itemGrid = default!;
         private IReadOnlyList<CostItem> _itemList = [];
         private IReadOnlyList<CostCategory> _categoryList = [];
-        private IReadOnlyList<CostCategory> _categoriesFullList = [];
+        private IReadOnlyList<CostCategory> _categoriesFatList = [];
         private IReadOnlyList<TreeItemData<object?>> _costTree = [];
+        private IReadOnlyList<Department> _departments = [];
+        private IReadOnlyList<Employee> _employees = [];
         private bool _expandedAll;
         private bool _isLoading;
         private bool _isProcessing;
         private HashSet<Guid> _expandedCategoryIds = [];
 
-        //protected override async Task OnInitializedAsync()
-        //{
-        //    await LoadDataAsync();
-        //}
+        protected override async Task OnInitializedAsync()
+        {
+            await LoadDataAndBuildTreeAsync();
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                var result = await SessionStorage.GetAsync<HashSet<Guid>>(nameof(_expandedCategoryIds));
+                _expandedCategoryIds = result.Success ? (result.Value ?? []) : [];
+                _expandedAll = _expandedCategoryIds.Count == _categoryList.Count;
+                BuildTree();
+                StateHasChanged();
+            }
+        }
+
+        private async Task LoadDataAndBuildTreeAsync()
+        {
+            await LoadDataAsync();
+            BuildTree();
+        }
 
         private async Task LoadDataAsync()
         {
@@ -40,13 +66,11 @@ namespace XMS.Components.Pages.CostPages
             _isLoading = true;
             try
             {
-                _itemList = await ItemService.GetListAsync(_cts.Token);
-
-                _categoryList = await CategoryService.GetListAsync(_cts.Token);
-
-                _categoriesFullList = await CategoryService.GetFullListAsync(_cts.Token);
-
-                _costTree = BuildTree(_categoriesFullList, null);
+                await Task.WhenAll(LoadCostCategories(),
+                    LoadCostCategoryFatList(),
+                    LoadCostItems(),
+                    LoadDepartments(),
+                    LoadEmployees());                
             }
             finally
             {
@@ -54,41 +78,17 @@ namespace XMS.Components.Pages.CostPages
             }
         }
 
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+        private async Task LoadCostCategories() => _categoryList = await CategoryService.GetListAsync(_cts.Token);
+        private async Task LoadCostCategoryFatList() => 
+            _categoriesFatList = await CategoryService.GetListIncludingNavigationPropertiesAsync(_cts.Token);
+        private async Task LoadCostItems() => _itemList = await ItemService.GetListAsync(_cts.Token);
+        private async Task LoadDepartments() => _departments = await DepartmentService.GetListAsync(_cts.Token);
+        private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync(_cts.Token);
+        
+        private void BuildTree()
         {
-            if (firstRender)
-            {
-                await LoadStateAsync();
-                StateHasChanged();
-            }
-        }
-
-        private async Task LoadStateAsync()
-        {
-            var result = await SessionStorage.GetAsync<HashSet<Guid>>(nameof(_expandedCategoryIds));
-            _expandedCategoryIds = result.Success ? (result.Value ?? []) : [];
-            await LoadDataAsync();
-        }
-
-        private async Task ExpandedChanged(ITreeItemData<object?> node, bool expanded)
-        {
-            node.Expanded = expanded;
-
-            if (node.Value is CostCategory category)
-            {
-                if (expanded)
-                    _expandedCategoryIds.Add(category.Id);
-                else
-                    _expandedCategoryIds.Remove(category.Id);
-
-                await SessionStorage.SetAsync(nameof(_expandedCategoryIds), _expandedCategoryIds);
-            }
-        }
-
-        private List<TreeItemData<object?>> BuildTree(IEnumerable<CostCategory> categories, Guid? parentId)
-        {
-            var lookup = categories.OrderBy(e => e.Name).ToLookup(e => e.ParentId);
-            return BuildTreeRecursive(lookup, parentId);
+            var lookup = _categoriesFatList.OrderBy(e => e.Name).ToLookup(e => e.ParentId);
+            _costTree = BuildTreeRecursive(lookup, null);
         }
 
         private List<TreeItemData<object?>> BuildTreeRecursive(ILookup<Guid?, CostCategory> lookup, Guid? parentId)
@@ -114,72 +114,37 @@ namespace XMS.Components.Pages.CostPages
             return nodes;
         }
 
-        private void ExpandAll()
+        private async Task ExpandedChanged(ITreeItemData<object?> node, bool expanded)
         {
-            _costTree.SetExpansion(true);
-            _expandedAll = true;
-        }
-        private void CollapseAll()
-        {
-            _costTree.SetExpansion(false);
-            _expandedAll = false;
-        }
+            node.Expanded = expanded;
 
-        // CostItem Operations //
-
-        private async Task NewItemAsync(MouseEventArgs args)
-        {
-            var item = new CostItem();
-
-            await _itemGrid.SetEditingItemAsync(item);
-        }
-
-        private async Task CommittedItemChanges(CostItem item)
-        {
-            try
+            if (node.Value is CostCategory category)
             {
-                if (!_itemList.Any(x => x.Id == item.Id))
-                    await ItemService.CreateAsync(item);
+                if (expanded)
+                    _expandedCategoryIds.Add(category.Id);
                 else
-                    await ItemService.UpdateAsync(item);
+                    _expandedCategoryIds.Remove(category.Id);
 
-                Snackbar.Add($"Успешно сохранено: {item.Name}", Severity.Success);
-
-                await LoadDataAsync();
-            }
-            catch (Exception ex)
-            {
-                Snackbar.Add($"Ошибка при сохранении {item.Name}: {ex.Message}", Severity.Error);
+                await SessionStorage.SetAsync(nameof(_expandedCategoryIds), _expandedCategoryIds);
             }
         }
 
-        private async Task DeleteItemAsync(CostItem item)
+        private async Task ExpandAll()
         {
-            if (_isProcessing) return;
-
-            if (await ConfirmDeleteItemAsync(item))
-            {
-                try
-                {
-                    _isProcessing = true;
-
-                    await ItemService.DeleteAsync(item.Id);
-
-                    await LoadDataAsync();
-
-                    Snackbar.Add($"Успешно удалено: {item.Name}", Severity.Success);
-                }
-                catch (Exception ex)
-                {
-                    Snackbar.Add($"Ошибка при удалении {item.Name}: {ex.Message}", Severity.Error);
-                }
-                finally
-                {
-                    _isProcessing = false;
-                }
-            }
+            _expandedAll = true;
+            _costTree.SetExpansion(true);
+            _expandedCategoryIds = _categoryList.Select(e => e.Id).ToHashSet();
+            await SessionStorage.SetAsync(nameof(_expandedCategoryIds), _expandedCategoryIds);
         }
 
+        private async Task CollapseAll()
+        {
+            _expandedAll = false;
+            _costTree.SetExpansion(false);
+            _expandedCategoryIds = [];
+            await SessionStorage.SetAsync(nameof(_expandedCategoryIds), _expandedCategoryIds);
+        }
+                
         // CostCategory Operations //
 
         private async Task NewCategoryAsync(object? value)
@@ -205,9 +170,12 @@ namespace XMS.Components.Pages.CostPages
             {
                 try
                 {
-                    await CategoryService.CreateOrUpdateAsync(costCategory, _cts.Token);
+                    if (_categoriesFatList?.Any(e => e.Id == category.Id) == false)
+                        await CategoryService.CreateAsync(costCategory, _cts.Token);
+                    else
+                        await CategoryService.UpdateAsync(costCategory, _cts.Token);
 
-                    await LoadDataAsync();
+                    await LoadDataAndBuildTreeAsync();
 
                     Snackbar.Add($"Успешно сохранено: {costCategory.Name}", Severity.Success);
                 }
@@ -226,7 +194,9 @@ namespace XMS.Components.Pages.CostPages
             {
                 { x => x.Category, category },
                 { x => x.ItemList, _itemList },
-                {x => x.CategoryList, _categoryList }
+                {x => x.CategoryList, _categoryList },
+                {x => x.Departments, _departments },
+                {x => x.Employees, _employees }
             };
 
             var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
@@ -252,7 +222,7 @@ namespace XMS.Components.Pages.CostPages
 
                         await CategoryService.DeleteAsync(category.Id);
 
-                        await LoadDataAsync();
+                        await LoadDataAndBuildTreeAsync();
 
                         Snackbar.Add($"Успешно удалено: {category.Name}", Severity.Success);
                     }
@@ -267,6 +237,61 @@ namespace XMS.Components.Pages.CostPages
                     {
                         _isProcessing = false;
                     }
+                }
+            }
+        }
+
+        // CostItem Operations //
+
+        private async Task NewItemAsync(MouseEventArgs args)
+        {
+            var item = new CostItem();
+
+            await _itemGrid.SetEditingItemAsync(item);
+        }
+
+        private async Task CommittedItemChanges(CostItem item)
+        {
+            try
+            {
+                if (!_itemList.Any(x => x.Id == item.Id))
+                    await ItemService.CreateAsync(item);
+                else
+                    await ItemService.UpdateAsync(item);
+
+                Snackbar.Add($"Успешно сохранено: {item.Name}", Severity.Success);
+
+                await LoadDataAndBuildTreeAsync();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Ошибка при сохранении {item.Name}: {ex.Message}", Severity.Error);
+            }
+        }
+
+        private async Task DeleteItemAsync(CostItem item)
+        {
+            if (_isProcessing) return;
+
+            if (await ConfirmDeleteItemAsync(item))
+            {
+                try
+                {
+                    _isProcessing = true;
+
+                    await ItemService.DeleteAsync(item.Id);
+
+                    await LoadDataAndBuildTreeAsync();
+
+                    Snackbar.Add($"Успешно удалено: {item.Name}", Severity.Success);
+                }
+                catch (Exception ex)
+                {
+                    Snackbar.Add($"Ошибка при удалении {item.Name}: {ex.Message}", Severity.Error);
+                }
+                finally
+                {
+                    _isProcessing = false;
                 }
             }
         }

@@ -2,6 +2,6 @@
 {
     public abstract class BaseEntity : IHasId<Guid>
     {
-        public Guid Id { get; init; }
+        public Guid Id { get; init; } = Guid.CreateVersion7();
     }
 }
