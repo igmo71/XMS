@@ -35,6 +35,7 @@ namespace XMS.Components.Pages.EmployeePages
 
         private MudDataGrid<Employee> _employeeGrid = default!;
 
+        private Guid _selectedUserUtId;
         private string? _searchString;
         private bool _isLoading;
         private bool _isProcessing;
@@ -43,6 +44,8 @@ namespace XMS.Components.Pages.EmployeePages
         protected override async Task OnInitializedAsync()
         {
             await LoadDataFromDb();
+
+            //_selectedUserUtId = 
         }
 
         private async Task LoadDataFromDb()
@@ -88,6 +91,16 @@ namespace XMS.Components.Pages.EmployeePages
         private async Task NewItemAsync()
         {
             await _employeeGrid.SetEditingItemAsync(new Employee());
+        }
+
+        private async Task CommittedItemChanges(Employee item)
+        {
+            if (_employees?.Any(x => x.Id == item.Id) == false)
+                await EmployeeService.CreateAsync(item);
+            else
+                await EmployeeService.UpdateAsync(item);
+
+            await LoadEmployees();
         }
 
         private async Task DeleteItem(Employee item)
@@ -137,73 +150,6 @@ namespace XMS.Components.Pages.EmployeePages
             return result is { Canceled: false };
         }
 
-        private Task<IEnumerable<UserUt>> SearchUserUt(string value, CancellationToken token)
-        {
-            if (_usersUt is null)
-                return Task.FromResult(Enumerable.Empty<UserUt>());
-
-            if (string.IsNullOrEmpty(value))
-                return Task.FromResult(_usersUt.AsEnumerable());
-
-            return Task.FromResult(_usersUt
-                .Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
-                .ToList().AsEnumerable());
-        }
-
-        private Task<IEnumerable<EmployeeBuh>> SearchEmployeeBuh(string value, CancellationToken token)
-        {
-            if (_employeesBuh is null)
-                return Task.FromResult(Enumerable.Empty<EmployeeBuh>());
-
-            if (string.IsNullOrEmpty(value))
-                return Task.FromResult(_employeesBuh.AsEnumerable());
-
-            return Task.FromResult(_employeesBuh
-                .Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
-                .ToList().AsEnumerable());
-        }
-
-        private Task<IEnumerable<EmployeeZup>> SearchEmployeeZup(string value, CancellationToken token)
-        {
-            if (_employeesZup is null)
-                return Task.FromResult(Enumerable.Empty<EmployeeZup>());
-
-            if (string.IsNullOrEmpty(value))
-                return Task.FromResult(_employeesZup.AsEnumerable());
-
-            return Task.FromResult(_employeesZup
-                .Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
-                .ToList().AsEnumerable());
-        }
-
-        private Task<IEnumerable<UserAd>> SearchUserAd(string value, CancellationToken token)
-        {
-            if (_usersAd is null)
-                return Task.FromResult(Enumerable.Empty<UserAd>());
-
-            if (string.IsNullOrEmpty(value))
-                return Task.FromResult(_usersAd.AsEnumerable());
-
-            return Task.FromResult(_usersAd
-                .Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
-                .ToList().AsEnumerable());
-        }
-
-
-
-        private Task<IEnumerable<Employee>> SearchEmployee(string value, CancellationToken token)
-        {
-            if (_employees is null)
-                return Task.FromResult(Enumerable.Empty<Employee>());
-
-            if (string.IsNullOrEmpty(value))
-                return Task.FromResult(_employees.AsEnumerable());
-
-            return Task.FromResult(_employees
-                .Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
-                .ToList().AsEnumerable());
-        }
-
         private void ToggleEditingGrid(bool args)
         {
             _isEditingGrid = args;
@@ -226,14 +172,95 @@ namespace XMS.Components.Pages.EmployeePages
             return false;
         };
 
-        private async Task CommittedItemChanges(Employee item)
+        private Task<IEnumerable<Guid?>> SearchUserUtIds(string value, CancellationToken token)
         {
-            if (_employees?.Any(x => x.Id == item.Id) == false)
-                await EmployeeService.CreateAsync(item);
-            else
-                await EmployeeService.UpdateAsync(item);
+            if (_usersUt is null)
+                return Task.FromResult(Enumerable.Empty<Guid?>());
 
-            await LoadEmployees();
+            if (string.IsNullOrEmpty(value))
+                return Task.FromResult(_usersUt.Select(e => e.Id as Guid?));
+
+            return Task.FromResult(_usersUt
+                .Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+                .Select(e => e.Id as Guid?));
+        }
+
+        private string? GetUserUtName(Guid? id)
+        {
+            return _usersUt.FirstOrDefault(e => e.Id == id)?.Name;
+        }
+
+        private Task<IEnumerable<Guid?>> SearchEmployeeBuhIds(string value, CancellationToken token)
+        {
+            if (_employeesBuh is null)
+                return Task.FromResult(Enumerable.Empty<Guid?>());
+
+            if (string.IsNullOrEmpty(value))
+                return Task.FromResult(_employeesBuh.Select(e => e.Id as Guid?));
+
+            return Task.FromResult(_employeesBuh
+                .Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+                .Select(e => e.Id as Guid?));
+        }
+
+        private string? GetEmployeeBuhLabel(Guid? id)
+        {
+            var item = _employeesBuh.FirstOrDefault(e => e.Id == id);
+            return item is null ? string.Empty : $"{item?.Name} ({item?.Code})";
+        }
+
+        private Task<IEnumerable<Guid?>> SearchEmployeeZupIds(string value, CancellationToken token)
+        {
+            if (_employeesZup is null)
+                return Task.FromResult(Enumerable.Empty<Guid?>());
+
+            if (string.IsNullOrEmpty(value))
+                return Task.FromResult(_employeesZup.Select(e => e.Id as Guid?));
+
+            return Task.FromResult(_employeesZup
+                .Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+                .Select(e => e.Id as Guid?));
+        }
+
+        private string? GetEmployeeZupLabel(Guid? id)
+        {
+            var item = _employeesZup.FirstOrDefault(e => e.Id == id);
+            return item is null ? string.Empty : $"{item?.Name} ({item?.Code})";
+        }
+
+        private Task<IEnumerable<string>> SearchUserAdIds(string value, CancellationToken token)
+        {
+            if (_usersAd is null)
+                return Task.FromResult(Enumerable.Empty<string>());
+
+            if (string.IsNullOrEmpty(value))
+                return Task.FromResult(_usersAd.Select(e => e.Sid));
+
+            return Task.FromResult(_usersAd
+                .Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+                .Select(e => e.Sid));
+        }
+
+        private string? GetUserAdName(string id)
+        {
+            return _usersAd.FirstOrDefault(e => e.Sid == id)?.Name;
+        }
+
+        private Task<IEnumerable<Guid?>> SearchEmployeeIds(string value, CancellationToken token)
+        {
+            if (_employees is null)
+                return Task.FromResult(Enumerable.Empty<Guid?>());
+
+            if (string.IsNullOrEmpty(value))
+                return Task.FromResult(_employees.Select(e => e.Id as Guid?));
+
+            return Task.FromResult(_employees
+                .Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+                .Select(e => e.Id as Guid?));
+        }
+
+        private string? GetEmployeeName(Guid? id) { 
+            return _employees.FirstOrDefault(e => e.Id == id)?.Name;
         }
     }
 }

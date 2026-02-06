@@ -23,14 +23,6 @@ namespace XMS.Modules.Employees.Application
 
             dbContext.Entry(existing).CurrentValues.SetValues(item);
 
-            existing.EmployeeBuhId = item.EmployeeBuh?.Id;
-            existing.EmployeeZupId = item.EmployeeZup?.Id;
-            existing.UserUtId = item.UserUt?.Id;
-            existing.UserAdId = item.UserAd?.Sid;
-            existing.OperationManagerId = item.OperationManager?.Id;
-            existing.LocationManagerId = item.LocationManager?.Id;
-
-
             await dbContext.SaveChangesAsync(ct);
         }
 
@@ -63,7 +55,6 @@ namespace XMS.Modules.Employees.Application
             .Include(e => e.UserUt)
             .Include(e => e.LocationManager)
             .Include(e => e.OperationManager)
-            //.Include(e => e.CostItem)
             .OrderBy(x => x.Name)
             .ToListAsync(ct);
         }

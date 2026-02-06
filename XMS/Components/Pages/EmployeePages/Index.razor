@@ -123,18 +123,18 @@
 			</PropertyColumn>
 			<PropertyColumn Property="x => x.UserUt == null ? string.Empty : x.UserUt.Name" Title="Пользователь УТ" Required="false">
 				<EditTemplate>
-					<MudAutocomplete @bind-Value="context.Item.UserUt"
-									 T="UserUt"
-									 ToStringFunc="@(e => e == null ? string.Empty : $"{e.Name}" )"
-									 SearchFunc="SearchUserUt"
+					<MudAutocomplete @bind-Value="context.Item.UserUtId"
+									 T="Guid?"
+									 ToStringFunc="GetUserUtName"
+									 SearchFunc="SearchUserUtIds"
 									 Variant="Variant.Outlined"
 									 Label="Поиск Пользователя УТ"
 									 Clearable="true"
 									 Dense="true"
 									 RelativeWidth="DropdownWidth.Ignore">
-						<ItemTemplate Context="item">
+						<ItemTemplate Context="id">
 							<MudText Typo="Typo.body2" Style="white-space:nowrap">
-								@item.Name
+								@GetUserUtName(id)
 							</MudText>
 						</ItemTemplate>
 					</MudAutocomplete>
@@ -146,18 +146,18 @@
 					@(string.IsNullOrEmpty(context.Item.EmployeeBuh?.Code) ? string.Empty : $"({context.Item.EmployeeBuh?.Code})")
 				</CellTemplate>
 				<EditTemplate>
-					<MudAutocomplete @bind-Value="context.Item.EmployeeBuh"
-									 T="EmployeeBuh"
-									 ToStringFunc="@(e => e == null ? string.Empty : $"{e.Name} ({e.Code})" )"
-									 SearchFunc="SearchEmployeeBuh"
+					<MudAutocomplete @bind-Value="context.Item.EmployeeBuhId"
+									 T="Guid?"
+									 ToStringFunc="GetEmployeeBuhLabel"
+									 SearchFunc="SearchEmployeeBuhIds"
 									 Variant="Variant.Outlined"
 									 Label="Поиск Сотрудника БП"
 									 Clearable="true"
 									 Dense="true"
 									 RelativeWidth="DropdownWidth.Ignore">
-						<ItemTemplate Context="item">
+						<ItemTemplate Context="id">
 							<MudText Typo="Typo.body2" Style="white-space:nowrap">
-								@item.Name (@item.Code)
+								@GetEmployeeBuhLabel(id)
 							</MudText>
 						</ItemTemplate>
 					</MudAutocomplete>
@@ -169,18 +169,18 @@
 					@(string.IsNullOrEmpty(context.Item.EmployeeZup?.Code) ? string.Empty : $"({context.Item.EmployeeZup?.Code})")
 				</CellTemplate>
 				<EditTemplate>
-					<MudAutocomplete @bind-Value="context.Item.EmployeeZup" FullWidth="true"
-									 T="EmployeeZup"
-									 ToStringFunc="@(e => e == null ? string.Empty : $"{e.Name} ({e.Code})" )"
-									 SearchFunc="SearchEmployeeZup"
+					<MudAutocomplete @bind-Value="context.Item.EmployeeZupId"
+									 T="Guid?"
+									 ToStringFunc="GetEmployeeZupLabel"
+									 SearchFunc="SearchEmployeeZupIds"
 									 Variant="Variant.Outlined"
 									 Label="Поиск Сотрудника ЗУП"
 									 Clearable="true"
 									 Dense="true"
 									 RelativeWidth="DropdownWidth.Ignore">
-						<ItemTemplate Context="item">
+						<ItemTemplate Context="id">
 							<MudText Typo="Typo.body2" Style="white-space:nowrap">
-								@item.Name (@item.Code)
+								@GetEmployeeZupLabel(id)
 							</MudText>
 						</ItemTemplate>
 					</MudAutocomplete>
@@ -191,18 +191,18 @@
 					@context.Item.UserAd?.Name
 				</CellTemplate>
 				<EditTemplate>
-					<MudAutocomplete @bind-Value="context.Item.UserAd" FullWidth="true"
-									 T="UserAd"
-									 ToStringFunc="@(e => e == null ? string.Empty : e.Name)"
-									 SearchFunc="SearchUserAd"
+					<MudAutocomplete @bind-Value="context.Item.UserAdId" FullWidth="true"
+									 T="string"
+									 ToStringFunc="GetUserAdName"
+									 SearchFunc="SearchUserAdIds"
 									 Variant="Variant.Outlined"
 									 Label="Поиск Пользователя AD"
 									 Clearable="true"
 									 Dense="true"
 									 RelativeWidth="DropdownWidth.Ignore">
-						<ItemTemplate Context="item">
+						<ItemTemplate Context="id">
 							<MudText Typo="Typo.body2" Style="white-space:nowrap">
-								@item.Name
+								@GetUserAdName(id)
 							</MudText>
 						</ItemTemplate>
 					</MudAutocomplete>
@@ -210,18 +210,18 @@
 			</PropertyColumn>
 			<PropertyColumn Property="x => x.OperationManager == null ? string.Empty : x.OperationManager.Name" Title="Оперативный Руководитель" Required="false">
 				<EditTemplate>
-					<MudAutocomplete @bind-Value="context.Item.OperationManager" FullWidth="true"
-									 T="Employee"
-									 ToStringFunc="@(e => e == null ? string.Empty : e.Name)"
-									 SearchFunc="SearchEmployee"
+					<MudAutocomplete @bind-Value="context.Item.OperationManagerId" FullWidth="true"
+									 T="Guid?"
+									 ToStringFunc="GetEmployeeName"
+									 SearchFunc="SearchEmployeeIds"
 									 Variant="Variant.Outlined"
 									 Label="Поиск Оперативного Руководителя"
 									 Clearable="true"
 									 Dense="true"
 									 RelativeWidth="DropdownWidth.Ignore">
-						<ItemTemplate Context="item">
+						<ItemTemplate Context="id">
 							<MudText Typo="Typo.body2" Style="white-space:nowrap">
-								@item.Name
+								@GetEmployeeName(id)
 							</MudText>
 						</ItemTemplate>
 					</MudAutocomplete>
@@ -229,18 +229,18 @@
 			</PropertyColumn>
 			<PropertyColumn Property="x => x.LocationManager == null ? string.Empty : x.LocationManager.Name" Title="Руководитель Локации" Required="false">
 				<EditTemplate>
-					<MudAutocomplete @bind-Value="context.Item.LocationManager" FullWidth="true"
-									 T="Employee"
-									 ToStringFunc="@(e => e == null ? string.Empty : e.Name)"
-									 SearchFunc="SearchEmployee"
+					<MudAutocomplete @bind-Value="context.Item.LocationManagerId" FullWidth="true"
+									 T="Guid?"
+									 ToStringFunc="GetEmployeeName"
+									 SearchFunc="SearchEmployeeIds"
 									 Variant="Variant.Outlined"
 									 Label="Поиск Руководителя Локации"
 									 Clearable="true"
 									 Dense="true"
 									 RelativeWidth="DropdownWidth.Ignore">
-						<ItemTemplate Context="item">
+						<ItemTemplate Context="id">
 							<MudText Typo="Typo.body2" Style="white-space:nowrap">
-								@item.Name
+								@GetEmployeeName(id)
 							</MudText>
 						</ItemTemplate>
 					</MudAutocomplete>

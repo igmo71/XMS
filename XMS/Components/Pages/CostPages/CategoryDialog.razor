@@ -56,10 +56,10 @@
 					<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
 				}
 			</MudSelect>
-			<MudAutocomplete @bind-Value="_selectedEmployeeId"
-							 T="Guid"
+			<MudAutocomplete @bind-Value="Category.EmployeeId"
+							 T="Guid?"
 							 ToStringFunc="GetEmployeeName"
-							 SearchFunc="SearcEmployeeId"
+							 SearchFunc="SearcEmployeeIds"
 							 Variant="Variant.Outlined"
 							 Label="Подбор Сотрудника"
 							 Clearable="true"
@@ -92,7 +92,6 @@
 	private IEnumerable<CostCategory> _categoriesFlattenedTree = [];
 	private IEnumerable<Department> _departmentsFlattenedTree = [];
 	private IEnumerable<CostItem> _selectedItems = [];
-	private Guid _selectedEmployeeId;
 
 	protected override void OnInitialized()
 	{
@@ -101,7 +100,6 @@
 		_categoriesFlattenedTree = TreeHelper.BuildFlattenedTree(availableCoategories);
 
 		_departmentsFlattenedTree = TreeHelper.BuildFlattenedTree(Departments);
-		_selectedEmployeeId = Category.EmployeeId ?? Guid.Empty;
 
 		if (Category.Items != null)
 		{
@@ -121,24 +119,23 @@
 		if (_form.IsValid)
 		{
 			Category.Items = _selectedItems.ToList();
-			Category.EmployeeId = _selectedEmployeeId;
 
 			MudDialog.Close(DialogResult.Ok(Category));
 		}
 	}
 
-	private Task<IEnumerable<Guid>> SearcEmployeeId(string value, CancellationToken token)
+	private Task<IEnumerable<Guid?>> SearcEmployeeIds(string value, CancellationToken token)
 	{
 		if (Employees is null)
-			return Task.FromResult(Enumerable.Empty<Guid>());
+			return Task.FromResult(Enumerable.Empty<Guid?>());
 
 		if (string.IsNullOrEmpty(value))
-			return Task.FromResult(Employees.Select(e => e.Id));
+			return Task.FromResult(Employees.Select(e => e.Id as Guid?));
 
 		return Task.FromResult(Employees
 			.Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
-			.Select(e => e.Id));
+			.Select(e => e.Id as Guid?));
 	}
 
-	private string GetEmployeeName(Guid id) => Employees.FirstOrDefault(x => x.Id == id)?.Name ?? string.Empty;
+	private string? GetEmployeeName(Guid? id) => Employees.FirstOrDefault(x => x.Id == id)?.Name;
 }
