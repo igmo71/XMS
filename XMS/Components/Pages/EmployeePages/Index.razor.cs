@@ -31,11 +31,9 @@ namespace XMS.Components.Pages.EmployeePages
         private IReadOnlyList<EmployeeBuh> _employeesBuh = [];
         private IReadOnlyList<EmployeeZup> _employeesZup = [];
         private IReadOnlyList<UserAd> _usersAd = [];
-        //private IReadOnlyList<CostItem> _costItems = [];
 
         private MudDataGrid<Employee> _employeeGrid = default!;
 
-        private Guid _selectedUserUtId;
         private string? _searchString;
         private bool _isLoading;
         private bool _isProcessing;
@@ -44,8 +42,6 @@ namespace XMS.Components.Pages.EmployeePages
         protected override async Task OnInitializedAsync()
         {
             await LoadDataFromDb();
-
-            //_selectedUserUtId = 
         }
 
         private async Task LoadDataFromDb()
@@ -80,7 +76,6 @@ namespace XMS.Components.Pages.EmployeePages
             var list = await DepartmentService.GetListAsync();
             _departments = TreeHelper.BuildFlattenedTree(list);
         }
-
         private async Task LoadCities() => _cities = await CityService.GetListAsync();
         private async Task LoadLocations() => _locations = await LocationService.GetListAsync();
         private async Task LoadUsersUt() => _usersUt = await UserUtService.GetListAsync();
@@ -95,12 +90,21 @@ namespace XMS.Components.Pages.EmployeePages
 
         private async Task CommittedItemChanges(Employee item)
         {
-            if (_employees?.Any(x => x.Id == item.Id) == false)
-                await EmployeeService.CreateAsync(item);
-            else
-                await EmployeeService.UpdateAsync(item);
+            try
+            {
+                if (_employees?.Any(x => x.Id == item.Id) == false)
+                    await EmployeeService.CreateAsync(item);
+                else
+                    await EmployeeService.UpdateAsync(item);
 
-            await LoadEmployees();
+                Snackbar.Add($"Успешно сохранено: {item.Name}", Severity.Success);
+
+                await LoadEmployees();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Ошибка при сохранении {item.Name}: {ex.Message}", Severity.Error);
+            }
         }
 
         private async Task DeleteItem(Employee item)

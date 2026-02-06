@@ -1,10 +1,9 @@
-﻿using XMS.Modules.Costs.Domain;
-using XMS.Modules.Employees.Abstractions;
+﻿using XMS.Core.Abstractions;
+using XMS.Modules.Costs.Domain;
 
 namespace XMS.Modules.Costs.Abstractions
 {
     public interface ICostItemService : ICrudService<CostItem>
     {
-        Task CreateAsync(CostItem item, ICollection<CostCategory> categories, CancellationToken ct = default);
     }
 }

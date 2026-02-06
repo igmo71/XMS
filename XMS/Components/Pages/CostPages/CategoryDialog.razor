@@ -11,12 +11,12 @@
 	</TitleContent>
 	<DialogContent>
 		<MudForm @ref="_form">
-			<MudTextField @bind-Value="Category.Name" T="string"
+			<MudTextField @bind-Value="CostCategory.Name" T="string"
 						  Label="Ввод Наименования"
 						  Required="true"
 						  RequiredError="Нужно ввести Наименование"
 						  Variant="Variant.Outlined" />
-			<MudSelect @bind-Value="Category.ParentId"
+			<MudSelect @bind-Value="CostCategory.ParentId"
 					   Label="Выбор Родительской Категории"
 					   Required="false"
 					   RequiredError="Нужно выбрать Категорию"
@@ -38,12 +38,12 @@
 					   Variant="Variant.Outlined"
 					   Clearable="true"
 					   Dense="true">
-				@foreach (var item in ItemList)
+				@foreach (var item in CostItems)
 				{
 					<MudSelectItem Value="@item">@item.Name</MudSelectItem>
 				}
 			</MudSelect>
-			<MudSelect @bind-Value="Category.DepartmentId"
+			<MudSelect @bind-Value="CostCategory.DepartmentId"
 					   Label="Выбор Отдела"
 					   Required="false"
 					   RequiredError="Нужно выбрать отдел"
@@ -56,7 +56,7 @@
 					<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
 				}
 			</MudSelect>
-			<MudAutocomplete @bind-Value="Category.EmployeeId"
+			<MudAutocomplete @bind-Value="CostCategory.EmployeeId"
 							 T="Guid?"
 							 ToStringFunc="GetEmployeeName"
 							 SearchFunc="SearcEmployeeIds"
@@ -81,9 +81,9 @@
 
 @code {
 	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
-	[Parameter] public CostCategory Category { get; set; } = new();
-	[Parameter] public IEnumerable<CostCategory> CategoryList { get; set; } = [];
-	[Parameter] public IEnumerable<CostItem> ItemList { get; set; } = [];
+	[Parameter] public CostCategory CostCategory { get; set; } = new();
+	[Parameter] public IEnumerable<CostCategory> CostCategories { get; set; } = [];
+	[Parameter] public IEnumerable<CostItem> CostItems { get; set; } = [];
 	[Parameter] public IEnumerable<Department> Departments { get; set; } = [];
 	[Parameter] public IEnumerable<Employee> Employees { get; set; } = [];
 
@@ -95,17 +95,17 @@
 
 	protected override void OnInitialized()
 	{
-		var forbiddenCaregoryIds = TreeHelper.GetForbiddenParentIds(Category, CategoryList);
-		var availableCoategories = CategoryList.Where(e => !forbiddenCaregoryIds.Contains(e.Id)).ToList();
+		var forbiddenCaregoryIds = TreeHelper.GetForbiddenParentIds(CostCategory, CostCategories);
+		var availableCoategories = CostCategories.Where(e => !forbiddenCaregoryIds.Contains(e.Id)).ToList();
 		_categoriesFlattenedTree = TreeHelper.BuildFlattenedTree(availableCoategories);
 
 		_departmentsFlattenedTree = TreeHelper.BuildFlattenedTree(Departments);
 
-		if (Category.Items != null)
+		if (CostCategory.Items != null)
 		{
-			var selectedIds = Category.Items.Select(x => x.Id).ToHashSet();
+			var selectedIds = CostCategory.Items.Select(x => x.Id).ToHashSet();
 
-			_selectedItems = ItemList
+			_selectedItems = CostItems
 				.Where(x => selectedIds.Contains(x.Id))
 				.ToList();
 		}
@@ -118,9 +118,9 @@
 		await _form.Validate();
 		if (_form.IsValid)
 		{
-			Category.Items = _selectedItems.ToList();
+			CostCategory.Items = _selectedItems.ToList();
 
-			MudDialog.Close(DialogResult.Ok(Category));
+			MudDialog.Close(DialogResult.Ok(CostCategory));
 		}
 	}
 

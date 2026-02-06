@@ -1,4 +1,4 @@
-﻿namespace XMS.Modules.Employees.Abstractions
+﻿namespace XMS.Core.Abstractions
 {
     public interface ICrudService<TEntity>
     {

@@ -70,7 +70,7 @@
 		</MudPaper>
 
 		<MudPaper Width="600px" Elevation="0" Outlined="true">
-			<MudDataGrid @ref="_itemGrid" Items="@_itemList" T="CostItem"
+			<MudDataGrid @ref="_costItemGrid" Items="@_costItems" T="CostItem"
 						 ReadOnly="false"
 						 Filterable="true"
 						 CommittedItemChanges="@CommittedItemChanges"

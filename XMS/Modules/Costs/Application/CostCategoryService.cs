@@ -54,24 +54,13 @@ namespace XMS.Modules.Costs.Application
             using var dbContext = dbFactory.CreateDbContext();
             return await dbContext.CostCategories
             .AsNoTracking()
-            .OrderBy(x => x.Name)
-            .ToListAsync(ct);
-        }
-
-        public async Task<IReadOnlyList<CostCategory>> GetListIncludingNavigationPropertiesAsync(CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
-            var list = dbContext.CostCategories
-            .AsNoTracking()
             .Include(e => e.Parent)
             .Include(e => e.Children)
             .Include(e => e.Items)
             .Include(e => e.Department)
             .Include(e => e.Employee)
             .OrderBy(x => x.Name)
-            .ToList();
-
-            return list;
+            .ToListAsync(ct);
         }
     }
 }

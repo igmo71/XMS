@@ -14,15 +14,6 @@ namespace XMS.Modules.Costs.Application
             await dbContext.SaveChangesAsync(ct);
         }
 
-        public async Task CreateAsync(CostItem item, ICollection<CostCategory> categories, CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
-            dbContext.CostItems.Add(item);
-            foreach (var category in categories)
-                dbContext.Add(new CostCategoryItem { CategoryId = category.Id, ItemId = item.Id });
-            await dbContext.SaveChangesAsync(ct);
-        }
-
         public async Task DeleteAsync(Guid id, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();

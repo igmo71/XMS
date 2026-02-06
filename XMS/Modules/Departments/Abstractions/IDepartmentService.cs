@@ -1,5 +1,5 @@
-﻿using XMS.Modules.Departments.Domain;
-using XMS.Modules.Employees.Abstractions;
+﻿using XMS.Core.Abstractions;
+using XMS.Modules.Departments.Domain;
 
 namespace XMS.Modules.Departments.Abstractions
 {

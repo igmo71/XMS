@@ -24,10 +24,9 @@ namespace XMS.Components.Pages.CostPages
         [Inject] private ProtectedSessionStorage SessionStorage { get; set; } = default!;
 
         private readonly CancellationTokenSource _cts = new();
-        private MudDataGrid<CostItem> _itemGrid = default!;
-        private IReadOnlyList<CostItem> _itemList = [];
-        private IReadOnlyList<CostCategory> _categoryList = [];
-        private IReadOnlyList<CostCategory> _categoriesFatList = [];
+        private MudDataGrid<CostItem> _costItemGrid = default!;
+        private IReadOnlyList<CostItem> _costItems = [];
+        private IReadOnlyList<CostCategory> _costCategories = [];
         private IReadOnlyList<TreeItemData<object?>> _costTree = [];
         private IReadOnlyList<Department> _departments = [];
         private IReadOnlyList<Employee> _employees = [];
@@ -47,7 +46,7 @@ namespace XMS.Components.Pages.CostPages
             {
                 var result = await SessionStorage.GetAsync<HashSet<Guid>>(nameof(_expandedCategoryIds));
                 _expandedCategoryIds = result.Success ? (result.Value ?? []) : [];
-                _expandedAll = _expandedCategoryIds.Count == _categoryList.Count;
+                _expandedAll = _expandedCategoryIds.Count == _costCategories.Count;
                 BuildTree();
                 StateHasChanged();
             }
@@ -67,7 +66,6 @@ namespace XMS.Components.Pages.CostPages
             try
             {
                 await Task.WhenAll(LoadCostCategories(),
-                    LoadCostCategoryFatList(),
                     LoadCostItems(),
                     LoadDepartments(),
                     LoadEmployees());                
@@ -78,16 +76,14 @@ namespace XMS.Components.Pages.CostPages
             }
         }
 
-        private async Task LoadCostCategories() => _categoryList = await CategoryService.GetListAsync(_cts.Token);
-        private async Task LoadCostCategoryFatList() => 
-            _categoriesFatList = await CategoryService.GetListIncludingNavigationPropertiesAsync(_cts.Token);
-        private async Task LoadCostItems() => _itemList = await ItemService.GetListAsync(_cts.Token);
+        private async Task LoadCostCategories() => _costCategories = await CategoryService.GetListAsync(_cts.Token);
+        private async Task LoadCostItems() => _costItems = await ItemService.GetListAsync(_cts.Token);
         private async Task LoadDepartments() => _departments = await DepartmentService.GetListAsync(_cts.Token);
         private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync(_cts.Token);
         
         private void BuildTree()
         {
-            var lookup = _categoriesFatList.OrderBy(e => e.Name).ToLookup(e => e.ParentId);
+            var lookup = _costCategories.OrderBy(e => e.Name).ToLookup(e => e.ParentId);
             _costTree = BuildTreeRecursive(lookup, null);
         }
 
@@ -133,7 +129,7 @@ namespace XMS.Components.Pages.CostPages
         {
             _expandedAll = true;
             _costTree.SetExpansion(true);
-            _expandedCategoryIds = _categoryList.Select(e => e.Id).ToHashSet();
+            _expandedCategoryIds = _costCategories.Select(e => e.Id).ToHashSet();
             await SessionStorage.SetAsync(nameof(_expandedCategoryIds), _expandedCategoryIds);
         }
 
@@ -170,7 +166,7 @@ namespace XMS.Components.Pages.CostPages
             {
                 try
                 {
-                    if (_categoriesFatList?.Any(e => e.Id == category.Id) == false)
+                    if (_costCategories?.Any(e => e.Id == category.Id) == false)
                         await CategoryService.CreateAsync(costCategory, _cts.Token);
                     else
                         await CategoryService.UpdateAsync(costCategory, _cts.Token);
@@ -182,26 +178,24 @@ namespace XMS.Components.Pages.CostPages
                 catch (Exception ex)
                 {
                     Snackbar.Add($"Ошибка при сохранении {costCategory.Name}: {ex.Message}", Severity.Error);
-
-                    throw;
                 }
             }
         }
 
-        private async Task<DialogResult?> ProcessCategoryDialog(CostCategory category)
+        private async Task<DialogResult?> ProcessCategoryDialog(CostCategory costCategory)
         {
             var parameters = new DialogParameters<CategoryDialog>
             {
-                { x => x.Category, category },
-                { x => x.ItemList, _itemList },
-                {x => x.CategoryList, _categoryList },
-                {x => x.Departments, _departments },
-                {x => x.Employees, _employees }
+                { x => x.CostCategory, costCategory },
+                { x => x.CostItems, _costItems },
+                { x => x.CostCategories, _costCategories },
+                { x => x.Departments, _departments },
+                { x => x.Employees, _employees }
             };
 
             var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
 
-            var title = category.Id == Guid.Empty ? "Создание Категории" : "Редактирование Категории";
+            var title = costCategory.Id == Guid.Empty ? "Создание Категории" : "Редактирование Категории";
 
             var dialog = await DialogService.ShowAsync<CategoryDialog>(title, parameters, options);
 
@@ -247,14 +241,14 @@ namespace XMS.Components.Pages.CostPages
         {
             var item = new CostItem();
 
-            await _itemGrid.SetEditingItemAsync(item);
+            await _costItemGrid.SetEditingItemAsync(item);
         }
 
         private async Task CommittedItemChanges(CostItem item)
         {
             try
             {
-                if (!_itemList.Any(x => x.Id == item.Id))
+                if (!_costItems.Any(x => x.Id == item.Id))
                     await ItemService.CreateAsync(item);
                 else
                     await ItemService.UpdateAsync(item);
