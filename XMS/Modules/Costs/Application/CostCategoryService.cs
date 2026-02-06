@@ -15,7 +15,7 @@ namespace XMS.Modules.Costs.Application
 
             await costCategoryItemService.UpdateByCategoryAsync(item, dbContext, ct);
 
-            item.ClearNavigationProperties().ClearCollections();
+            item.ClearCollections();
 
             dbContext.CostCategories.Add(item);
 
