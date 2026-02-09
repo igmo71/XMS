@@ -23,7 +23,7 @@
 					 Striped="true"
 					 Filterable="true">
 			<ToolBarContent>
-				<MudText Typo="Typo.h4">Локации</MudText>
+				<MudText Typo="Typo.h5">Локации</MudText>
 				<MudSpacer />
 				<MudButtonGroup Class="ma-0 pa-0" Color="Color.Primary" Variant="Variant.Filled">
 					<MudButton OnClick="NewItemAsync" StartIcon="@Icons.Material.Filled.Add">
@@ -46,9 +46,9 @@
 				</MudAlert>
 			</LoadingContent>
 			<NoRecordsContent>
-				<MudText Typo="Typo.h6" Align="Align.Center" Class="pa-4">
+				<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
 					Здесь пока ничего нет. Нажмите "Добавить", чтобы создать первый!
-				</MudText>
+				</MudAlert>
 			</NoRecordsContent>
 			<PagerContent>
 				<MudDataGridPager T="Location" />
@@ -137,8 +137,11 @@
 
 	private async Task<bool> ConfirmDeleteItemAsync(Location item)
 	{
+		var title = "Удалить Локацию";
+
 		var parameters = new DialogParameters<ConfirmDialog>
 		{
+			{ x => x.TitleIcon, Icons.Material.Filled.DeleteForever },
 			{ x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}' навсегда?" },
 			{ x => x.ButtonText, "Да, удалить" },
 			{ x => x.ConfirmColor, Color.Error }
@@ -146,7 +149,7 @@
 
 		var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
 
-		var dialog = await DialogService.ShowAsync<ConfirmDialog>("Удаление", parameters, options);
+		var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
 
 		var result = await dialog.Result;
 

@@ -138,8 +138,11 @@ namespace XMS.Components.Pages.EmployeePages
 
         private async Task<bool> ConfirmDeleteItemAsync(Employee item)
         {
+            var title = "Удалить Сотрудника";
+
             var parameters = new DialogParameters<ConfirmDialog>
             {
+                { x => x.TitleIcon, Icons.Material.Filled.DeleteForever },
                 { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}' навсегда?" },
                 { x => x.ButtonText, "Да, удалить" },
                 { x => x.ConfirmColor, Color.Error }
@@ -147,7 +150,7 @@ namespace XMS.Components.Pages.EmployeePages
 
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
 
-            var dialog = await DialogService.ShowAsync<ConfirmDialog>("Удаление", parameters, options);
+            var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
 
             var result = await dialog.Result;
 
@@ -263,7 +266,8 @@ namespace XMS.Components.Pages.EmployeePages
                 .Select(e => e.Id as Guid?));
         }
 
-        private string? GetEmployeeName(Guid? id) { 
+        private string? GetEmployeeName(Guid? id)
+        {
             return _employees.FirstOrDefault(e => e.Id == id)?.Name;
         }
     }

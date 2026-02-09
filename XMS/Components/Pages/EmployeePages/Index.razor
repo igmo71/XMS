@@ -25,7 +25,7 @@
 					 ApplyDropClassesOnDragStarted="true"
 					 DragIndicatorIcon="@Icons.Material.Filled.DragIndicator">
 			<ToolBarContent>
-				<MudText Typo="Typo.h4">Сотрудники</MudText>
+				<MudText Typo="Typo.h5">Сотрудники</MudText>
 				<MudSpacer />
 				<MudSwitch T="bool" ValueChanged="ToggleEditingGrid" Color="Color.Primary">Редактировать</MudSwitch>
 				<MudButton Class="ms-5" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!_isEditingGrid)" OnClick="NewItemAsync">
@@ -263,9 +263,9 @@
 				</MudAlert>
 			</LoadingContent>
 			<NoRecordsContent>
-				<MudText Typo="Typo.h6" Align="Align.Start" Class="pa-4">
-					Здесь пока ничего нет. Включите редактирование и нажмите "Добавить", чтобы создать первый!
-				</MudText>
+				<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
+					Здесь пока ничего нет. Нажмите "Добавить", чтобы создать первый!
+				</MudAlert>
 			</NoRecordsContent>
 			<PagerContent>
 				<MudDataGridPager T="Employee" />
