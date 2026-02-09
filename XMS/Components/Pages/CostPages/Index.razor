@@ -1,22 +1,19 @@
 ﻿@page "/costitems"
 @using XMS.Modules.Costs.Domain
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+<MudContainer MaxWidth="MaxWidth.Large">
 	<MudStack Row="true">
-		<MudPaper Width="600px" Elevation="0" Outlined="true">
-			<MudPickerToolbar>
-				<MudText Typo="Typo.h5">Категории и Статьи Затрат</MudText>
-				<MudSpacer />
-				@if (_expandedAll)
-				{
-					<MudFab Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Material.Filled.VerticalAlignCenter" OnClick="CollapseAll" title="Свернуть все" />
-				}
-				else
-				{
-					<MudFab Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Expand" OnClick="ExpandAll" title="Развернуть все" />
-				}
-				<MudSpacer />
-			</MudPickerToolbar>
+		<MudPaper>
+			<MudToolBar>
+				<MudStack Row="true" Spacing="6">
+					<MudText Typo="Typo.h5">Категории и Статьи Затрат</MudText>
+					<MudFab Color="Color.Primary"
+							Size="Size.Small"
+							StartIcon="@(_expandedAll ? Icons.Material.Filled.VerticalAlignCenter : Icons.Material.Filled.Expand)"
+							OnClick="@(_expandedAll ? CollapseAll : ExpandAll)"
+							title="Свернуть все" />
+				</MudStack>
+			</MudToolBar>
 			<MudTreeView Items="_costTree" T="object" Dense="true">
 				<ItemTemplate Context="node">
 					<MudTreeViewItem Expanded="@node.Expanded"
@@ -24,20 +21,16 @@
 									 Items="@node.Children"
 									 Value="@node.Value">
 						<Content>
-							<MudTreeViewItemToggleButton 
-								Expanded="@node.Expanded" 
-								Visible="@node.HasChildren" 
-								ExpandedChanged="@((expanded) => ExpandedChanged(node, expanded))" />
+							<MudTreeViewItemToggleButton Expanded="@node.Expanded"
+														 Visible="@node.HasChildren"
+														 ExpandedChanged="@((expanded) => ExpandedChanged(node, expanded))" />
 							<div class="d-flex align-center">
 								@if (node.Value is CostCategory category)
 								{
-									<MudIcon Icon="@(node.Expanded? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder)"
-											 Size="Size.Medium"
-											 Class="mr-2"
-											 Title="Категория Затрат" />
+									<MudIcon Icon="@(node.Expanded? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder)" Size="Size.Medium" Class="mr-2" Title="Категория Затрат" />
 									<MudText Typo="Typo.body1">@category.Name</MudText>
 									<MudMenu Icon="@Icons.Material.Filled.MoreVert"
-											 Size="Size.Small"
+											 Size="Size.Medium"
 											 AnchorOrigin="Origin.TopRight"
 											 TransformOrigin="Origin.TopLeft"
 											 Dense="true"
@@ -48,28 +41,21 @@
 											<MudMenuItem Label="Изменить эту Категорию" Icon="@Icons.Material.Filled.Edit" OnClick="() => EditCategoryAsync(node.Value)" />
 											<MudMenuItem Label="Удалить эту Категорию" Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteCategoryAsync(node.Value)" />
 										}
-										@* <MudDivider />
-										<MudMenuItem Label="Добавить Статью Затрат" Icon="@Icons.Material.Filled.Description" /> *@
 									</MudMenu>
 
 								}
 								else if (node.Value is CostItem costItem)
 								{
-									<MudIcon Icon="@Icons.Material.Filled.Description"
-											 Size="Size.Small"
-											 Class="mr-2"
-											 Title="Статья Затрат" />
+									<MudIcon Icon="@Icons.Material.Filled.Description" Size="Size.Small" Class="mr-2" Title="Статья Затрат" />
 									<MudText Typo="Typo.body2">@costItem.Name</MudText>
 								}
 							</div>
 						</Content>
-
 					</MudTreeViewItem>
 				</ItemTemplate>
 			</MudTreeView>
 		</MudPaper>
-
-		<MudPaper Width="600px" Elevation="0" Outlined="true">
+		<MudPaper>
 			<MudDataGrid @ref="_costItemGrid" Items="@_costItems" T="CostItem"
 						 ReadOnly="false"
 						 Filterable="true"
@@ -79,34 +65,14 @@
 						 EditMode="DataGridEditMode.Form"
 						 EditTrigger="DataGridEditTrigger.Manual">
 				<ToolBarContent>
-					<MudStack Row="true" Class="pt-5">
-						<MudText Typo="Typo.h5">Статьи Затрат</MudText>
-						<MudSpacer />
-						<MudButtonGroup Class="ma-0 pa-0" Color="Color.Primary" Variant="Variant.Filled">
-							<MudButton OnClick="NewItemAsync" StartIcon="@Icons.Material.Filled.Add">
-								Добавить
-							</MudButton>
-						</MudButtonGroup>
-					</MudStack>
+					<MudText Typo="Typo.h5">Статьи Затрат</MudText>
+					<MudSpacer />
+					<MudButton Color="Color.Primary" OnClick="NewItemAsync" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add">
+						Добавить
+					</MudButton>
 				</ToolBarContent>
 				<Columns>
 					<PropertyColumn Property="x => x.Name" Title="Наименование" />
-					<TemplateColumn>
-						@* <EditTemplate>
-							<MudSelect @bind-Value="context.Item.Categories" Label="Выбор Категории Статьи Затрат"
-									   Required="false"
-									   RequiredError="Нужно выбрать категорию"
-									   RelativeWidth="DropdownWidth.Ignore"
-									   Variant="Variant.Outlined"
-									   Clearable="true"
-									   Dense="true">
-								@foreach (var item in _categoriesFlattenedTree)
-								{
-									<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
-								}
-							</MudSelect>
-						</EditTemplate> *@
-					</TemplateColumn>
 					<TemplateColumn CellClass="d-flex justify-between">
 						<CellTemplate>
 							<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@context.Actions.StartEditingItemAsync" />
@@ -129,7 +95,6 @@
 				</PagerContent>
 			</MudDataGrid>
 		</MudPaper>
-
 	</MudStack>
 </MudContainer>
 

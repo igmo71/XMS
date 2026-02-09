@@ -7,16 +7,21 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
-<MudContainer MaxWidth="MaxWidth.Large">
-	<MudGrid xs="12" sm="6" md="4" Class="ms-1 mt-2">
-		<MudDataGrid @ref="_itemGrid" T="JobTitle" Items="@_items"
-					 ReadOnly="false"
-					 Filterable="true" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
-					 CommittedItemChanges="@CommittedItemChanges"
-					 Bordered="true" Striped="true" Hover="true" Dense="true"
+<MudContainer MaxWidth="MaxWidth.Medium">
+	<MudPaper>
+		<MudDataGrid @ref="_itemGrid"
+					 T="JobTitle" 
+					 Items="@_items"
 					 Loading="@_isLoading"
 					 EditMode="DataGridEditMode.Form"
-					 EditTrigger="DataGridEditTrigger.Manual">
+					 EditTrigger="DataGridEditTrigger.Manual"
+					 CommittedItemChanges="@CommittedItemChanges"
+					 ReadOnly="false"
+					 Filterable="true"
+					 Bordered="true"
+					 Striped="true"
+					 Hover="true"
+					 Dense="true">
 			<ToolBarContent>
 				<MudText Typo="Typo.h4">Должности</MudText>
 				<MudSpacer />
@@ -49,7 +54,7 @@
 				<MudDataGridPager T="JobTitle" />
 			</PagerContent>
 		</MudDataGrid>
-	</MudGrid>
+	</MudPaper>
 </MudContainer>
 
 @code {

@@ -1,69 +1,74 @@
 ﻿@page "/emploees-buh"
-
 @using XMS.Modules.Employees.Abstractions
 @using XMS.Modules.Employees.Domain
 @inject IEmployeeBuhService Service
 @inject ISnackbar Snackbar
+
 <MudContainer MaxWidth="MaxWidth.Large">
-	<MudDataGrid Items="@_items" Dense="true" Filterable="true" FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
-				 Loading="@_isLoading">
-		<ToolBarContent>
-			<MudText Typo="Typo.h4">Сотрудники 1С Бух</MudText>
-			<MudSpacer />
-			<MudSpacer />
-			<MudButton OnClick="ReloadDataFromOneSAsync" Color="Color.Primary" Variant="Variant.Filled">
-				@if (_isReloading)
-				{
-					<MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" Color="Color.Inherit" />
-					<MudText Class="ms-2">Синхронизация...</MudText>
-				}
-				else
-				{
-					<MudIcon Icon="@Icons.Material.Filled.Sync" Class="me-2" />
-					<MudText>Обновить из 1С</MudText>
-				}
-			</MudButton>
-			<MudSpacer />
-		</ToolBarContent>
-		<Columns>
-			<PropertyColumn Property="x => x.Id" />
-			<PropertyColumn Property="x => x.Name" Title="ФИО" />
-			<PropertyColumn Property="x => x.Code" Title="Code" />
-			<PropertyColumn Property="x => x.DeletionMark" Title="Пометка удаления">
-				<CellTemplate>
-					<MudChip T="string"
-							 Color="@(context.Item.DeletionMark ? Color.Error : Color.Success)"
-							 Size="Size.Small"
-							 Variant="Variant.Text">
-						@(context.Item.DeletionMark ? "Удален" : "Активен")
-					</MudChip>
-				</CellTemplate>
-			</PropertyColumn>
-			<PropertyColumn Property="x => x.Archived" Title="В архиве">
-				<CellTemplate>
-					<MudChip T="string"
-							 Color="@(context.Item.Archived ? Color.Error : Color.Success)"
-							 Size="Size.Small"
-							 Variant="Variant.Text">
-						@(context.Item.Archived ? "В архиве" : "Активен")
-					</MudChip>
-				</CellTemplate>
-			</PropertyColumn>
-		</Columns>
-		<LoadingContent>
-			<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
-				Загрузка из БД...
-			</MudAlert>
-		</LoadingContent>
-		<NoRecordsContent>
-			<MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center" Class="mx-3">
-				Пользователи не найдены. Нажмите "Обновить", чтобы загрузить данные.
-			</MudAlert>
-		</NoRecordsContent>
-		<PagerContent>
-			<MudDataGridPager T="EmployeeBuh" />
-		</PagerContent>
-	</MudDataGrid>
+	<MudPaper>
+		<MudDataGrid Items="@_items"
+					 Loading="@_isLoading"
+					 FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+					 Filterable="true"
+					 Dense="true">
+			<ToolBarContent>
+				<MudText Typo="Typo.h4">Сотрудники 1С Бух</MudText>
+				<MudSpacer />
+				<MudSpacer />
+				<MudButton OnClick="ReloadDataFromOneSAsync" Color="Color.Primary" Variant="Variant.Filled">
+					@if (_isReloading)
+					{
+						<MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" Color="Color.Inherit" />
+						<MudText Class="ms-2">Синхронизация...</MudText>
+					}
+					else
+					{
+						<MudIcon Icon="@Icons.Material.Filled.Sync" Class="me-2" />
+						<MudText>Обновить из 1С</MudText>
+					}
+				</MudButton>
+				<MudSpacer />
+			</ToolBarContent>
+			<Columns>
+				<PropertyColumn Property="x => x.Id" />
+				<PropertyColumn Property="x => x.Name" Title="ФИО" />
+				<PropertyColumn Property="x => x.Code" Title="Code" />
+				<PropertyColumn Property="x => x.DeletionMark" Title="Пометка удаления">
+					<CellTemplate>
+						<MudChip T="string"
+								 Color="@(context.Item.DeletionMark ? Color.Error : Color.Success)"
+								 Size="Size.Small"
+								 Variant="Variant.Text">
+							@(context.Item.DeletionMark ? "Удален" : "Активен")
+						</MudChip>
+					</CellTemplate>
+				</PropertyColumn>
+				<PropertyColumn Property="x => x.Archived" Title="В архиве">
+					<CellTemplate>
+						<MudChip T="string"
+								 Color="@(context.Item.Archived ? Color.Error : Color.Success)"
+								 Size="Size.Small"
+								 Variant="Variant.Text">
+							@(context.Item.Archived ? "В архиве" : "Активен")
+						</MudChip>
+					</CellTemplate>
+				</PropertyColumn>
+			</Columns>
+			<LoadingContent>
+				<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
+					Загрузка из БД...
+				</MudAlert>
+			</LoadingContent>
+			<NoRecordsContent>
+				<MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center" Class="mx-3">
+					Пользователи не найдены. Нажмите "Обновить", чтобы загрузить данные.
+				</MudAlert>
+			</NoRecordsContent>
+			<PagerContent>
+				<MudDataGridPager T="EmployeeBuh" />
+			</PagerContent>
+		</MudDataGrid>
+	</MudPaper>
 </MudContainer>
 
 @code {
