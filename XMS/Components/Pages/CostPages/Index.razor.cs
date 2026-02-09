@@ -68,7 +68,7 @@ namespace XMS.Components.Pages.CostPages
                 await Task.WhenAll(LoadCostCategories(),
                     LoadCostItems(),
                     LoadDepartments(),
-                    LoadEmployees());                
+                    LoadEmployees());
             }
             finally
             {
@@ -80,7 +80,7 @@ namespace XMS.Components.Pages.CostPages
         private async Task LoadCostItems() => _costItems = await ItemService.GetListAsync(_cts.Token);
         private async Task LoadDepartments() => _departments = await DepartmentService.GetListAsync(_cts.Token);
         private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync(_cts.Token);
-        
+
         private void BuildTree()
         {
             var lookup = _costCategories.OrderBy(e => e.Name).ToLookup(e => e.ParentId);
@@ -140,7 +140,7 @@ namespace XMS.Components.Pages.CostPages
             _expandedCategoryIds = [];
             await SessionStorage.SetAsync(nameof(_expandedCategoryIds), _expandedCategoryIds);
         }
-                
+
         // CostCategory Operations //
 
         private async Task NewCategoryAsync(object? value)
@@ -166,7 +166,7 @@ namespace XMS.Components.Pages.CostPages
             {
                 try
                 {
-                    if (_costCategories?.Any(e => e.Id == category.Id) == false)
+                    if (_costCategories?.Any(e => e.Id == costCategory.Id) == false)
                         await CategoryService.CreateAsync(costCategory, _cts.Token);
                     else
                         await CategoryService.UpdateAsync(costCategory, _cts.Token);
@@ -184,8 +184,13 @@ namespace XMS.Components.Pages.CostPages
 
         private async Task<DialogResult?> ProcessCategoryDialog(CostCategory costCategory)
         {
+            bool isNew = _costCategories?.Any(e => e.Id == costCategory.Id) == false;
+
+            var title = isNew ? "Создать Категорию" : "Изменить Категорию";
+
             var parameters = new DialogParameters<CategoryDialog>
             {
+                { x => x.TitleIcon, isNew ? Icons.Material.Filled.AddCircleOutline : Icons.Material.Filled.Edit },
                 { x => x.CostCategory, costCategory },
                 { x => x.CostItems, _costItems },
                 { x => x.CostCategories, _costCategories },
@@ -194,8 +199,6 @@ namespace XMS.Components.Pages.CostPages
             };
 
             var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-
-            var title = costCategory.Id == Guid.Empty ? "Создание Категории" : "Редактирование Категории";
 
             var dialog = await DialogService.ShowAsync<CategoryDialog>(title, parameters, options);
 
@@ -223,7 +226,7 @@ namespace XMS.Components.Pages.CostPages
                     catch (Exception ex)
                     {
                         if (ex.Message.Contains("SAME TABLE REFERENCE"))
-                            Snackbar.Add($"Ошибка при удалении {category.Name}: Категория содержит другие категории", Severity.Error);
+                            Snackbar.Add($"Ошибка при удалении {category.Name}: Категория содержит вложенные категории", Severity.Error);
                         else
                             Snackbar.Add($"Ошибка при удалении {category.Name}: {ex.Message}", Severity.Error);
                     }
@@ -294,16 +297,19 @@ namespace XMS.Components.Pages.CostPages
 
         private async Task<bool> ConfirmDeleteItemAsync<T>(T item) where T : IHasName
         {
+            var title = "Удалить Категорию Затрат";
+
             var parameters = new DialogParameters<ConfirmDialog>
             {
+                { x => x.TitleIcon, Icons.Material.Filled.DeleteForever },
                 { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}' навсегда?" },
                 { x => x.ButtonText, "Да, удалить" },
-                { x => x.ButtonColor, Color.Error }
+                { x => x.ConfirmColor, Color.Error }
             };
 
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
 
-            var dialog = await DialogService.ShowAsync<ConfirmDialog>("Удаление", parameters, options);
+            var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
 
             var result = await dialog.Result;
 

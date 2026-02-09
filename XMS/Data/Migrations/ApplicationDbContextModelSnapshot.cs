@@ -270,7 +270,7 @@ namespace XMS.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("CostCategories");
+                    b.ToTable("CostCategories", (string)null);
                 });
 
             modelBuilder.Entity("XMS.Modules.Costs.Domain.CostCategoryItem", b =>
@@ -285,7 +285,7 @@ namespace XMS.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("CostCategoryItems");
+                    b.ToTable("CostCategoryItems", (string)null);
                 });
 
             modelBuilder.Entity("XMS.Modules.Costs.Domain.CostItem", b =>
@@ -301,7 +301,7 @@ namespace XMS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CostItems");
+                    b.ToTable("CostItems", (string)null);
                 });
 
             modelBuilder.Entity("XMS.Modules.Departments.Domain.Department", b =>
@@ -322,7 +322,7 @@ namespace XMS.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("XMS.Modules.Employees.Domain.City", b =>
@@ -338,7 +338,7 @@ namespace XMS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Cities");
+                    b.ToTable("Cities", (string)null);
                 });
 
             modelBuilder.Entity("XMS.Modules.Employees.Domain.Employee", b =>
@@ -404,7 +404,7 @@ namespace XMS.Migrations
 
                     b.HasIndex("UserUtId");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("XMS.Modules.Employees.Domain.EmployeeBuh", b =>
@@ -430,7 +430,7 @@ namespace XMS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EmployeesBuh");
+                    b.ToTable("EmployeesBuh", (string)null);
                 });
 
             modelBuilder.Entity("XMS.Modules.Employees.Domain.EmployeeZup", b =>
@@ -456,7 +456,7 @@ namespace XMS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EmployeesZup");
+                    b.ToTable("EmployeesZup", (string)null);
                 });
 
             modelBuilder.Entity("XMS.Modules.Employees.Domain.JobTitle", b =>
@@ -472,7 +472,7 @@ namespace XMS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("JobTitles");
+                    b.ToTable("JobTitles", (string)null);
                 });
 
             modelBuilder.Entity("XMS.Modules.Employees.Domain.Location", b =>
@@ -488,7 +488,7 @@ namespace XMS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Locations");
+                    b.ToTable("Locations", (string)null);
                 });
 
             modelBuilder.Entity("XMS.Modules.Employees.Domain.UserAd", b =>
@@ -527,7 +527,7 @@ namespace XMS.Migrations
 
                     b.HasKey("Sid");
 
-                    b.ToTable("UsersAd");
+                    b.ToTable("UsersAd", (string)null);
                 });
 
             modelBuilder.Entity("XMS.Modules.Employees.Domain.UserUt", b =>
@@ -546,7 +546,7 @@ namespace XMS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UsersUt");
+                    b.ToTable("UsersUt", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -613,7 +613,7 @@ namespace XMS.Migrations
 
                             b1.HasKey("IdentityUserPasskeyCredentialId");
 
-                            b1.ToTable("AspNetUserPasskeys");
+                            b1.ToTable("AspNetUserPasskeys", (string)null);
 
                             b1
                                 .ToJson("Data")

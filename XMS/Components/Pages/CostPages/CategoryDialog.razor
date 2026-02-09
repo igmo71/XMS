@@ -4,10 +4,10 @@
 @using XMS.Modules.Employees.Domain
 <MudDialog>
 	<TitleContent>
-		<MudText Typo="Typo.h6">
-			<MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3 mb-n1" />
-			@MudDialog.Title
-		</MudText>
+		<MudStack Row="true">
+			<MudIcon Icon="@TitleIcon" />
+			<MudText Typo="Typo.h5">@MudDialog.Title</MudText>
+		</MudStack>
 	</TitleContent>
 	<DialogContent>
 		<MudForm @ref="_form">
@@ -74,13 +74,14 @@
 		</MudForm>
 	</DialogContent>
 	<DialogActions>
-		<MudButton OnClick="Cancel">Отмена</MudButton>
+		<MudButton OnClick="Cancel">Отменить</MudButton>
 		<MudButton OnClick="Submit" Color="Color.Primary">Сохранить</MudButton>
 	</DialogActions>
 </MudDialog>
 
 @code {
 	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+	[Parameter] public string? TitleIcon { get; set; }
 	[Parameter] public CostCategory CostCategory { get; set; } = new();
 	[Parameter] public IEnumerable<CostCategory> CostCategories { get; set; } = [];
 	[Parameter] public IEnumerable<CostItem> CostItems { get; set; } = [];

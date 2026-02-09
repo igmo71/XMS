@@ -1,24 +1,24 @@
 ﻿using MudBlazor;
 using XMS.Core.Abstractions;
-using XMS.Modules.Costs.Domain;
 
 namespace XMS.Components.Common
 {
     public class TreeHelper
     {
-        public static List<TreeItemData<T>> BuildTree<T>(IEnumerable<T> allItems, Guid? parentId) where T : NamedEntity, IHasParent<T>
+        public static List<TreeItemData<T>> BuildTree<T>(IEnumerable<T> allItems, Guid? parentId, HashSet<Guid>? _expandedIds = null) where T : NamedEntity, IHasParent<T>
         {
-            return allItems
-                .Where(d => d.ParentId == parentId)
-                .Select(d => new TreeItemData<T>
+            var result = allItems
+                .Where(e => e.ParentId == parentId)
+                .Select(e => new TreeItemData<T>
                 {
-                    Value = d,
-                    Text = d.Name,
-                    Expanded = false,
-                    Icon = Icons.Material.Filled.Category,
-                    Children = BuildTree(allItems, d.Id)
-                })                
+                    Value = e,
+                    Text = e.Name,
+                    Expanded = _expandedIds is not null && _expandedIds.Contains(e.Id),
+                    Children = BuildTree(allItems, e.Id, _expandedIds)
+                })
                 .ToList();
+
+            return result;
         }
 
         public static List<T> BuildFlattenedTree<T>(IEnumerable<T> items) where T : BaseEntity, IHasParent<T>, IHasName, new()
@@ -51,21 +51,37 @@ namespace XMS.Components.Common
             return result;
         }
 
-        public static HashSet<Guid> GetForbiddenParentIds(CostCategory currentCategory, IEnumerable<CostCategory> allCategories)
+        //public static HashSet<Guid> GetForbiddenParentIds(CostCategory currentCategory, IEnumerable<CostCategory> allCategories)
+        //{
+        //    var forbiddenIds = new HashSet<Guid>();
+        //    if (currentCategory.Id == Guid.Empty) return forbiddenIds;
+
+        //    forbiddenIds.Add(currentCategory.Id);
+
+        //    // Собираем всех потомков рекурсивно
+        //    var lookup = allCategories.ToLookup(x => x.ParentId);
+        //    AddChildrenToForbiddenList(currentCategory.Id, lookup, forbiddenIds);
+
+        //    return forbiddenIds;
+        //}
+
+        public static HashSet<Guid> GetForbiddenParentIds<T>(T current, IEnumerable<T> all) where T : BaseEntity, ITreeNode<T>
         {
             var forbiddenIds = new HashSet<Guid>();
-            if (currentCategory.Id == Guid.Empty) return forbiddenIds;
 
-            forbiddenIds.Add(currentCategory.Id);
+            if (current.Id == Guid.Empty) return forbiddenIds;
 
-            // Собираем всех потомков рекурсивно
-            var lookup = allCategories.ToLookup(x => x.ParentId);
-            AddChildrenToForbiddenList(currentCategory.Id, lookup, forbiddenIds);
+            forbiddenIds.Add(current.Id);
+
+            var lookup = all.ToLookup(x => x.ParentId);
+
+            AddChildrenToForbiddenList(current.Id, lookup, forbiddenIds);
 
             return forbiddenIds;
         }
 
-        private static void AddChildrenToForbiddenList(Guid parentId, ILookup<Guid?, CostCategory> lookup, HashSet<Guid> forbiddenIds)
+
+        private static void AddChildrenToForbiddenList<T>(Guid parentId, ILookup<Guid?, T> lookup, HashSet<Guid> forbiddenIds) where T : BaseEntity, ITreeNode<T>
         {
             foreach (var child in lookup[parentId])
             {

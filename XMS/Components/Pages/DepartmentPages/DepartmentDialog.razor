@@ -1,0 +1,67 @@
+﻿@using XMS.Components.Common
+@using XMS.Modules.Departments.Domain
+
+<MudDialog>
+	<TitleContent>
+		<MudStack Row="true">
+			<MudIcon Icon="@TitleIcon" />
+			<MudText Typo="Typo.h5">@MudDialog.Title</MudText>
+		</MudStack>
+	</TitleContent>
+	<DialogContent>
+		<MudForm @ref="_form">
+			<MudTextField @bind-Value="Department.Name" T="string"
+						  Label="Ввод Наименования"
+						  Required="true"
+						  RequiredError="Нужно ввести Наименование"
+						  Variant="Variant.Outlined" />
+			<MudSelect @bind-Value="Department.ParentId"
+					   Label="Выбор Родительского Департамента"
+					   Required="false"
+					   RequiredError="Нужно выбрать Департамент"
+					   RelativeWidth="DropdownWidth.Ignore"
+					   Variant="Variant.Outlined"
+					   Clearable="true"
+					   Dense="true">
+				@foreach (var item in _departmentsFlattenedTree)
+				{
+					<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
+				}
+			</MudSelect>
+		</MudForm>
+	</DialogContent>
+	<DialogActions>
+		<MudButton OnClick="Cancel">Отменить</MudButton>
+		<MudButton OnClick="Submit" Color="Color.Primary">Сохранить</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+	[Parameter] public string? TitleIcon { get; set; }
+	[Parameter] public Department Department { get; set; } = new();
+	[Parameter] public IEnumerable<Department> Departments { get; set; } = [];
+
+	private IEnumerable<Department> _departmentsFlattenedTree = [];
+	private MudForm _form = default!;
+
+	protected override void OnInitialized()
+	{
+		var forbiddenDepartmentIds = TreeHelper.GetForbiddenParentIds(Department, Departments);
+		var availableDepartments = Departments.Where(e => !forbiddenDepartmentIds.Contains(e.Id)).ToList();
+		_departmentsFlattenedTree = TreeHelper.BuildFlattenedTree(availableDepartments);
+	}
+
+	private void Cancel() => MudDialog.Cancel();
+
+	private async Task Submit()
+	{
+		await _form.Validate();
+		if (_form.IsValid)
+		{
+			//CostCategory.Items = _selectedItems.ToList();
+
+			MudDialog.Close(DialogResult.Ok(Department));
+		}
+	}
+}

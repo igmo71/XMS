@@ -142,7 +142,7 @@ namespace XMS.Components.Pages.EmployeePages
             {
                 { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}' навсегда?" },
                 { x => x.ButtonText, "Да, удалить" },
-                { x => x.ButtonColor, Color.Error }
+                { x => x.ConfirmColor, Color.Error }
             };
 
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };

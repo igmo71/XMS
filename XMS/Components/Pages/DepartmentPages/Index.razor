@@ -1,73 +1,46 @@
 ﻿@page "/departments"
-
-@using XMS.Components.Common
-@using XMS.Modules.Departments.Abstractions
 @using XMS.Modules.Departments.Domain
-@using XMS.Modules.Employees.Abstractions
-@using XMS.Modules.Employees.Domain
-@inject IDepartmentService Service;
-<MudContainer MaxWidth="MaxWidth.Large">
-	
-		
 
-		<MudPaper Width="600px"  Class="pa-2 mt-2">
-			<MudStack>
-				<MudStack Row="true">
-					<MudText Typo="Typo.h4">Схема предприятия</MudText>
-					<MudSpacer />
-					@if (_expandedAll)
-					{
-						<MudFab Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Material.Filled.VerticalAlignCenter" OnClick="CollapseAll" title="Свернуть все" />
-					}
-					else
-					{
-						<MudFab Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Expand" OnClick="ExpandAll" title="Развернуть все" />
-					}
-				</MudStack>
-				<MudTreeView Items="_treeItems" T="Department" Dense="true">
-					<ItemTemplate Context="item">
-						<MudTreeViewItem @bind-Expanded="@item.Expanded"
-										 Items="@item.Children"
-										 Value="@item.Value"
-										 Text="@item.Value?.Name"
-										 Icon="@GetIcon(item)" />
-					</ItemTemplate>
-				</MudTreeView>
+<MudContainer MaxWidth="MaxWidth.Medium">
+	<MudPaper>
+		<MudToolBar>
+			<MudStack Row="true" Spacing="6">
+				<MudText Typo="Typo.h5">Схема предприятия</MudText>
+				<MudFab Color="Color.Primary"
+						Size="Size.Small"
+						StartIcon="@(_expandedAll ? Icons.Material.Filled.VerticalAlignCenter : Icons.Material.Filled.Expand)"
+						OnClick="@(_expandedAll ? CollapseAll : ExpandAll)"
+						title="Свернуть все" />
 			</MudStack>
-			
-		</MudPaper>
-	
+		</MudToolBar>
+		<MudTreeView Items="_treeItems" T="Department" Dense="true">
+			<ItemTemplate Context="item">
+				<MudTreeViewItem Expanded="@item.Expanded"
+								 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
+								 Items="@item.Children"
+								 Value="@item.Value">
+					<Content>
+						<MudTreeViewItemToggleButton Expanded="@item.Expanded"
+													 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
+													 Visible="@item.HasChildren" />
+						<MudIcon Icon="@GetIcon(item)" Size="@(item.HasChildren? Size.Medium: Size.Small)" Class="mr-2" />
+						<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)">@item.Value?.Name</MudText>
+						<MudMenu Icon="@Icons.Material.Filled.MoreVert"
+								 Size="Size.Medium"
+								 AnchorOrigin="Origin.TopRight"
+								 TransformOrigin="Origin.TopLeft"
+								 Dense="true"
+								 AriaLabel="Open menu">
+							<MudMenuItem Label="Добавить Подразделение" Icon="@Icons.Material.Filled.CreateNewFolder" OnClick="() => NewDepartmentAsync(item.Value)" />
+							@if (item.Value is Department department && department.ParentId is not null)
+							{
+								<MudMenuItem Label="Изменить это Подразделение" Icon="@Icons.Material.Filled.Edit" OnClick="() => EditDepartmentAsync(item.Value)" />
+								<MudMenuItem Label="Удалить это Подразделение" Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteDepartmentAsync(item.Value)" />
+							}
+						</MudMenu>
+					</Content>
+				</MudTreeViewItem>
+			</ItemTemplate>
+		</MudTreeView>
+	</MudPaper>
 </MudContainer>
-
-@code {
-
-	private readonly CancellationTokenSource _cts = new();
-	private List<TreeItemData<Department>> _treeItems = new();
-	private bool _expandedAll;
-
-	protected override async Task OnInitializedAsync()
-	{
-		var departments = await Service.GetListAsync(_cts.Token);
-
-		_treeItems = TreeHelper.BuildTree(departments, null);
-	}
-
-	private void ExpandAll()
-	{
-		_treeItems.SetExpansion(true);
-		_expandedAll = true;
-	}
-	private void CollapseAll()
-	{
-		_treeItems.SetExpansion(false);
-		_expandedAll = false;
-	}
-
-	private string GetIcon(ITreeItemData<Department> item)
-	{
-		if (item.HasChildren)
-			return item.Expanded ? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder;
-
-		return Icons.Material.Filled.CorporateFare;
-	}
-}
