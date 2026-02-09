@@ -50,15 +50,19 @@ namespace XMS.Components.Pages.DepartmentPages
 
         private async Task BuildTreeAsync() => _treeItems = TreeHelper.BuildTree(_departments, null, _expandedDepartmentIds);
 
-        private void ExpandAll()
+        private async Task ExpandAll()
         {
             _treeItems.SetExpansion(true);
             _expandedAll = true;
+            _expandedDepartmentIds = _departments.Select(e => e.Id).ToHashSet();
+            await SessionStorage.SetAsync(nameof(_expandedDepartmentIds), _expandedDepartmentIds);
         }
-        private void CollapseAll()
+        private async Task CollapseAll()
         {
             _treeItems.SetExpansion(false);
             _expandedAll = false;
+            _expandedDepartmentIds = [];
+            await SessionStorage.SetAsync(nameof(_expandedDepartmentIds), _expandedDepartmentIds);
         }
 
         private static string GetIcon(ITreeItemData<Department> item)
@@ -197,7 +201,7 @@ namespace XMS.Components.Pages.DepartmentPages
             var result = await dialog.Result;
 
             return result is { Canceled: false };
-        }       
+        }
 
         public void Dispose()
         {
