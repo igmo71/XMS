@@ -4,8 +4,10 @@ using XMS.Modules.Employees.Domain;
 
 namespace XMS.Modules.Costs.Domain
 {
-    public class CostCategory : NamedEntity, ITreeNode<CostCategory>
+    public class CostCategory : BaseEntity, IHasName, ITreeNode<CostCategory>
     {
+        public string Name { get; set; } = string.Empty;
+
         public Guid? ParentId { get; set; }
 
         public CostCategory? Parent { get; set; }

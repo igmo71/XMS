@@ -2,10 +2,13 @@
 
 namespace XMS.Modules.Departments.Domain
 {
-    public class Department : NamedEntity, ITreeNode<Department>, ISoftDelete
+    public class Department : BaseEntity, IHasName, ITreeNode<Department>, ISoftDelete
     {
+        public string Name { get; set; } = string.Empty;
+
         public Guid? ParentId { get; set; }
         public Department? Parent { get; set; }
+
         public virtual ICollection<Department> Children { get; set; } = [];
 
         public bool IsDeleted { get; set; }

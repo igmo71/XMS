@@ -5,7 +5,8 @@ namespace XMS.Components.Common
 {
     public class TreeHelper
     {
-        public static List<TreeItemData<T>> BuildTree<T>(IEnumerable<T> allItems, Guid? parentId, HashSet<Guid>? _expandedIds = null) where T : NamedEntity, IHasParent<T>
+        public static List<TreeItemData<T>> BuildTree<T>(IEnumerable<T> allItems, Guid? parentId, HashSet<Guid>? _expandedIds = null) 
+            where T : IHasId<Guid>, IHasName, IHasParent<T>
         {
             var result = allItems
                 .Where(e => e.ParentId == parentId)

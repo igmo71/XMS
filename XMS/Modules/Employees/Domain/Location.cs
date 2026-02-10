@@ -2,7 +2,8 @@
 
 namespace XMS.Modules.Employees.Domain
 {
-    public class Location : NamedEntity
+    public class Location : BaseEntity, IHasName
     {
+        public string Name { get; set; } = string.Empty;
     }
 }

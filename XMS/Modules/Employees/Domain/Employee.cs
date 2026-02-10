@@ -3,8 +3,10 @@ using XMS.Modules.Departments.Domain;
 
 namespace XMS.Modules.Employees.Domain
 {
-    public class Employee : NamedEntity
+    public class Employee : BaseEntity, IHasName
     {
+        public string Name { get; set; } = string.Empty;
+
         public Guid? JobTitleId { get; set; }
         public JobTitle? JobTitle { get; set; }
 

@@ -3,7 +3,8 @@ using XMS.Core.Abstractions;
 
 namespace XMS.Modules.Employees.Domain
 {
-    public class JobTitle : NamedEntity
+    public class JobTitle : BaseEntity, IHasName
     {
+        public string Name { get; set; } = string.Empty;
     }
 }

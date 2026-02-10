@@ -2,8 +2,9 @@
 
 namespace XMS.Modules.Employees.Domain
 {
-    public class UserUt : NamedEntity
+    public class UserUt : BaseEntity, IHasName
     {
+        public string Name { get; set; } = string.Empty;
         public bool DeletionMark { get; set; }
     }
 }
