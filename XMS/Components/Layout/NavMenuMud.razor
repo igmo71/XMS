@@ -19,6 +19,10 @@
 			<MudNavLink Href="users-ut" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Diversity3">Пользователи УТ</MudNavLink>
 		</MudNavGroup>
 	</MudNavGroup>
+	<MudNavGroup Title="Админка" Icon="@Icons.Material.Filled.AdminPanelSettings" Expanded="false">
+		<MudNavLink Href="admin/users" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.PersonPin">Пользователи</MudNavLink>
+		<MudNavLink Href="admin/roles" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.SupervisedUserCircle">Роли</MudNavLink>
+	</MudNavGroup>
 
 	<MudNavLink Href="auth" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Lock">Auth Required</MudNavLink>
 	<AuthorizeView>

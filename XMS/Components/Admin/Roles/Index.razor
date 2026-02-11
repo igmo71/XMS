@@ -1,0 +1,110 @@
+﻿@page "/admin/roles"
+
+@using Microsoft.AspNetCore.Identity
+@using System.ComponentModel.DataAnnotations
+@using XMS.Components.Common
+@inject RoleManager<IdentityRole> RoleManager
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.Medium">
+	<MudDataGrid @ref="_roleGrid" T="IdentityRole"
+				 Items="_roles"
+				 ReadOnly="false"
+				 EditMode="DataGridEditMode.Form"
+				 EditTrigger="DataGridEditTrigger.Manual"
+				 CommittedItemChanges="@CommittedItemChanges"
+				 Bordered="true" Dense="false">
+		<ToolBarContent>
+			<MudText Typo="Typo.h5">Роли</MudText>
+			<MudSpacer />
+			<MudButtonGroup Class="ma-0 pa-0" Color="Color.Primary" Variant="Variant.Filled">
+				<MudButton OnClick="NewItemAsync" StartIcon="@Icons.Material.Filled.Add">
+					Добавить
+				</MudButton>
+			</MudButtonGroup>
+		</ToolBarContent>
+		<Columns>
+			<PropertyColumn Property="x => x.Name" Title="Роль" />
+			<TemplateColumn>
+				<CellTemplate >
+					<MudIconButton Size="@Size.Medium" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync" />
+					<MudIconButton Size="@Size.Medium" Icon="@Icons.Material.Outlined.Delete" OnClick="@(() => DeleteItem(context.Item))" />
+				</CellTemplate>
+			</TemplateColumn>
+		</Columns>
+	</MudDataGrid>
+</MudContainer>
+
+@code {
+	private List<IdentityRole> _roles = [];
+	private MudDataGrid<IdentityRole> _roleGrid = default!;
+
+	protected override void OnInitialized()
+	{
+		LoadData();
+	}
+
+	private void LoadData()
+	{
+		_roles = RoleManager.Roles.OrderBy(expression => expression.Name).ToList();
+	}
+
+	private async Task NewItemAsync()
+	{
+		var role = new IdentityRole();
+
+		await _roleGrid.SetEditingItemAsync(role);
+	}
+
+	private async Task CommittedItemChanges(IdentityRole role)
+	{
+		IdentityResult result;
+
+		if (_roles.Any(e => e.Id == role.Id))
+			result = await RoleManager.UpdateAsync(role);
+		else
+			result = await RoleManager.CreateAsync(role);
+
+		if (result.Succeeded)
+			Snackbar.Add($"'{role.Name}' успешно", Severity.Success);
+		else
+			Snackbar.Add($"'{role.Name}' не удалось: {string.Join(", ", result.Errors.Select(error => error.Description))}", Severity.Error);
+
+		LoadData();
+	}
+
+	private async Task DeleteItem(IdentityRole role)
+	{
+		if (await ConfirmDeleteItemAsync(role))
+		{
+			var result = await RoleManager.DeleteAsync(role);
+
+			if (result.Succeeded)
+				Snackbar.Add($"'{role.Name}' удалено", Severity.Success);
+			else
+				Snackbar.Add($"'{role.Name}' удалить не удалось: {string.Join(", ", result.Errors.Select(error => error.Description))}", Severity.Error);
+		}
+	}
+
+	private async Task<bool> ConfirmDeleteItemAsync(IdentityRole role)
+	{
+		var title = "Удалить Роль";
+
+		var parameters = new DialogParameters<ConfirmDialog>
+		{
+			{ x => x.TitleIcon, Icons.Material.Filled.DeleteForever },
+			{ x => x.ContentText, $"Вы уверены, что хотите удалить роль '{role.Name}' навсегда?" },
+			{ x => x.ButtonText, "Да, Удалить" },
+			{ x => x.ConfirmColor, Color.Error }
+		};
+
+		var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+		var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
+
+		var result = await dialog.Result;
+
+		return result is { Canceled: false };
+	}
+}
