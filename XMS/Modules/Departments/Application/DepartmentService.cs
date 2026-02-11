@@ -52,6 +52,22 @@ namespace XMS.Modules.Departments.Application
             return ServiceResult.Success();
         }
 
+        public async Task<ServiceResult> RestoreAsync(Guid id, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var existing = await dbContext.Departments.IgnoreQueryFilters().FirstOrDefaultAsync(e => e.Id == id, ct);
+
+            if (existing is null)
+                return ServiceError.NotFound.WithDescription($"Подразделение не найдено ({id})");
+
+            existing.IsDeleted = false;
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return ServiceResult.Success();
+        }
+
         public async Task<Department?> GetByIdAsync(Guid id, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
@@ -62,10 +78,23 @@ namespace XMS.Modules.Departments.Application
         public async Task<IReadOnlyList<Department>> GetListAsync(CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
+
             return await dbContext.Departments
-            .AsNoTracking()
-            .OrderBy(x => x.Name)
-            .ToListAsync(ct);
+                .AsNoTracking()
+                .OrderBy(x => x.Name)
+                .ToListAsync(ct);
+        }
+
+        public async Task<IReadOnlyList<Department>> GetListAsync(bool ignoreQueryFilters = false, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var query = dbContext.Departments.AsNoTracking();
+
+            if (ignoreQueryFilters)
+                query = query.IgnoreQueryFilters();
+
+            return await query.OrderBy(x => x.Name).ToListAsync(ct);
         }
     }
 }

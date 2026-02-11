@@ -11,6 +11,7 @@
 						StartIcon="@(_expandedAll ? Icons.Material.Filled.VerticalAlignCenter : Icons.Material.Filled.Expand)"
 						OnClick="@(_expandedAll ? CollapseAll : ExpandAll)"
 						title="Свернуть все" />
+				<MudSwitch T="bool" ValueChanged="ToggleQueryFilters" Color="Color.Primary">Показать удаленные</MudSwitch>
 			</MudStack>
 		</MudToolBar>
 		<MudTreeView Items="_treeItems" T="Department" Dense="true">
@@ -23,21 +24,33 @@
 						<MudTreeViewItemToggleButton Expanded="@item.Expanded"
 													 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
 													 Visible="@item.HasChildren" />
-						<MudIcon Icon="@GetIcon(item)" Size="@(item.HasChildren? Size.Medium: Size.Small)" Class="mr-2" />
-						<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)">@item.Value?.Name</MudText>
-						<MudMenu Icon="@Icons.Material.Filled.MoreVert"
-								 Size="Size.Medium"
-								 AnchorOrigin="Origin.TopRight"
-								 TransformOrigin="Origin.TopLeft"
-								 Dense="true"
-								 AriaLabel="Open menu">
-							<MudMenuItem Label="Добавить Подразделение" Icon="@Icons.Material.Filled.CreateNewFolder" OnClick="() => NewDepartmentAsync(item.Value)" />
-							@if (item.Value is Department department && department.ParentId is not null)
-							{
-								<MudMenuItem Label="Изменить это Подразделение" Icon="@Icons.Material.Filled.Edit" OnClick="() => EditDepartmentAsync(item.Value)" />
-								<MudMenuItem Label="Удалить это Подразделение" Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteDepartmentAsync(item.Value)" />
-							}
-						</MudMenu>
+						@if (item.Value?.IsDeleted == true)
+						{
+							<MudIcon Icon="@GetIcon(item)" Style="opacity: 0.6;" Size="@(item.HasChildren? Size.Medium: Size.Small)" Class="mr-2" />
+							<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)" Style="opacity: 0.6; text-decoration: line-through;">
+								@item.Value?.Name
+							</MudText>
+							<MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Medium"
+									 AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopLeft" Dense="true">
+								<MudMenuItem Label="Восстановить" Icon="@Icons.Material.Filled.Replay" OnClick="() => RestoreDepartmentAsync(item.Value)" />
+							</MudMenu>
+						}
+						else
+						{
+							<MudIcon Icon="@GetIcon(item)" Size="@(item.HasChildren? Size.Medium: Size.Small)" Class="mr-2" />
+							<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)">
+								@item.Value?.Name
+							</MudText>
+							<MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Medium"
+									 AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopLeft" Dense="true">
+								<MudMenuItem Label="Добавить " Icon="@Icons.Material.Filled.CreateNewFolder" OnClick="() => NewDepartmentAsync(item.Value)" />
+								@if (item.Value is Department department && department.ParentId is not null)
+								{
+									<MudMenuItem Label="Изменить" Icon="@Icons.Material.Filled.Edit" OnClick="() => EditDepartmentAsync(item.Value)" />
+									<MudMenuItem Label="Удалить" Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteDepartmentAsync(item.Value)" />
+								}
+							</MudMenu>
+						}
 					</Content>
 				</MudTreeViewItem>
 			</ItemTemplate>

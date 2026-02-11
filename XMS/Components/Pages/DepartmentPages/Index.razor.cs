@@ -21,6 +21,7 @@ namespace XMS.Components.Pages.DepartmentPages
         private bool _expandedAll;
         private HashSet<Guid> _expandedDepartmentIds = [];
         private bool _isProcessing;
+        private bool _ignoreQueryFilters;
 
         protected override async Task OnInitializedAsync()
         {
@@ -46,7 +47,7 @@ namespace XMS.Components.Pages.DepartmentPages
             await BuildTreeAsync();
         }
 
-        private async Task LoadDataAsync() => _departments = await Service.GetListAsync(_cts.Token);
+        private async Task LoadDataAsync() => _departments = await Service.GetListAsync(_ignoreQueryFilters, _cts.Token);
 
         private async Task BuildTreeAsync() => _treeItems = TreeHelper.BuildTree(_departments, null, _expandedDepartmentIds);
 
@@ -194,7 +195,61 @@ namespace XMS.Components.Pages.DepartmentPages
                 { x => x.ConfirmColor, Color.Error }
             };
 
-            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+
+            var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
+
+            var result = await dialog.Result;
+
+            return result is { Canceled: false };
+        }
+
+        private async Task RestoreDepartmentAsync(Department? value)
+        {
+            if (_isProcessing) return;
+
+            if (value is Department department)
+            {
+                if (await ConfirmRestoreItemAsync(department))
+                {
+                    try
+                    {
+                        _isProcessing = true;
+
+                        var result = await Service.RestoreAsync(department.Id);
+
+                        if (result.IsSuccess)
+                            Snackbar.Add($"Успешно восстановлено: {department.Name}", Severity.Success);
+                        else
+                            Snackbar.Add($"Ошибка при восстановлении {department.Name}: {result.Error.Description}", Severity.Error);
+                    }
+                    catch (Exception ex)
+                    {
+                        Snackbar.Add($"Ошибка при восстановлении {department.Name}: {ex.Message}", Severity.Error);
+                    }
+                    finally
+                    {
+                        _isProcessing = false;
+
+                        await LoadDataAndBuildTreeAsync();
+                    }
+                }
+            }
+        }
+
+        private async Task<bool> ConfirmRestoreItemAsync<T>(T item) where T : IHasName
+        {
+            var title = "Восстановить Подразделение";
+
+            var parameters = new DialogParameters<ConfirmDialog>
+            {
+                { x => x.TitleIcon, Icons.Material.Filled.DeleteForever },
+                { x => x.ContentText, $"Вы уверены, что хотите восстановить '{item.Name}'?" },
+                { x => x.ButtonText, "Да, восстановить" },
+                { x => x.ConfirmColor, Color.Warning }
+            };
+
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
 
             var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
 
@@ -207,6 +262,12 @@ namespace XMS.Components.Pages.DepartmentPages
         {
             _cts.Cancel();
             _cts.Dispose();
+        }
+		private async Task ToggleQueryFilters(bool args)
+		{
+			_ignoreQueryFilters = args;
+
+            await LoadDataAndBuildTreeAsync();
         }
     }
 }

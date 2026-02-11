@@ -198,7 +198,7 @@ namespace XMS.Components.Pages.CostPages
                 { x => x.Employees, _employees }
             };
 
-            var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+            var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
 
             var dialog = await DialogService.ShowAsync<CategoryDialog>(title, parameters, options);
 
@@ -310,7 +310,7 @@ namespace XMS.Components.Pages.CostPages
                 { x => x.ConfirmColor, Color.Error }
             };
 
-            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
 
             var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
 

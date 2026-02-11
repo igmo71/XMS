@@ -31,6 +31,11 @@ namespace XMS.Data
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
+            ApplyQueryFilter(modelBuilder);
+        }
+
+        private static void ApplyQueryFilter(ModelBuilder modelBuilder)
+        {
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 if (typeof(ISoftDeletable).IsAssignableFrom(entityType.ClrType))
