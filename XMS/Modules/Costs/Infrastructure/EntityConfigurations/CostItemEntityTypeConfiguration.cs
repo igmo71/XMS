@@ -4,11 +4,13 @@ using CostItem = XMS.Modules.Costs.Domain.CostItem;
 
 namespace XMS.Modules.Costs.Infrastructure.EntityConfigurations
 {
-    public class CostItemEntityTypeConfiguration : BaseNamedEntityTypeConfiguration<CostItem>
+    public class CostItemEntityTypeConfiguration : BaseEntityTypeConfiguration<CostItem>
     {
         public override void Configure(EntityTypeBuilder<CostItem> builder)
-        {
+        {            
             base.Configure(builder);
+         
+            builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
 
             //builder
             //    .HasMany(e => e.Categories)

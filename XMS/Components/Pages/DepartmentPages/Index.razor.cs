@@ -92,7 +92,7 @@ namespace XMS.Components.Pages.DepartmentPages
         private async Task NewDepartmentAsync(Department? value)
         {
             if (value is Department parent)
-                await CreareOrUpdateDepartment(new Department
+                await CreateOrUpdateDepartment(new Department
                 {
                     ParentId = parent.Id
                 });
@@ -101,10 +101,10 @@ namespace XMS.Components.Pages.DepartmentPages
         private async Task EditDepartmentAsync(object? value)
         {
             if (value is Department department)
-                await CreareOrUpdateDepartment(department);
+                await CreateOrUpdateDepartment(department);
         }
 
-        private async Task CreareOrUpdateDepartment(Department department)
+        private async Task CreateOrUpdateDepartment(Department department)
         {
             var result = await ProcessDepartmentDialog(department);
 
@@ -161,22 +161,22 @@ namespace XMS.Components.Pages.DepartmentPages
                     {
                         _isProcessing = true;
 
-                        await Service.DeleteAsync(department.Id);
+                        var result = await Service.DeleteAsync(department.Id);
 
-                        await LoadDataAndBuildTreeAsync();
-
-                        Snackbar.Add($"Успешно удалено: {department.Name}", Severity.Success);
+                        if (result.IsSuccess)
+                            Snackbar.Add($"Успешно удалено: {department.Name}", Severity.Success);
+                        else
+                            Snackbar.Add($"Ошибка при удалении {department.Name}: {result.Error.Description}", Severity.Error);
                     }
                     catch (Exception ex)
                     {
-                        if (ex.Message.Contains("SAME TABLE REFERENCE"))
-                            Snackbar.Add($"Ошибка при удалении {department.Name}: Подразделение содержит вложенные подразделения", Severity.Error);
-                        else
-                            Snackbar.Add($"Ошибка при удалении {department.Name}: {ex.Message}", Severity.Error);
+                        Snackbar.Add($"Ошибка при удалении {department.Name}: {ex.Message}", Severity.Error);
                     }
                     finally
                     {
                         _isProcessing = false;
+
+                        await LoadDataAndBuildTreeAsync();
                     }
                 }
             }

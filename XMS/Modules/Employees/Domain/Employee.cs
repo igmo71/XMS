@@ -3,9 +3,13 @@ using XMS.Modules.Departments.Domain;
 
 namespace XMS.Modules.Employees.Domain
 {
-    public class Employee : BaseEntity, IHasName
+    public class Employee : BaseEntity, IHasName, ISoftDeletable
     {
         public string Name { get; set; } = string.Empty;
+
+        public bool IsDeleted { get; set; }
+        public DateTimeOffset? DeletedAt { get; set; }
+        public Guid? DeletedBy { get; set; }
 
         public Guid? JobTitleId { get; set; }
         public JobTitle? JobTitle { get; set; }

@@ -146,7 +146,7 @@ namespace XMS.Components.Pages.CostPages
         private async Task NewCategoryAsync(object? value)
         {
             if (value is CostCategory parent)
-                await CreareOrUpdateCategory(new CostCategory
+                await CreateOrUpdateCategory(new CostCategory
                 {
                     ParentId = parent.Id
                 });
@@ -155,10 +155,10 @@ namespace XMS.Components.Pages.CostPages
         private async Task EditCategoryAsync(object? value)
         {
             if (value is CostCategory category)
-                await CreareOrUpdateCategory(category);
+                await CreateOrUpdateCategory(category);
         }
 
-        private async Task CreareOrUpdateCategory(CostCategory category)
+        private async Task CreateOrUpdateCategory(CostCategory category)
         {
             var result = await ProcessCategoryDialog(category);
 
@@ -217,22 +217,22 @@ namespace XMS.Components.Pages.CostPages
                     {
                         _isProcessing = true;
 
-                        await CategoryService.DeleteAsync(category.Id);
+                        var result = await CategoryService.DeleteAsync(category.Id);
 
-                        await LoadDataAndBuildTreeAsync();
-
-                        Snackbar.Add($"Успешно удалено: {category.Name}", Severity.Success);
+                        if (result.IsSuccess)
+                            Snackbar.Add($"Успешно удалено: {category.Name}", Severity.Success);
+                        else
+                            Snackbar.Add($"Ошибка при удалении {category.Name}: {result.Error.Description}", Severity.Error);
                     }
                     catch (Exception ex)
                     {
-                        if (ex.Message.Contains("SAME TABLE REFERENCE"))
-                            Snackbar.Add($"Ошибка при удалении {category.Name}: Категория содержит вложенные категории", Severity.Error);
-                        else
-                            Snackbar.Add($"Ошибка при удалении {category.Name}: {ex.Message}", Severity.Error);
+                        Snackbar.Add($"Ошибка при удалении {category.Name}: {ex.Message}", Severity.Error);
                     }
                     finally
                     {
                         _isProcessing = false;
+
+                        await LoadDataAndBuildTreeAsync();
                     }
                 }
             }
@@ -276,11 +276,12 @@ namespace XMS.Components.Pages.CostPages
                 {
                     _isProcessing = true;
 
-                    await ItemService.DeleteAsync(item.Id);
+                    var result = await ItemService.DeleteAsync(item.Id);
 
-                    await LoadDataAndBuildTreeAsync();
-
-                    Snackbar.Add($"Успешно удалено: {item.Name}", Severity.Success);
+                    if (result.IsSuccess)
+                        Snackbar.Add($"Успешно удалено: {item.Name}", Severity.Success);
+                    else
+                        Snackbar.Add($"Ошибка при удалении {item.Name}: {result.Error.Description}", Severity.Error);
                 }
                 catch (Exception ex)
                 {
@@ -289,6 +290,8 @@ namespace XMS.Components.Pages.CostPages
                 finally
                 {
                     _isProcessing = false;
+
+                    await LoadDataAndBuildTreeAsync();
                 }
             }
         }

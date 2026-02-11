@@ -2,7 +2,7 @@
 
 namespace XMS.Modules.Departments.Domain
 {
-    public class Department : BaseEntity, IHasName, ITreeNode<Department>, ISoftDelete
+    public class Department : BaseEntity, IHasName, ITreeNode<Department>, ISoftDeletable
     {
         public string Name { get; set; } = string.Empty;
 

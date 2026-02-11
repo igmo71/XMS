@@ -1,9 +1,9 @@
 ﻿namespace XMS.Core.Abstractions
 {
-    public interface ISoftDelete
+    public interface ISoftDeletable
     {
         bool IsDeleted { get; set; }
         DateTimeOffset? DeletedAt { get; set; }
-        public Guid? DeletedBy { get; set; }
+        Guid? DeletedBy { get; set; }
     }
 }

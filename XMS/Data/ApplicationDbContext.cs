@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using XMS.Core.Abstractions;
 using XMS.Modules.Costs.Domain;
 using XMS.Modules.Departments.Domain;
 using XMS.Modules.Employees.Domain;
@@ -23,11 +25,30 @@ namespace XMS.Data
         public DbSet<CostItem> CostItems { get; set; }
         public DbSet<CostCategoryItem> CostCategoryItems { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
 
-            builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                if (typeof(ISoftDeletable).IsAssignableFrom(entityType.ClrType))
+                {
+                    modelBuilder.Entity(entityType.ClrType).HasQueryFilter(ConvertFilterExpression(entityType.ClrType));
+                }
+            }
+        }
+
+        private static LambdaExpression? ConvertFilterExpression(Type type)
+        {
+            var parameter = Expression.Parameter(type, "e");
+            var property = Expression.Property(parameter, nameof(ISoftDeletable.IsDeleted));
+            var falseConstant = Expression.Constant(false);
+            var comparison = Expression.Equal(property, falseConstant);
+
+            var result = Expression.Lambda(comparison, parameter);
+            return result;
         }
     }
 }

@@ -2,8 +2,12 @@
 
 namespace XMS.Modules.Employees.Domain
 {
-    public class City : BaseEntity, IHasName
+    public class City : BaseEntity, IHasName, ISoftDeletable
     {
         public string Name { get; set; } = string.Empty;
+
+        public bool IsDeleted { get; set; }
+        public DateTimeOffset? DeletedAt { get; set; }
+        public Guid? DeletedBy { get; set; }
     }
 }

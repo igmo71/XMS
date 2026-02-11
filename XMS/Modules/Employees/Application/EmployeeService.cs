@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using XMS.Core;
 using XMS.Data;
 using XMS.Modules.Employees.Abstractions;
 using XMS.Modules.Employees.Domain;
@@ -10,7 +11,9 @@ namespace XMS.Modules.Employees.Application
         public async Task CreateAsync(Employee item, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
+
             dbContext.Employees.Add(item);
+
             await dbContext.SaveChangesAsync(ct);
         }
 
@@ -26,23 +29,35 @@ namespace XMS.Modules.Employees.Application
             await dbContext.SaveChangesAsync(ct);
         }
 
-        public async Task DeleteAsync(Guid id, CancellationToken ct = default)
+        public async Task<ServiceResult> DeleteAsync(Guid id, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
-            await dbContext.Employees
-                .Where(x => x.Id == id)
-                .ExecuteDeleteAsync(ct);
+
+            var existing = await dbContext.Employees.FindAsync([id], cancellationToken: ct);
+
+            if (existing is null)
+                return ServiceError.NotFound.WithDescription($"Сотрудник не найден ({id})");
+
+            existing.IsDeleted = true;
+            existing.DeletedAt = DateTime.UtcNow;
+            //existing.DeletedBy = 
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return ServiceResult.Success();
         }
 
         public async Task<Employee?> GetByIdAsync(Guid id, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
+
             return await dbContext.Employees.FindAsync([id], ct);
         }
 
         public async Task<IReadOnlyList<Employee>> GetListAsync(CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
+
             return await dbContext.Employees
             .AsNoTracking()
             .Include(e => e.City)

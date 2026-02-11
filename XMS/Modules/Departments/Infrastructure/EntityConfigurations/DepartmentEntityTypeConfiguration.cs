@@ -5,12 +5,13 @@ using XMS.Modules.Departments.Domain;
 
 namespace XMS.Modules.Departments.Infrastructure.EntityConfigurations
 {
-    public class DepartmentEntityTypeConfiguration : BaseNamedEntityTypeConfiguration<Department>
+    public class DepartmentEntityTypeConfiguration : BaseEntityTypeConfiguration<Department>
     {
         public override void Configure(EntityTypeBuilder<Department> builder)
         {
             base.Configure(builder);
 
+            builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
             builder.HasOne(x => x.Parent).WithMany(x => x.Children).HasForeignKey(x => x.ParentId).OnDelete(DeleteBehavior.Restrict);
         }
     }

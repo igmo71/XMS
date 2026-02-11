@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using XMS.Core;
 using XMS.Data;
 using XMS.Modules.Costs.Abstractions;
 using XMS.Modules.Costs.Domain;
@@ -14,12 +15,22 @@ namespace XMS.Modules.Costs.Application
             await dbContext.SaveChangesAsync(ct);
         }
 
-        public async Task DeleteAsync(Guid id, CancellationToken ct = default)
+        public async Task<ServiceResult> DeleteAsync(Guid id, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
-            await dbContext.CostItems
-                .Where(x => x.Id == id)
-                .ExecuteDeleteAsync(ct);
+
+            var existing = await dbContext.CostItems.FindAsync([id], cancellationToken: ct);
+
+            if (existing is null)
+                return ServiceError.NotFound.WithDescription($"Категория Затрат не найдена ({id})");
+
+            existing.IsDeleted = true;
+            existing.DeletedAt = DateTime.UtcNow;
+            //existing.DeletedBy = 
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return ServiceResult.Success();
         }
 
         public async Task<CostItem?> GetByIdAsync(Guid id, CancellationToken ct = default)

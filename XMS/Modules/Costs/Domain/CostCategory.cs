@@ -4,15 +4,17 @@ using XMS.Modules.Employees.Domain;
 
 namespace XMS.Modules.Costs.Domain
 {
-    public class CostCategory : BaseEntity, IHasName, ITreeNode<CostCategory>
+    public class CostCategory : BaseEntity, IHasName, ITreeNode<CostCategory>, ISoftDeletable
     {
         public string Name { get; set; } = string.Empty;
 
         public Guid? ParentId { get; set; }
-
         public CostCategory? Parent { get; set; }
-
         public ICollection<CostCategory> Children { get; set; } = [];
+
+        public bool IsDeleted { get; set; }
+        public DateTimeOffset? DeletedAt { get; set; }
+        public Guid? DeletedBy { get; set; }
 
         public ICollection<CostItem>? Items { get; set; } = [];
 

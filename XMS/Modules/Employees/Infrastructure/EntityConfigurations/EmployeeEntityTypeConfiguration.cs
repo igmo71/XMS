@@ -5,11 +5,13 @@ using XMS.Modules.Employees.Domain;
 
 namespace XMS.Modules.Employees.Infrastructure.EntityConfigurations
 {
-    public class EmployeeEntityTypeConfiguration : BaseNamedEntityTypeConfiguration<Employee>
+    public class EmployeeEntityTypeConfiguration : BaseEntityTypeConfiguration<Employee>
     {
         public override void Configure(EntityTypeBuilder<Employee> builder)
         {
             base.Configure(builder);
+
+            builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
 
             builder.HasOne(x => x.JobTitle).WithMany().HasForeignKey(x => x.JobTitleId).OnDelete(DeleteBehavior.SetNull);
             builder.HasOne(x => x.Department).WithMany().HasForeignKey(x => x.DepartmentId).OnDelete(DeleteBehavior.SetNull); 

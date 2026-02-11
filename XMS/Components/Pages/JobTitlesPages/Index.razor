@@ -10,7 +10,7 @@
 <MudContainer MaxWidth="MaxWidth.Medium">
 	<MudPaper>
 		<MudDataGrid @ref="_itemGrid"
-					 T="JobTitle" 
+					 T="JobTitle"
 					 Items="@_items"
 					 Loading="@_isLoading"
 					 EditMode="DataGridEditMode.Form"
@@ -120,11 +120,12 @@
 			{
 				_isProcessing = true;
 
-				await Service.DeleteAsync(item.Id);
+				var result = await Service.DeleteAsync(item.Id);
 
-				await LoadDataAsync();
-
-				Snackbar.Add($"Успешно удалено: {item.Name}", Severity.Success);
+				if (result.IsSuccess)
+					Snackbar.Add($"Успешно удалено: {item.Name}", Severity.Success);
+				else
+					Snackbar.Add($"Ошибка при удалении {item.Name}: {result.Error.Description}", Severity.Error);
 			}
 			catch (Exception ex)
 			{
@@ -133,6 +134,8 @@
 			finally
 			{
 				_isProcessing = false;
+
+				await LoadDataAsync();
 			}
 		}
 	}

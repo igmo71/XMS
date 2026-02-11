@@ -74,9 +74,15 @@ namespace XMS
                 })
                 .AddIdentityCookies();
 
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            builder.Services.AddPooledDbContextFactory<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
+
+            builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddDbContextFactory<ApplicationDbContext>((sp, options) =>
+            {
+                var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+                options.UseSqlServer(connectionString);
+            });
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddIdentityCore<ApplicationUser>(options =>
@@ -89,6 +95,7 @@ namespace XMS
                 .AddDefaultTokenProviders();
 
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+
 
             builder.Services.AddIntegrationSServices(builder.Configuration);
 

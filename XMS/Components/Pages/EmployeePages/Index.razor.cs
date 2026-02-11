@@ -117,11 +117,12 @@ namespace XMS.Components.Pages.EmployeePages
                 {
                     _isProcessing = true;
 
-                    await EmployeeService.DeleteAsync(item.Id);
+                    var result = await EmployeeService.DeleteAsync(item.Id);
 
-                    await LoadEmployees();
-
-                    Snackbar.Add($"Успешно удалено: {item.Name}", Severity.Success);
+                    if (result.IsSuccess)
+                        Snackbar.Add($"Успешно удалено: {item.Name}", Severity.Success);
+                    else
+                        Snackbar.Add($"Ошибка при удалении {item.Name}: {result.Error.Description}", Severity.Error);
                 }
                 catch (Exception ex)
                 {
@@ -130,6 +131,8 @@ namespace XMS.Components.Pages.EmployeePages
                 finally
                 {
                     _isProcessing = false;
+
+                    await LoadEmployees();
                 }
             }
 
