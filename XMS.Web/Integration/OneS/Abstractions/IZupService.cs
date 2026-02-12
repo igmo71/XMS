@@ -1,0 +1,9 @@
+﻿using XMS.Web.Integration.OneS.Zup.Domain;
+
+namespace XMS.Web.Integration.OneS.Abstractions
+{
+    public interface IZupService
+    {
+        Task<Catalog_Сотрудники[]> GetCatalog_Сотрудники(CancellationToken ct = default);
+    }
+}

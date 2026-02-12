@@ -1,0 +1,124 @@
+﻿@page "/emploees-zup"
+@using Microsoft.AspNetCore.Authorization
+@using XMS.Web.Modules.Employees.Abstractions
+@using XMS.Web.Modules.Employees.Domain
+@inject IEmployeeZupService Service
+@inject ISnackbar Snackbar
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.Large">
+	<MudPaper>
+		<MudDataGrid Items="@_items"
+					 Loading="@_isLoading"
+					 FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+					 Filterable="true"
+					 Dense="true">
+			<ToolBarContent>
+				<MudText Typo="Typo.h5">Сотрудники 1С ЗУП</MudText>
+				<MudSpacer />
+				<MudSpacer />
+				<MudButton OnClick="ReloadDataFromOneSAsync" Color="Color.Primary" Variant="Variant.Filled">
+					@if (_isReloading)
+					{
+						<MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" Color="Color.Inherit" />
+						<MudText Class="ms-2">Синхронизация...</MudText>
+					}
+					else
+					{
+						<MudIcon Icon="@Icons.Material.Filled.Sync" Class="me-2" />
+						<MudText>Обновить из 1С</MudText>
+					}
+				</MudButton>
+				<MudSpacer />
+			</ToolBarContent>
+			<Columns>
+				<PropertyColumn Property="x => x.Id" />
+				<PropertyColumn Property="x => x.Name" Title="ФИО" />
+				<PropertyColumn Property="x => x.Code" Title="Code" />
+				<PropertyColumn Property="x => x.DeletionMark" Title="Пометка удаления">
+					<CellTemplate>
+						<MudChip T="string"
+								 Color="@(context.Item.DeletionMark ? Color.Error : Color.Success)"
+								 Size="Size.Small"
+								 Variant="Variant.Text">
+							@(context.Item.DeletionMark ? "Удален" : "Активен")
+						</MudChip>
+					</CellTemplate>
+				</PropertyColumn>
+				<PropertyColumn Property="x => x.Archived" Title="В архиве">
+					<CellTemplate>
+						<MudChip T="string"
+								 Color="@(context.Item.Archived ? Color.Error : Color.Success)"
+								 Size="Size.Small"
+								 Variant="Variant.Text">
+							@(context.Item.Archived ? "В архиве" : "Активен")
+						</MudChip>
+					</CellTemplate>
+				</PropertyColumn>
+			</Columns>
+			<LoadingContent>
+				<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
+					Загрузка из БД...
+				</MudAlert>
+			</LoadingContent>
+			<NoRecordsContent>
+				<MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center" Class="mx-3">
+					Пользователи не найдены. Нажмите "Обновить", чтобы загрузить данные.
+				</MudAlert>
+			</NoRecordsContent>
+			<PagerContent>
+				<MudDataGridPager T="EmployeeZup" />
+			</PagerContent>
+		</MudDataGrid>
+	</MudPaper>
+</MudContainer>
+
+@code {
+	private IEnumerable<EmployeeZup> _items = [];
+	private bool _isLoading;
+	private bool _isReloading;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadDataAsync();
+	}
+
+	private async Task LoadDataAsync()
+	{
+		if (_isLoading) return;
+
+		_isLoading = true;
+		try
+		{
+			_items = await Service.GetListAsync();
+		}
+		finally
+		{
+			_isLoading = false;
+		}
+	}
+
+	private async Task ReloadDataFromOneSAsync()
+	{
+		_isReloading = true;
+		try
+		{
+
+			Snackbar.Add("Начало синхронизации с 1С...", Severity.Info);
+
+			await Service.ReloadListAsync();
+
+			Snackbar.Add("Данные успешно синхронизированы с 1С", Severity.Success);
+
+			await LoadDataAsync();
+		}
+		catch (Exception ex)
+		{
+			Snackbar.Add($"Ошибка при обмене с 1С: {ex.Message}", Severity.Error);
+		}
+		finally
+		{
+			_isReloading = false;
+		}
+	}
+}

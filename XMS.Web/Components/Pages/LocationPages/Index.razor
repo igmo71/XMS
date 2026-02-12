@@ -1,0 +1,169 @@
+﻿@page "/locations"
+@using Microsoft.AspNetCore.Authorization
+@using XMS.Web.Components.Common
+@using XMS.Web.Modules.Employees.Abstractions
+@using XMS.Web.Modules.Employees.Domain
+@implements IDisposable
+@inject ILocationService Service
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.Medium">
+	<MudPaper>
+		<MudDataGrid @ref="_itemGrid"
+					 T="Location"
+					 Items="@_items"
+					 Loading="@_isLoading"
+					 EditMode="DataGridEditMode.Form"
+					 EditTrigger="DataGridEditTrigger.Manual"
+					 CommittedItemChanges="@CommittedItemChanges"
+					 ReadOnly="false"
+					 Bordered="true"
+					 Dense="true"
+					 Hover="true"
+					 Striped="true"
+					 Filterable="true">
+			<ToolBarContent>
+				<MudText Typo="Typo.h5">Локации</MudText>
+				<MudSpacer />
+				<MudButtonGroup Class="ma-0 pa-0" Color="Color.Primary" Variant="Variant.Filled">
+					<MudButton OnClick="NewItemAsync" StartIcon="@Icons.Material.Filled.Add">
+						Добавить
+					</MudButton>
+				</MudButtonGroup>
+			</ToolBarContent>
+			<Columns>
+				<MudBlazor.PropertyColumn Property="x => x.Name" Title="Наименование" />
+				<TemplateColumn CellClass="d-flex justify-between">
+					<CellTemplate>
+						<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@context.Actions.StartEditingItemAsync" />
+						<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Secondary" OnClick="@(() => DeleteItemAsync(context.Item))" />
+					</CellTemplate>
+				</TemplateColumn>
+			</Columns>
+			<LoadingContent>
+				<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
+					Загрузка из БД...
+				</MudAlert>
+			</LoadingContent>
+			<NoRecordsContent>
+				<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
+					Здесь пока ничего нет. Нажмите "Добавить", чтобы создать первый!
+				</MudAlert>
+			</NoRecordsContent>
+			<PagerContent>
+				<MudDataGridPager T="Location" />
+			</PagerContent>
+		</MudDataGrid>
+	</MudPaper>
+</MudContainer>
+
+@code {
+	private readonly CancellationTokenSource _cts = new();
+	private IReadOnlyList<Location> _items = [];
+	private MudDataGrid<Location> _itemGrid = default!;
+	private bool _isLoading;
+	private bool _isProcessing;
+
+	protected async override Task OnInitializedAsync()
+	{
+		await LoadDataAsync();
+	}
+
+	private async Task LoadDataAsync()
+	{
+		_isLoading = true;
+		try
+		{
+			_items = await Service.GetListAsync(_cts.Token);
+		}
+		finally
+		{
+			_isLoading = false;
+		}
+	}
+
+	private async Task NewItemAsync()
+	{
+		var item = new Location();
+
+		await _itemGrid.SetEditingItemAsync(item);
+	}
+
+	private async Task CommittedItemChanges(Location item)
+	{
+		try
+		{
+			if (!_items.Any(x => x.Id == item.Id))
+				await Service.CreateAsync(item);
+			else
+				await Service.UpdateAsync(item);
+
+			Snackbar.Add($"Успешно сохранено: {item.Name}", Severity.Success);
+
+			await LoadDataAsync();
+		}
+		catch (Exception ex)
+		{
+			Snackbar.Add($"Ошибка при сохранении {item.Name}: {ex.Message}", Severity.Error);
+		}
+	}
+
+	private async Task DeleteItemAsync(Location item)
+	{
+		if (_isProcessing) return;
+
+		if (await ConfirmDeleteItemAsync(item))
+		{
+			try
+			{
+				_isProcessing = true;
+
+				var result = await Service.DeleteAsync(item.Id);
+
+				if (result.IsSuccess)
+					Snackbar.Add($"Успешно удалено: {item.Name}", Severity.Success);
+				else
+					Snackbar.Add($"Ошибка при удалении {item.Name}: {result.Error.Description}", Severity.Error);
+			}
+			catch (Exception ex)
+			{
+				Snackbar.Add($"Ошибка при удалении {item.Name}: {ex.Message}", Severity.Error);
+			}
+			finally
+			{
+				_isProcessing = false;
+
+				await LoadDataAsync();
+			}
+		}
+	}
+
+	private async Task<bool> ConfirmDeleteItemAsync(Location item)
+	{
+		var title = "Удалить Локацию";
+
+		var parameters = new DialogParameters<ConfirmDialog>
+		{
+			{ x => x.TitleIcon, Icons.Material.Filled.DeleteForever },
+			{ x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}' навсегда?" },
+			{ x => x.ButtonText, "Да, удалить" },
+			{ x => x.ConfirmColor, Color.Error }
+		};
+
+		var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+		var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
+
+		var result = await dialog.Result;
+
+		return result is { Canceled: false };
+	}
+
+	public void Dispose()
+	{
+		_cts.Cancel();
+		_cts.Dispose();
+	}
+}

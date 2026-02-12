@@ -1,0 +1,67 @@
+﻿using Microsoft.EntityFrameworkCore;
+using XMS.Web.Core;
+using XMS.Web.Data;
+using XMS.Web.Modules.Employees.Abstractions;
+using XMS.Web.Modules.Employees.Domain;
+
+namespace XMS.Web.Modules.Employees.Application
+{
+    public class LocationService(IDbContextFactory<ApplicationDbContext> dbFactory) : ILocationService
+    {
+        public async Task CreateAsync(Location item, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            dbContext.Locations.Add(item);
+
+            await dbContext.SaveChangesAsync(ct);
+        }
+
+        public async Task UpdateAsync(Location item, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var existing = await dbContext.Locations.FindAsync([item.Id], ct)
+                ?? throw new KeyNotFoundException($"Location with ID {item.Id} not found");
+
+            dbContext.Entry(existing).CurrentValues.SetValues(item);
+
+            await dbContext.SaveChangesAsync(ct);
+        }
+
+        public async Task<ServiceResult> DeleteAsync(Guid id, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var existing = await dbContext.Locations.FindAsync([id], cancellationToken: ct);
+
+            if (existing is null)
+                return ServiceError.NotFound.WithDescription($"Локация не найдена ({id})");
+
+            existing.IsDeleted = true;
+            existing.DeletedAt = DateTime.UtcNow;
+            //existing.DeletedBy = 
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return ServiceResult.Success();
+        }
+
+        public async Task<Location?> GetByIdAsync(Guid id, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            return await dbContext.Locations.FindAsync([id], ct);
+        }
+
+        public async Task<IReadOnlyList<Location>> GetListAsync(CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            return await dbContext.Locations
+            .AsNoTracking()
+            .OrderBy(x => x.Name)
+            .ToListAsync(ct);
+        }
+    }
+}

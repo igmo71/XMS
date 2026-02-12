@@ -1,0 +1,118 @@
+﻿@page "/users-ad"
+@using Microsoft.AspNetCore.Authorization
+@using XMS.Web.Modules.Employees.Abstractions
+@using XMS.Web.Modules.Employees.Domain
+@inject IUserAdService Service
+@inject ISnackbar Snackbar
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+	<MudPaper>
+		<MudDataGrid Items="@_items"
+					 Loading="@_isLoading"
+					 FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+					 Filterable="true"
+					 Dense="true">
+			<ToolBarContent>
+				<MudText Typo="Typo.h5">Пользователи AD</MudText>
+				<MudSpacer />
+				<MudSpacer />
+				<MudButton OnClick="ReloadDataFromAdAsync" Color="Color.Primary" Variant="Variant.Filled">
+					@if (_isReloading)
+					{
+						<MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" Color="Color.Inherit" />
+						<MudText Class="ms-2">Синхронизация...</MudText>
+					}
+					else
+					{
+						<MudIcon Icon="@Icons.Material.Filled.Sync" Class="me-2" />
+						<MudText>Обновить из AD</MudText>
+					}
+				</MudButton>
+				<MudSpacer />
+			</ToolBarContent>
+			<Columns>
+				<PropertyColumn Property="x => x.Name" />
+				<PropertyColumn Property="x => x.Title" />
+				<PropertyColumn Property="x => x.Login" />
+				<PropertyColumn Property="x => x.Department" />
+				<PropertyColumn Property="x => x.Enabled">
+					<CellTemplate>
+						<MudChip T="string"
+								 Color="@(context.Item.Enabled ? Color.Success : Color.Error)"
+								 Size="Size.Small"
+								 Variant="Variant.Text">
+							@(context.Item.Enabled ? "Активен" : "Неактивен")
+						</MudChip>
+					</CellTemplate>
+				</PropertyColumn>
+				<PropertyColumn Property="x => x.DistinguishedName" />
+				<PropertyColumn Property="x => x.Manager" />
+				@* <PropertyColumn Property="x => x.Sid" /> *@
+			</Columns>
+			<LoadingContent>
+				<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
+					Загрузка из БД...
+				</MudAlert>
+			</LoadingContent>
+			<NoRecordsContent>
+				<MudAlert Severity="Severity.Warning" ContentAlignment="HorizontalAlignment.Center" Class="mx-3">
+					Пользователи не найдены. Нажмите "Обновить", чтобы загрузить данные.
+				</MudAlert>
+			</NoRecordsContent>
+			<PagerContent>
+				<MudDataGridPager T="UserAd" />
+			</PagerContent>
+		</MudDataGrid>
+	</MudPaper>
+</MudContainer>
+
+@code {
+	private IEnumerable<UserAd> _items = [];
+	private bool _isLoading;
+	private bool _isReloading;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadDataAsync();
+	}
+
+	private async Task LoadDataAsync()
+	{
+		if (_isLoading) return;
+
+		_isLoading = true;
+		try
+		{
+			_items = await Service.GetListAsync();
+		}
+		finally
+		{
+			_isLoading = false;
+		}
+	}
+
+	private async Task ReloadDataFromAdAsync()
+	{
+		_isReloading = true;
+		try
+		{
+
+			Snackbar.Add("Начало синхронизации с AD...", Severity.Info);
+
+			await Service.ReloadListAsync();
+
+			Snackbar.Add("Данные успешно синхронизированы с AD", Severity.Success);
+
+			await LoadDataAsync();
+		}
+		catch (Exception ex)
+		{
+			Snackbar.Add($"Ошибка при обмене с AD: {ex.Message}", Severity.Error);
+		}
+		finally
+		{
+			_isReloading = false;
+		}
+	}
+}

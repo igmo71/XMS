@@ -1,0 +1,12 @@
+﻿using XMS.Web.Core.Abstractions;
+
+namespace XMS.Web.Modules.Employees.Domain
+{
+    public class EmployeeBuh : BaseEntity, IHasName
+    {
+        public string Name { get; set; } = string.Empty;
+        public bool DeletionMark { get; set; }
+        public string? Code { get; set; }
+        public bool Archived { get; set; }
+    }
+}
