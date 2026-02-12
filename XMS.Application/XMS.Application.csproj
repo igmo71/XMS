@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\XMS.Domain\XMS.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

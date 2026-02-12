@@ -37,4 +37,9 @@
     <Folder Include="Core\Extensions\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\XMS.Application\XMS.Application.csproj" />
+    <ProjectReference Include="..\XMS.Infrastructure\XMS.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
