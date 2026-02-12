@@ -1,5 +1,7 @@
 ﻿@page "/costitems"
+@using Microsoft.AspNetCore.Authorization
 @using XMS.Modules.Costs.Domain
+@attribute [Authorize]
 
 <MudContainer MaxWidth="MaxWidth.Large">
 	<MudStack Row="true">

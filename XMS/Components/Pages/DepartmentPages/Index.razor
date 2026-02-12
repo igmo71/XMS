@@ -1,5 +1,8 @@
 ﻿@page "/departments"
+@using Microsoft.AspNetCore.Authorization
 @using XMS.Modules.Departments.Domain
+@attribute [Authorize]
+
 
 <MudContainer MaxWidth="MaxWidth.Medium">
 	<MudPaper>

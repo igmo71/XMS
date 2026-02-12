@@ -1,6 +1,8 @@
 ﻿@page "/employees"
 @using System.Globalization
+@using Microsoft.AspNetCore.Authorization
 @using XMS.Modules.Employees.Domain
+@attribute [Authorize]
 
 <PageTitle>Сотрудники</PageTitle>
 

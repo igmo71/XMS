@@ -96,12 +96,25 @@ namespace XMS
                 .AddSignInManager()
                 .AddDefaultTokenProviders();
 
+            builder.Services.Configure<IdentityOptions>(options =>
+            {
+                // Default Password settings.
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 6;
+                options.Password.RequiredUniqueChars = 1;
+            });
+
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 
-            builder.Services.AddIntegrationSServices(builder.Configuration);
+            builder.Services.AddIntegrationServices(builder.Configuration);
 
             builder.Services.AddModules(builder.Configuration);
+
+            builder.Services.AddScoped<AuthService>();
 
             var app = builder.Build();
 

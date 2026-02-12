@@ -6,8 +6,15 @@
 
 <PageTitle>Auth</PageTitle>
 
-<h1>You are authenticated</h1>
-
-<AuthorizeView>
-    Hello @context.User.Identity?.Name!
-</AuthorizeView>
+<MudContainer MaxWidth="MaxWidth.Medium">
+	<h1>You are authenticated</h1>
+	<AuthorizeView>
+		Hello @context.User.Identity?.Name!
+	</AuthorizeView>
+	<AuthorizeView Roles="Manager">
+		<div>You are a manager</div>
+	</AuthorizeView>
+	<AuthorizeView Roles="Admin">
+		<div>You are an admin</div>
+	</AuthorizeView>
+</MudContainer>

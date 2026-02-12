@@ -1,5 +1,5 @@
 ﻿@page "/admin/users"
-
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using XMS.Components.Common
 @using XMS.Data
@@ -7,16 +7,17 @@
 @inject RoleManager<IdentityRole> RoleManager
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
+@attribute [Authorize(Roles = "Admin")]
 
 
-<MudContainer MaxWidth="MaxWidth.Medium">
+<MudContainer MaxWidth="MaxWidth.Large">
 	<MudDataGrid T="ApplicationUser"
 				 Items="_users"
 				 ReadOnly="false"
 				 EditMode="DataGridEditMode.Form"
 				 EditTrigger="DataGridEditTrigger.Manual"
 				 CommittedItemChanges="@CommittedItemChanges"
-				 Bordered="true" Dense="false">
+				 Bordered="true" Dense="true">
 		<ToolBarContent>
 			<MudText Typo="Typo.h5">Пользователи</MudText>
 		</ToolBarContent>
@@ -47,6 +48,15 @@
 						}
 					</MudSelect>
 				</EditTemplate>
+			</TemplateColumn>
+			<TemplateColumn Title="Битрикс">
+				<CellTemplate>
+					<MudStack Row=true Spacing="2">
+						<MudText>@context.Item.LastName</MudText>
+						<MudText>@context.Item.FirstName</MudText>
+						<MudText>@context.Item.MiddleName</MudText>
+					</MudStack>
+				</CellTemplate>
 			</TemplateColumn>
 			<TemplateColumn CellClass="d-flex justify-between">
 				<CellTemplate>

@@ -1,11 +1,13 @@
 ﻿@page "/admin/roles"
 
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using System.ComponentModel.DataAnnotations
 @using XMS.Components.Common
 @inject RoleManager<IdentityRole> RoleManager
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
+@attribute [Authorize(Roles = "Admin")]
 
 <MudContainer MaxWidth="MaxWidth.Medium">
 	<MudDataGrid @ref="_roleGrid" T="IdentityRole"
@@ -14,7 +16,7 @@
 				 EditMode="DataGridEditMode.Form"
 				 EditTrigger="DataGridEditTrigger.Manual"
 				 CommittedItemChanges="@CommittedItemChanges"
-				 Bordered="true" Dense="false">
+				 Bordered="true" Dense="true">
 		<ToolBarContent>
 			<MudText Typo="Typo.h5">Роли</MudText>
 			<MudSpacer />

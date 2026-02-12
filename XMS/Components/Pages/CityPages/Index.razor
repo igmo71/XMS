@@ -1,4 +1,5 @@
 ﻿@page "/cities"
+@using Microsoft.AspNetCore.Authorization
 @using XMS.Components.Common
 @using XMS.Modules.Employees.Abstractions
 @using XMS.Modules.Employees.Domain
@@ -6,6 +7,7 @@
 @inject ICityService Service
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
+@attribute [Authorize]
 
 <MudContainer MaxWidth="MaxWidth.Medium">
 	<MudPaper>

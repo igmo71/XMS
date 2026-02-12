@@ -1,9 +1,10 @@
 ﻿@page "/emploees-zup"
+@using Microsoft.AspNetCore.Authorization
 @using XMS.Modules.Employees.Abstractions
 @using XMS.Modules.Employees.Domain
-
 @inject IEmployeeZupService Service
 @inject ISnackbar Snackbar
+@attribute [Authorize]
 
 <MudContainer MaxWidth="MaxWidth.Large">
 	<MudPaper>
