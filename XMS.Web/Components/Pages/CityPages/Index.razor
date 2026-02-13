@@ -83,6 +83,8 @@
 		finally
 		{
 			_isLoading = false;
+			
+			StateHasChanged();
 		}
 	}
 
@@ -105,7 +107,7 @@
 			Snackbar.Add($"Успешно сохранено: {item.Name}", Severity.Success);
 
 			await LoadDataAsync();
-			
+						
 			return DataGridEditFormAction.Close;
 		}
 		catch (Exception ex)

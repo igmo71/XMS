@@ -25,36 +25,23 @@ namespace XMS.Web.Components.Account
         }
 
         public async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure = false)
-        {
-            SignInResult signInResult = await signInManager.PasswordSignInAsync(userName, password, isPersistent, lockoutOnFailure: false);
-
-            if (signInResult.Succeeded)
-                return signInResult;
-
+        {           
             var bitrixUser = await bitrixService.GetUserAsync(userName, password);
 
-            if (bitrixUser is null)
-                return SignInResult.Failed;
-            else if (string.IsNullOrEmpty(bitrixUser.EMAIL))
-                bitrixUser.EMAIL = $"{userName}@bitrix";
+            if (bitrixUser?.LOGIN is null)
+                return SignInResult.Failed;  
 
-            var appUser = await userManager.FindByEmailAsync(bitrixUser.EMAIL);
+            var appUser = await userManager.FindByNameAsync(bitrixUser.LOGIN);
 
             if (appUser is null)
             {
                 appUser = await RegisterBitrixUserAsync(bitrixUser, password);
             }
-            else if (string.IsNullOrEmpty(appUser.BitrixId)) // already an existing registered user
-            {
-                logger.LogError("{Source} Attempt to log in as a Bitrix user when there is already an existing registered user {appUser}",
-                    nameof(PasswordSignInAsync), appUser.UserName);
-                return SignInResult.Failed;
-            }
 
             if (appUser?.UserName is null)
                 return SignInResult.Failed;
 
-            signInResult = await signInManager.PasswordSignInAsync(appUser.UserName, password, isPersistent, lockoutOnFailure);
+            var signInResult = await signInManager.PasswordSignInAsync(appUser.UserName, password, isPersistent, lockoutOnFailure);
 
             return signInResult;
         }
@@ -68,7 +55,7 @@ namespace XMS.Web.Components.Account
             user.LastName = bitrixUser.LAST_NAME;
             user.BitrixId = bitrixUser.ID;
 
-            await userStore.SetUserNameAsync(user, bitrixUser.EMAIL, CancellationToken.None);
+            await userStore.SetUserNameAsync(user, bitrixUser.LOGIN, CancellationToken.None);
 
             var emailStore = GetEmailStore();
 
@@ -80,7 +67,7 @@ namespace XMS.Web.Components.Account
             {
                 logger.LogError("{Source} {Operation} {@Errors}",
                     nameof(RegisterBitrixUserAsync), nameof(userManager.CreateAsync), result.Errors);
-                //throw new InvalidOperationException("Failed to create a user");
+
                 return null;
             }
 

@@ -7,7 +7,7 @@
 @inject RoleManager<IdentityRole> RoleManager
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
-@attribute [Authorize(Roles = "Admin")]
+@* @attribute [Authorize(Roles = "Admin")]*@
 
 <MudContainer MaxWidth="MaxWidth.Medium">
 	<MudDataGrid @ref="_roleGrid" T="IdentityRole"
@@ -29,7 +29,7 @@
 		<Columns>
 			<PropertyColumn Property="x => x.Name" Title="Роль" />
 			<TemplateColumn>
-				<CellTemplate >
+				<CellTemplate>
 					<MudIconButton Size="@Size.Medium" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync" />
 					<MudIconButton Size="@Size.Medium" Icon="@Icons.Material.Outlined.Delete" OnClick="@(() => DeleteItem(context.Item))" />
 				</CellTemplate>

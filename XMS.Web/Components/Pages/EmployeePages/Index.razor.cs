@@ -65,6 +65,8 @@ namespace XMS.Web.Components.Pages.EmployeePages
             finally
             {
                 _isLoading = false;
+
+                StateHasChanged();
             }
         }
 

@@ -69,6 +69,8 @@ namespace XMS.Web.Components.Pages.CostPages
             finally
             {
                 _isLoading = false;
+
+                StateHasChanged();
             }
         }
 

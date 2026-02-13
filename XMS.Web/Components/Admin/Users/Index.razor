@@ -7,7 +7,7 @@
 @inject RoleManager<IdentityRole> RoleManager
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
-@attribute [Authorize(Roles = "Admin")]
+@* @attribute [Authorize(Roles = "Admin")] *@
 
 
 <MudContainer MaxWidth="MaxWidth.Large">
@@ -22,8 +22,8 @@
 			<MudText Typo="Typo.h5">Пользователи</MudText>
 		</ToolBarContent>
 		<Columns>
-			<PropertyColumn Property="x => x.UserName" Editable="false" />
-			<TemplateColumn Title="Roles">
+			<PropertyColumn Property="x => x.UserName" Editable="false" Title="Логин" />
+			<TemplateColumn Title="Роли">
 				<CellTemplate>
 					@if (_userRoles.ContainsKey(context.Item.Id))
 						foreach (var role in _userRoles[context.Item.Id].Order())
@@ -49,7 +49,7 @@
 					</MudSelect>
 				</EditTemplate>
 			</TemplateColumn>
-			<TemplateColumn Title="Битрикс">
+			<TemplateColumn Title="ФИО">
 				<CellTemplate>
 					<MudStack Row=true Spacing="2">
 						<MudText>@context.Item.LastName</MudText>
@@ -94,18 +94,27 @@
 
 	private async Task<DataGridEditFormAction> CommittedItemChanges(ApplicationUser user)
 	{
+
+		var userToUpdate = await UserManager.FindByIdAsync(user.Id);
+
+		if (userToUpdate == null)
+		{
+			Snackbar.Add("Пользователь не найден", Severity.Error);
+			return DataGridEditFormAction.Close;
+		}
+
 		var existingRoles = await UserManager.GetRolesAsync(user);
 
 		var rolesToAdd = _userRoles[user.Id].Where(e => !existingRoles.Contains(e));
 
-		var result = await UserManager.AddToRolesAsync(user, rolesToAdd);
+		var result = await UserManager.AddToRolesAsync(userToUpdate, rolesToAdd);
 
 		if (!result.Succeeded)
 			Snackbar.Add($"Добавить '{user.UserName}' в роли не удалось: {string.Join(", ", result.Errors.Select(error => error.Description))}", Severity.Error);
 
 		var rolesToRemove = existingRoles.Where(e => !_userRoles[user.Id].Contains(e));
 
-		result = await UserManager.RemoveFromRolesAsync(user, rolesToRemove);
+		result = await UserManager.RemoveFromRolesAsync(userToUpdate, rolesToRemove);
 				
 		if (!result.Succeeded)
 			Snackbar.Add($"Удалить '{user.UserName}' из ролей не удалось: {string.Join(", ", result.Errors.Select(error => error.Description))}", Severity.Error);

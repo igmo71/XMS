@@ -5,6 +5,7 @@ using XMS.Application.Abstractions.Services;
 using XMS.Domain.Abstractions;
 using XMS.Domain.Models;
 using XMS.Web.Components.Common;
+using static MudBlazor.CategoryTypes;
 
 namespace XMS.Web.Components.Pages.DepartmentPages
 {
@@ -20,6 +21,7 @@ namespace XMS.Web.Components.Pages.DepartmentPages
         private List<TreeItemData<Department>> _treeItems = [];
         private bool _expandedAll;
         private HashSet<Guid> _expandedDepartmentIds = [];
+        private bool _isLoading;
         private bool _isProcessing;
         private bool _ignoreQueryFilters;
 
@@ -47,7 +49,22 @@ namespace XMS.Web.Components.Pages.DepartmentPages
             await BuildTreeAsync();
         }
 
-        private async Task LoadDataAsync() => _departments = await Service.GetListAsync(_ignoreQueryFilters, _cts.Token);
+        private async Task LoadDataAsync()
+        {
+            if (_isLoading) return;
+
+            _isLoading = true;
+            try
+            {
+                _departments = await Service.GetListAsync(_ignoreQueryFilters, _cts.Token);
+            }
+            finally
+            {
+                _isLoading = false;
+
+                StateHasChanged();
+            }
+        }
 
         private async Task BuildTreeAsync() => _treeItems = TreeHelper.BuildTree(_departments, null, _expandedDepartmentIds);
 
