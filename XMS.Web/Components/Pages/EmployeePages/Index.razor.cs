@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using XMS.Application.Abstractions.Services;
+using XMS.Domain.Models;
 using XMS.Web.Components.Common;
-using XMS.Web.Modules.Departments.Abstractions;
-using XMS.Web.Modules.Departments.Domain;
-using XMS.Web.Modules.Employees.Abstractions;
-using XMS.Web.Modules.Employees.Domain;
 
 namespace XMS.Web.Components.Pages.EmployeePages
 {
-    public partial class Index
+    public partial class Index : IDisposable
     {
         [Inject] public IEmployeeService EmployeeService { get; set; } = default!;
         [Inject] public IJobTitleService JobTitleService { get; set; } = default!;
@@ -22,6 +20,7 @@ namespace XMS.Web.Components.Pages.EmployeePages
         [Inject] public IDialogService DialogService { get; set; } = default!;
         [Inject] public ISnackbar Snackbar { get; set; } = default!;
 
+        private readonly CancellationTokenSource _cts = new();
         private IReadOnlyList<Employee> _employees = [];
         private IReadOnlyList<JobTitle> _jobTitles = [];
         private IReadOnlyList<City> _cities = [];
@@ -69,41 +68,45 @@ namespace XMS.Web.Components.Pages.EmployeePages
             }
         }
 
-        private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync();
-        private async Task LoadJobTitles() => _jobTitles = await JobTitleService.GetListAsync();
+        private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync(_cts.Token);
+        private async Task LoadJobTitles() => _jobTitles = await JobTitleService.GetListAsync(_cts.Token);
         private async Task LoadDepartments()
         {
-            var list = await DepartmentService.GetListAsync();
+            var list = await DepartmentService.GetListAsync(_cts.Token);
             _departments = TreeHelper.BuildFlattenedTree(list);
         }
-        private async Task LoadCities() => _cities = await CityService.GetListAsync();
-        private async Task LoadLocations() => _locations = await LocationService.GetListAsync();
-        private async Task LoadUsersUt() => _usersUt = await UserUtService.GetListAsync();
-        private async Task LoadUsersAd() => _usersAd = await UserAdService.GetListAsync();
-        private async Task LoadEmploeesBuh() => _employeesBuh = await EmployeeBuhService.GetListAsync();
-        private async Task LoadEmploeesZup() => _employeesZup = await EmployeeZupService.GetListAsync();
+        private async Task LoadCities() => _cities = await CityService.GetListAsync(_cts.Token);
+        private async Task LoadLocations() => _locations = await LocationService.GetListAsync(_cts.Token);
+        private async Task LoadUsersUt() => _usersUt = await UserUtService.GetListAsync(_cts.Token);
+        private async Task LoadUsersAd() => _usersAd = await UserAdService.GetListAsync(_cts.Token);
+        private async Task LoadEmploeesBuh() => _employeesBuh = await EmployeeBuhService.GetListAsync(_cts.Token);
+        private async Task LoadEmploeesZup() => _employeesZup = await EmployeeZupService.GetListAsync(_cts.Token);
 
         private async Task NewItemAsync()
         {
             await _employeeGrid.SetEditingItemAsync(new Employee());
         }
 
-        private async Task CommittedItemChanges(Employee item)
+        private async Task<DataGridEditFormAction> CommittedItemChanges(Employee item)
         {
             try
             {
                 if (_employees?.Any(x => x.Id == item.Id) == false)
-                    await EmployeeService.CreateAsync(item);
+                    await EmployeeService.CreateAsync(item, _cts.Token);
                 else
-                    await EmployeeService.UpdateAsync(item);
+                    await EmployeeService.UpdateAsync(item, _cts.Token);
 
                 Snackbar.Add($"Успешно сохранено: {item.Name}", Severity.Success);
 
                 await LoadEmployees();
+
+                return DataGridEditFormAction.Close;
             }
             catch (Exception ex)
             {
                 Snackbar.Add($"Ошибка при сохранении {item.Name}: {ex.Message}", Severity.Error);
+
+                return DataGridEditFormAction.KeepOpen;
             }
         }
 
@@ -117,7 +120,7 @@ namespace XMS.Web.Components.Pages.EmployeePages
                 {
                     _isProcessing = true;
 
-                    var result = await EmployeeService.DeleteAsync(item.Id);
+                    var result = await EmployeeService.DeleteAsync(item.Id, _cts.Token);
 
                     if (result.IsSuccess)
                         Snackbar.Add($"Успешно удалено: {item.Name}", Severity.Success);
@@ -272,6 +275,13 @@ namespace XMS.Web.Components.Pages.EmployeePages
         private string? GetEmployeeName(Guid? id)
         {
             return _employees.FirstOrDefault(e => e.Id == id)?.Name;
+        }
+
+        public void Dispose()
+        {
+            _cts.Cancel();
+            _cts.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

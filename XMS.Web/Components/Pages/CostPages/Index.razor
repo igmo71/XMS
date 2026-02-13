@@ -1,6 +1,6 @@
 ﻿@page "/costitems"
 @using Microsoft.AspNetCore.Authorization
-@using XMS.Web.Modules.Costs.Domain
+@using XMS.Domain.Models
 @attribute [Authorize]
 
 <MudContainer MaxWidth="MaxWidth.Large">
@@ -61,7 +61,7 @@
 			<MudDataGrid @ref="_costItemGrid" Items="@_costItems" T="CostItem"
 						 ReadOnly="false"
 						 Filterable="true"
-						 CommittedItemChanges="@CommittedItemChanges"
+						 CommittedItemChanges="@((item) => CommittedItemChanges(item))"
 						 Bordered="true" Striped="true" Hover="true" Dense="true"
 						 Loading="@_isLoading"
 						 EditMode="DataGridEditMode.Form"

@@ -1,7 +1,8 @@
 ﻿@page "/users-ad"
 @using Microsoft.AspNetCore.Authorization
-@using XMS.Web.Modules.Employees.Abstractions
-@using XMS.Web.Modules.Employees.Domain
+@using XMS.Application.Abstractions.Services
+@using XMS.Domain.Models
+@implements IDisposable
 @inject IUserAdService Service
 @inject ISnackbar Snackbar
 @attribute [Authorize]
@@ -68,6 +69,7 @@
 </MudContainer>
 
 @code {
+	private readonly CancellationTokenSource _cts = new();
 	private IEnumerable<UserAd> _items = [];
 	private bool _isLoading;
 	private bool _isReloading;
@@ -84,7 +86,7 @@
 		_isLoading = true;
 		try
 		{
-			_items = await Service.GetListAsync();
+			_items = await Service.GetListAsync(_cts.Token);
 		}
 		finally
 		{
@@ -100,7 +102,7 @@
 
 			Snackbar.Add("Начало синхронизации с AD...", Severity.Info);
 
-			await Service.ReloadListAsync();
+			await Service.ReloadListAsync(_cts.Token);
 
 			Snackbar.Add("Данные успешно синхронизированы с AD", Severity.Success);
 
@@ -114,5 +116,12 @@
 		{
 			_isReloading = false;
 		}
+	}
+
+	public void Dispose()
+	{
+		_cts.Cancel();
+		_cts.Dispose();
+		GC.SuppressFinalize(this);
 	}
 }

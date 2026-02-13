@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
-using XMS.Web.Data;
-using XMS.Web.Integration.Bitrix.Application;
-using XMS.Web.Integration.Bitrix.Domain;
+using XMS.Domain.Models;
+using XMS.Infrastructure.Integration.Bitrix.Application;
+using XMS.Infrastructure.Integration.Bitrix.Domain;
 
 namespace XMS.Web.Components.Account
 {
@@ -33,7 +33,7 @@ namespace XMS.Web.Components.Account
 
             var bitrixUser = await bitrixService.GetUserAsync(userName, password);
 
-            if(bitrixUser is null)
+            if (bitrixUser is null)
                 return SignInResult.Failed;
             else if (string.IsNullOrEmpty(bitrixUser.EMAIL))
                 bitrixUser.EMAIL = $"{userName}@bitrix";
@@ -42,7 +42,7 @@ namespace XMS.Web.Components.Account
 
             if (appUser is null)
             {
-                appUser = await RegisterBitrixUserAsync(bitrixUser, password);                
+                appUser = await RegisterBitrixUserAsync(bitrixUser, password);
             }
             else if (string.IsNullOrEmpty(appUser.BitrixId)) // already an existing registered user
             {

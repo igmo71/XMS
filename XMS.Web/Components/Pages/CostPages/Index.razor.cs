@@ -2,14 +2,10 @@
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
+using XMS.Application.Abstractions.Services;
+using XMS.Domain.Abstractions;
+using XMS.Domain.Models;
 using XMS.Web.Components.Common;
-using XMS.Web.Core.Abstractions;
-using XMS.Web.Modules.Costs.Abstractions;
-using XMS.Web.Modules.Costs.Domain;
-using XMS.Web.Modules.Departments.Abstractions;
-using XMS.Web.Modules.Departments.Domain;
-using XMS.Web.Modules.Employees.Abstractions;
-using XMS.Web.Modules.Employees.Domain;
 
 namespace XMS.Web.Components.Pages.CostPages
 {
@@ -247,7 +243,7 @@ namespace XMS.Web.Components.Pages.CostPages
             await _costItemGrid.SetEditingItemAsync(item);
         }
 
-        private async Task CommittedItemChanges(CostItem item)
+        private async Task<DataGridEditFormAction> CommittedItemChanges(CostItem item)
         {
             try
             {
@@ -259,10 +255,14 @@ namespace XMS.Web.Components.Pages.CostPages
                 Snackbar.Add($"Успешно сохранено: {item.Name}", Severity.Success);
 
                 await LoadDataAndBuildTreeAsync();
+
+                return DataGridEditFormAction.Close;
             }
             catch (Exception ex)
             {
                 Snackbar.Add($"Ошибка при сохранении {item.Name}: {ex.Message}", Severity.Error);
+
+                return DataGridEditFormAction.KeepOpen;
             }
         }
 
@@ -323,6 +323,7 @@ namespace XMS.Web.Components.Pages.CostPages
         {
             _cts.Cancel();
             _cts.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

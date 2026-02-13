@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using MudBlazor;
+using XMS.Application.Abstractions.Services;
+using XMS.Domain.Abstractions;
+using XMS.Domain.Models;
 using XMS.Web.Components.Common;
-using XMS.Web.Core.Abstractions;
-using XMS.Web.Modules.Departments.Abstractions;
-using XMS.Web.Modules.Departments.Domain;
 
 namespace XMS.Web.Components.Pages.DepartmentPages
 {
@@ -258,16 +258,18 @@ namespace XMS.Web.Components.Pages.DepartmentPages
             return result is { Canceled: false };
         }
 
-        public void Dispose()
-        {
-            _cts.Cancel();
-            _cts.Dispose();
-        }
 		private async Task ToggleQueryFilters(bool args)
 		{
 			_ignoreQueryFilters = args;
 
             await LoadDataAndBuildTreeAsync();
+        }
+
+        public void Dispose()
+        {
+            _cts.Cancel();
+            _cts.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

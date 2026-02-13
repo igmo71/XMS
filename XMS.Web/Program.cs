@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using MudBlazor.Services;
 using MudBlazor.Translations;
 using OpenTelemetry.Exporter;
@@ -9,12 +7,13 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
 using System.Globalization;
+using XMS.Application;
+using XMS.Application.Common;
+using XMS.Domain.Models;
+using XMS.Infrastructure;
+using XMS.Infrastructure.Data;
 using XMS.Web.Components;
 using XMS.Web.Components.Account;
-using XMS.Web.Core;
-using XMS.Web.Data;
-using XMS.Web.Integration;
-using XMS.Web.Modules;
 
 namespace XMS.Web
 {
@@ -77,13 +76,7 @@ namespace XMS.Web
 
             builder.Services.AddHttpContextAccessor();
 
-            builder.Services.AddDbContextFactory<ApplicationDbContext>((sp, options) =>
-            {
-                var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-                    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-                options.UseSqlServer(connectionString);
-            });
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+            builder.Services.AddInfrastructure(builder.Configuration);
 
             builder.Services.AddIdentityCore<ApplicationUser>(options =>
                 {
@@ -105,14 +98,16 @@ namespace XMS.Web
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredLength = 6;
                 options.Password.RequiredUniqueChars = 1;
+                options.User.RequireUniqueEmail = true;
+                //options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.SignIn.RequireConfirmedAccount = false;
+                options.SignIn.RequireConfirmedEmail = false;
+
             });
 
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
-
-            builder.Services.AddIntegrationServices(builder.Configuration);
-
-            builder.Services.AddModules(builder.Configuration);
+            builder.Services.AddApplicationServices();
 
             builder.Services.AddScoped<AuthService>();
 

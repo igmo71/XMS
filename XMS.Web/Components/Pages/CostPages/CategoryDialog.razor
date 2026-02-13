@@ -1,7 +1,5 @@
-﻿@using XMS.Web.Components.Common
-@using XMS.Web.Modules.Costs.Domain
-@using XMS.Web.Modules.Departments.Domain
-@using XMS.Web.Modules.Employees.Domain
+﻿@using XMS.Domain.Models
+@using XMS.Web.Components.Common
 <MudDialog>
 	<TitleContent>
 		<MudStack Row="true">
@@ -92,7 +90,7 @@
 
 	private IEnumerable<CostCategory> _categoriesFlattenedTree = [];
 	private IEnumerable<Department> _departmentsFlattenedTree = [];
-	private IEnumerable<CostItem> _selectedItems = [];
+	private IReadOnlyCollection<CostItem> _selectedItems = [];
 
 	protected override void OnInitialized()
 	{

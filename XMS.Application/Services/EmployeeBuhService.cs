@@ -1,0 +1,58 @@
+﻿using Microsoft.EntityFrameworkCore;
+using XMS.Application.Abstractions;
+using XMS.Application.Abstractions.Integration;
+using XMS.Application.Abstractions.Services;
+using XMS.Domain.Models;
+
+namespace XMS.Application.Services
+{
+    public class EmployeeBuhService(IOneSBuhService oneSBuhService, IDbContextFactoryProxy dbFactory) : IEmployeeBuhService
+    {
+        public async Task<IReadOnlyList<EmployeeBuh>> GetListAsync(CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            return await dbContext.Set<EmployeeBuh>()
+                .AsNoTracking()
+                .OrderBy(x => x.Name)
+                .ToListAsync(ct);
+        }
+
+        public async Task<IReadOnlyList<EmployeeBuh>> LoadListAsync(CancellationToken ct = default)
+        {
+            return await oneSBuhService.GetEmployeeBuhListAsync(ct);
+        }
+
+        public async Task ReloadListAsync(CancellationToken ct = default)
+        {
+            var list = await LoadListAsync(ct);
+
+            await SaveListAsync(list, ct);
+        }
+
+        public async Task SaveListAsync(IReadOnlyList<EmployeeBuh> list, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var incomingIds = list.Select(x => x.Id).ToList();
+
+            var existingList = await dbContext.Set<EmployeeBuh>().Where(x => incomingIds.Contains(x.Id)).ToListAsync(ct);
+
+            var existingEntities = existingList.ToDictionary(x => x.Id);
+
+            foreach (var incoming in list)
+            {
+                if (existingEntities.TryGetValue(incoming.Id, out var existing))
+                {
+                    dbContext.UpdateValues(existing, incoming);
+                }
+                else
+                {
+                    dbContext.Set<EmployeeBuh>().Add(incoming);
+                }
+            }
+
+            await dbContext.SaveChangesAsync(ct);
+        }
+    }
+}

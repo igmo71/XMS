@@ -9,7 +9,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using XMS.Web.Components.Account.Pages;
 using XMS.Web.Components.Account.Pages.Manage;
-using XMS.Web.Data;
+using XMS.Domain.Models;
 
 namespace Microsoft.AspNetCore.Routing
 {

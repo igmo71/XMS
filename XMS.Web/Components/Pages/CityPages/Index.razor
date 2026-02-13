@@ -1,8 +1,8 @@
 ﻿@page "/cities"
 @using Microsoft.AspNetCore.Authorization
+@using XMS.Application.Abstractions.Services
+@using XMS.Domain.Models
 @using XMS.Web.Components.Common
-@using XMS.Web.Modules.Employees.Abstractions
-@using XMS.Web.Modules.Employees.Domain
 @implements IDisposable
 @inject ICityService Service
 @inject IDialogService DialogService
@@ -17,7 +17,7 @@
 					 Loading="@_isLoading"
 					 EditMode="DataGridEditMode.Form"
 					 EditTrigger="DataGridEditTrigger.Manual"
-					 CommittedItemChanges="@CommittedItemChanges"
+					 CommittedItemChanges="@((item) => CommittedItemChanges(item))"
 					 ReadOnly="false"
 					 Filterable="true"
 					 Bordered="true"
@@ -93,7 +93,7 @@
 		await _itemGrid.SetEditingItemAsync(item);
 	}
 
-	private async Task CommittedItemChanges(City item)
+	private async Task<DataGridEditFormAction> CommittedItemChanges(City item)
 	{
 		try
 		{
@@ -105,10 +105,14 @@
 			Snackbar.Add($"Успешно сохранено: {item.Name}", Severity.Success);
 
 			await LoadDataAsync();
+			
+			return DataGridEditFormAction.Close;
 		}
 		catch (Exception ex)
 		{
 			Snackbar.Add($"Ошибка при сохранении {item.Name}: {ex.Message}", Severity.Error);
+			
+			return DataGridEditFormAction.KeepOpen;
 		}
 	}
 
@@ -167,5 +171,6 @@
 	{
 		_cts.Cancel();
 		_cts.Dispose();
+		GC.SuppressFinalize(this);
 	}
 }

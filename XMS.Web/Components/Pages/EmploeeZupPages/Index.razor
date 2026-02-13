@@ -1,7 +1,8 @@
 ﻿@page "/emploees-zup"
 @using Microsoft.AspNetCore.Authorization
-@using XMS.Web.Modules.Employees.Abstractions
-@using XMS.Web.Modules.Employees.Domain
+@using XMS.Application.Abstractions.Services
+@using XMS.Domain.Models
+@implements IDisposable
 @inject IEmployeeZupService Service
 @inject ISnackbar Snackbar
 @attribute [Authorize]
@@ -74,6 +75,7 @@
 </MudContainer>
 
 @code {
+	private readonly CancellationTokenSource _cts = new();
 	private IEnumerable<EmployeeZup> _items = [];
 	private bool _isLoading;
 	private bool _isReloading;
@@ -90,7 +92,7 @@
 		_isLoading = true;
 		try
 		{
-			_items = await Service.GetListAsync();
+			_items = await Service.GetListAsync(_cts.Token);
 		}
 		finally
 		{
@@ -106,7 +108,7 @@
 
 			Snackbar.Add("Начало синхронизации с 1С...", Severity.Info);
 
-			await Service.ReloadListAsync();
+			await Service.ReloadListAsync(_cts.Token);
 
 			Snackbar.Add("Данные успешно синхронизированы с 1С", Severity.Success);
 
@@ -120,5 +122,13 @@
 		{
 			_isReloading = false;
 		}
+	}
+	
+
+	public void Dispose()
+	{
+		_cts.Cancel();
+		_cts.Dispose();
+		GC.SuppressFinalize(this);
 	}
 }

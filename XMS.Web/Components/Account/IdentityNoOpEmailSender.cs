@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using XMS.Web.Data;
+using XMS.Domain.Models;
 
 namespace XMS.Web.Components.Account
 {

@@ -1,8 +1,8 @@
 ﻿@page "/admin/users"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
+@using XMS.Domain.Models
 @using XMS.Web.Components.Common
-@using XMS.Web.Data
 @inject UserManager<ApplicationUser> UserManager
 @inject RoleManager<IdentityRole> RoleManager
 @inject IDialogService DialogService
@@ -16,7 +16,7 @@
 				 ReadOnly="false"
 				 EditMode="DataGridEditMode.Form"
 				 EditTrigger="DataGridEditTrigger.Manual"
-				 CommittedItemChanges="@CommittedItemChanges"
+				 CommittedItemChanges="@((item) => CommittedItemChanges(item))"
 				 Bordered="true" Dense="true">
 		<ToolBarContent>
 			<MudText Typo="Typo.h5">Пользователи</MudText>
@@ -71,7 +71,7 @@
 @code {
 	private List<ApplicationUser> _users = [];
 	private List<IdentityRole> _roles = [];
-	private Dictionary<string, IEnumerable<string>> _userRoles = [];
+	private Dictionary<string, IReadOnlyCollection<string>> _userRoles = [];
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -87,11 +87,12 @@
 
 		foreach (var user in _users)
 		{
-			_userRoles.Add(user.Id, await UserManager.GetRolesAsync(user));
+			var roles = await UserManager.GetRolesAsync(user);
+			_userRoles.Add(user.Id, roles.AsReadOnly());
 		}
 	}
 
-	private async Task CommittedItemChanges(ApplicationUser user)
+	private async Task<DataGridEditFormAction> CommittedItemChanges(ApplicationUser user)
 	{
 		var existingRoles = await UserManager.GetRolesAsync(user);
 
@@ -110,6 +111,8 @@
 			Snackbar.Add($"Удалить '{user.UserName}' из ролей не удалось: {string.Join(", ", result.Errors.Select(error => error.Description))}", Severity.Error);
 
 		await LoadData();
+
+		return DataGridEditFormAction.Close;
 	}
 
 	private async Task DeleteItem(ApplicationUser user)

@@ -1,5 +1,5 @@
 ﻿using MudBlazor;
-using XMS.Web.Core.Abstractions;
+using XMS.Domain.Abstractions;
 
 namespace XMS.Web.Components.Common
 {

@@ -15,7 +15,7 @@
 				 ReadOnly="false"
 				 EditMode="DataGridEditMode.Form"
 				 EditTrigger="DataGridEditTrigger.Manual"
-				 CommittedItemChanges="@CommittedItemChanges"
+				 CommittedItemChanges="@((item) => CommittedItemChanges(item))"
 				 Bordered="true" Dense="true">
 		<ToolBarContent>
 			<MudText Typo="Typo.h5">Роли</MudText>
@@ -59,7 +59,7 @@
 		await _roleGrid.SetEditingItemAsync(role);
 	}
 
-	private async Task CommittedItemChanges(IdentityRole role)
+	private async Task<DataGridEditFormAction> CommittedItemChanges(IdentityRole role)
 	{
 		IdentityResult result;
 
@@ -74,6 +74,8 @@
 			Snackbar.Add($"'{role.Name}' не удалось: {string.Join(", ", result.Errors.Select(error => error.Description))}", Severity.Error);
 
 		LoadData();
+
+		return DataGridEditFormAction.Close;
 	}
 
 	private async Task DeleteItem(IdentityRole role)

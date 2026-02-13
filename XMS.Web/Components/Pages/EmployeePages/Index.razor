@@ -1,7 +1,7 @@
 ﻿@page "/employees"
 @using System.Globalization
 @using Microsoft.AspNetCore.Authorization
-@using XMS.Web.Modules.Employees.Domain
+@using XMS.Domain.Models
 @attribute [Authorize]
 
 <PageTitle>Сотрудники</PageTitle>
@@ -11,7 +11,7 @@
 		<MudDataGrid @ref="_employeeGrid" T="Employee" Items="@_employees" Culture="@(new CultureInfo("ru-RU", false))"
 					 Loading="@_isLoading"
 					 ReadOnly="@(!_isEditingGrid)"
-					 CommittedItemChanges="@CommittedItemChanges"
+					 CommittedItemChanges="@((item) => CommittedItemChanges(item))"
 					 QuickFilter="QuickFilter"
 					 EditMode="DataGridEditMode.Form"
 					 EditTrigger="@DataGridEditTrigger.OnRowClick"
