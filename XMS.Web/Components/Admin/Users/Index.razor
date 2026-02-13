@@ -1,4 +1,5 @@
 ﻿@page "/admin/users"
+
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using XMS.Domain.Models
@@ -7,8 +8,7 @@
 @inject RoleManager<IdentityRole> RoleManager
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
-@* @attribute [Authorize(Roles = "Admin")] *@
-
+@attribute [Authorize(Roles = "Admin")]
 
 <MudContainer MaxWidth="MaxWidth.Large">
 	<MudDataGrid T="ApplicationUser"
