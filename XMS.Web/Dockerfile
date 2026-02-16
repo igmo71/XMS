@@ -12,19 +12,22 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["XMS/XMS.csproj", "XMS/"]
-RUN dotnet restore "./XMS/XMS.csproj"
+COPY ["XMS.Web/XMS.Web.csproj", "XMS.Web/"]
+COPY ["XMS.Application/XMS.Application.csproj", "XMS.Application/"]
+COPY ["XMS.Domain/XMS.Domain.csproj", "XMS.Domain/"]
+COPY ["XMS.Infrastructure/XMS.Infrastructure.csproj", "XMS.Infrastructure/"]
+RUN dotnet restore "./XMS.Web/XMS.Web.csproj"
 COPY . .
-WORKDIR "/src/XMS"
-RUN dotnet build "./XMS.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/XMS.Web"
+RUN dotnet build "./XMS.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./XMS.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./XMS.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "XMS.dll"]
+ENTRYPOINT ["dotnet", "XMS.Web.dll"]

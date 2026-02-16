@@ -74,11 +74,29 @@
 					</MudButton>
 				</ToolBarContent>
 				<Columns>
-					<PropertyColumn Property="x => x.Name" Title="Наименование" />
-					<TemplateColumn CellClass="d-flex justify-between">
+					<PropertyColumn Property="x => x.Name" Title="Наименование" Style="opacity: 0.6; text-decoration: line-through;">
 						<CellTemplate>
-							<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@context.Actions.StartEditingItemAsync" />
-							<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Secondary" OnClick="@(() => DeleteItemAsync(context.Item))" />
+							<MudText Style="@( context.Item.IsDeleted ? "opacity: 0.6; text-decoration: line-through;" : "")">@context.Item.Name</MudText>
+						</CellTemplate>
+					</PropertyColumn>
+					<PropertyColumn Property="x => x.IsDeleted" Title="Удален">
+						<CellTemplate>
+							<MudChip T="string" Color="@(context.Item.IsDeleted? Color.Error: Color.Success)" Size="Size.Small" Variant="Variant.Text">
+								@(context.Item.IsDeleted ? "Удален" : "Активен")
+							</MudChip>
+						</CellTemplate>
+					</PropertyColumn>
+					<TemplateColumn>
+						<CellTemplate>
+							<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@context.Actions.StartEditingItemAsync" title="Изменить" />
+							@if (context.Item.IsDeleted)
+							{
+								<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Filled.RestoreFromTrash" Color="Color.Info" OnClick="@(() => RestoreItemAsync(context.Item))" title="Восстановить" />
+							}
+							else
+							{
+								<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Secondary" OnClick="@(() => DeleteItemAsync(context.Item))" title="Удалить" />
+							}
 						</CellTemplate>
 					</TemplateColumn>
 				</Columns>

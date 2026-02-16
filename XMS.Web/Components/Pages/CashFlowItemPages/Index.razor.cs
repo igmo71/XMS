@@ -16,12 +16,11 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
         private readonly CancellationTokenSource _cts = new();
         private IReadOnlyList<CashFlowItem> _cashFlowItems = [];
         private List<TreeItemData<CashFlowItem>> _treeItems = [];
-        private bool _expandedAll;
         private HashSet<Guid> _expandedCashFlowItemIds = [];
+        private bool _expandedAll;
         private bool _isLoading;
-        //private bool _isProcessing;
-        private bool _ignoreQueryFilters;
         private bool _isReloading;
+        private bool _includeDeleted = false;
 
         protected override async Task OnInitializedAsync()
         {
@@ -35,7 +34,7 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
                 var result = await SessionStorage.GetAsync<HashSet<Guid>>(nameof(_expandedCashFlowItemIds));
                 _expandedCashFlowItemIds = result.Success ? (result.Value ?? []) : [];
                 _expandedAll = _expandedCashFlowItemIds.Count == _cashFlowItems.Count;
-                await BuildTreeAsync();
+                BuildTree();
                 StateHasChanged();
             }
         }
@@ -44,7 +43,7 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
         {
             await LoadDataAsync();
 
-            await BuildTreeAsync();
+            BuildTree();
         }
 
         private async Task LoadDataAsync()
@@ -54,7 +53,7 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
             _isLoading = true;
             try
             {
-                _cashFlowItems = await Service.GetListAsync(_ignoreQueryFilters, _cts.Token);
+                _cashFlowItems = await Service.GetListAsync(_includeDeleted, _cts.Token);
             }
             finally
             {
@@ -64,9 +63,14 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
             }
         }
 
-        private async Task BuildTreeAsync() => _treeItems = BuildTree(_cashFlowItems, Guid.Parse("00000000-0000-0000-0000-000000000000"), _expandedCashFlowItemIds);
+        private void BuildTree()
+        {
+            _treeItems = ExecuteBuildTree(_cashFlowItems, Guid.Parse("00000000-0000-0000-0000-000000000000"), _expandedCashFlowItemIds);
 
-        private static List<TreeItemData<CashFlowItem>> BuildTree(IEnumerable<CashFlowItem> allItems, Guid? parentId, HashSet<Guid>? _expandedIds = null)
+            StateHasChanged();
+        }
+
+        private static List<TreeItemData<CashFlowItem>> ExecuteBuildTree(IEnumerable<CashFlowItem> allItems, Guid? parentId, HashSet<Guid>? _expandedIds = null)
         {
             var list = allItems
                 .Where(e => e.ParentId == parentId).ToList();
@@ -76,7 +80,7 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
                 Value = e,
                 Text = e.Name,
                 Expanded = _expandedIds is not null && _expandedIds.Contains(e.Id),
-                Children = BuildTree(allItems, e.Id, _expandedIds)
+                Children = ExecuteBuildTree(allItems, e.Id, _expandedIds)
             })
             .ToList();
 
@@ -90,6 +94,7 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
             _expandedCashFlowItemIds = _cashFlowItems.Select(e => e.Id).ToHashSet();
             await SessionStorage.SetAsync(nameof(_expandedCashFlowItemIds), _expandedCashFlowItemIds);
         }
+
         private async Task CollapseAll()
         {
             _treeItems.SetExpansion(false);
@@ -98,9 +103,9 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
             await SessionStorage.SetAsync(nameof(_expandedCashFlowItemIds), _expandedCashFlowItemIds);
         }
 
-        private async Task ToggleQueryFilters(bool args)
+        private async Task ToggleIncludeDeleted(bool args)
         {
-            _ignoreQueryFilters = args;
+            _includeDeleted = args;
 
             await LoadDataAndBuildTreeAsync();
         }
@@ -126,7 +131,7 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
             if (item.HasChildren)
                 return item.Expanded ? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder;
 
-            return Icons.Material.Filled.Description; //Icons.Material.Filled.CurrencyRuble;
+            return Icons.Material.Filled.Description;
         }
 
         private async Task ReloadDataFromOneSAsync()
@@ -134,8 +139,7 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
             _isReloading = true;
             try
             {
-
-                Snackbar.Add("Начало синхронизации с 1С...", Severity.Info);
+                Snackbar.Add("Синхронизация с 1С...", Severity.Info);
 
                 await Service.ReloadListAsync(_cts.Token);
 

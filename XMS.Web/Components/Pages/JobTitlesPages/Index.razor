@@ -34,11 +34,29 @@
 				</MudButtonGroup>
 			</ToolBarContent>
 			<Columns>
-				<MudBlazor.PropertyColumn Property="x => x.Name" Title="Наименование" />
-				<TemplateColumn CellClass="d-flex justify-between">
+				<PropertyColumn Property="x => x.Name" Title="Наименование" Style="opacity: 0.6; text-decoration: line-through;">
 					<CellTemplate>
-						<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@context.Actions.StartEditingItemAsync" />
-						<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Secondary" OnClick="@(() => DeleteItemAsync(context.Item))" />
+						<MudText Style="@( context.Item.IsDeleted ? "opacity: 0.6; text-decoration: line-through;" : "")">@context.Item.Name</MudText>
+					</CellTemplate>
+				</PropertyColumn>
+				<PropertyColumn Property="x => x.IsDeleted" Title="Удален">
+					<CellTemplate>
+						<MudChip T="string" Color="@(context.Item.IsDeleted? Color.Error: Color.Success)" Size="Size.Small" Variant="Variant.Text">
+							@(context.Item.IsDeleted ? "Удален" : "Активен")
+						</MudChip>
+					</CellTemplate>
+				</PropertyColumn>
+				<TemplateColumn>
+					<CellTemplate>
+						<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@context.Actions.StartEditingItemAsync" title="Изменить" />
+						@if (context.Item.IsDeleted)
+						{
+							<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Filled.RestoreFromTrash" Color="Color.Info" OnClick="@(() => RestoreItemAsync(context.Item))" title="Восстановить" />
+						}
+						else
+						{
+							<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Secondary" OnClick="@(() => DeleteItemAsync(context.Item))" title="Удалить" />
+						}
 					</CellTemplate>
 				</TemplateColumn>
 			</Columns>
@@ -65,6 +83,7 @@
 	private MudDataGrid<JobTitle> _itemGrid = default!;
 	private bool _isLoading;
 	private bool _isProcessing;
+	private bool _includeDeleted = true;
 
 	protected async override Task OnInitializedAsync()
 	{
@@ -78,7 +97,7 @@
 		_isLoading = true;
 		try
 		{
-			_items = await Service.GetListAsync(_cts.Token);
+			_items = await Service.GetListAsync(_includeDeleted, _cts.Token);
 		}
 		finally
 		{
@@ -155,9 +174,60 @@
 		var parameters = new DialogParameters<ConfirmDialog>
 		{
 			{ x => x.TitleIcon, Icons.Material.Filled.DeleteForever },
-			{ x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}' навсегда?" },
+			{ x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}'?" },
 			{ x => x.ButtonText, "Да, удалить" },
 			{ x => x.ConfirmColor, Color.Error }
+		};
+
+		var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+		var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
+
+		var result = await dialog.Result;
+
+		return result is { Canceled: false };
+	}
+
+	private async Task RestoreItemAsync(JobTitle item)
+	{
+		if (_isProcessing) return;
+
+		if (await ConfirmRestoreItemAsync(item))
+		{
+			try
+			{
+				_isProcessing = true;
+
+				var result = await Service.RestoreAsync(item.Id);
+
+				if (result.IsSuccess)
+					Snackbar.Add($"Успешно восстановлено: {item.Name}", Severity.Success);
+				else
+					Snackbar.Add($"Ошибка при восстановлении {item.Name}: {result.Error.Description}", Severity.Error);
+			}
+			catch (Exception ex)
+			{
+				Snackbar.Add($"Ошибка при восстановлении {item.Name}: {ex.Message}", Severity.Error);
+			}
+			finally
+			{
+				_isProcessing = false;
+
+				await LoadDataAsync();
+			}
+		}
+	}
+
+	private async Task<bool> ConfirmRestoreItemAsync(JobTitle item)
+	{
+		var title = "Восстановить Должность";
+
+		var parameters = new DialogParameters<ConfirmDialog>
+		{
+			{ x => x.TitleIcon, Icons.Material.Filled.DeleteForever },
+			{ x => x.ContentText, $"Вы уверены, что хотите восстановить '{item.Name}'?" },
+			{ x => x.ButtonText, "Да, восстановить" },
+			{ x => x.ConfirmColor, Color.Info }
 		};
 
 		var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };

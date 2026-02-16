@@ -46,6 +46,22 @@ namespace XMS.Application.Services
             return ServiceResult.Success();
         }
 
+        public async Task<ServiceResult> RestoreAsync(Guid id, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var existing = await dbContext.Set<JobTitle>().FindAsync([id], cancellationToken: ct);
+
+            if (existing is null)
+                return ServiceError.NotFound.WithDescription($"Должность не найдена ({id})");
+
+            existing.IsDeleted = false;
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return ServiceResult.Success();
+        }
+
         public async Task<JobTitle?> GetByIdAsync(Guid id, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
@@ -53,14 +69,16 @@ namespace XMS.Application.Services
             return await dbContext.Set<JobTitle>().FindAsync([id], ct);
         }
 
-        public async Task<IReadOnlyList<JobTitle>> GetListAsync(CancellationToken ct = default)
+        public async Task<IReadOnlyList<JobTitle>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            return await dbContext.Set<JobTitle>()
-            .AsNoTracking()
-            .OrderBy(x => x.Name)
-            .ToListAsync(ct);
+            var query = dbContext.Set<JobTitle>().AsNoTracking();
+
+            if (!includeDeleted)
+                query = query.Where(x => !x.IsDeleted);
+
+            return await query.OrderBy(x => x.Name).ToListAsync(ct);
         }
     }
 }

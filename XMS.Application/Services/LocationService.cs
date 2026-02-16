@@ -46,6 +46,22 @@ namespace XMS.Application.Services
             return ServiceResult.Success();
         }
 
+        public async Task<ServiceResult> RestoreAsync(Guid id, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var existing = await dbContext.Set<Location>().FindAsync([id], cancellationToken: ct);
+
+            if (existing is null)
+                return ServiceError.NotFound.WithDescription($"Локация не найдена ({id})");
+
+            existing.IsDeleted = false;
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return ServiceResult.Success();
+        }
+
         public async Task<Location?> GetByIdAsync(Guid id, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
@@ -53,14 +69,16 @@ namespace XMS.Application.Services
             return await dbContext.Set<Location>().FindAsync([id], ct);
         }
 
-        public async Task<IReadOnlyList<Location>> GetListAsync(CancellationToken ct = default)
+        public async Task<IReadOnlyList<Location>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            return await dbContext.Set<Location>()
-            .AsNoTracking()
-            .OrderBy(x => x.Name)
-            .ToListAsync(ct);
+            var query = dbContext.Set<Location>().AsNoTracking();
+
+            if (!includeDeleted)
+                query = query.Where(x => !x.IsDeleted);
+
+            return await query.OrderBy(x => x.Name).ToListAsync(ct);
         }
     }
 }

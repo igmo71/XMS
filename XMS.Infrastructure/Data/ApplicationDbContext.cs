@@ -30,7 +30,7 @@ namespace XMS.Infrastructure.Data
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
-            ApplyQueryFilter(modelBuilder);
+            //ApplyQueryFilter(modelBuilder);
         }
 
         private static void ApplyQueryFilter(ModelBuilder modelBuilder)

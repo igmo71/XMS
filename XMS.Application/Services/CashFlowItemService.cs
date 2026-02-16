@@ -8,14 +8,14 @@ namespace XMS.Application.Services
 {
     internal class CashFlowItemService(IOneSUtService oneSUtService, IDbContextFactoryProxy dbFactory) : ICashFlowItemService
     {
-        public async Task<IReadOnlyList<CashFlowItem>> GetListAsync(bool ignoreQueryFilters = false, CancellationToken ct = default)
+        public async Task<IReadOnlyList<CashFlowItem>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
             var query = dbContext.Set<CashFlowItem>().AsNoTracking();
 
-            if (ignoreQueryFilters)
-                query = query.IgnoreQueryFilters();
+            if(!includeDeleted)
+                query = query.Where(e => !e.IsDeleted);
 
             return await query.OrderBy(x => x.Name).ToListAsync(ct);
         }
@@ -32,7 +32,7 @@ namespace XMS.Application.Services
             await SaveListAsync(list, ct);
         }
 
-        public async Task SaveListAsync(IReadOnlyList<CashFlowItem> list, CancellationToken ct = default)
+        private async Task SaveListAsync(IReadOnlyList<CashFlowItem> list, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 

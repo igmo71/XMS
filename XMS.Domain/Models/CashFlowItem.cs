@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using XMS.Domain.Abstractions;
+﻿using XMS.Domain.Abstractions;
 
 namespace XMS.Domain.Models
 {

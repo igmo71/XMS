@@ -23,7 +23,7 @@ namespace XMS.Web.Components.Pages.DepartmentPages
         private HashSet<Guid> _expandedDepartmentIds = [];
         private bool _isLoading;
         private bool _isProcessing;
-        private bool _ignoreQueryFilters;
+        private bool _includeDeleted = false;
 
         protected override async Task OnInitializedAsync()
         {
@@ -37,7 +37,7 @@ namespace XMS.Web.Components.Pages.DepartmentPages
                 var result = await SessionStorage.GetAsync<HashSet<Guid>>(nameof(_expandedDepartmentIds));
                 _expandedDepartmentIds = result.Success ? (result.Value ?? []) : [];
                 _expandedAll = _expandedDepartmentIds.Count == _departments.Count;
-                await BuildTreeAsync();
+                BuildTree();
                 StateHasChanged();
             }
         }
@@ -46,7 +46,7 @@ namespace XMS.Web.Components.Pages.DepartmentPages
         {
             await LoadDataAsync();
 
-            await BuildTreeAsync();
+            BuildTree();
         }
 
         private async Task LoadDataAsync()
@@ -56,7 +56,7 @@ namespace XMS.Web.Components.Pages.DepartmentPages
             _isLoading = true;
             try
             {
-                _departments = await Service.GetListAsync(_ignoreQueryFilters, _cts.Token);
+                _departments = await Service.GetListAsync(_includeDeleted, _cts.Token);
             }
             finally
             {
@@ -66,7 +66,10 @@ namespace XMS.Web.Components.Pages.DepartmentPages
             }
         }
 
-        private async Task BuildTreeAsync() => _treeItems = TreeHelper.BuildTree(_departments, null, _expandedDepartmentIds);
+        private void BuildTree()
+        {
+            _treeItems = TreeHelper.BuildTree(_departments, null, _expandedDepartmentIds);
+        }
 
         private async Task ExpandAll()
         {
@@ -275,9 +278,9 @@ namespace XMS.Web.Components.Pages.DepartmentPages
             return result is { Canceled: false };
         }
 
-		private async Task ToggleQueryFilters(bool args)
-		{
-			_ignoreQueryFilters = args;
+        private async Task ToggleIncludeDelete(bool args)
+        {
+            _includeDeleted = args;
 
             await LoadDataAndBuildTreeAsync();
         }

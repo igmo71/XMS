@@ -23,7 +23,7 @@ namespace XMS.Web.Components.Pages.EmployeePages
         private readonly CancellationTokenSource _cts = new();
         private IReadOnlyList<Employee> _employees = [];
         private IReadOnlyList<JobTitle> _jobTitles = [];
-        private IReadOnlyList<City> _cities = [];
+        private IEnumerable<City> _cities = [];
         private IReadOnlyList<Location> _locations = [];
         private IReadOnlyList<Department> _departments = [];
         private IReadOnlyList<UserUt> _usersUt = [];
@@ -37,6 +37,7 @@ namespace XMS.Web.Components.Pages.EmployeePages
         private bool _isLoading;
         private bool _isProcessing;
         private bool _isEditingGrid;
+        private bool _includeDeleted = true;
 
         protected override async Task OnInitializedAsync()
         {
@@ -70,19 +71,19 @@ namespace XMS.Web.Components.Pages.EmployeePages
             }
         }
 
-        private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync(_cts.Token);
-        private async Task LoadJobTitles() => _jobTitles = await JobTitleService.GetListAsync(_cts.Token);
+        private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync(_includeDeleted, _cts.Token);
+        private async Task LoadJobTitles() => _jobTitles = await JobTitleService.GetListAsync(false, _cts.Token);
         private async Task LoadDepartments()
         {
-            var list = await DepartmentService.GetListAsync(_cts.Token);
+            var list = await DepartmentService.GetListAsync(false, _cts.Token);
             _departments = TreeHelper.BuildFlattenedTree(list);
         }
-        private async Task LoadCities() => _cities = await CityService.GetListAsync(_cts.Token);
-        private async Task LoadLocations() => _locations = await LocationService.GetListAsync(_cts.Token);
-        private async Task LoadUsersUt() => _usersUt = await UserUtService.GetListAsync(_cts.Token);
+        private async Task LoadCities() => _cities = await CityService.GetListAsync(false, _cts.Token);
+        private async Task LoadLocations() => _locations = await LocationService.GetListAsync(false, _cts.Token);
+        private async Task LoadUsersUt() => _usersUt = await UserUtService.GetListAsync(false, _cts.Token);
         private async Task LoadUsersAd() => _usersAd = await UserAdService.GetListAsync(_cts.Token);
-        private async Task LoadEmploeesBuh() => _employeesBuh = await EmployeeBuhService.GetListAsync(_cts.Token);
-        private async Task LoadEmploeesZup() => _employeesZup = await EmployeeZupService.GetListAsync(_cts.Token);
+        private async Task LoadEmploeesBuh() => _employeesBuh = await EmployeeBuhService.GetListAsync(false, _cts.Token);
+        private async Task LoadEmploeesZup() => _employeesZup = await EmployeeZupService.GetListAsync(false, _cts.Token);
 
         private async Task NewItemAsync()
         {

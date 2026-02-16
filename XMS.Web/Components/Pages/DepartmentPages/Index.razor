@@ -14,7 +14,7 @@
 						StartIcon="@(_expandedAll ? Icons.Material.Filled.VerticalAlignCenter : Icons.Material.Filled.Expand)"
 						OnClick="@(_expandedAll ? CollapseAll : ExpandAll)"
 						title="Свернуть все" />
-				<MudSwitch T="bool" ValueChanged="ToggleQueryFilters" Color="Color.Primary">Показать удаленные</MudSwitch>
+				<MudSwitch T="bool" ValueChanged="ToggleIncludeDelete" Color="Color.Primary">Показать удаленные</MudSwitch>
 			</MudStack>
 		</MudToolBar>
 		<MudTreeView Items="_treeItems" T="Department" Dense="true">

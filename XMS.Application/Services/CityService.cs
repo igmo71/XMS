@@ -3,6 +3,7 @@ using XMS.Application.Abstractions;
 using XMS.Application.Abstractions.Services;
 using XMS.Application.Common;
 using XMS.Domain.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace XMS.Application.Services
 {
@@ -46,6 +47,22 @@ namespace XMS.Application.Services
             return ServiceResult.Success();
         }
 
+        public async Task<ServiceResult> RestoreAsync(Guid id, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var existing = await dbContext.Set<City>().FindAsync([id], cancellationToken: ct);
+
+            if (existing is null)
+                return ServiceError.NotFound.WithDescription($"Город не найден ({id})");
+
+            existing.IsDeleted = false;
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return ServiceResult.Success();
+        }
+
         public async Task<City?> GetByIdAsync(Guid id, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
@@ -53,14 +70,16 @@ namespace XMS.Application.Services
             return await dbContext.Set<City>().FindAsync([id], ct);
         }
 
-        public async Task<IReadOnlyList<City>> GetListAsync(CancellationToken ct = default)
+        public async Task<IReadOnlyList<City>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            return await dbContext.Set<City>()
-            .AsNoTracking()
-            .OrderBy(x => x.Name)
-            .ToListAsync(ct);
+            var query = dbContext.Set<City>().AsNoTracking();
+
+            if (!includeDeleted)
+                query = query.Where(e => !e.IsDeleted);
+
+            return await query.OrderBy(x => x.Name).ToListAsync(ct);
         }
     }
 }

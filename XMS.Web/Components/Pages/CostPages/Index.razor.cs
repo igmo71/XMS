@@ -30,6 +30,7 @@ namespace XMS.Web.Components.Pages.CostPages
         private bool _isLoading;
         private bool _isProcessing;
         private HashSet<Guid> _expandedCategoryIds = [];
+        private bool _includeDeleted = false;
 
         protected override async Task OnInitializedAsync()
         {
@@ -74,10 +75,10 @@ namespace XMS.Web.Components.Pages.CostPages
             }
         }
 
-        private async Task LoadCostCategories() => _costCategories = await CategoryService.GetListAsync(_cts.Token);
-        private async Task LoadCostItems() => _costItems = await ItemService.GetListAsync(_cts.Token);
-        private async Task LoadDepartments() => _departments = await DepartmentService.GetListAsync(_cts.Token);
-        private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync(_cts.Token);
+        private async Task LoadCostCategories() => _costCategories = await CategoryService.GetListAsync(_includeDeleted, _cts.Token);
+        private async Task LoadCostItems() => _costItems = await ItemService.GetListAsync(true, _cts.Token);
+        private async Task LoadDepartments() => _departments = await DepartmentService.GetListAsync(false, _cts.Token);
+        private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync(false, _cts.Token);
 
         private void BuildTree()
         {
@@ -298,21 +299,70 @@ namespace XMS.Web.Components.Pages.CostPages
             }
         }
 
-        ////
-
         private async Task<bool> ConfirmDeleteItemAsync<T>(T item) where T : IHasName
         {
-            var title = "Удалить Категорию Затрат";
+            var title = "Удалить";
 
             var parameters = new DialogParameters<ConfirmDialog>
             {
                 { x => x.TitleIcon, Icons.Material.Filled.DeleteForever },
-                { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}' навсегда?" },
+                { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}'?" },
                 { x => x.ButtonText, "Да, удалить" },
                 { x => x.ConfirmColor, Color.Error }
             };
 
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+
+            var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
+
+            var result = await dialog.Result;
+
+            return result is { Canceled: false };
+        }
+
+        private async Task RestoreItemAsync(CostItem item)
+        {
+            if (_isProcessing) return;
+
+            if (await ConfirmRestoreItemAsync(item))
+            {
+                try
+                {
+                    _isProcessing = true;
+
+                    var result = await ItemService.RestoreAsync(item.Id);
+
+                    if (result.IsSuccess)
+                        Snackbar.Add($"Успешно восстановлено: {item.Name}", Severity.Success);
+                    else
+                        Snackbar.Add($"Ошибка при восстановлении {item.Name}: {result.Error.Description}", Severity.Error);
+                }
+                catch (Exception ex)
+                {
+                    Snackbar.Add($"Ошибка при восстановлении {item.Name}: {ex.Message}", Severity.Error);
+                }
+                finally
+                {
+                    _isProcessing = false;
+
+                    await LoadDataAsync();
+                }
+            }
+        }
+
+        private async Task<bool> ConfirmRestoreItemAsync(CostItem item)
+        {
+            var title = "Восстановить Статью Затрат";
+
+            var parameters = new DialogParameters<ConfirmDialog>
+        {
+            { x => x.TitleIcon, Icons.Material.Filled.DeleteForever },
+            { x => x.ContentText, $"Вы уверены, что хотите восстановить '{item.Name}'?" },
+            { x => x.ButtonText, "Да, восстановить" },
+            { x => x.ConfirmColor, Color.Info }
+        };
+
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
 
             var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
 

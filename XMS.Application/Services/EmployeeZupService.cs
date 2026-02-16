@@ -8,14 +8,16 @@ namespace XMS.Application.Services
 {
     public class EmployeeZupService(IOneSZupService zupService, IDbContextFactoryProxy dbFactory) : IEmployeeZupService
     {
-        public async Task<IReadOnlyList<EmployeeZup>> GetListAsync(CancellationToken ct = default)
+        public async Task<IReadOnlyList<EmployeeZup>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            return await dbContext.Set<EmployeeZup>()
-                .AsNoTracking()
-                .OrderBy(x => x.Name)
-                .ToListAsync(ct);
+            var query = dbContext.Set<EmployeeZup>().AsNoTracking();
+
+            if (!includeDeleted)
+                query = query.Where(e => !e.IsDeleted);
+
+            return await query.OrderBy(x => x.Name).ToListAsync(ct);
         }
 
         public async Task<IReadOnlyList<EmployeeZup>> LoadListAsync(CancellationToken ct = default)
@@ -30,7 +32,7 @@ namespace XMS.Application.Services
             await SaveListAsync(list, ct);
         }
 
-        public async Task SaveListAsync(IReadOnlyList<EmployeeZup> list, CancellationToken ct = default)
+        private async Task SaveListAsync(IReadOnlyList<EmployeeZup> list, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 

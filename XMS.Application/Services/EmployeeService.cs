@@ -46,6 +46,22 @@ namespace XMS.Application.Services
             return ServiceResult.Success();
         }
 
+        public async Task<ServiceResult> RestoreAsync(Guid id, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var existing = await dbContext.Set<Employee>().FindAsync([id], cancellationToken: ct);
+
+            if (existing is null)
+                return ServiceError.NotFound.WithDescription($"Сотрудник не найден ({id})");
+
+            existing.IsDeleted = false;
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return ServiceResult.Success();
+        }
+
         public async Task<Employee?> GetByIdAsync(Guid id, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
@@ -53,24 +69,27 @@ namespace XMS.Application.Services
             return await dbContext.Set<Employee>().FindAsync([id], ct);
         }
 
-        public async Task<IReadOnlyList<Employee>> GetListAsync(CancellationToken ct = default)
+        public async Task<IReadOnlyList<Employee>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            return await dbContext.Set<Employee>()
-            .AsNoTracking()
-            .Include(e => e.City)
-            .Include(e => e.Department)
-            .Include(e => e.EmployeeBuh)
-            .Include(e => e.EmployeeZup)
-            .Include(e => e.JobTitle)
-            .Include(e => e.Location)
-            .Include(e => e.UserAd)
-            .Include(e => e.UserUt)
-            .Include(e => e.LocationManager)
-            .Include(e => e.OperationManager)
-            .OrderBy(x => x.Name)
-            .ToListAsync(ct);
+            var query = dbContext.Set<Employee>().AsNoTracking();
+
+            if (!includeDeleted)
+                query = query.Where(e => !e.IsDeleted);
+
+            return await query.Include(e => e.City)
+                .Include(e => e.Department)
+                .Include(e => e.EmployeeBuh)
+                .Include(e => e.EmployeeZup)
+                .Include(e => e.JobTitle)
+                .Include(e => e.Location)
+                .Include(e => e.UserAd)
+                .Include(e => e.UserUt)
+                .Include(e => e.LocationManager)
+                .Include(e => e.OperationManager)
+                .OrderBy(x => x.Name)
+                .ToListAsync(ct);
         }
     }
 }

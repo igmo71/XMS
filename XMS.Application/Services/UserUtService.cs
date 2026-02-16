@@ -8,14 +8,16 @@ namespace XMS.Application.Services
 {
     public class UserUtService(IOneSUtService oneSUtService, IDbContextFactoryProxy dbFactory) : IUserUtService
     {
-        public async Task<IReadOnlyList<UserUt>> GetListAsync(CancellationToken ct = default)
+        public async Task<IReadOnlyList<UserUt>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            return await dbContext.Set<UserUt>()
-                .AsNoTracking()
-                .OrderBy(x => x.Name)
-                .ToListAsync(ct);
+            var query = dbContext.Set<UserUt>().AsNoTracking();
+
+            if (!includeDeleted)
+                query = query.Where(e => !e.IsDeleted);
+
+            return await query.OrderBy(x => x.Name).ToListAsync(ct);
         }
 
         public async Task<IReadOnlyList<UserUt>> LoadListAsync(CancellationToken ct = default)
@@ -30,7 +32,7 @@ namespace XMS.Application.Services
             await SaveListAsync(list, ct);
         }
 
-        public async Task SaveListAsync(IReadOnlyList<UserUt> list, CancellationToken ct = default)
+        private async Task SaveListAsync(IReadOnlyList<UserUt> list, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 

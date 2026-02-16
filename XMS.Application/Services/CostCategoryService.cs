@@ -59,6 +59,27 @@ namespace XMS.Application.Services
             return ServiceResult.Success();
         }
 
+        public async Task<ServiceResult> RestoreAsync(Guid id, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var existing = await dbContext.Set<CostCategory>()
+                .Include(e => e.Children)
+                .FirstOrDefaultAsync(e => e.Id == id, ct);
+
+            if (existing is null)
+                return ServiceError.NotFound.WithDescription($"Категория Затрат не найдена ({id})");
+
+            if (existing.Children.Count > 0)
+                return ServiceError.InvalidOperation.WithDescription("Категория Затрат содержит вложенную Категорию");
+
+            existing.IsDeleted = false;
+
+            await dbContext.SaveChangesAsync(ct);
+
+            return ServiceResult.Success();
+        }
+
         public async Task<CostCategory?> GetByIdAsync(Guid id, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
@@ -66,18 +87,24 @@ namespace XMS.Application.Services
             return await dbContext.Set<CostCategory>().FindAsync([id], ct);
         }
 
-        public async Task<IReadOnlyList<CostCategory>> GetListAsync(CancellationToken ct = default)
+        public async Task<IReadOnlyList<CostCategory>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
-            return await dbContext.Set<CostCategory>()
-            .AsNoTracking()
-            //.Include(e => e.Parent)
-            //.Include(e => e.Children)
-            .Include(e => e.Items)
-            .Include(e => e.Department)
-            .Include(e => e.Employee)
-            .OrderBy(x => x.Name)
-            .ToListAsync(ct);
+            var query = dbContext.Set<CostCategory>()
+            .AsNoTracking();
+
+            if (!includeDeleted)
+                query = query.Where(e => !e.IsDeleted);
+
+            return await query
+                //.Include(e => e.Parent)
+                //.Include(e => e.Children)
+                .Include(e => e.Items)
+                .Include(e => e.Department)
+                .Include(e => e.Employee)
+                .OrderBy(x => x.Name)
+                .ToListAsync(ct);
+
         }
     }
 }

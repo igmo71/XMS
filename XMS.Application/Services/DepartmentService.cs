@@ -55,7 +55,7 @@ namespace XMS.Application.Services
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var existing = await dbContext.Set<Department>().IgnoreQueryFilters().FirstOrDefaultAsync(e => e.Id == id, ct);
+            var existing = await dbContext.Set<Department>().FindAsync([id], ct);
 
             if (existing is null)
                 return ServiceError.NotFound.WithDescription($"Подразделение не найдено ({id})");
@@ -84,14 +84,14 @@ namespace XMS.Application.Services
                 .ToListAsync(ct);
         }
 
-        public async Task<IReadOnlyList<Department>> GetListAsync(bool ignoreQueryFilters = false, CancellationToken ct = default)
+        public async Task<IReadOnlyList<Department>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
             var query = dbContext.Set<Department>().AsNoTracking();
 
-            if (ignoreQueryFilters)
-                query = query.IgnoreQueryFilters();
+            if(!includeDeleted)
+                query = query.Where(e => !e.IsDeleted);
 
             return await query.OrderBy(x => x.Name).ToListAsync(ct);
         }

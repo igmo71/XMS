@@ -33,7 +33,7 @@ namespace XMS.Application.Services
             await SaveListAsync(list, ct);
         }
 
-        public async Task SaveListAsync(IReadOnlyList<UserAd> list, CancellationToken ct = default)
+        private async Task SaveListAsync(IReadOnlyList<UserAd> list, CancellationToken ct = default)
         {
             using var activity = StartActivity();
 
