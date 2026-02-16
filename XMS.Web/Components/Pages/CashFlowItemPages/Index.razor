@@ -1,0 +1,63 @@
+﻿@page "/cashflowitems"
+@using Microsoft.AspNetCore.Authorization
+@using XMS.Domain.Models
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.Medium">
+	<MudPaper>
+		<MudToolBar>
+			<MudStack Row="true" Spacing="6">
+				<MudText Typo="Typo.h5">Статьи ДДС</MudText>
+				<MudFab Color="Color.Primary"
+						Size="Size.Small"
+						StartIcon="@(_expandedAll ? Icons.Material.Filled.VerticalAlignCenter : Icons.Material.Filled.Expand)"
+						OnClick="@(_expandedAll ? CollapseAll : ExpandAll)"
+						title="Свернуть все" />
+				<MudSwitch T="bool" ValueChanged="ToggleQueryFilters" Color="Color.Primary">Показать удаленные</MudSwitch>
+				<MudButton OnClick="ReloadDataFromOneSAsync" Color="Color.Primary" Variant="Variant.Filled">
+					@if (_isReloading)
+					{
+						<MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" Color="Color.Inherit" />
+						<MudText Class="ms-2">Синхронизация...</MudText>
+					}
+					else
+					{
+						<MudIcon Icon="@Icons.Material.Filled.Sync" Class="me-2" />
+						<MudText>Обновить из 1С</MudText>
+					}
+				</MudButton>
+			</MudStack>
+		</MudToolBar>
+		<MudTreeView Items="_treeItems" T="CashFlowItem" Dense="true">
+			<ItemTemplate Context="item">
+				<MudTreeViewItem Expanded="@item.Expanded"
+								 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
+								 Items="@item.Children"
+								 Value="@item.Value">
+					<Content>
+						<MudTreeViewItemToggleButton Expanded="@item.Expanded"
+													 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
+													 Visible="@item.HasChildren" />
+						@if (item.Value?.IsDeleted == true)
+						{
+							<MudIcon Icon="@GetIcon(item)" Style="opacity: 0.6;" Size="@(item.HasChildren? Size.Medium: Size.Small)" Class="mr-2" />
+							<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)" Style="opacity: 0.6; text-decoration: line-through;">
+								@item.Value?.Name
+							</MudText>
+						}
+						else
+						{
+							<MudIcon Icon="@GetIcon(item)" Size="@(item.HasChildren? Size.Medium: Size.Small)" Class="mr-2" />
+							<MudStack Row="true" Class="d-flex justify-space-between flex-grow-1 gap-4">
+								<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)">
+									@item.Value?.Name
+								</MudText>
+								<MudText>@item.Value?.Code</MudText>
+							</MudStack>														
+						}
+					</Content>
+				</MudTreeViewItem>
+			</ItemTemplate>
+		</MudTreeView>
+	</MudPaper>
+</MudContainer>

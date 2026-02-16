@@ -10,18 +10,19 @@ namespace XMS.Infrastructure.Data
 {
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options), IApplicationDbContext
     {
-        public DbSet<Employee> Employees { get; set; }
-        public DbSet<JobTitle> JobTitles { get; set; }
-        public DbSet<Department> Departments { get; set; }
-        public DbSet<Location> Locations { get; set; }
+        public DbSet<CashFlowItem> CashFlowItems { get; set; }
         public DbSet<City> Cities { get; set; }
-        public DbSet<UserAd> UsersAd { get; set; }
-        public DbSet<UserUt> UsersUt { get; set; }
+        public DbSet<CostCategory> CostCategories { get; set; }
+        public DbSet<CostCategoryItem> CostCategoryItems { get; set; }  
+        public DbSet<CostItem> CostItems { get; set; }      
+        public DbSet<Employee> Employees { get; set; }
         public DbSet<EmployeeBuh> EmployeesBuh { get; set; }
         public DbSet<EmployeeZup> EmployeesZup { get; set; }
-        public DbSet<CostCategory> CostCategories { get; set; }
-        public DbSet<CostItem> CostItems { get; set; }
-        public DbSet<CostCategoryItem> CostCategoryItems { get; set; }        
+        public DbSet<Department> Departments { get; set; }
+        public DbSet<JobTitle> JobTitles { get; set; }
+        public DbSet<Location> Locations { get; set; }
+        public DbSet<UserAd> UsersAd { get; set; }
+        public DbSet<UserUt> UsersUt { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

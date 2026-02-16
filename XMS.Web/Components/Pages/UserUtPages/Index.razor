@@ -35,13 +35,13 @@
 			<Columns>
 				<PropertyColumn Property="x => x.Id" />
 				<PropertyColumn Property="x => x.Name" Title="ФИО" />
-				<PropertyColumn Property="x => x.DeletionMark" Title="Пометка удаления">
+				<PropertyColumn Property="x => x.IsDeleted" Title="Пометка удаления">
 					<CellTemplate>
 						<MudChip T="string"
-								 Color="@(context.Item.DeletionMark ? Color.Error : Color.Success)"
+								 Color="@(context.Item.IsDeleted ? Color.Error : Color.Success)"
 								 Size="Size.Small"
 								 Variant="Variant.Text">
-							@(context.Item.DeletionMark ? "Удален" : "Активен")
+							@(context.Item.IsDeleted ? "Удален" : "Активен")
 						</MudChip>
 					</CellTemplate>
 				</PropertyColumn>

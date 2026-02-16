@@ -15,9 +15,9 @@ namespace XMS.Infrastructure.Integration.OneS.Zup.Application
             {
                 Id = x.Ref_Key,
                 Name = x.Description ?? string.Empty,
-                DeletionMark = x.DeletionMark,
                 Code = x.Code,
-                Archived = x.ВАрхиве
+                Archived = x.ВАрхиве,
+                IsDeleted = x.DeletionMark
             }).ToList();
 
             return result ?? [];

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using XMS.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using XMS.Infrastructure.Data;
 namespace XMS.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260216074752_CreateCashFlowItems")]
+    partial class CreateCashFlowItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -264,16 +267,10 @@ namespace XMS.Web.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Code")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFolder")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -285,6 +282,8 @@ namespace XMS.Web.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
 
                     b.ToTable("CashFlowItems");
                 });
@@ -497,10 +496,7 @@ namespace XMS.Web.Migrations
                         .HasMaxLength(36)
                         .HasColumnType("nvarchar(36)");
 
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("DeletionMark")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -526,10 +522,7 @@ namespace XMS.Web.Migrations
                         .HasMaxLength(36)
                         .HasColumnType("nvarchar(36)");
 
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("DeletionMark")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -631,10 +624,7 @@ namespace XMS.Web.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("DeletedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("DeletionMark")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -747,6 +737,16 @@ namespace XMS.Web.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("XMS.Domain.Models.CashFlowItem", b =>
+                {
+                    b.HasOne("XMS.Domain.Models.CashFlowItem", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("XMS.Domain.Models.CostCategory", b =>
@@ -872,6 +872,11 @@ namespace XMS.Web.Migrations
                     b.Navigation("UserAd");
 
                     b.Navigation("UserUt");
+                });
+
+            modelBuilder.Entity("XMS.Domain.Models.CashFlowItem", b =>
+                {
+                    b.Navigation("Children");
                 });
 
             modelBuilder.Entity("XMS.Domain.Models.CostCategory", b =>

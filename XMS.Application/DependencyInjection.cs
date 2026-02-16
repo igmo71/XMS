@@ -8,18 +8,19 @@ namespace XMS.Application
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
+            services.AddScoped<ICashFlowItemService, CashFlowItemService>();
+            services.AddScoped<ICityService, CityService>();
+            services.AddScoped<ICostCategoryItemService, CostCategoryItemService>();
             services.AddScoped<ICostCategoryService, CostCategoryService>();
             services.AddScoped<ICostItemService, CostItemService>();
-            services.AddScoped<ICostCategoryItemService, CostCategoryItemService>();
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
-            services.AddScoped<IUserAdService, UserAdService>();
-            services.AddScoped<IUserUtService, UserUtService>();
             services.AddScoped<IEmployeeBuhService, EmployeeBuhService>();
             services.AddScoped<IEmployeeZupService, EmployeeZupService>();
             services.AddScoped<IJobTitleService, JobTitleService>();
-            services.AddScoped<ICityService, CityService>();
             services.AddScoped<ILocationService, LocationService>();
+            services.AddScoped<IUserAdService, UserAdService>();
+            services.AddScoped<IUserUtService, UserUtService>();
 
             return services;
         }
