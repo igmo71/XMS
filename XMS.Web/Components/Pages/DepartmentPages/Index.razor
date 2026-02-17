@@ -35,7 +35,7 @@
 							</MudText>
 							<MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Medium"
 									 AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopLeft" Dense="true">
-								<MudMenuItem Label="Восстановить" Icon="@Icons.Material.Filled.Replay" OnClick="() => RestoreDepartmentAsync(item.Value)" />
+								<MudMenuItem Label="Восстановить" Icon="@Icons.Material.Filled.RestoreFromTrash" IconColor="Color.Info" OnClick="() => RestoreDepartmentAsync(item.Value)" />
 							</MudMenu>
 						}
 						else
@@ -46,11 +46,11 @@
 							</MudText>
 							<MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Medium"
 									 AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopLeft" Dense="true">
-								<MudMenuItem Label="Добавить " Icon="@Icons.Material.Filled.CreateNewFolder" OnClick="() => NewDepartmentAsync(item.Value)" />
+								<MudMenuItem Label="Добавить " Icon="@Icons.Material.Filled.CreateNewFolder" IconColor="Color.Primary" OnClick="() => NewDepartmentAsync(item.Value)" />
 								@if (item.Value is Department department && department.ParentId is not null)
 								{
-									<MudMenuItem Label="Изменить" Icon="@Icons.Material.Filled.Edit" OnClick="() => EditDepartmentAsync(item.Value)" />
-									<MudMenuItem Label="Удалить" Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteDepartmentAsync(item.Value)" />
+									<MudMenuItem Label="Изменить" Icon="@Icons.Material.Filled.Edit" IconColor="Color.Primary" OnClick="() => EditDepartmentAsync(item.Value)" />
+									<MudMenuItem Label="Удалить" Icon="@Icons.Material.Filled.Delete" IconColor="Color.Secondary" OnClick="() => DeleteDepartmentAsync(item.Value)" />
 								}
 							</MudMenu>
 						}

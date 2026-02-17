@@ -40,7 +40,7 @@
 				<PropertyColumn Property="x => x.Enabled">
 					<CellTemplate>
 						<MudChip T="string"
-								 Color="@(context.Item.Enabled ? Color.Success : Color.Error)"
+								 Color="@(context.Item.Enabled ? Color.Secondary: Color.Info)"
 								 Size="Size.Small"
 								 Variant="Variant.Text">
 							@(context.Item.Enabled ? "Активен" : "Неактивен")

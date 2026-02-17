@@ -40,6 +40,9 @@
 			</ToolBarContent>
 			<Columns>
 				<PropertyColumn Property="x => x.Name" Title="ФИО" DragAndDropEnabled="false" StickyLeft="true">
+					<CellTemplate>
+						<MudText Style="@( context.Item.IsDeleted ? "opacity: 0.6; text-decoration: line-through;" : "")">@context.Item.Name</MudText>
+					</CellTemplate>
 					<EditTemplate>
 						<MudGrid style="min-width: 500px">
 							<MudItem xs="12">
@@ -52,6 +55,13 @@
 							</MudItem>
 						</MudGrid>
 					</EditTemplate>
+				</PropertyColumn>
+				<PropertyColumn Property="x => x.IsDeleted" Title="Удален">
+					<CellTemplate>
+						<MudChip T="string" Color="@(context.Item.IsDeleted? Color.Secondary: Color.Info)" Size="Size.Small" Variant="Variant.Text">
+							@(context.Item.IsDeleted ? "Удален" : "Активен")
+						</MudChip>
+					</CellTemplate>
 				</PropertyColumn>
 				<PropertyColumn Property="x => x.JobTitle == null ? string.Empty : x.JobTitle.Name" Title="Должность">
 					<EditTemplate>
@@ -125,7 +135,7 @@
 				<PropertyColumn Property="x => x.UserUt == null ? string.Empty : x.UserUt.Name" Title="Пользователь УТ" Required="false">
 					<EditTemplate>
 						<MudAutocomplete @bind-Value="context.Item.UserUtId"
-										 T="Guid ?"
+										 T="Guid?"
 										 ToStringFunc="GetUserUtName"
 										 SearchFunc="SearchUserUtIds"
 										 Variant="Variant.Outlined"
@@ -148,7 +158,7 @@
 					</CellTemplate>
 					<EditTemplate>
 						<MudAutocomplete @bind-Value="context.Item.EmployeeBuhId"
-										 T="Guid ?"
+										 T="Guid?"
 										 ToStringFunc="GetEmployeeBuhLabel"
 										 SearchFunc="SearchEmployeeBuhIds"
 										 Variant="Variant.Outlined"
@@ -171,7 +181,7 @@
 					</CellTemplate>
 					<EditTemplate>
 						<MudAutocomplete @bind-Value="context.Item.EmployeeZupId"
-										 T="Guid ?"
+										 T="Guid?"
 										 ToStringFunc="GetEmployeeZupLabel"
 										 SearchFunc="SearchEmployeeZupIds"
 										 Variant="Variant.Outlined"
@@ -212,7 +222,7 @@
 				<PropertyColumn Property="x => x.OperationManager == null ? string.Empty : x.OperationManager.Name" Title="Оперативный Руководитель" Required="false">
 					<EditTemplate>
 						<MudAutocomplete @bind-Value="context.Item.OperationManagerId" FullWidth="true"
-										 T="Guid ?"
+										 T="Guid?"
 										 ToStringFunc="GetEmployeeName"
 										 SearchFunc="SearchEmployeeIds"
 										 Variant="Variant.Outlined"
@@ -231,7 +241,7 @@
 				<PropertyColumn Property="x => x.LocationManager == null ? string.Empty : x.LocationManager.Name" Title="Руководитель Локации" Required="false">
 					<EditTemplate>
 						<MudAutocomplete @bind-Value="context.Item.LocationManagerId" FullWidth="true"
-										 T="Guid ?"
+										 T="Guid?"
 										 ToStringFunc="GetEmployeeName"
 										 SearchFunc="SearchEmployeeIds"
 										 Variant="Variant.Outlined"
@@ -249,13 +259,33 @@
 				</PropertyColumn>
 				<TemplateColumn Hidden="@(!_isEditingGrid)">
 					<CellTemplate>
-						<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Secondary" OnClick="@(() => DeleteItem(context.Item))" />
+						@if (context.Item.IsDeleted)
+						{
+							<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Filled.RestoreFromTrash" Color="Color.Info"
+										   OnClick="@(() => RestoreItemAsync(context.Item))" title="Восстановить" />
+						}
+						else
+						{
+							<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Secondary"
+										   OnClick="@(() => DeleteItemAsync(context.Item))" title="Удалить" />
+						}
 					</CellTemplate>
 					<EditTemplate>
-						<MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Delete" Size="Size.Small"
-								   OnClick="@(() => DeleteItem(context.Item))" Class="mt-3">
-							Delete
-						</MudButton>
+						@if (context.Item.IsDeleted)
+						{
+							<MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Delete" Size="Size.Medium" Color="Color.Info"
+									   OnClick="@(() => RestoreItemAsync(context.Item))" Class="mt-3">
+								Восстановить
+							</MudButton>
+						}
+						else
+						{
+							<MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Delete" Size="Size.Medium" Color="Color.Secondary"
+									   OnClick="@(() => DeleteItemAsync(context.Item))" Class="mt-3">
+								Удалить
+							</MudButton>
+						}
+						
 					</EditTemplate>
 				</TemplateColumn>
 			</Columns>

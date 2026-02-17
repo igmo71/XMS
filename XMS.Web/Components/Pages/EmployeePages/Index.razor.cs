@@ -113,7 +113,7 @@ namespace XMS.Web.Components.Pages.EmployeePages
             }
         }
 
-        private async Task DeleteItem(Employee item)
+        private async Task DeleteItemAsync(Employee item)
         {
             if (_isProcessing) return;
 
@@ -152,10 +152,63 @@ namespace XMS.Web.Components.Pages.EmployeePages
             var parameters = new DialogParameters<ConfirmDialog>
             {
                 { x => x.TitleIcon, Icons.Material.Filled.DeleteForever },
-                { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}' навсегда?" },
+                { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}'?" },
                 { x => x.ButtonText, "Да, удалить" },
                 { x => x.ConfirmColor, Color.Error }
             };
+
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+            var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
+
+            var result = await dialog.Result;
+
+            return result is { Canceled: false };
+        }
+
+        private async Task RestoreItemAsync(Employee item)
+        {
+            if (_isProcessing) return;
+
+            if (await ConfirmRestoreItemAsync(item))
+            {
+                try
+                {
+                    _isProcessing = true;
+
+                    var result = await EmployeeService.RestoreAsync(item.Id);
+
+                    if (result.IsSuccess)
+                        Snackbar.Add($"Успешно восстановлено: {item.Name}", Severity.Success);
+                    else
+                        Snackbar.Add($"Ошибка при восстановлении {item.Name}: {result.Error.Description}", Severity.Error);
+                }
+                catch (Exception ex)
+                {
+                    Snackbar.Add($"Ошибка при восстановлении {item.Name}: {ex.Message}", Severity.Error);
+                }
+                finally
+                {
+                    _isProcessing = false;
+
+                    await LoadEmployees();
+                }
+            }
+
+            await _employeeGrid.CancelEditingItemAsync();
+        }
+
+        private async Task<bool> ConfirmRestoreItemAsync(Employee item)
+        {
+            var title = "Восстановить Сотрудника";
+
+            var parameters = new DialogParameters<ConfirmDialog>
+        {
+            { x => x.TitleIcon, Icons.Material.Filled.DeleteForever },
+            { x => x.ContentText, $"Вы уверены, что хотите восстановить '{item.Name}'?" },
+            { x => x.ButtonText, "Да, восстановить" },
+            { x => x.ConfirmColor, Color.Info }
+        };
 
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
 

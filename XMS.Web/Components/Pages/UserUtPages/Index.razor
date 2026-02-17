@@ -38,7 +38,7 @@
 				<PropertyColumn Property="x => x.IsDeleted" Title="Пометка удаления">
 					<CellTemplate>
 						<MudChip T="string"
-								 Color="@(context.Item.IsDeleted ? Color.Error : Color.Success)"
+								 Color="@(context.Item.IsDeleted ? Color.Secondary: Color.Info)"
 								 Size="Size.Small"
 								 Variant="Variant.Text">
 							@(context.Item.IsDeleted ? "Удален" : "Активен")
