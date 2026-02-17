@@ -27,12 +27,16 @@
 						<MudTreeViewItemToggleButton Expanded="@item.Expanded"
 													 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
 													 Visible="@item.HasChildren" />
+
+													 
+						<MudIcon Icon="@GetIcon(item)" Size="@(item.HasChildren? Size.Medium: Size.Small)" Class="mr-2"
+								 Style="@(item.Value?.IsDeleted == true ? "opacity: 0.6;" : "")" />
+						<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)"
+								 Style="@(item.Value?.IsDeleted == true ? "opacity: 0.6; text-decoration: line-through;" : "")">
+							@item.Value?.Name
+						</MudText>
 						@if (item.Value?.IsDeleted == true)
 						{
-							<MudIcon Icon="@GetIcon(item)" Style="opacity: 0.6;" Size="@(item.HasChildren? Size.Medium: Size.Small)" Class="mr-2" />
-							<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)" Style="opacity: 0.6; text-decoration: line-through;">
-								@item.Value?.Name
-							</MudText>
 							<MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Medium"
 									 AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopLeft" Dense="true">
 								<MudMenuItem Label="Восстановить" Icon="@Icons.Material.Filled.RestoreFromTrash" IconColor="Color.Info" OnClick="() => RestoreDepartmentAsync(item.Value)" />
@@ -40,10 +44,6 @@
 						}
 						else
 						{
-							<MudIcon Icon="@GetIcon(item)" Size="@(item.HasChildren? Size.Medium: Size.Small)" Class="mr-2" />
-							<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)">
-								@item.Value?.Name
-							</MudText>
 							<MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Medium"
 									 AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopLeft" Dense="true">
 								<MudMenuItem Label="Добавить " Icon="@Icons.Material.Filled.CreateNewFolder" IconColor="Color.Primary" OnClick="() => NewDepartmentAsync(item.Value)" />

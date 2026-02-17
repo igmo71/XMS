@@ -209,10 +209,10 @@ namespace XMS.Web.Components.Pages.DepartmentPages
 
             var parameters = new DialogParameters<ConfirmDialog>
             {
-                { x => x.TitleIcon, Icons.Material.Filled.DeleteForever },
+                { x => x.TitleIcon, Icons.Material.Filled.Delete },
                 { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}' навсегда?" },
                 { x => x.ButtonText, "Да, удалить" },
-                { x => x.ConfirmColor, Color.Error }
+                { x => x.ConfirmColor, Color.Secondary }
             };
 
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
@@ -263,10 +263,10 @@ namespace XMS.Web.Components.Pages.DepartmentPages
 
             var parameters = new DialogParameters<ConfirmDialog>
             {
-                { x => x.TitleIcon, Icons.Material.Filled.DeleteForever },
+                { x => x.TitleIcon, Icons.Material.Filled.RestoreFromTrash },
                 { x => x.ContentText, $"Вы уверены, что хотите восстановить '{item.Name}'?" },
                 { x => x.ButtonText, "Да, восстановить" },
-                { x => x.ConfirmColor, Color.Warning }
+                { x => x.ConfirmColor, Color.Info }
             };
 
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };

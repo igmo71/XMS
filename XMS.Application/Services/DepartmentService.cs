@@ -40,7 +40,7 @@ namespace XMS.Application.Services
             if (existing is null)
                 return ServiceError.NotFound.WithDescription($"Подразделение не найдено ({id})");
 
-            if (existing.Children.Count > 0)
+            if (existing.Children.Any(e => !e.IsDeleted))
                 return ServiceError.InvalidOperation.WithDescription("Подразделение содержит вложенные Подразделения");
 
             existing.IsDeleted = true;
@@ -55,10 +55,13 @@ namespace XMS.Application.Services
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var existing = await dbContext.Set<Department>().FindAsync([id], ct);
+            var existing = await dbContext.Set<Department>().Include(e => e.Parent).FirstOrDefaultAsync(e => e.Id ==  id, ct);
 
             if (existing is null)
                 return ServiceError.NotFound.WithDescription($"Подразделение не найдено ({id})");
+
+            if(existing.Parent?.IsDeleted == true)
+                return ServiceError.InvalidOperation.WithDescription("Подразделение вложено в удаленное Подразделения");
 
             existing.IsDeleted = false;
 

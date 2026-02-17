@@ -191,7 +191,7 @@ namespace XMS.Web.Components.Pages.CostPages
             {
                 { x => x.TitleIcon, isNew ? Icons.Material.Filled.AddCircleOutline : Icons.Material.Filled.Edit },
                 { x => x.CostCategory, costCategory },
-                { x => x.CostItems, _costItems },
+                { x => x.CostItems, _costItems.Where(e => !e.IsDeleted) },
                 { x => x.CostCategories, _costCategories },
                 { x => x.Departments, _departments },
                 { x => x.Employees, _employees }
@@ -305,10 +305,10 @@ namespace XMS.Web.Components.Pages.CostPages
 
             var parameters = new DialogParameters<ConfirmDialog>
             {
-                { x => x.TitleIcon, Icons.Material.Filled.DeleteForever },
+                { x => x.TitleIcon, Icons.Material.Filled.Delete },
                 { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}'?" },
                 { x => x.ButtonText, "Да, удалить" },
-                { x => x.ConfirmColor, Color.Error }
+                { x => x.ConfirmColor, Color.Secondary }
             };
 
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
@@ -356,7 +356,7 @@ namespace XMS.Web.Components.Pages.CostPages
 
             var parameters = new DialogParameters<ConfirmDialog>
         {
-            { x => x.TitleIcon, Icons.Material.Filled.DeleteForever },
+            { x => x.TitleIcon, Icons.Material.Filled.RestoreFromTrash },
             { x => x.ContentText, $"Вы уверены, что хотите восстановить '{item.Name}'?" },
             { x => x.ButtonText, "Да, восстановить" },
             { x => x.ConfirmColor, Color.Info }
