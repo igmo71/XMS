@@ -17,14 +17,8 @@
 					 EditTrigger="@DataGridEditTrigger.OnRowClick"
 					 FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
 					 ColumnResizeMode="ResizeMode.Container"
-					 Dense="true"
-					 Hover="true"
-					 Striped="true"
-					 Bordered="true"
-					 Filterable="true"
-					 Groupable="true"
-					 DragDropColumnReordering="true"
-					 ApplyDropClassesOnDragStarted="true"
+					 Dense="true" Hover="true" Striped="true" Bordered="true" Filterable="true" Groupable="true"
+					 DragDropColumnReordering="true" ApplyDropClassesOnDragStarted="true"
 					 DragIndicatorIcon="@Icons.Material.Filled.DragIndicator">
 			<ToolBarContent>
 				<MudText Typo="Typo.h5">Сотрудники</MudText>
@@ -41,17 +35,13 @@
 			<Columns>
 				<PropertyColumn Property="x => x.Name" Title="ФИО" DragAndDropEnabled="false" StickyLeft="true">
 					<CellTemplate>
-						<MudText Style="@( context.Item.IsDeleted ? "opacity: 0.6; text-decoration: line-through;" : "")">@context.Item.Name</MudText>
+						<MudText Class="@(context.Item.IsDeleted ? "text-secondary text-decoration-line-through" : "")">@context.Item.Name</MudText>
 					</CellTemplate>
 					<EditTemplate>
 						<MudGrid style="min-width: 500px">
 							<MudItem xs="12">
-								<MudTextField @bind-Value="context.Item.Name"
-											  Label="Ввод ФИО"
-											  Variant="Variant.Outlined"
-											  Required="true"
-											  RequiredError="Нужно ввести ФИО"
-											  Clearable="true" />
+								<MudTextField @bind-Value="context.Item.Name" Label="Ввод ФИО" Variant="Variant.Outlined"
+											  Required="true" RequiredError="Нужно ввести ФИО" Clearable="true" />
 							</MudItem>
 						</MudGrid>
 					</EditTemplate>
@@ -66,13 +56,8 @@
 				<PropertyColumn Property="x => x.JobTitle == null ? string.Empty : x.JobTitle.Name" Title="Должность">
 					<EditTemplate>
 						<MudSelect @bind-Value="context.Item.JobTitleId"
-								   Label="Выбор Должности"
-								   Required="true"
-								   RequiredError="Нужно выбрать должность"
-								   RelativeWidth="DropdownWidth.Ignore"
-								   Variant="Variant.Outlined"
-								   Clearable="true"
-								   Dense="true">
+								   Label="Выбор Должности" Required="true" RequiredError="Нужно выбрать должность"
+								   RelativeWidth="DropdownWidth.Ignore" Variant="Variant.Outlined" Clearable="true" Dense="true">
 							@foreach (var item in _jobTitles)
 							{
 								<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
@@ -84,13 +69,8 @@
 				<PropertyColumn Property="x => x.Department == null ? string.Empty : x.Department.Name" Title="Отдел">
 					<EditTemplate>
 						<MudSelect @bind-Value="context.Item.DepartmentId"
-								   Label="Выбор Отдела"
-								   Required="false"
-								   RequiredError="Нужно выбрать отдел"
-								   RelativeWidth="DropdownWidth.Ignore"
-								   Variant="Variant.Outlined"
-								   Clearable="true"
-								   Dense="true">
+								   Label="Выбор Отдела" Required="false" RequiredError="Нужно выбрать отдел"
+								   RelativeWidth="DropdownWidth.Ignore" Variant="Variant.Outlined" Clearable="true" Dense="true">
 							@foreach (var item in _departments)
 							{
 								<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
@@ -102,12 +82,8 @@
 				<PropertyColumn Property="x => x.City == null ? string.Empty : x.City.Name" Title="Город">
 					<EditTemplate>
 						<MudSelect @bind-Value="context.Item.CityId"
-								   Label="Выберите Город"
-								   Required="false"
-								   RequiredError="Нужно выбрать город"
-								   Variant="Variant.Outlined"
-								   Clearable="true"
-								   Dense="true">
+								   Label="Выберите Город" Required="false" RequiredError="Нужно выбрать город"
+								   Variant="Variant.Outlined" Clearable="true" Dense="true">
 							@foreach (var item in _cities)
 							{
 								<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
@@ -118,12 +94,8 @@
 				<PropertyColumn Property="x => x.Location == null ? string.Empty : x.Location.Name" Title="Локация" Required="false">
 					<EditTemplate>
 						<MudSelect @bind-Value="context.Item.LocationId"
-								   Label="Выбор Локации"
-								   Required="false"
-								   RequiredError="Нужно выбрать локацию"
-								   Variant="Variant.Outlined"
-								   Clearable="true"
-								   Dense="true">
+								   Label="Выбор Локации" Required="false" RequiredError="Нужно выбрать локацию"
+								   Variant="Variant.Outlined" Clearable="true" Dense="true">
 							@foreach (var item in _locations)
 							{
 								<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
@@ -134,14 +106,11 @@
 				</PropertyColumn>
 				<PropertyColumn Property="x => x.UserUt == null ? string.Empty : x.UserUt.Name" Title="Пользователь УТ" Required="false">
 					<EditTemplate>
-						<MudAutocomplete @bind-Value="context.Item.UserUtId"
-										 T="Guid?"
+						<MudAutocomplete @bind-Value="context.Item.UserUtId" T="Guid?"
 										 ToStringFunc="GetUserUtName"
 										 SearchFunc="SearchUserUtIds"
-										 Variant="Variant.Outlined"
-										 Label="Поиск Пользователя УТ"
-										 Clearable="true"
-										 Dense="true"
+										 Variant="Variant.Outlined" Label="Подбор Пользователя УТ"
+										 Clearable="true" Dense="true"
 										 RelativeWidth="DropdownWidth.Ignore">
 							<ItemTemplate Context="id">
 								<MudText Typo="Typo.body2" Style="white-space:nowrap">
@@ -157,14 +126,11 @@
 						@(string.IsNullOrEmpty(context.Item.EmployeeBuh?.Code) ? string.Empty : $"({context.Item.EmployeeBuh?.Code})")
 					</CellTemplate>
 					<EditTemplate>
-						<MudAutocomplete @bind-Value="context.Item.EmployeeBuhId"
-										 T="Guid?"
+						<MudAutocomplete @bind-Value="context.Item.EmployeeBuhId" T="Guid?"
 										 ToStringFunc="GetEmployeeBuhLabel"
 										 SearchFunc="SearchEmployeeBuhIds"
-										 Variant="Variant.Outlined"
-										 Label="Поиск Сотрудника БП"
-										 Clearable="true"
-										 Dense="true"
+										 Variant="Variant.Outlined" Label="Подбор Сотрудника БП"
+										 Clearable="true" Dense="true"
 										 RelativeWidth="DropdownWidth.Ignore">
 							<ItemTemplate Context="id">
 								<MudText Typo="Typo.body2" Style="white-space:nowrap">
@@ -180,15 +146,12 @@
 						@(string.IsNullOrEmpty(context.Item.EmployeeZup?.Code) ? string.Empty : $"({context.Item.EmployeeZup?.Code})")
 					</CellTemplate>
 					<EditTemplate>
-						<MudAutocomplete @bind-Value="context.Item.EmployeeZupId"
-										 T="Guid?"
+						<MudAutocomplete @bind-Value="context.Item.EmployeeZupId" T="Guid?"
 										 ToStringFunc="GetEmployeeZupLabel"
 										 SearchFunc="SearchEmployeeZupIds"
-										 Variant="Variant.Outlined"
-										 Label="Поиск Сотрудника ЗУП"
-										 Clearable="true"
-										 Dense="true"
-										 RelativeWidth="DropdownWidth.Ignore">
+										 Variant="Variant.Outlined" Label="Подбор Сотрудника ЗУП"
+										 Clearable="true" Dense="true"
+										 RelativeWidth="DropdownWidth.Ignore" FullWidth="true">
 							<ItemTemplate Context="id">
 								<MudText Typo="Typo.body2" Style="white-space:nowrap">
 									@GetEmployeeZupLabel(id)
@@ -202,15 +165,12 @@
 						@context.Item.UserAd?.Name
 					</CellTemplate>
 					<EditTemplate>
-						<MudAutocomplete @bind-Value="context.Item.UserAdId" FullWidth="true"
-										 T="string"
+						<MudAutocomplete @bind-Value="context.Item.UserAdId" T="string"
 										 ToStringFunc="GetUserAdName"
 										 SearchFunc="SearchUserAdIds"
-										 Variant="Variant.Outlined"
-										 Label="Поиск Пользователя AD"
-										 Clearable="true"
-										 Dense="true"
-										 RelativeWidth="DropdownWidth.Ignore">
+										 Variant="Variant.Outlined" Label="Подбор Пользователя AD"
+										 Clearable="true" Dense="true"
+										 RelativeWidth="DropdownWidth.Ignore" FullWidth="true">
 							<ItemTemplate Context="id">
 								<MudText Typo="Typo.body2" Style="white-space:nowrap">
 									@GetUserAdName(id)
@@ -221,15 +181,12 @@
 				</PropertyColumn>
 				<PropertyColumn Property="x => x.OperationManager == null ? string.Empty : x.OperationManager.Name" Title="Оперативный Руководитель" Required="false">
 					<EditTemplate>
-						<MudAutocomplete @bind-Value="context.Item.OperationManagerId" FullWidth="true"
-										 T="Guid?"
+						<MudAutocomplete @bind-Value="context.Item.OperationManagerId" T="Guid?"
 										 ToStringFunc="GetEmployeeName"
 										 SearchFunc="SearchEmployeeIds"
-										 Variant="Variant.Outlined"
-										 Label="Поиск Оперативного Руководителя"
-										 Clearable="true"
-										 Dense="true"
-										 RelativeWidth="DropdownWidth.Ignore">
+										 Variant="Variant.Outlined" Label="Подбор Оперативного Руководителя"
+										 Clearable="true" Dense="true"
+										 RelativeWidth="DropdownWidth.Ignore" FullWidth="true">
 							<ItemTemplate Context="id">
 								<MudText Typo="Typo.body2" Style="white-space:nowrap">
 									@GetEmployeeName(id)
@@ -240,15 +197,12 @@
 				</PropertyColumn>
 				<PropertyColumn Property="x => x.LocationManager == null ? string.Empty : x.LocationManager.Name" Title="Руководитель Локации" Required="false">
 					<EditTemplate>
-						<MudAutocomplete @bind-Value="context.Item.LocationManagerId" FullWidth="true"
-										 T="Guid?"
+						<MudAutocomplete @bind-Value="context.Item.LocationManagerId" T="Guid?"
 										 ToStringFunc="GetEmployeeName"
 										 SearchFunc="SearchEmployeeIds"
-										 Variant="Variant.Outlined"
-										 Label="Поиск Руководителя Локации"
-										 Clearable="true"
-										 Dense="true"
-										 RelativeWidth="DropdownWidth.Ignore">
+										 Variant="Variant.Outlined" Label="Подбор Руководителя Локации"
+										 Clearable="true" Dense="true"
+										 RelativeWidth="DropdownWidth.Ignore" FullWidth="true">
 							<ItemTemplate Context="id">
 								<MudText Typo="Typo.body2" Style="white-space:nowrap">
 									@GetEmployeeName(id)

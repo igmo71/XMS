@@ -9,11 +9,10 @@
 			<MudToolBar>
 				<MudStack Row="true" Spacing="6">
 					<MudText Typo="Typo.h5">Категории и Статьи Затрат</MudText>
-					<MudFab Color="Color.Primary"
-							Size="Size.Small"
-							StartIcon="@(_expandedAll ? Icons.Material.Filled.VerticalAlignCenter : Icons.Material.Filled.Expand)"
-							OnClick="@(_expandedAll ? CollapseAll : ExpandAll)"
-							title="Свернуть все" />
+					<MudFab Color="Color.Primary" Size="Size.Small"
+							StartIcon="@(_expandedAll? Icons.Material.Filled.VerticalAlignCenter : Icons.Material.Filled.Expand)"
+							OnClick="@(_expandedAll ? CollapseAll : ExpandAll)" title="Свернуть все" />
+					<MudSwitch T="bool" ValueChanged="ToggleIncludeDelete" Color="Color.Primary">Показать удаленные</MudSwitch>
 				</MudStack>
 			</MudToolBar>
 			<MudTreeView Items="_costTree" T="object" Dense="true">
@@ -29,27 +28,37 @@
 							<div class="d-flex align-center">
 								@if (node.Value is CostCategory category)
 								{
-									<MudIcon Icon="@(node.Expanded? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder)" Size="Size.Medium" Class="mr-2" Title="Категория Затрат" />
-									<MudText Typo="Typo.body1">@category.Name</MudText>
-									<MudMenu Icon="@Icons.Material.Filled.MoreVert"
-											 Size="Size.Medium"
-											 AnchorOrigin="Origin.TopRight"
-											 TransformOrigin="Origin.TopLeft"
-											 Dense="true"
-											 AriaLabel="Open menu">
-										<MudMenuItem Label="Добавить Категорию" Icon="@Icons.Material.Filled.CreateNewFolder" OnClick="() => NewCategoryAsync(node.Value)" />
-										@if (node.Value is CostCategory costCategory && costCategory.ParentId is not null)
+									<MudIcon Icon="@(node.Expanded? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder)" Size="Size.Medium"
+											 Class="@(category.IsDeleted ? "mr-2 text-secondary" : "mr-2")" Title="Категория Затрат" />
+									<MudText Typo="Typo.body1"
+											 Class="@(category.IsDeleted ? "text-secondary text-decoration-line-through" : "")">
+										@category.Name
+									</MudText>
+									<MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Medium" AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopLeft" Dense="true">
+										@if (category.IsDeleted)
 										{
-											<MudMenuItem Label="Изменить эту Категорию" Icon="@Icons.Material.Filled.Edit" OnClick="() => EditCategoryAsync(node.Value)" />
-											<MudMenuItem Label="Удалить эту Категорию" Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteCategoryAsync(node.Value)" />
+											<MudMenuItem Label="Восстановить" Icon="@Icons.Material.Filled.RestoreFromTrash" IconColor="Color.Info" OnClick="() => RestoreCategoryAsync(node.Value)" />
+										}
+										else
+										{
+											<MudMenuItem Label="Добавить" Icon="@Icons.Material.Filled.CreateNewFolder" IconColor="Color.Primary" OnClick="() => NewCategoryAsync(node.Value)" />
+											@if (node.Value is CostCategory costCategory && costCategory.ParentId is not null)
+											{
+												<MudMenuItem Label="Изменить" Icon="@Icons.Material.Filled.Edit" IconColor="Color.Primary" OnClick="() => EditCategoryAsync(node.Value)" />
+												<MudMenuItem Label="Удалить" Icon="@Icons.Material.Filled.Delete" IconColor="Color.Secondary" OnClick="() => DeleteCategoryAsync(node.Value)" />
+											}
 										}
 									</MudMenu>
 
 								}
 								else if (node.Value is CostItem costItem)
 								{
-									<MudIcon Icon="@Icons.Material.Filled.Description" Size="Size.Small" Class="mr-2" Title="Статья Затрат" />
-									<MudText Typo="Typo.body2">@costItem.Name</MudText>
+									<MudIcon Icon="@Icons.Material.Filled.Description" Size="Size.Small"
+											 Class="@(costItem.IsDeleted ? "mr-2 text-secondary" : "mr-2")" Title="Статья Затрат" />
+									<MudText Typo="Typo.body2"
+											 Class="@(costItem.IsDeleted ? "text-secondary text-decoration-line-through" : "")">
+										@costItem.Name
+									</MudText>
 								}
 							</div>
 						</Content>
@@ -59,8 +68,7 @@
 		</MudPaper>
 		<MudPaper>
 			<MudDataGrid @ref="_costItemGrid" Items="@_costItems" T="CostItem"
-						 ReadOnly="false"
-						 Filterable="true"
+						 ReadOnly="false" Filterable="true"
 						 CommittedItemChanges="@((item) => CommittedItemChanges(item))"
 						 Bordered="true" Striped="true" Hover="true" Dense="true"
 						 Loading="@_isLoading"
@@ -76,7 +84,7 @@
 				<Columns>
 					<PropertyColumn Property="x => x.Name" Title="Наименование">
 						<CellTemplate>
-							<MudText Style="@( context.Item.IsDeleted ? "opacity: 0.6; text-decoration: line-through;" : "")">@context.Item.Name</MudText>
+							<MudText Class="@(context.Item.IsDeleted ? "text-secondary text-decoration-line-through" : "")">@context.Item.Name</MudText>
 						</CellTemplate>
 					</PropertyColumn>
 					<PropertyColumn Property="x => x.IsDeleted" Title="Удален">

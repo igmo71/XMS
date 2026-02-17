@@ -55,7 +55,9 @@ namespace XMS.Application.Services
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var existing = await dbContext.Set<Department>().Include(e => e.Parent).FirstOrDefaultAsync(e => e.Id ==  id, ct);
+            var existing = await dbContext.Set<Department>()
+                .Include(e => e.Parent)
+                .FirstOrDefaultAsync(e => e.Id ==  id, ct);
 
             if (existing is null)
                 return ServiceError.NotFound.WithDescription($"Подразделение не найдено ({id})");

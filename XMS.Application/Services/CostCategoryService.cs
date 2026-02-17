@@ -43,13 +43,17 @@ namespace XMS.Application.Services
 
             var existing = await dbContext.Set<CostCategory>()
                 .Include(e => e.Children)
+                .Include(e => e.Items)
                 .FirstOrDefaultAsync(e => e.Id == id, ct);
 
             if (existing is null)
                 return ServiceError.NotFound.WithDescription($"Категория Затрат не найдена ({id})");
 
-            if (existing.Children.Count > 0)
+            if (existing.Children.Any(e => !e.IsDeleted))
                 return ServiceError.InvalidOperation.WithDescription("Категория Затрат содержит вложенную Категорию");
+
+            if (existing.Items?.Any(e => !e.IsDeleted) == true)
+                return ServiceError.InvalidOperation.WithDescription("Категория Затрат содержит вложенную Статью");
 
             existing.IsDeleted = true;
             existing.DeletedAt = DateTime.UtcNow;
@@ -64,14 +68,15 @@ namespace XMS.Application.Services
             using var dbContext = dbFactory.CreateDbContext();
 
             var existing = await dbContext.Set<CostCategory>()
-                .Include(e => e.Children)
+                .Include(e => e.Parent)
+                .Include(e => e.Items)
                 .FirstOrDefaultAsync(e => e.Id == id, ct);
 
             if (existing is null)
                 return ServiceError.NotFound.WithDescription($"Категория Затрат не найдена ({id})");
 
-            if (existing.Children.Count > 0)
-                return ServiceError.InvalidOperation.WithDescription("Категория Затрат содержит вложенную Категорию");
+            if (existing.Parent?.IsDeleted == true)
+                return ServiceError.InvalidOperation.WithDescription("Категория Затрат вложена в удаленную Категорию");
 
             existing.IsDeleted = false;
 

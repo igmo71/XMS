@@ -140,6 +140,13 @@ namespace XMS.Web.Components.Pages.CostPages
             await SessionStorage.SetAsync(nameof(_expandedCategoryIds), _expandedCategoryIds);
         }
 
+        private async Task ToggleIncludeDelete(bool args)
+        {
+            _includeDeleted = args;
+
+            await LoadDataAndBuildTreeAsync();
+        }
+
         // CostCategory Operations //
 
         private async Task NewCategoryAsync(object? value)
@@ -170,13 +177,15 @@ namespace XMS.Web.Components.Pages.CostPages
                     else
                         await CategoryService.UpdateAsync(costCategory, _cts.Token);
 
-                    await LoadDataAndBuildTreeAsync();
-
                     Snackbar.Add($"Успешно сохранено: {costCategory.Name}", Severity.Success);
                 }
                 catch (Exception ex)
                 {
                     Snackbar.Add($"Ошибка при сохранении {costCategory.Name}: {ex.Message}", Severity.Error);
+                }
+                finally
+                {
+                    await LoadDataAndBuildTreeAsync();
                 }
             }
         }
@@ -237,6 +246,39 @@ namespace XMS.Web.Components.Pages.CostPages
             }
         }
 
+        private async Task RestoreCategoryAsync(object? value)
+        {
+            if (_isProcessing) return;
+
+            if (value is CostCategory category)
+            {
+                if (await ConfirmRestoreItemAsync(category))
+                {
+                    try
+                    {
+                        _isProcessing = true;
+
+                        var result = await CategoryService.RestoreAsync(category.Id);
+
+                        if (result.IsSuccess)
+                            Snackbar.Add($"Успешно восстановлено: {category.Name}", Severity.Success);
+                        else
+                            Snackbar.Add($"Ошибка при восстановлении {category.Name}: {result.Error.Description}", Severity.Error);
+                    }
+                    catch (Exception ex)
+                    {
+                        Snackbar.Add($"Ошибка при восстановлении {category.Name}: {ex.Message}", Severity.Error);
+                    }
+                    finally
+                    {
+                        _isProcessing = false;
+
+                        await LoadDataAndBuildTreeAsync();
+                    }
+                }
+            }
+        }
+
         // CostItem Operations //
 
         private async Task NewItemAsync(MouseEventArgs args)
@@ -257,8 +299,6 @@ namespace XMS.Web.Components.Pages.CostPages
 
                 Snackbar.Add($"Успешно сохранено: {item.Name}", Severity.Success);
 
-                await LoadDataAndBuildTreeAsync();
-
                 return DataGridEditFormAction.Close;
             }
             catch (Exception ex)
@@ -266,6 +306,10 @@ namespace XMS.Web.Components.Pages.CostPages
                 Snackbar.Add($"Ошибка при сохранении {item.Name}: {ex.Message}", Severity.Error);
 
                 return DataGridEditFormAction.KeepOpen;
+            }
+            finally
+            {
+                await LoadDataAndBuildTreeAsync();
             }
         }
 
@@ -299,27 +343,6 @@ namespace XMS.Web.Components.Pages.CostPages
             }
         }
 
-        private async Task<bool> ConfirmDeleteItemAsync<T>(T item) where T : IHasName
-        {
-            var title = "Удалить";
-
-            var parameters = new DialogParameters<ConfirmDialog>
-            {
-                { x => x.TitleIcon, Icons.Material.Filled.Delete },
-                { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}'?" },
-                { x => x.ButtonText, "Да, удалить" },
-                { x => x.ConfirmColor, Color.Secondary }
-            };
-
-            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
-
-            var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
-
-            var result = await dialog.Result;
-
-            return result is { Canceled: false };
-        }
-
         private async Task RestoreItemAsync(CostItem item)
         {
             if (_isProcessing) return;
@@ -345,22 +368,45 @@ namespace XMS.Web.Components.Pages.CostPages
                 {
                     _isProcessing = false;
 
-                    await LoadDataAsync();
+                    await LoadDataAndBuildTreeAsync();
                 }
             }
         }
 
-        private async Task<bool> ConfirmRestoreItemAsync(CostItem item)
+        // Confirm Dialog
+
+        private async Task<bool> ConfirmDeleteItemAsync<T>(T item) where T : IHasName
         {
-            var title = "Восстановить Статью Затрат";
+            var title = "Удалить";
 
             var parameters = new DialogParameters<ConfirmDialog>
+            {
+                { x => x.TitleIcon, Icons.Material.Filled.Delete },
+                { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}'?" },
+                { x => x.ButtonText, "Да, удалить" },
+                { x => x.ConfirmColor, Color.Secondary }
+            };
+
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+
+            var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
+
+            var result = await dialog.Result;
+
+            return result is { Canceled: false };
+        }
+
+        private async Task<bool> ConfirmRestoreItemAsync<T>(T item) where T : IHasName
         {
-            { x => x.TitleIcon, Icons.Material.Filled.RestoreFromTrash },
-            { x => x.ContentText, $"Вы уверены, что хотите восстановить '{item.Name}'?" },
-            { x => x.ButtonText, "Да, восстановить" },
-            { x => x.ConfirmColor, Color.Info }
-        };
+            var title = "Восстановить";
+
+            var parameters = new DialogParameters<ConfirmDialog>
+            {
+                { x => x.TitleIcon, Icons.Material.Filled.RestoreFromTrash },
+                { x => x.ContentText, $"Вы уверены, что хотите восстановить '{item.Name}'?" },
+                { x => x.ButtonText, "Да, восстановить" },
+                { x => x.ConfirmColor, Color.Info }
+            };
 
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
 
@@ -370,6 +416,8 @@ namespace XMS.Web.Components.Pages.CostPages
 
             return result is { Canceled: false };
         }
+
+        //
 
         public void Dispose()
         {

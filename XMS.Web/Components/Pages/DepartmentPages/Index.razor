@@ -3,17 +3,14 @@
 @using XMS.Domain.Models
 @attribute [Authorize]
 
-
 <MudContainer MaxWidth="MaxWidth.Medium">
 	<MudPaper>
 		<MudToolBar>
 			<MudStack Row="true" Spacing="6">
 				<MudText Typo="Typo.h5">Схема предприятия</MudText>
-				<MudFab Color="Color.Primary"
-						Size="Size.Small"
+				<MudFab Color="Color.Primary" Size="Size.Small"
 						StartIcon="@(_expandedAll ? Icons.Material.Filled.VerticalAlignCenter : Icons.Material.Filled.Expand)"
-						OnClick="@(_expandedAll ? CollapseAll : ExpandAll)"
-						title="Свернуть все" />
+						OnClick="@(_expandedAll ? CollapseAll : ExpandAll)" title="Свернуть все" />
 				<MudSwitch T="bool" ValueChanged="ToggleIncludeDelete" Color="Color.Primary">Показать удаленные</MudSwitch>
 			</MudStack>
 		</MudToolBar>
@@ -27,33 +24,27 @@
 						<MudTreeViewItemToggleButton Expanded="@item.Expanded"
 													 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
 													 Visible="@item.HasChildren" />
-
-													 
-						<MudIcon Icon="@GetIcon(item)" Size="@(item.HasChildren? Size.Medium: Size.Small)" Class="mr-2"
-								 Style="@(item.Value?.IsDeleted == true ? "opacity: 0.6;" : "")" />
+						<MudIcon Icon="@GetIcon(item)" Size="@(item.HasChildren? Size.Medium : Size.Small)"
+								 Class="@(item.Value?.IsDeleted == true ? "mr-2 text-secondary" : "mr-2")" />
 						<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)"
-								 Style="@(item.Value?.IsDeleted == true ? "opacity: 0.6; text-decoration: line-through;" : "")">
+								 Class="@(item.Value?.IsDeleted == true ? "text-secondary text-decoration-line-through" : "")">
 							@item.Value?.Name
 						</MudText>
-						@if (item.Value?.IsDeleted == true)
-						{
-							<MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Medium"
-									 AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopLeft" Dense="true">
+						<MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Medium" AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopLeft" Dense="true">
+							@if (item.Value?.IsDeleted == true)
+							{
 								<MudMenuItem Label="Восстановить" Icon="@Icons.Material.Filled.RestoreFromTrash" IconColor="Color.Info" OnClick="() => RestoreDepartmentAsync(item.Value)" />
-							</MudMenu>
-						}
-						else
-						{
-							<MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Medium"
-									 AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopLeft" Dense="true">
+							}
+							else
+							{
 								<MudMenuItem Label="Добавить " Icon="@Icons.Material.Filled.CreateNewFolder" IconColor="Color.Primary" OnClick="() => NewDepartmentAsync(item.Value)" />
 								@if (item.Value is Department department && department.ParentId is not null)
 								{
 									<MudMenuItem Label="Изменить" Icon="@Icons.Material.Filled.Edit" IconColor="Color.Primary" OnClick="() => EditDepartmentAsync(item.Value)" />
 									<MudMenuItem Label="Удалить" Icon="@Icons.Material.Filled.Delete" IconColor="Color.Secondary" OnClick="() => DeleteDepartmentAsync(item.Value)" />
 								}
-							</MudMenu>
-						}
+							}
+						</MudMenu>
 					</Content>
 				</MudTreeViewItem>
 			</ItemTemplate>

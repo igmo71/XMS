@@ -36,7 +36,7 @@
 			<Columns>
 				<PropertyColumn Property="x => x.Name" Title="Наименование">
 					<CellTemplate>
-						<MudText Style="@( context.Item.IsDeleted ? "opacity: 0.6; text-decoration: line-through;" : "")">@context.Item.Name</MudText>
+						<MudText Class="@(context.Item.IsDeleted ? "text-secondary text-decoration-line-through" : "")">@context.Item.Name</MudText>
 					</CellTemplate>
 				</PropertyColumn>
 				<PropertyColumn Property="x => x.IsDeleted" Title="Удален">

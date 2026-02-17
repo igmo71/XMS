@@ -38,26 +38,16 @@
 						<MudTreeViewItemToggleButton Expanded="@item.Expanded"
 													 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
 													 Visible="@item.HasChildren" />
-						@if (item.Value?.IsDeleted == true)
-						{
-							<MudIcon Icon="@GetIcon(item)" Style="opacity: 0.6;" Size="@(item.HasChildren? Size.Medium: Size.Small)" Class="mr-2" />
-							<MudStack Row="true" Class="d-flex justify-space-between flex-grow-1 gap-4">
-								<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)" Style="opacity: 0.6; text-decoration: line-through;">
-									@item.Value?.Name
-								</MudText>
-								<MudText>@item.Value?.Code</MudText>
-							</MudStack>
-						}
-						else
-						{
-							<MudIcon Icon="@GetIcon(item)" Size="@(item.HasChildren? Size.Medium: Size.Small)" Class="mr-2" />
-							<MudStack Row="true" Class="d-flex justify-space-between flex-grow-1 gap-4">
-								<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)">
-									@item.Value?.Name
-								</MudText>
-								<MudText>@item.Value?.Code</MudText>
-							</MudStack>
-						}
+						<MudIcon Icon="@GetIcon(item)"
+								 Class="@(item.Value?.IsDeleted == true ? "mr-2 text-secondary" : "mr-2")" />
+						<MudStack Row="true" Class="d-flex justify-space-between flex-grow-1 gap-4">
+							<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)"
+									 Class="@(item.Value?.IsDeleted == true ? "text-secondary text-decoration-line-through" : "")">
+								@item.Value?.Name
+							</MudText>
+							<MudText>@item.Value?.Code</MudText>
+						</MudStack>
+						
 					</Content>
 				</MudTreeViewItem>
 			</ItemTemplate>
