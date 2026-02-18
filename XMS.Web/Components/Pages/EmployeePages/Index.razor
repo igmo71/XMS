@@ -9,16 +9,18 @@
 <MudContainer MaxWidth="MaxWidth.ExtraLarge">
 	<MudPaper>
 		<MudDataGrid @ref="_employeeGrid" T="Employee" Items="@_employees" Culture="@(new CultureInfo("ru-RU", false))"
+					 Style="height: calc(100vh - 80px); overflow-y: auto;" FixedHeader
 					 Loading="@_isLoading"
 					 ReadOnly="@(!_isEditingGrid)"
 					 CommittedItemChanges="@((item) => CommittedItemChanges(item))"
 					 QuickFilter="QuickFilter"
 					 EditMode="DataGridEditMode.Form"
-					 EditTrigger="@DataGridEditTrigger.OnRowClick"
+					 EditTrigger="@DataGridEditTrigger.Manual"
 					 FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+					 FilterMode="DataGridFilterMode.ColumnFilterRow"
 					 ColumnResizeMode="ResizeMode.Container"
-					 Dense="true" Hover="true" Striped="true" Bordered="true" Filterable="true" Groupable="true"
-					 DragDropColumnReordering="true" ApplyDropClassesOnDragStarted="true"
+					 Dense Hover Striped Bordered Filterable Groupable
+					 DragDropColumnReordering ApplyDropClassesOnDragStarted HorizontalScrollbar
 					 DragIndicatorIcon="@Icons.Material.Filled.DragIndicator">
 			<ToolBarContent>
 				<MudText Typo="Typo.h5">Сотрудники</MudText>
@@ -253,9 +255,9 @@
 					Здесь пока ничего нет. Нажмите "Добавить", чтобы создать первый!
 				</MudAlert>
 			</NoRecordsContent>
-			<PagerContent>
-				<MudDataGridPager T="Employee" />
-			</PagerContent>
+			@* <PagerContent>
+				<MudDataGridPager T="Employee" PageSizeOptions="[10,20,50,100,1000]"  />
+			</PagerContent> *@
 		</MudDataGrid>
 	</MudPaper>
 </MudContainer>
