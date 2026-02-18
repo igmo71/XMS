@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using XMS.Application.Abstractions.Services;
 using XMS.Domain.Models;
@@ -36,8 +37,8 @@ namespace XMS.Web.Components.Pages.EmployeePages
         private string? _searchString;
         private bool _isLoading;
         private bool _isProcessing;
-        private bool _isEditingGrid;
         private bool _includeDeleted = true;
+        private Employee? _selectedItem;
 
         protected override async Task OnInitializedAsync()
         {
@@ -71,7 +72,12 @@ namespace XMS.Web.Components.Pages.EmployeePages
             }
         }
 
-        private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync(_includeDeleted, _cts.Token);
+        private async Task LoadEmployees()
+        {
+            _employees = await EmployeeService.GetListAsync(_includeDeleted, _cts.Token);
+            StateHasChanged();
+        }
+
         private async Task LoadJobTitles() => _jobTitles = await JobTitleService.GetListAsync(false, _cts.Token);
         private async Task LoadDepartments()
         {
@@ -88,6 +94,11 @@ namespace XMS.Web.Components.Pages.EmployeePages
         private async Task NewItemAsync()
         {
             await _employeeGrid.SetEditingItemAsync(new Employee());
+        }
+
+        private async Task StartEditing(Employee item)
+        {
+            await _employeeGrid.SetEditingItemAsync(item);
         }
 
         private async Task<DataGridEditFormAction> CommittedItemChanges(Employee item)
@@ -217,11 +228,6 @@ namespace XMS.Web.Components.Pages.EmployeePages
             var result = await dialog.Result;
 
             return result is { Canceled: false };
-        }
-
-        private void ToggleEditingGrid(bool args)
-        {
-            _isEditingGrid = args;
         }
 
         private Func<Employee, bool> QuickFilter => e =>
