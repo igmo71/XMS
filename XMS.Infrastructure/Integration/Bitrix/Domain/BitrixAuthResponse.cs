@@ -2,7 +2,7 @@
 
 namespace XMS.Infrastructure.Integration.Bitrix.Domain
 {
-    public class BitrixAuthResponse
+    internal class BitrixAuthResponse
     {
         [JsonPropertyName("result")]
         public bool Result { get; set; }

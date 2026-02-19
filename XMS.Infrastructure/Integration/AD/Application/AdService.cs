@@ -4,7 +4,7 @@ using XMS.Infrastructure.Integration.AD.Infrastructure;
 
 namespace XMS.Infrastructure.Integration.AD.Application
 {
-    public class AdService(AdClient client) : IAdService
+    internal class AdService(AdClient client) : IAdService
     {
         public async Task<List<UserAd>> GetUsersAsync(CancellationToken ct = default)
         {

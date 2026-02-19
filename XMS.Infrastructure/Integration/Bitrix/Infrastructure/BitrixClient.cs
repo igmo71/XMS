@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace XMS.Infrastructure.Integration.Bitrix.Infrastructure
 {
-    public class BitrixClient(HttpClient httpClient, ILogger<BitrixClient> logger)
+    internal class BitrixClient(HttpClient httpClient, ILogger<BitrixClient> logger)
     {
         public async Task<TResponse?> PostDataAsync<TResponse>(string? uri, HttpContent httpContent)
         {

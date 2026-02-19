@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq.Expressions;
 using XMS.Application.Abstractions;
 using XMS.Domain.Abstractions;
@@ -13,8 +12,8 @@ namespace XMS.Infrastructure.Data
         public DbSet<CashFlowItem> CashFlowItems { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<CostCategory> CostCategories { get; set; }
-        public DbSet<CostCategoryItem> CostCategoryItems { get; set; }  
-        public DbSet<CostItem> CostItems { get; set; }      
+        public DbSet<CostCategoryItem> CostCategoryItems { get; set; }
+        public DbSet<CostItem> CostItems { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<EmployeeBuh> EmployeesBuh { get; set; }
         public DbSet<EmployeeZup> EmployeesZup { get; set; }

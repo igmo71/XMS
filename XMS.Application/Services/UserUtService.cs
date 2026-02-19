@@ -6,7 +6,7 @@ using XMS.Domain.Models;
 
 namespace XMS.Application.Services
 {
-    public class UserUtService(IOneSUtService oneSUtService, IDbContextFactoryProxy dbFactory) : IUserUtService
+    internal class UserUtService(IOneSUtService oneSUtService, IDbContextFactoryProxy dbFactory) : IUserUtService
     {
         public async Task<IReadOnlyList<UserUt>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
         {

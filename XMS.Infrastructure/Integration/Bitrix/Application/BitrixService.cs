@@ -9,7 +9,7 @@ namespace XMS.Infrastructure.Integration.Bitrix.Application
         Task<BitrixUser?> GetUserAsync(string userName, string password);
     }
 
-    public class BitrixService(BitrixClient bitrixClient, IConfiguration configuration) : IBitrixService
+    internal class BitrixService(BitrixClient bitrixClient, IConfiguration configuration) : IBitrixService
     {
         public async Task<BitrixUser?> GetUserAsync(string userName, string password)
         {

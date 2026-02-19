@@ -6,7 +6,7 @@ using XMS.Domain.Models;
 
 namespace XMS.Application.Services
 {
-    public class EmployeeService(IDbContextFactoryProxy dbFactory) : IEmployeeService
+    internal class EmployeeService(IDbContextFactoryProxy dbFactory) : IEmployeeService
     {
         public async Task CreateAsync(Employee item, CancellationToken ct = default)
         {

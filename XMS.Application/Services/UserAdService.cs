@@ -6,7 +6,7 @@ using XMS.Domain.Models;
 
 namespace XMS.Application.Services
 {
-    public class UserAdService(IAdService adService, IDbContextFactoryProxy dbFactory) : BaseService, IUserAdService
+    internal class UserAdService(IAdService adService, IDbContextFactoryProxy dbFactory) : BaseService, IUserAdService
     {
         public async Task<IReadOnlyList<UserAd>> GetListAsync(CancellationToken ct = default)
         {

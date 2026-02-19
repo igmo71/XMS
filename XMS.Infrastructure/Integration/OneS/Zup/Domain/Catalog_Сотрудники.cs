@@ -1,6 +1,6 @@
 ﻿namespace XMS.Infrastructure.Integration.OneS.Zup.Domain
 {
-    public class Catalog_Сотрудники
+    internal class Catalog_Сотрудники
     {
         public Guid Ref_Key { get; set; }
         public string? Description { get; set; }

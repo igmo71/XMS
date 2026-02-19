@@ -5,7 +5,7 @@ using XMS.Domain.Models;
 
 namespace XMS.Application.Services
 {
-    public class CostCategoryItemService(IDbContextFactoryProxy dbFactory) : ICostCategoryItemService
+    internal class CostCategoryItemService(IDbContextFactoryProxy dbFactory) : ICostCategoryItemService
     {
         public async Task DeleteByCategoryAsync(Guid valueId, CancellationToken ct = default)
         {

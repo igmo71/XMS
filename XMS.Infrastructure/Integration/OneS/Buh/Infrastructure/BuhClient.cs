@@ -2,6 +2,6 @@
 
 namespace XMS.Infrastructure.Integration.OneS.Buh.Infrastructure
 {
-    public class BuhClient(HttpClient httpClient, IOptions<BuhClientConfig> options)
+    internal class BuhClient(HttpClient httpClient, IOptions<BuhClientConfig> options)
         : OneSClient<BuhClientConfig>(httpClient, options);
 }

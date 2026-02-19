@@ -6,7 +6,7 @@ using XMS.Domain.Models;
 
 namespace XMS.Application.Services
 {
-    public class EmployeeZupService(IOneSZupService zupService, IDbContextFactoryProxy dbFactory) : IEmployeeZupService
+    internal class EmployeeZupService(IOneSZupService zupService, IDbContextFactoryProxy dbFactory) : IEmployeeZupService
     {
         public async Task<IReadOnlyList<EmployeeZup>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
         {

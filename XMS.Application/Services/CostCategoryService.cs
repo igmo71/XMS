@@ -6,9 +6,7 @@ using XMS.Domain.Models;
 
 namespace XMS.Application.Services
 {
-    public class CostCategoryService(
-        IDbContextFactoryProxy dbFactory,
-        ICostCategoryItemService costCategoryItemService) : ICostCategoryService
+    internal class CostCategoryService(IDbContextFactoryProxy dbFactory, ICostCategoryItemService costCategoryItemService) : ICostCategoryService
     {
         public async Task CreateAsync(CostCategory item, CancellationToken ct = default)
         {

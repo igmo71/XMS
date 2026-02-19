@@ -1,6 +1,6 @@
 ﻿namespace XMS.Infrastructure.Integration.OneS.Ut.Domain
 {
-    public class Catalog_Пользователи
+    internal class Catalog_Пользователи
     {
         public Guid Ref_Key { get; set; }
         public string? Description { get; set; }

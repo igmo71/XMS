@@ -5,7 +5,7 @@ using XMS.Infrastructure.Integration.OneS.Zup.Infrastructure;
 
 namespace XMS.Infrastructure.Integration.OneS.Zup.Application
 {
-    public class ZupService(ZupClient client) : IOneSZupService
+    internal class ZupService(ZupClient client) : IOneSZupService
     {
         public async Task<List<EmployeeZup>> GetEmployeeListAsync(CancellationToken ct = default)
         {

@@ -4,7 +4,7 @@ using XMS.Domain.Models;
 
 namespace XMS.Infrastructure.Integration.AD.Infrastructure
 {
-    public class AdClient(HttpClient httpClient, IOptions<AdClientConfig> options)
+    internal class AdClient(HttpClient httpClient, IOptions<AdClientConfig> options)
     {
         private readonly AdClientConfig clientConfig = options.Value;
         public Task<List<UserAd>?> GetUsersAsync(CancellationToken ct = default)

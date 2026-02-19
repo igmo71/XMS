@@ -3,11 +3,10 @@ using XMS.Application.Abstractions;
 using XMS.Application.Abstractions.Services;
 using XMS.Application.Common;
 using XMS.Domain.Models;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace XMS.Application.Services
 {
-    public class CityService(IDbContextFactoryProxy dbFactory) : ICityService
+    internal class CityService(IDbContextFactoryProxy dbFactory) : ICityService
     {
         public async Task CreateAsync(City item, CancellationToken ct = default)
         {

@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 
 namespace XMS.Infrastructure.Integration.OneS
 {
-    public abstract class OneSClient<TConfig>(HttpClient httpClient, IOptions<TConfig> options)
+    internal abstract class OneSClient<TConfig>(HttpClient httpClient, IOptions<TConfig> options)
         where TConfig : OneSClientConfig
     {
         protected readonly TConfig _clientConfig = options.Value;

@@ -38,7 +38,6 @@ namespace XMS.Web.Components.Pages.EmployeePages
         private bool _isLoading;
         private bool _isProcessing;
         private bool _includeDeleted = true;
-        private Employee? _selectedItem;
 
         protected override async Task OnInitializedAsync()
         {

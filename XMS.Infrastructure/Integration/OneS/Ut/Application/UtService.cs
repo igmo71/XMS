@@ -5,7 +5,7 @@ using XMS.Infrastructure.Integration.OneS.Ut.Infrastructure;
 
 namespace XMS.Infrastructure.Integration.OneS.Ut.Application
 {
-    public class UtService(UtClient client) : IOneSUtService
+    internal class UtService(UtClient client) : IOneSUtService
     {
         public async Task<List<CashFlowItem>> GetCashFlowItemListAsync(CancellationToken ct = default)
         {

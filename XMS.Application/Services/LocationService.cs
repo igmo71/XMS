@@ -6,7 +6,7 @@ using XMS.Domain.Models;
 
 namespace XMS.Application.Services
 {
-    public class LocationService(IDbContextFactoryProxy dbFactory) : ILocationService
+    internal class LocationService(IDbContextFactoryProxy dbFactory) : ILocationService
     {
         public async Task CreateAsync(Location item, CancellationToken ct = default)
         {

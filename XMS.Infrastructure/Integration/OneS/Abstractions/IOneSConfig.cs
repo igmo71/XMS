@@ -1,6 +1,6 @@
 ﻿namespace XMS.Infrastructure.Integration.OneS.Abstractions
 {
-    public interface IOneSConfig
+    internal interface IOneSConfig
     {
     }
 }

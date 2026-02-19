@@ -5,7 +5,7 @@ using XMS.Infrastructure.Integration.OneS.Buh.Infrastructure;
 
 namespace XMS.Infrastructure.Integration.OneS.Buh.Application
 {
-    public class BuhService(BuhClient client) : IOneSBuhService
+    internal class BuhService(BuhClient client) : IOneSBuhService
     {
         public async Task<List<EmployeeBuh>> GetEmployeeBuhListAsync(CancellationToken ct = default)
         {

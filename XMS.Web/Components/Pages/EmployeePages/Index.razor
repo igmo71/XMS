@@ -11,8 +11,7 @@
 		<MudDataGrid @ref="_employeeGrid" T="Employee" Items="@_employees" Culture="@(new CultureInfo("ru-RU", false))"
 					 Style="height: calc(100vh - 80px); overflow-y: auto;" FixedHeader
 					 Loading="@_isLoading"
-					 ReadOnly="false"
-					 SelectedItem="_selectedItem"
+					 ReadOnly="false"					 
 					 CommittedItemChanges="@((item) => CommittedItemChanges(item))"
 					 QuickFilter="QuickFilter"
 					 EditMode="DataGridEditMode.Form"
