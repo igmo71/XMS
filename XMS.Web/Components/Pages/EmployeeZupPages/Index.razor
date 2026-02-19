@@ -1,9 +1,9 @@
-﻿@page "/emploees-buh"
+﻿@page "/employees-zup"
 @using Microsoft.AspNetCore.Authorization
 @using XMS.Application.Abstractions.Services
 @using XMS.Domain.Models
 @implements IDisposable
-@inject IEmployeeBuhService Service
+@inject IEmployeeZupService Service
 @inject ISnackbar Snackbar
 @attribute [Authorize]
 
@@ -15,7 +15,7 @@
 					 Filterable="true"
 					 Dense="true">
 			<ToolBarContent>
-				<MudText Typo="Typo.h5">Сотрудники 1С Бух</MudText>
+				<MudText Typo="Typo.h5">Сотрудники 1С ЗУП</MudText>
 				<MudSpacer />
 				<MudSpacer />
 				<MudButton OnClick="ReloadDataFromOneSAsync" Color="Color.Primary" Variant="Variant.Filled">
@@ -68,15 +68,15 @@
 				</MudAlert>
 			</NoRecordsContent>
 			<PagerContent>
-				<MudDataGridPager T="EmployeeBuh" />
+				<MudDataGridPager T="EmployeeZup" />
 			</PagerContent>
 		</MudDataGrid>
 	</MudPaper>
 </MudContainer>
 
-@code {	
+@code {
 	private readonly CancellationTokenSource _cts = new();
-	private IEnumerable<EmployeeBuh> _items = [];
+	private IEnumerable<EmployeeZup> _items = [];
 	private bool _isLoading;
 	private bool _isReloading;
 	private bool _includeDeleted = true;
@@ -108,6 +108,7 @@
 		_isReloading = true;
 		try
 		{
+
 			Snackbar.Add("Синхронизация с 1С...", Severity.Info);
 
 			await Service.ReloadListAsync(_cts.Token);
@@ -124,7 +125,8 @@
 		{
 			_isReloading = false;
 		}
-	}	
+	}
+	
 
 	public void Dispose()
 	{

@@ -88,6 +88,8 @@
 				Snackbar.Add($"'{role.Name}' удалено", Severity.Success);
 			else
 				Snackbar.Add($"'{role.Name}' удалить не удалось: {string.Join(", ", result.Errors.Select(error => error.Description))}", Severity.Error);
+
+			LoadData();
 		}
 	}
 

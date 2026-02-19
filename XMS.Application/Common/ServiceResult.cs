@@ -25,7 +25,7 @@ namespace XMS.Application.Common
         public static ServiceResult Success() => new();
         public static ServiceResult Fail(ServiceError error) => new(error);
 
-        // Allow converting a T directly into Result<T>
+        // Allow converting a T directly into Result
         public static implicit operator ServiceResult(ServiceError error) => Fail(error);
     }
 

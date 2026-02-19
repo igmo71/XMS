@@ -61,8 +61,8 @@ namespace XMS.Web.Components.Pages.EmployeePages
                     LoadLocations(),
                     LoadUsersUt(),
                     LoadUsersAd(),
-                    LoadEmploeesBuh(),
-                    LoadEmploeesZup());
+                    LoadEmployeesBuh(),
+                    LoadEmployeesZup());
             }
             finally
             {
@@ -88,8 +88,8 @@ namespace XMS.Web.Components.Pages.EmployeePages
         private async Task LoadLocations() => _locations = await LocationService.GetListAsync(false, _cts.Token);
         private async Task LoadUsersUt() => _usersUt = await UserUtService.GetListAsync(false, _cts.Token);
         private async Task LoadUsersAd() => _usersAd = await UserAdService.GetListAsync(_cts.Token);
-        private async Task LoadEmploeesBuh() => _employeesBuh = await EmployeeBuhService.GetListAsync(false, _cts.Token);
-        private async Task LoadEmploeesZup() => _employeesZup = await EmployeeZupService.GetListAsync(false, _cts.Token);
+        private async Task LoadEmployeesBuh() => _employeesBuh = await EmployeeBuhService.GetListAsync(false, _cts.Token);
+        private async Task LoadEmployeesZup() => _employeesZup = await EmployeeZupService.GetListAsync(false, _cts.Token);
 
         private async Task NewItemAsync()
         {
