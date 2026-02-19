@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using XMS.Application.Common;
 using XMS.Application.Abstractions;
 using XMS.Application.Abstractions.Integration;
 using XMS.Application.Abstractions.Services;
@@ -36,11 +37,18 @@ namespace XMS.Application.Services
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var incomingIds = list.Select(x => x.Id).ToList();
+            var existingEntities = new Dictionary<Guid, EmployeeZup>();
 
-            var existingList = await dbContext.Set<EmployeeZup>().Where(x => incomingIds.Contains(x.Id)).ToListAsync(ct);
+            // Avoid translating Contains(...) into OPENJSON/WITH SQL by using batched OR predicates.
+            foreach (var batchIds in list.Select(x => x.Id).Distinct().Chunk(200))
+            {
+                var existingBatch = await dbContext.Set<EmployeeZup>()
+                    .Where(EntityFilterBuilder.BuildIdOrFilter<EmployeeZup>(batchIds))
+                    .ToListAsync(ct);
 
-            var existingEntities = existingList.ToDictionary(x => x.Id);
+                foreach (var existing in existingBatch)
+                    existingEntities[existing.Id] = existing;
+            }
 
             foreach (var incoming in list)
             {

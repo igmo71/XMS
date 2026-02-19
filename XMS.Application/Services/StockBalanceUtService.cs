@@ -7,23 +7,22 @@ using XMS.Domain.Models;
 
 namespace XMS.Application.Services
 {
-    internal class UserUtService(IOneSUtService oneSUtService, IDbContextFactoryProxy dbFactory) : IUserUtService
+    internal class StockBalanceUtService(IOneSUtService oneSUtService, IDbContextFactoryProxy dbFactory) : IStockBalanceUtService
     {
-        public async Task<IReadOnlyList<UserUt>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
+        public async Task<IReadOnlyList<StockBalanceUt>> GetListAsync(CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var query = dbContext.Set<UserUt>().AsNoTracking();
-
-            if (!includeDeleted)
-                query = query.Where(e => !e.IsDeleted);
-
-            return await query.OrderBy(x => x.Name).ToListAsync(ct);
+            return await dbContext.Set<StockBalanceUt>()
+                .AsNoTracking()
+                .OrderBy(x => x.NomenclatureId)
+                .ThenBy(x => x.WarehouseId)
+                .ToListAsync(ct);
         }
 
-        public async Task<IReadOnlyList<UserUt>> LoadListAsync(CancellationToken ct = default)
+        public async Task<IReadOnlyList<StockBalanceUt>> LoadListAsync(CancellationToken ct = default)
         {
-            return await oneSUtService.GetUserUtListAsync(ct);
+            return await oneSUtService.GetStockBalanceUtListAsync(ct);
         }
 
         public async Task ReloadListAsync(CancellationToken ct = default)
@@ -33,17 +32,17 @@ namespace XMS.Application.Services
             await SaveListAsync(list, ct);
         }
 
-        private async Task SaveListAsync(IReadOnlyList<UserUt> list, CancellationToken ct = default)
+        private async Task SaveListAsync(IReadOnlyList<StockBalanceUt> list, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var existingEntities = new Dictionary<Guid, UserUt>();
+            var existingEntities = new Dictionary<Guid, StockBalanceUt>();
 
             // Avoid translating Contains(...) into OPENJSON/WITH SQL by using batched OR predicates.
             foreach (var batchIds in list.Select(x => x.Id).Distinct().Chunk(200))
             {
-                var existingBatch = await dbContext.Set<UserUt>()
-                    .Where(EntityFilterBuilder.BuildIdOrFilter<UserUt>(batchIds))
+                var existingBatch = await dbContext.Set<StockBalanceUt>()
+                    .Where(EntityFilterBuilder.BuildIdOrFilter<StockBalanceUt>(batchIds))
                     .ToListAsync(ct);
 
                 foreach (var existing in existingBatch)
@@ -58,7 +57,7 @@ namespace XMS.Application.Services
                 }
                 else
                 {
-                    dbContext.Set<UserUt>().Add(incoming);
+                    dbContext.Set<StockBalanceUt>().Add(incoming);
                 }
             }
 
