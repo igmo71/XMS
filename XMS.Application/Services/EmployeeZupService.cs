@@ -36,11 +36,9 @@ namespace XMS.Application.Services
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var incomingIds = list.Select(x => x.Id).ToList();
-
-            var existingList = await dbContext.Set<EmployeeZup>().Where(x => incomingIds.Contains(x.Id)).ToListAsync(ct);
-
-            var existingEntities = existingList.ToDictionary(x => x.Id);
+            // NOTE: Avoid translating Contains(...) into OPENJSON/WITH SQL for older SQL Server compatibility.
+            var existingEntities = await dbContext.Set<EmployeeZup>()
+                .ToDictionaryAsync(x => x.Id, ct);
 
             foreach (var incoming in list)
             {
