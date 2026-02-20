@@ -15,7 +15,7 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
 
         private readonly CancellationTokenSource _cts = new();
         private IReadOnlyList<CashFlowItem> _cashFlowItems = [];
-        private List<TreeItemData<CashFlowItem>> _treeItems = [];
+        private IReadOnlyList<TreeItemData<CashFlowItem>> _treeItems = [];
         private HashSet<Guid> _expandedCashFlowItemIds = [];
         private bool _expandedAll;
         private bool _isLoading;
@@ -33,7 +33,7 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
             {
                 var result = await SessionStorage.GetAsync<HashSet<Guid>>(nameof(_expandedCashFlowItemIds));
                 _expandedCashFlowItemIds = result.Success ? (result.Value ?? []) : [];
-                _expandedAll = _expandedCashFlowItemIds.Count == _cashFlowItems.Count;
+                _expandedAll = _expandedCashFlowItemIds.Count > 0 && _expandedCashFlowItemIds.Count == _cashFlowItems.Count;
                 BuildTree();
                 StateHasChanged();
             }

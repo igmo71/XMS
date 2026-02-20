@@ -5,7 +5,6 @@ using XMS.Application.Abstractions.Services;
 using XMS.Domain.Abstractions;
 using XMS.Domain.Models;
 using XMS.Web.Components.Common;
-using static MudBlazor.CategoryTypes;
 
 namespace XMS.Web.Components.Pages.DepartmentPages
 {
@@ -18,9 +17,9 @@ namespace XMS.Web.Components.Pages.DepartmentPages
 
         private readonly CancellationTokenSource _cts = new();
         private IReadOnlyList<Department> _departments = [];
-        private List<TreeItemData<Department>> _treeItems = [];
-        private bool _expandedAll;
+        private IReadOnlyList<TreeItemData<Department>> _treeItems = [];
         private HashSet<Guid> _expandedDepartmentIds = [];
+        private bool _expandedAll;
         private bool _isLoading;
         private bool _isProcessing;
         private bool _includeDeleted = false;
@@ -36,7 +35,7 @@ namespace XMS.Web.Components.Pages.DepartmentPages
             {
                 var result = await SessionStorage.GetAsync<HashSet<Guid>>(nameof(_expandedDepartmentIds));
                 _expandedDepartmentIds = result.Success ? (result.Value ?? []) : [];
-                _expandedAll = _expandedDepartmentIds.Count == _departments.Count;
+                _expandedAll = _expandedDepartmentIds.Count > 0 && _expandedDepartmentIds.Count == _departments.Count;
                 BuildTree();
                 StateHasChanged();
             }
@@ -212,7 +211,7 @@ namespace XMS.Web.Components.Pages.DepartmentPages
                 { x => x.TitleIcon, Icons.Material.Filled.Delete },
                 { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}' навсегда?" },
                 { x => x.ButtonText, "Да, удалить" },
-                { x => x.ConfirmColor, Color.Secondary }
+                { x => x.ConfirmColor, Color.Warning }
             };
 
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };

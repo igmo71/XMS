@@ -6,10 +6,11 @@
 
 <PageTitle>Сотрудники</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-4">
 	<MudPaper>
 		<MudDataGrid @ref="_employeeGrid" T="Employee" Items="@_employees" Culture="@(new CultureInfo("ru-RU", false))"
-					 Style="height: calc(100vh - 80px); overflow-y: auto;" FixedHeader
+					 Style="max-height: calc(100vh - 96px); overflow-y: auto;"
+					 FixedHeader
 					 Loading="@_isLoading"
 					 ReadOnly="false"					 
 					 CommittedItemChanges="@((item) => CommittedItemChanges(item))"
@@ -267,7 +268,7 @@
 						}
 						else
 						{
-							<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Secondary"
+							<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Warning"
 										   OnClick="@(() => DeleteItemAsync(context.Item))" title="Удалить" />
 						}
 					</CellTemplate>
@@ -281,7 +282,7 @@
 						}
 						else
 						{
-							<MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Delete" Size="Size.Medium" Color="Color.Secondary"
+							<MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Delete" Size="Size.Medium" Color="Color.Warning"
 									   OnClick="@(() => DeleteItemAsync(context.Item))" Class="mt-3">
 								Удалить
 							</MudButton>

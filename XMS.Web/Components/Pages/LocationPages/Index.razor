@@ -9,7 +9,7 @@
 @inject ISnackbar Snackbar
 @attribute [Authorize]
 
-<MudContainer MaxWidth="MaxWidth.Medium">
+<MudContainer MaxWidth="MaxWidth.Medium" Class="pt-4">
 	<MudPaper>
 		<MudDataGrid @ref="_itemGrid"
 					 T="Location"
@@ -55,7 +55,7 @@
 						}
 						else
 						{
-							<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Secondary" OnClick="@(() => DeleteItemAsync(context.Item))" title="Удалить" />
+							<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Warning" OnClick="@(() => DeleteItemAsync(context.Item))" title="Удалить" />
 						}
 					</CellTemplate>
 				</TemplateColumn>
@@ -174,7 +174,7 @@
 			{ x => x.TitleIcon, Icons.Material.Filled.Delete },
 			{ x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}'?" },
 			{ x => x.ButtonText, "Да, удалить" },
-			{ x => x.ConfirmColor, Color.Secondary }
+			{ x => x.ConfirmColor, Color.Warning }
 		};
 
 		var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };

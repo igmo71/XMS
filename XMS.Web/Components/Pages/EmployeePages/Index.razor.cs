@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using MudBlazor;
 using XMS.Application.Abstractions.Services;
 using XMS.Domain.Models;
@@ -20,6 +21,7 @@ namespace XMS.Web.Components.Pages.EmployeePages
         [Inject] public IEmployeeZupService EmployeeZupService { get; set; } = default!;
         [Inject] public IDialogService DialogService { get; set; } = default!;
         [Inject] public ISnackbar Snackbar { get; set; } = default!;
+        [Inject] public IJSRuntime JsRuntime { get; set; } = default!;
 
         private readonly CancellationTokenSource _cts = new();
         private IEnumerable<Employee> _employees = [];
@@ -127,6 +129,8 @@ namespace XMS.Web.Components.Pages.EmployeePages
         {
             if (_isProcessing) return;
 
+            await _employeeGrid.CancelEditingItemAsync();
+
             if (await ConfirmDeleteItemAsync(item))
             {
                 try
@@ -151,12 +155,12 @@ namespace XMS.Web.Components.Pages.EmployeePages
                     await LoadEmployees();
                 }
             }
-
-            await _employeeGrid.CancelEditingItemAsync();
         }
 
         private async Task<bool> ConfirmDeleteItemAsync(Employee item)
         {
+            await Task.Delay(50);
+
             var title = "Удалить Сотрудника";
 
             var parameters = new DialogParameters<ConfirmDialog>
@@ -164,7 +168,7 @@ namespace XMS.Web.Components.Pages.EmployeePages
                 { x => x.TitleIcon, Icons.Material.Filled.Delete },
                 { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}'?" },
                 { x => x.ButtonText, "Да, удалить" },
-                { x => x.ConfirmColor, Color.Secondary }
+                { x => x.ConfirmColor, Color.Warning }
             };
 
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
@@ -179,6 +183,8 @@ namespace XMS.Web.Components.Pages.EmployeePages
         private async Task RestoreItemAsync(Employee item)
         {
             if (_isProcessing) return;
+
+            await _employeeGrid.CancelEditingItemAsync();
 
             if (await ConfirmRestoreItemAsync(item))
             {
@@ -204,21 +210,21 @@ namespace XMS.Web.Components.Pages.EmployeePages
                     await LoadEmployees();
                 }
             }
-
-            await _employeeGrid.CancelEditingItemAsync();
         }
 
         private async Task<bool> ConfirmRestoreItemAsync(Employee item)
         {
+            await Task.Delay(50);
+
             var title = "Восстановить Сотрудника";
 
             var parameters = new DialogParameters<ConfirmDialog>
-        {
-            { x => x.TitleIcon, Icons.Material.Filled.RestoreFromTrash },
-            { x => x.ContentText, $"Вы уверены, что хотите восстановить '{item.Name}'?" },
-            { x => x.ButtonText, "Да, восстановить" },
-            { x => x.ConfirmColor, Color.Info }
-        };
+            {
+                { x => x.TitleIcon, Icons.Material.Filled.RestoreFromTrash },
+                { x => x.ContentText, $"Вы уверены, что хотите восстановить '{item.Name}'?" },
+                { x => x.ButtonText, "Да, восстановить" },
+                { x => x.ConfirmColor, Color.Info }
+            };
 
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
 

@@ -3,15 +3,16 @@
 @using XMS.Domain.Models
 @attribute [Authorize]
 
-<MudContainer MaxWidth="MaxWidth.Large">
+<MudContainer MaxWidth="MaxWidth.Large" Class="pt-4">
 	<MudStack Row="true">
-		<MudPaper>
+		<MudPaper Style="max-height: calc(100vh - 96px); overflow-y: auto;">
 			<MudToolBar>
 				<MudStack Row="true" Spacing="6">
 					<MudText Typo="Typo.h5">Категории и Статьи Затрат</MudText>
 					<MudFab Color="Color.Primary" Size="Size.Small"
 							StartIcon="@(_expandedAll? Icons.Material.Filled.VerticalAlignCenter : Icons.Material.Filled.Expand)"
-							OnClick="@(_expandedAll ? CollapseAll : ExpandAll)" title="Свернуть все" />
+							OnClick="@(_expandedAll ? CollapseAll : ExpandAll)" 
+							title="@(_expandedAll ? "Свернуть все" : "Развернуть все")" />
 					<MudSwitch T="bool" ValueChanged="ToggleIncludeDelete" Color="Color.Primary">Показать удаленные</MudSwitch>
 				</MudStack>
 			</MudToolBar>
@@ -41,11 +42,11 @@
 										}
 										else
 										{
-											<MudMenuItem Label="Добавить" Icon="@Icons.Material.Filled.CreateNewFolder" IconColor="Color.Primary" OnClick="() => NewCategoryAsync(node.Value)" />
+											<MudMenuItem Label="Добавить" Icon="@Icons.Material.Outlined.CreateNewFolder" IconColor="Color.Primary" OnClick="() => NewCategoryAsync(node.Value)" />
 											@if (node.Value is CostCategory costCategory && costCategory.ParentId is not null)
 											{
-												<MudMenuItem Label="Изменить" Icon="@Icons.Material.Filled.Edit" IconColor="Color.Primary" OnClick="() => EditCategoryAsync(node.Value)" />
-												<MudMenuItem Label="Удалить" Icon="@Icons.Material.Filled.Delete" IconColor="Color.Secondary" OnClick="() => DeleteCategoryAsync(node.Value)" />
+												<MudMenuItem Label="Изменить" Icon="@Icons.Material.Outlined.Edit" IconColor="Color.Primary" OnClick="() => EditCategoryAsync(node.Value)" />
+												<MudMenuItem Label="Удалить" Icon="@Icons.Material.Outlined.Delete" IconColor="Color.Warning" OnClick="() => DeleteCategoryAsync(node.Value)" />
 											}
 										}
 									</MudMenu>
@@ -103,7 +104,7 @@
 							}
 							else
 							{
-								<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Secondary" OnClick="@(() => DeleteItemAsync(context.Item))" title="Удалить" />
+								<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Warning" OnClick="@(() => DeleteItemAsync(context.Item))" title="Удалить" />
 							}
 						</CellTemplate>
 					</TemplateColumn>

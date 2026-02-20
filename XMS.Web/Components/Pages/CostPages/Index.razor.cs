@@ -23,13 +23,13 @@ namespace XMS.Web.Components.Pages.CostPages
         private MudDataGrid<CostItem> _costItemGrid = default!;
         private IEnumerable<CostItem> _costItems = [];
         private IReadOnlyList<CostCategory> _costCategories = [];
-        private IEnumerable<TreeItemData<object?>> _costTree = [];
+        private IReadOnlyList<TreeItemData<object?>> _costTree = [];
         private IEnumerable<Department> _departments = [];
         private IEnumerable<Employee> _employees = [];
+        private HashSet<Guid> _expandedCategoryIds = [];
         private bool _expandedAll;
         private bool _isLoading;
         private bool _isProcessing;
-        private HashSet<Guid> _expandedCategoryIds = [];
         private bool _includeDeleted = false;
 
         protected override async Task OnInitializedAsync()
@@ -43,7 +43,7 @@ namespace XMS.Web.Components.Pages.CostPages
             {
                 var result = await SessionStorage.GetAsync<HashSet<Guid>>(nameof(_expandedCategoryIds));
                 _expandedCategoryIds = result.Success ? (result.Value ?? []) : [];
-                _expandedAll = _expandedCategoryIds.Count == _costCategories.Count;
+                _expandedAll = _expandedCategoryIds.Count > 0 && _expandedCategoryIds.Count == _costCategories.Count;
                 BuildTree();
                 StateHasChanged();
             }
@@ -384,7 +384,7 @@ namespace XMS.Web.Components.Pages.CostPages
                 { x => x.TitleIcon, Icons.Material.Filled.Delete },
                 { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}'?" },
                 { x => x.ButtonText, "Да, удалить" },
-                { x => x.ConfirmColor, Color.Secondary }
+                { x => x.ConfirmColor, Color.Warning }
             };
 
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };

@@ -7,7 +7,7 @@
 @inject ISnackbar Snackbar
 @attribute [Authorize]
 
-<MudContainer MaxWidth="MaxWidth.Large">
+<MudContainer MaxWidth="MaxWidth.Large" Class="pt-4">
 	<MudPaper>
 		<MudDataGrid Items="@_items"
 					 Loading="@_isLoading"
@@ -29,6 +29,7 @@
 						<MudText>Обновить из 1С</MudText>
 					}
 				</MudButton>
+				<MudSpacer />
 			</ToolBarContent>
 			<Columns>
 				@* <PropertyColumn Property="x => x.Id" Title="Id" /> *@

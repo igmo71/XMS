@@ -149,7 +149,7 @@
 			{ x => x.TitleIcon, Icons.Material.Filled.Delete },
 			{ x => x.ContentText, $"Вы уверены, что хотите удалить пользователя '{user.UserName}' навсегда?" },
 			{ x => x.ButtonText, "Да, Удалить" },
-			{ x => x.ConfirmColor, Color.Secondary }
+			{ x => x.ConfirmColor, Color.Warning }
 		};
 
 		var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };

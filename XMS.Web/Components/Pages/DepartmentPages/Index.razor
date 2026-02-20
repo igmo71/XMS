@@ -3,14 +3,15 @@
 @using XMS.Domain.Models
 @attribute [Authorize]
 
-<MudContainer MaxWidth="MaxWidth.Medium">
-	<MudPaper>
+<MudContainer MaxWidth="MaxWidth.Medium" Class="pt-4">
+	<MudPaper Style="max-height: calc(100vh - 96px); overflow-y: auto;">
 		<MudToolBar>
 			<MudStack Row="true" Spacing="6">
 				<MudText Typo="Typo.h5">Схема предприятия</MudText>
 				<MudFab Color="Color.Primary" Size="Size.Small"
 						StartIcon="@(_expandedAll ? Icons.Material.Filled.VerticalAlignCenter : Icons.Material.Filled.Expand)"
-						OnClick="@(_expandedAll ? CollapseAll : ExpandAll)" title="Свернуть все" />
+						OnClick="@(_expandedAll ? CollapseAll : ExpandAll)"
+						title="@(_expandedAll ? "Свернуть все" : "Развернуть все")" />
 				<MudSwitch T="bool" ValueChanged="ToggleIncludeDelete" Color="Color.Primary">Показать удаленные</MudSwitch>
 			</MudStack>
 		</MudToolBar>
@@ -24,7 +25,7 @@
 						<MudTreeViewItemToggleButton Expanded="@item.Expanded"
 													 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
 													 Visible="@item.HasChildren" />
-						<MudIcon Icon="@GetIcon(item)" Size="@(item.HasChildren? Size.Medium : Size.Small)"
+						<MudIcon Icon="@GetIcon(item)" Size="@(item.HasChildren? Size.Medium: Size.Small)"
 								 Class="@(item.Value?.IsDeleted == true ? "mr-2 text-secondary" : "mr-2")" />
 						<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)"
 								 Class="@(item.Value?.IsDeleted == true ? "text-secondary text-decoration-line-through" : "")">
@@ -37,11 +38,11 @@
 							}
 							else
 							{
-								<MudMenuItem Label="Добавить " Icon="@Icons.Material.Filled.CreateNewFolder" IconColor="Color.Primary" OnClick="() => NewDepartmentAsync(item.Value)" />
+								<MudMenuItem Label="Добавить " Icon="@Icons.Material.Outlined.CreateNewFolder" IconColor="Color.Primary" OnClick="() => NewDepartmentAsync(item.Value)" />
 								@if (item.Value is Department department && department.ParentId is not null)
 								{
-									<MudMenuItem Label="Изменить" Icon="@Icons.Material.Filled.Edit" IconColor="Color.Primary" OnClick="() => EditDepartmentAsync(item.Value)" />
-									<MudMenuItem Label="Удалить" Icon="@Icons.Material.Filled.Delete" IconColor="Color.Secondary" OnClick="() => DeleteDepartmentAsync(item.Value)" />
+									<MudMenuItem Label="Изменить" Icon="@Icons.Material.Outlined.Edit" IconColor="Color.Primary" OnClick="() => EditDepartmentAsync(item.Value)" />
+									<MudMenuItem Label="Удалить" Icon="@Icons.Material.Outlined.Delete" IconColor="Color.Warning" OnClick="() => DeleteDepartmentAsync(item.Value)" />
 								}
 							}
 						</MudMenu>

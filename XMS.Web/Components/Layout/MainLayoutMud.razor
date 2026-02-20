@@ -1,15 +1,23 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider @ref="@_mudThemeProvider" Theme="_myCustomTheme" @bind-IsDarkMode="@_isDarkMode" />
 <MudPopoverProvider />
 <MudDialogProvider />
-<MudSnackbarProvider />
+<MudSnackbarProvider PositionClass="@Defaults.Classes.Position.BottomRight"
+					 PreventDuplicates="false"
+					 NewestOnTop="true"
+					 @bind-Configuration="snackbarConfig" />
 
 <MudLayout>
-	<MudAppBar Elevation="1">
+	<MudAppBar Elevation="1" Class="mb-2">
 		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
 		<MudText Typo="Typo.h5" Class="ml-3">Предприятие</MudText>
 		<MudSpacer />
+		<MudToggleIconButton @bind-Toggled="@_isDarkMode"
+							 Icon="@Icons.Material.Filled.LightMode"
+							 Color="Color.Inherit"
+							 ToggledIcon="@Icons.Material.Filled.DarkMode"
+							 ToggledColor="Color.Inherit" />
 		<MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
 	</MudAppBar>
 	<MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
@@ -21,7 +29,82 @@
 </MudLayout>
 
 @code {
-	bool _drawerOpen = true;
+	private bool _drawerOpen = true;
+	private bool _isDarkMode = false;
+
+	private MudThemeProvider _mudThemeProvider = default!;
+
+	private MudTheme _myCustomTheme = new MudTheme()
+	{
+		PaletteLight = new PaletteLight()
+		{
+			// Акценты (Indigo)
+			Primary = "#4F46E5",          // Indigo 600 (основной)
+			Secondary = "#475569",        // Slate 600 (второстепенный)
+
+			// Поверхности
+			Background = "#F8FAFC",       // Slate 50 (фон страницы)
+			AppbarBackground = "#1E293B", // Slate 800 (шапка - темный контраст)
+			DrawerBackground = "#FFFFFF", // Белый сайдбар
+			Surface = "#FFFFFF",          // Карточки
+
+			// Текст и линии
+			TextPrimary = "#0F172A",      // Slate 900
+			TextSecondary = "#64748B",    // Slate 500
+			LinesDefault = "#E2E8F0",     // Slate 200 (сетка таблицы)
+			TableStriped = "#F1F5F9",     // Slate 100 (мягкие полоски)
+
+			// Статусы (Muted)
+			Success = "#10B981",          // Emerald 500
+			Error = "#EF4444",            // Red 500
+			Info = "#3B82F6",             // Blue 500
+			Warning = "#F59E0B",          // Amber 500
+		},
+		PaletteDark = new PaletteDark()
+		{
+			// Акценты (Indigo Light)
+			Primary = "#818CF8",          // Indigo 400 (светлее для контраста)
+			Secondary = "#94A3B8",        // Slate 400
+
+			// Поверхности
+			Background = "#0F172A",       // Slate 900 (глубокий синий)
+			Surface = "#1E293B",          // Slate 800 (карточки)
+			AppbarBackground = "#1E293B", // Slate 800
+			DrawerBackground = "#1E293B", // Slate 800
+
+			// Текст и линии
+			TextPrimary = "#F8FAFC",      // Slate 50
+			TextSecondary = "#94A3B8",    // Slate 400
+			LinesDefault = "#334155",     // Slate 700 (тонкие границы)
+			TableStriped = "#242F3E",     // Кастомный Slate 850 (едва заметный)
+
+			// Статусы
+			Success = "#34D399",          // Emerald 400
+			Error = "#F87171",            // Red 400
+			Info = "#60A5FA",             // Blue 400
+			Warning = "#FBBF24",          // Amber 400
+		},
+		LayoutProperties = new LayoutProperties()
+		{
+			DefaultBorderRadius = "8px" // Вот она!
+		}
+	};
+
+	private SnackbarConfiguration snackbarConfig = new SnackbarConfiguration()
+	{
+		VisibleStateDuration = 5000,
+		ShowCloseIcon = true,
+		SnackbarVariant = Variant.Outlined
+	};
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			_isDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
+			StateHasChanged();
+		}
+	}
 
 	void DrawerToggle()
 	{

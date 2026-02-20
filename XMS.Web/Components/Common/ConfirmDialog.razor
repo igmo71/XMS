@@ -1,6 +1,5 @@
-﻿@inject IDialogService DialogService
-<MudDialog >
-	<TitleContent >
+﻿<MudDialog>
+	<TitleContent>
 		<MudStack Row="true">
 			<MudIcon Icon="@TitleIcon" Color="ConfirmColor" />
 			<MudText Typo="Typo.h5" Color="ConfirmColor" Class="mud-text-nowrap">@MudDialog.Title</MudText>
@@ -16,21 +15,26 @@
 </MudDialog>
 
 @code {
-	@code {
-		[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+	[CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
-		[Parameter] public string TitleText { get; set; } = default!;
+	[Parameter] public string TitleText { get; set; } = default!;
 
-		[Parameter] public string TitleIcon { get; set; } = default!;
+	[Parameter] public string TitleIcon { get; set; } = default!;
 
-		[Parameter] public string ContentText { get; set; } = default!;
+	[Parameter] public string ContentText { get; set; } = default!;
 
-		[Parameter] public string ButtonText { get; set; } = default!;
+	[Parameter] public string ButtonText { get; set; } = default!;
 
-		[Parameter] public Color ConfirmColor { get; set; }
+	[Parameter] public Color ConfirmColor { get; set; }
 
-		private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+	private void Submit()
+	{
+		MudDialog.Close(DialogResult.Ok(true));
+	}
 
-		private void Cancel() => MudDialog.Cancel();
+	private void Cancel()
+	{
+		MudDialog.Cancel();
 	}
 }
+
