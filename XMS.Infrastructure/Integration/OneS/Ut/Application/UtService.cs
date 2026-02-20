@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using XMS.Application.Abstractions.Integration;
+﻿using XMS.Application.Abstractions.Integration;
 using XMS.Domain.Models;
 using XMS.Infrastructure.Integration.OneS.Ut.Domain;
 using XMS.Infrastructure.Integration.OneS.Ut.Infrastructure;
@@ -37,33 +36,6 @@ namespace XMS.Infrastructure.Integration.OneS.Ut.Application
             }).ToList();
 
             return result ?? [];
-        }
-
-        public async Task<List<StockBalanceUt>> GetStockBalanceUtListAsync(CancellationToken ct = default)
-        {
-            var rootObject = await client.GetValueAsync<RootObject<AccumulationRegister_ТоварыНаСкладах_Balance>>(AccumulationRegister_ТоварыНаСкладах_Balance.Uri, ct);
-
-            var result = rootObject?.Value?.Select(x => new StockBalanceUt
-            {
-                Id = CreateStockBalanceId(x.Номенклатура_Key, x.Склад_Key),
-                NomenclatureId = x.Номенклатура_Key,
-                WarehouseId = x.Склад_Key,
-                AvailableBalance = x.ВНаличииBalance
-            }).ToList();
-
-            return result ?? [];
-        }
-
-        private static Guid CreateStockBalanceId(Guid nomenclatureId, Guid warehouseId)
-        {
-            Span<byte> input = stackalloc byte[32];
-            nomenclatureId.ToByteArray().CopyTo(input[..16]);
-            warehouseId.ToByteArray().CopyTo(input[16..]);
-
-            Span<byte> hash = stackalloc byte[32];
-            SHA256.HashData(input, hash);
-
-            return new Guid(hash[..16]);
         }
     }
 }

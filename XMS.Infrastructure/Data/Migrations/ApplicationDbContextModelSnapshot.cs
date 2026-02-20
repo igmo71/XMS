@@ -647,31 +647,6 @@ namespace XMS.Web.Migrations
                     b.ToTable("UsersUt");
                 });
 
-
-            modelBuilder.Entity("XMS.Domain.Models.StockBalanceUt", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("AvailableBalance")
-                        .HasPrecision(18, 3)
-                        .HasColumnType("decimal(18,3)");
-
-                    b.Property<Guid>("NomenclatureId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("WarehouseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NomenclatureId", "WarehouseId")
-                        .IsUnique();
-
-                    b.ToTable("StockBalancesUt");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)

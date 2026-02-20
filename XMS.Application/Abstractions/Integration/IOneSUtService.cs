@@ -6,6 +6,5 @@ namespace XMS.Application.Abstractions.Integration
     {
         Task<List<UserUt>> GetUserUtListAsync(CancellationToken ct = default);
         Task<List<CashFlowItem>> GetCashFlowItemListAsync(CancellationToken ct = default);
-        Task<List<StockBalanceUt>> GetStockBalanceUtListAsync(CancellationToken ct = default);
     }
 }
