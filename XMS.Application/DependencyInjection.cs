@@ -19,7 +19,7 @@ namespace XMS.Application
             services.AddScoped<IEmployeeZupService, EmployeeZupService>();
             services.AddScoped<IJobTitleService, JobTitleService>();
             services.AddScoped<ILocationService, LocationService>();
-            services.AddScoped<IStockBalanceUtService, StockBalanceUtService>();
+            services.AddScoped<ISkuInventoryUtService, SkuInventoryUtService>();
             services.AddScoped<IUserAdService, UserAdService>();
             services.AddScoped<IUserUtService, UserUtService>();
 

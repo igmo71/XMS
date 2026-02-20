@@ -1,9 +1,9 @@
-﻿@page "/stock-balances-ut"
+﻿@page "/sku-inventory-ut"
 @using Microsoft.AspNetCore.Authorization
 @using XMS.Application.Abstractions.Services
 @using XMS.Domain.Models
 @implements IDisposable
-@inject IStockBalanceUtService Service
+@inject ISkuInventoryUtService Service
 @inject ISnackbar Snackbar
 @attribute [Authorize]
 
@@ -31,10 +31,10 @@
 				</MudButton>
 			</ToolBarContent>
 			<Columns>
-				<PropertyColumn Property="x => x.Id" Title="Id" />
-				<PropertyColumn Property="x => x.NomenclatureId" Title="Номенклатура" />
+				@* <PropertyColumn Property="x => x.Id" Title="Id" /> *@
+				<PropertyColumn Property="x => x.ScuId" Title="Номенклатура" />
 				<PropertyColumn Property="x => x.WarehouseId" Title="Склад" />
-				<PropertyColumn Property="x => x.AvailableBalance" Title="В наличии" />
+				<PropertyColumn Property="x => x.QuantityOnHand" Title="В наличии" />
 			</Columns>
 			<LoadingContent>
 				<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
@@ -47,7 +47,7 @@
 				</MudAlert>
 			</NoRecordsContent>
 			<PagerContent>
-				<MudDataGridPager T="StockBalanceUt" />
+				<MudDataGridPager T="SkuInventoryUt" />
 			</PagerContent>
 		</MudDataGrid>
 	</MudPaper>
@@ -55,7 +55,7 @@
 
 @code {
 	private readonly CancellationTokenSource _cts = new();
-	private IEnumerable<StockBalanceUt> _items = [];
+	private IEnumerable<SkuInventoryUt> _items = [];
 	private bool _isLoading;
 	private bool _isReloading;
 

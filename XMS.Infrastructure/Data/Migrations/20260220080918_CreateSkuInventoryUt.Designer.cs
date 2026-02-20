@@ -12,8 +12,8 @@ using XMS.Infrastructure.Data;
 namespace XMS.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260219100000_AddStockBalanceUt")]
-    partial class AddStockBalanceUt
+    [Migration("20260220080918_CreateSkuInventoryUt")]
+    partial class CreateSkuInventoryUt
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -589,6 +589,30 @@ namespace XMS.Web.Migrations
                     b.ToTable("Locations");
                 });
 
+            modelBuilder.Entity("XMS.Domain.Models.SkuInventoryUt", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("QuantityOnHand")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<Guid>("ScuId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScuId", "WarehouseId")
+                        .IsUnique();
+
+                    b.ToTable("SkuInventoryUt");
+                });
+
             modelBuilder.Entity("XMS.Domain.Models.UserAd", b =>
                 {
                     b.Property<string>("Sid")
@@ -648,31 +672,6 @@ namespace XMS.Web.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UsersUt");
-                });
-
-
-            modelBuilder.Entity("XMS.Domain.Models.StockBalanceUt", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("AvailableBalance")
-                        .HasPrecision(18, 3)
-                        .HasColumnType("decimal(18,3)");
-
-                    b.Property<Guid>("NomenclatureId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("WarehouseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NomenclatureId", "WarehouseId")
-                        .IsUnique();
-
-                    b.ToTable("StockBalancesUt");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

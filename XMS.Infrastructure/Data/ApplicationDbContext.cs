@@ -20,7 +20,7 @@ namespace XMS.Infrastructure.Data
         public DbSet<Department> Departments { get; set; }
         public DbSet<JobTitle> JobTitles { get; set; }
         public DbSet<Location> Locations { get; set; }
-        public DbSet<StockBalanceUt> StockBalancesUt { get; set; }
+        public DbSet<SkuInventoryUt> SkuInventoryUt { get; set; }
         public DbSet<UserAd> UsersAd { get; set; }
         public DbSet<UserUt> UsersUt { get; set; }
 

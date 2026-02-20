@@ -39,16 +39,16 @@ namespace XMS.Infrastructure.Integration.OneS.Ut.Application
             return result ?? [];
         }
 
-        public async Task<List<StockBalanceUt>> GetStockBalanceUtListAsync(CancellationToken ct = default)
+        public async Task<List<SkuInventoryUt>> GetStockBalanceUtListAsync(CancellationToken ct = default)
         {
             var rootObject = await client.GetValueAsync<RootObject<AccumulationRegister_ТоварыНаСкладах_Balance>>(AccumulationRegister_ТоварыНаСкладах_Balance.Uri, ct);
 
-            var result = rootObject?.Value?.Select(x => new StockBalanceUt
+            var result = rootObject?.Value?.Select(x => new SkuInventoryUt
             {
                 Id = CreateStockBalanceId(x.Номенклатура_Key, x.Склад_Key),
-                NomenclatureId = x.Номенклатура_Key,
+                ScuId = x.Номенклатура_Key,
                 WarehouseId = x.Склад_Key,
-                AvailableBalance = x.ВНаличииBalance
+                QuantityOnHand = x.ВНаличииBalance
             }).ToList();
 
             return result ?? [];
