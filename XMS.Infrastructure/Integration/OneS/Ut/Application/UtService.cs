@@ -8,7 +8,7 @@ namespace XMS.Infrastructure.Integration.OneS.Ut.Application
 {
     internal class UtService(UtClient client) : IOneSUtService
     {
-        public async Task<List<CashFlowItem>> GetCashFlowItemListAsync(CancellationToken ct = default)
+        public async Task<IReadOnlyList<CashFlowItem>> GetCashFlowItemListAsync(CancellationToken ct = default)
         {
             var rootObject = await client.GetValueAsync<RootObject<Catalog_СтатьиДвиженияДенежныхСредств>>(Catalog_СтатьиДвиженияДенежныхСредств.Uri, ct);
 
@@ -25,7 +25,7 @@ namespace XMS.Infrastructure.Integration.OneS.Ut.Application
             return result ?? [];
         }
 
-        public async Task<List<UserUt>> GetUserUtListAsync(CancellationToken ct = default)
+        public async Task<IReadOnlyList<UserUt>> GetUserUtListAsync(CancellationToken ct = default)
         {
             var rootObject = await client.GetValueAsync<RootObject<Catalog_Пользователи>>(Catalog_Пользователи.Uri, ct);
 
@@ -39,7 +39,7 @@ namespace XMS.Infrastructure.Integration.OneS.Ut.Application
             return result ?? [];
         }
 
-        public async Task<List<SkuInventoryUt>> GetStockBalanceUtListAsync(CancellationToken ct = default)
+        public async Task<IReadOnlyList<SkuInventoryUt>> GetStockBalanceUtListAsync(CancellationToken ct = default)
         {
             var rootObject = await client.GetValueAsync<RootObject<AccumulationRegister_ТоварыНаСкладах_Balance>>(AccumulationRegister_ТоварыНаСкладах_Balance.Uri, ct);
 

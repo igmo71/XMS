@@ -1,8 +1,9 @@
+using EFCore.BulkExtensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
+//using System.Linq.Expressions;
 using XMS.Application.Abstractions;
-using XMS.Domain.Abstractions;
+//using XMS.Domain.Abstractions;
 using XMS.Domain.Models;
 
 namespace XMS.Infrastructure.Data
@@ -33,31 +34,33 @@ namespace XMS.Infrastructure.Data
             //ApplyQueryFilter(modelBuilder);
         }
 
-        private static void ApplyQueryFilter(ModelBuilder modelBuilder)
-        {
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-            {
-                if (typeof(ISoftDeletable).IsAssignableFrom(entityType.ClrType))
-                {
-                    modelBuilder.Entity(entityType.ClrType).HasQueryFilter(ConvertFilterExpression(entityType.ClrType));
-                }
-            }
-        }
-
-        private static LambdaExpression? ConvertFilterExpression(Type type)
-        {
-            var parameter = Expression.Parameter(type, "e");
-            var property = Expression.Property(parameter, nameof(ISoftDeletable.IsDeleted));
-            var falseConstant = Expression.Constant(false);
-            var comparison = Expression.Equal(property, falseConstant);
-
-            var result = Expression.Lambda(comparison, parameter);
-            return result;
-        }
-
-        public void UpdateValues<TEntity>(TEntity existing, TEntity newItem) where TEntity : class
-        {
+        public void UpdateValues<TEntity>(TEntity existing, TEntity newItem) where TEntity : class =>
             Entry(existing).CurrentValues.SetValues(newItem);
-        }
+
+        public Task BulkInsertAsync<TEntity>(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null, CancellationToken ct = default)
+            where TEntity : class =>
+            this.BulkInsertAsync(entities, bulkConfig, cancellationToken: ct);
+
+        //private static void ApplyQueryFilter(ModelBuilder modelBuilder)
+        //{
+        //    foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        //    {
+        //        if (typeof(ISoftDeletable).IsAssignableFrom(entityType.ClrType))
+        //        {
+        //            modelBuilder.Entity(entityType.ClrType).HasQueryFilter(ConvertFilterExpression(entityType.ClrType));
+        //        }
+        //    }
+        //}
+
+        //private static LambdaExpression? ConvertFilterExpression(Type type)
+        //{
+        //    var parameter = Expression.Parameter(type, "e");
+        //    var property = Expression.Property(parameter, nameof(ISoftDeletable.IsDeleted));
+        //    var falseConstant = Expression.Constant(false);
+        //    var comparison = Expression.Equal(property, falseConstant);
+
+        //    var result = Expression.Lambda(comparison, parameter);
+        //    return result;
+        //}
     }
 }

@@ -79,7 +79,7 @@
 
 @code {
 	private readonly CancellationTokenSource _cts = new();
-	private IReadOnlyList<City> _items = [];
+	private IEnumerable<City> _items = [];
 	private MudDataGrid<City> _itemGrid = default!;
 	private bool _isLoading;
 	private bool _isProcessing;

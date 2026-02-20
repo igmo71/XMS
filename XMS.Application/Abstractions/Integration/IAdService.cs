@@ -4,6 +4,6 @@ namespace XMS.Application.Abstractions.Integration
 {
     public interface IAdService
     {
-        Task<List<UserAd>> GetUsersAsync(CancellationToken ct = default);
+        Task<IReadOnlyList<UserAd>> GetUsersAsync(CancellationToken ct = default);
     }
 }

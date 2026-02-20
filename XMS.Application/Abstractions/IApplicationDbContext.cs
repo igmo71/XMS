@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace XMS.Application.Abstractions
 {
@@ -10,5 +10,7 @@ namespace XMS.Application.Abstractions
         void UpdateValues<TEntity>(TEntity existing, TEntity newItem) where TEntity : class;
 
         Task<int> SaveChangesAsync(CancellationToken token);
+
+        Task BulkInsertAsync<TEntity>(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null, CancellationToken ct = default) where TEntity : class;
     }
 }

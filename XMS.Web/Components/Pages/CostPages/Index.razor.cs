@@ -21,11 +21,11 @@ namespace XMS.Web.Components.Pages.CostPages
 
         private readonly CancellationTokenSource _cts = new();
         private MudDataGrid<CostItem> _costItemGrid = default!;
-        private IReadOnlyList<CostItem> _costItems = [];
+        private IEnumerable<CostItem> _costItems = [];
         private IReadOnlyList<CostCategory> _costCategories = [];
-        private IReadOnlyList<TreeItemData<object?>> _costTree = [];
-        private IReadOnlyList<Department> _departments = [];
-        private IReadOnlyList<Employee> _employees = [];
+        private IEnumerable<TreeItemData<object?>> _costTree = [];
+        private IEnumerable<Department> _departments = [];
+        private IEnumerable<Employee> _employees = [];
         private bool _expandedAll;
         private bool _isLoading;
         private bool _isProcessing;

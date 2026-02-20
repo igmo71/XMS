@@ -4,8 +4,8 @@ namespace XMS.Application.Abstractions.Integration
 {
     public interface IOneSUtService
     {
-        Task<List<UserUt>> GetUserUtListAsync(CancellationToken ct = default);
-        Task<List<CashFlowItem>> GetCashFlowItemListAsync(CancellationToken ct = default);
-        Task<List<SkuInventoryUt>> GetStockBalanceUtListAsync(CancellationToken ct = default);
+        Task<IReadOnlyList<UserUt>> GetUserUtListAsync(CancellationToken ct = default);
+        Task<IReadOnlyList<CashFlowItem>> GetCashFlowItemListAsync(CancellationToken ct = default);
+        Task<IReadOnlyList<SkuInventoryUt>> GetStockBalanceUtListAsync(CancellationToken ct = default);
     }
 }

@@ -7,7 +7,7 @@ namespace XMS.Infrastructure.Integration.OneS.Buh.Application
 {
     internal class BuhService(BuhClient client) : IOneSBuhService
     {
-        public async Task<List<EmployeeBuh>> GetEmployeeBuhListAsync(CancellationToken ct = default)
+        public async Task<IReadOnlyList<EmployeeBuh>> GetEmployeeBuhListAsync(CancellationToken ct = default)
         {
             var rootObject = await client.GetValueAsync<RootObject<Catalog_Сотрудники>>(Catalog_Сотрудники.Uri, ct);
 

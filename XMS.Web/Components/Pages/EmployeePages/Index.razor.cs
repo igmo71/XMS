@@ -22,15 +22,15 @@ namespace XMS.Web.Components.Pages.EmployeePages
         [Inject] public ISnackbar Snackbar { get; set; } = default!;
 
         private readonly CancellationTokenSource _cts = new();
-        private IReadOnlyList<Employee> _employees = [];
-        private IReadOnlyList<JobTitle> _jobTitles = [];
+        private IEnumerable<Employee> _employees = [];
+        private IEnumerable<JobTitle> _jobTitles = [];
         private IEnumerable<City> _cities = [];
-        private IReadOnlyList<Location> _locations = [];
-        private IReadOnlyList<Department> _departments = [];
-        private IReadOnlyList<UserUt> _usersUt = [];
-        private IReadOnlyList<EmployeeBuh> _employeesBuh = [];
-        private IReadOnlyList<EmployeeZup> _employeesZup = [];
-        private IReadOnlyList<UserAd> _usersAd = [];
+        private IEnumerable<Location> _locations = [];
+        private IEnumerable<Department> _departments = [];
+        private IEnumerable<UserUt> _usersUt = [];
+        private IEnumerable<EmployeeBuh> _employeesBuh = [];
+        private IEnumerable<EmployeeZup> _employeesZup = [];
+        private IEnumerable<UserAd> _usersAd = [];
 
         private MudDataGrid<Employee> _employeeGrid = default!;
 

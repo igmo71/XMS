@@ -7,7 +7,7 @@ namespace XMS.Infrastructure.Integration.OneS.Zup.Application
 {
     internal class ZupService(ZupClient client) : IOneSZupService
     {
-        public async Task<List<EmployeeZup>> GetEmployeeListAsync(CancellationToken ct = default)
+        public async Task<IReadOnlyList<EmployeeZup>> GetEmployeeListAsync(CancellationToken ct = default)
         {
             var rootObject = await client.GetValueAsync<RootObject<Catalog_Сотрудники>>(Catalog_Сотрудники.Uri, ct);
 

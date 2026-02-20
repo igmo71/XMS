@@ -6,7 +6,7 @@ namespace XMS.Infrastructure.Integration.AD.Application
 {
     internal class AdService(AdClient client) : IAdService
     {
-        public async Task<List<UserAd>> GetUsersAsync(CancellationToken ct = default)
+        public async Task<IReadOnlyList<UserAd>> GetUsersAsync(CancellationToken ct = default)
         {
             var result = await client.GetUsersAsync(ct);
 

@@ -4,6 +4,6 @@ namespace XMS.Application.Abstractions.Integration
 {
     public interface IOneSBuhService
     {
-        Task<List<EmployeeBuh>> GetEmployeeBuhListAsync(CancellationToken ct = default);
+        Task<IReadOnlyList<EmployeeBuh>> GetEmployeeBuhListAsync(CancellationToken ct = default);
     }
 }
