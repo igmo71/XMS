@@ -6,12 +6,20 @@ namespace XMS.Api.Endpoints
     {
         public static IEndpointRouteBuilder MapYuNuEndpoints(this IEndpointRouteBuilder endpoints)
         {
-            endpoints.MapGet("/integration/yunu/article-relations", async (IYuNuService service, CancellationToken ct) =>
+            endpoints.MapGet("/integration/yunu/article-relations/godoo", async (IYuNuService service, CancellationToken ct) =>
                 {
-                    var result = await service.GetArticleRelationsAsync(ct);
+                    var result = await service.GetArticleRelationsAsync("godoo", ct);
                     return Results.Ok(result);
                 })
-                .WithName("GetYuNuArticleRelations")
+                .WithName("GetYuNuArticleRelations_godoo")
+                .WithTags("YuNu");
+
+            endpoints.MapGet("/integration/yunu/article-relations/ip", async (IYuNuService service, CancellationToken ct) =>
+            {
+                var result = await service.GetArticleRelationsAsync("ip", ct);
+                return Results.Ok(result);
+            })
+                .WithName("GetYuNuArticleRelations_ip")
                 .WithTags("YuNu");
 
             return endpoints;

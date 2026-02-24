@@ -6,9 +6,9 @@ namespace XMS.Infrastructure.Integration.YuNu.Application
 {
     internal class YuNuService(YuNuClient client) : IYuNuService
     {
-        public Task<IReadOnlyList<YuNuArticleRelation>> GetArticleRelationsAsync(CancellationToken ct = default)
+        public Task<YuNuArticleRelation?> GetArticleRelationsAsync(string apiKeyName, CancellationToken ct = default)
         {
-            return client.GetArticleRelationsAsync(ct);
+            return client.GetArticleRelationsAsync(apiKeyName, ct);
         }
     }
 }

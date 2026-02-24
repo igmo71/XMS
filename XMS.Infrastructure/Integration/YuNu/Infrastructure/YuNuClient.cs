@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Azure.Core;
+using Microsoft.Extensions.Options;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using XMS.Domain.Models;
 
@@ -8,49 +10,24 @@ namespace XMS.Infrastructure.Integration.YuNu.Infrastructure
     {
         private readonly YuNuClientConfig clientConfig = options.Value;
 
-        public async Task<IReadOnlyList<YuNuArticleRelation>> GetArticleRelationsAsync(CancellationToken ct = default)
+        public async Task<YuNuArticleRelation?> GetArticleRelationsAsync(string apiKeyName, CancellationToken ct = default)
         {
-            using var response = await httpClient.GetAsync(clientConfig.ArticleRelations, ct);
+            using var request = new HttpRequestMessage(HttpMethod.Get, clientConfig.ArticleRelations);
+
+            var apiKey = clientConfig.ApiKeys.FirstOrDefault(e => e.Name.Equals(apiKeyName))
+                ?? throw new InvalidOperationException($"ApiKey {apiKeyName} not found.");
+
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey.Value);
+
+            using var response = await httpClient.SendAsync(request, ct);
+
             response.EnsureSuccessStatusCode();
 
-            await using var stream = await response.Content.ReadAsStreamAsync(ct);
-            using var document = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
+            var content = await response.Content.ReadAsStringAsync();
 
-            var relations = TryExtractRelations(document.RootElement);
-            if (relations is not null)
-            {
-                return relations;
-            }
+            var relation = JsonSerializer.Deserialize<YuNuArticleRelation>(content);
 
-            return [];
-        }
-
-        private static IReadOnlyList<YuNuArticleRelation>? TryExtractRelations(JsonElement root)
-        {
-            if (root.ValueKind == JsonValueKind.Array)
-            {
-                return Deserialize(root);
-            }
-
-            if (root.ValueKind != JsonValueKind.Object)
-            {
-                return null;
-            }
-
-            foreach (var propertyName in new[] { "data", "items", "results" })
-            {
-                if (root.TryGetProperty(propertyName, out var nested) && nested.ValueKind == JsonValueKind.Array)
-                {
-                    return Deserialize(nested);
-                }
-            }
-
-            return null;
-        }
-
-        private static IReadOnlyList<YuNuArticleRelation> Deserialize(JsonElement element)
-        {
-            return element.Deserialize<List<YuNuArticleRelation>>() ?? [];
+            return relation;
         }
     }
 }

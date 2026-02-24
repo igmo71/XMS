@@ -4,6 +4,6 @@ namespace XMS.Application.Abstractions.Integration
 {
     public interface IYuNuService
     {
-        Task<IReadOnlyList<YuNuArticleRelation>> GetArticleRelationsAsync(CancellationToken ct = default);
+        Task<YuNuArticleRelation?> GetArticleRelationsAsync(string apiKeyName, CancellationToken ct = default);
     }
 }
