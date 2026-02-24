@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using XMS.Infrastructure.Integration.AD;
 using XMS.Infrastructure.Integration.Bitrix;
 using XMS.Infrastructure.Integration.OneS;
+using XMS.Infrastructure.Integration.YuNu;
 
 namespace XMS.Infrastructure.Integration
 {
@@ -13,6 +14,7 @@ namespace XMS.Infrastructure.Integration
             services.AddOneSServices(configuration);
             services.AddAdServices(configuration);
             services.AddBitrixServices(configuration);
+            services.AddYuNuServices(configuration);
 
             return services;
         }
