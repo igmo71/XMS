@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@using XMS.Web.Components.Layout.Sections
+@inherits LayoutComponentBase
+@inject IEnumerable<IAppSection> Sections
 
 <MudThemeProvider @ref="@_mudThemeProvider" Theme="_myCustomTheme" @bind-IsDarkMode="@_isDarkMode" />
 <MudPopoverProvider />
@@ -13,6 +15,18 @@
 		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
 		<MudText Typo="Typo.h5" Class="ml-3">Предприятие</MudText>
 		<MudSpacer />
+		<MudTabs ActivePanelIndex="_activeIndex"
+				 ActivePanelIndexChanged="SetSection"
+				 Elevation="0"
+				 Rounded="true">
+
+			@foreach (var section in _sections)
+			{
+				<MudTabPanel Text="@(section.Title)" />
+			}
+
+		</MudTabs>
+		<MudSpacer />
 		<MudToggleIconButton @bind-Toggled="@_isDarkMode"
 							 Icon="@Icons.Material.Filled.LightMode"
 							 Color="Color.Inherit"
@@ -21,7 +35,8 @@
 		<MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
 	</MudAppBar>
 	<MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-		<NavMenuMud />
+		@* <NavMenuMud /> *@
+		@_currentSection?.Menu
 	</MudDrawer>
 	<MudMainContent>
 		@Body
@@ -31,6 +46,10 @@
 @code {
 	private bool _drawerOpen = true;
 	private bool _isDarkMode = false;
+
+	private List<IAppSection> _sections = new();
+	private IAppSection? _currentSection;
+	private int _activeIndex;
 
 	private MudThemeProvider _mudThemeProvider = default!;
 
@@ -97,6 +116,13 @@
 		SnackbarVariant = Variant.Outlined
 	};
 
+	protected override void OnInitialized()
+	{
+		_sections = Sections.ToList();
+		_currentSection = _sections.First();
+		_activeIndex = 0;
+	}
+
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		if (firstRender)
@@ -109,5 +135,14 @@
 	void DrawerToggle()
 	{
 		_drawerOpen = !_drawerOpen;
+	}
+
+	private void SetSection(int index)
+	{
+		if (index < 0 || index >= _sections.Count)
+			return;
+
+		_activeIndex = index;
+		_currentSection = _sections[index];
 	}
 }

@@ -14,6 +14,7 @@ using XMS.Infrastructure;
 using XMS.Infrastructure.Data;
 using XMS.Web.Components;
 using XMS.Web.Components.Account;
+using XMS.Web.Components.Layout.Sections;
 
 namespace XMS.Web
 {
@@ -110,6 +111,11 @@ namespace XMS.Web
             builder.Services.AddApplicationServices();
 
             builder.Services.AddScoped<AuthService>();
+
+
+            builder.Services.AddScoped<IAppSection, SectionConfig>();
+            builder.Services.AddScoped<IAppSection, SectionAdmin>();
+            builder.Services.AddScoped<IAppSection, SectionYuNu>();
 
             var app = builder.Build();
 
