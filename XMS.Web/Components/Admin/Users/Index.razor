@@ -10,7 +10,7 @@
 @inject ISnackbar Snackbar
 @attribute [Authorize(Roles = "Admin")]
 
-<MudContainer MaxWidth="MaxWidth.Large">
+<MudContainer MaxWidth="MaxWidth.Large" Class="pt-4">
 	<MudDataGrid T="ApplicationUser"
 				 Items="_users"
 				 ReadOnly="false"

@@ -37,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Integration\OneS\BuhGodoo\" />
     <Folder Include="Integration\YuNu\" />
   </ItemGroup>
 

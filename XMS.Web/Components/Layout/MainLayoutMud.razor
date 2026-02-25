@@ -13,20 +13,19 @@
 <MudLayout>
 	<MudAppBar Elevation="1" Class="mb-2">
 		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-		<MudText Typo="Typo.h5" Class="ml-3">Предприятие</MudText>
-		<MudSpacer />
+		<MudText Typo="Typo.h5" Class="ml-3 mr-3">Предприятие</MudText>
+		
 		<MudTabs ActivePanelIndex="_activeIndex"
 				 ActivePanelIndexChanged="SetSection"
-				 Elevation="0"
-				 Rounded="true">
+				 Elevation="0" Rounded="true" Color="Color.Inherit" Class="ml-5">
 
 			@foreach (var section in _sections)
 			{
 				<MudTabPanel Text="@(section.Title)" />
 			}
-
 		</MudTabs>
 		<MudSpacer />
+		<AuthOnAppBar />
 		<MudToggleIconButton @bind-Toggled="@_isDarkMode"
 							 Icon="@Icons.Material.Filled.LightMode"
 							 Color="Color.Inherit"

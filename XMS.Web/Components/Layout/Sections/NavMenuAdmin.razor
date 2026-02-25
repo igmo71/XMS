@@ -1,51 +1,10 @@
-﻿@implements IDisposable
-
-@inject NavigationManager NavigationManager
-
-<MudNavMenu>	
+﻿<MudNavMenu>
+	<MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Главная</MudNavLink>
 	<MudNavGroup Title="Админка" Icon="@Icons.Material.Filled.AdminPanelSettings" Expanded="false">
 		<MudNavLink Href="admin/users" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.PersonPin">Пользователи</MudNavLink>
 		<MudNavLink Href="admin/roles" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.SupervisedUserCircle">Роли</MudNavLink>
 	</MudNavGroup>
 
 	<MudNavLink Href="auth" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Lock">Auth Required</MudNavLink>
-	<AuthorizeView>
-		<Authorized>
-			@* <MudNavLink Href="Account/Manage" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">@context.User.Identity?.Name</MudNavLink> *@
-			<form action="Account/Logout" method="post">
-				<AntiforgeryToken />
-				<input type="hidden" name="ReturnUrl" value="@currentUrl" />
-				<button type="submit" class="mud-nav-link mud-ripple">
-					<MudIcon Icon="@Icons.Material.Filled.Logout" Class="mr-3"></MudIcon> Выход
-				</button>
-			</form>
-		</Authorized>
-		<NotAuthorized>
-			@* <MudNavLink Href="Account/Register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Регистрация</MudNavLink> *@
-			<MudNavLink Href="Account/Login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Login">Вход</MudNavLink>
-		</NotAuthorized>
-	</AuthorizeView>
+	<AuthInNavMenu />
 </MudNavMenu>
-
-
-@code {
-	private string? currentUrl;
-
-	protected override void OnInitialized()
-	{
-		currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-		NavigationManager.LocationChanged += OnLocationChanged;
-	}
-
-	private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-	{
-		currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
-		StateHasChanged();
-	}
-
-	public void Dispose()
-	{
-		NavigationManager.LocationChanged -= OnLocationChanged;
-	}
-}
-
