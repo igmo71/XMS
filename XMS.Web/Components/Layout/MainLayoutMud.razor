@@ -2,14 +2,10 @@
 @inherits LayoutComponentBase
 @inject IEnumerable<IAppSection> Sections
 
-<MudThemeProvider @ref="@_mudThemeProvider" Theme="_myCustomTheme" @bind-IsDarkMode="@_isDarkMode" />
-<MudPopoverProvider />
+<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" Theme="_myCustomTheme" />
+<MudSnackbarProvider @bind-Configuration="snackbarConfig" />
 <MudDialogProvider />
-<MudSnackbarProvider PositionClass="@Defaults.Classes.Position.BottomRight"
-					 PreventDuplicates="false"
-					 NewestOnTop="true"
-					 @bind-Configuration="snackbarConfig" />
-
+<MudPopoverProvider />
 <MudLayout>
 	<MudAppBar Elevation="1" Class="mb-2">
 		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
@@ -17,11 +13,12 @@
 		
 		<MudTabs ActivePanelIndex="_activeIndex"
 				 ActivePanelIndexChanged="SetSection"
-				 Elevation="0" Rounded="true" Color="Color.Inherit" Class="ml-5">
+				 Elevation="0" Rounded="true" Color="Color.Transparent" Class="ml-5">
 
 			@foreach (var section in _sections)
 			{
-				<MudTabPanel Text="@(section.Title)" />
+				string tabPanelBackground = _isDarkMode ? _myCustomTheme.PaletteDark.AppbarBackground.Value : _myCustomTheme.PaletteLight.AppbarBackground.Value;
+				<MudTabPanel Text="@(section.Title)" Style="@($"background: {tabPanelBackground}")" />
 			}
 		</MudTabs>
 		<MudSpacer />
@@ -104,7 +101,7 @@
 		},
 		LayoutProperties = new LayoutProperties()
 		{
-			DefaultBorderRadius = "8px" // Вот она!
+			DefaultBorderRadius = "8px"
 		}
 	};
 
@@ -112,7 +109,10 @@
 	{
 		VisibleStateDuration = 5000,
 		ShowCloseIcon = true,
-		SnackbarVariant = Variant.Outlined
+		SnackbarVariant = Variant.Outlined,
+		PositionClass = Defaults.Classes.Position.BottomRight,
+		NewestOnTop = true,
+		PreventDuplicates = false,
 	};
 
 	protected override void OnInitialized()
@@ -143,5 +143,6 @@
 
 		_activeIndex = index;
 		_currentSection = _sections[index];
+		_drawerOpen = true;
 	}
 }

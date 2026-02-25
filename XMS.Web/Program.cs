@@ -112,10 +112,7 @@ namespace XMS.Web
 
             builder.Services.AddScoped<AuthService>();
 
-
-            builder.Services.AddScoped<IAppSection, SectionConfig>();
-            builder.Services.AddScoped<IAppSection, SectionAdmin>();
-            builder.Services.AddScoped<IAppSection, SectionYuNu>();
+            builder.Services.AddAppSections();
 
             var app = builder.Build();
 
