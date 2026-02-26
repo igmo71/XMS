@@ -83,6 +83,12 @@ namespace XMS.Application.Services
 
         private async Task<Product?> GetProduct(IReadOnlyList<Product> existingProducts, Result yunuProduct, CancellationToken ct)
         {
+            if (string.IsNullOrEmpty(yunuProduct.YuNuArticle))
+                logger.LogWarning("Try {Source} by YuNuArticle {yunuProduct.YuNuArticle}", nameof(GetProduct), yunuProduct.YuNuArticle);
+            else
+                logger.LogDebug("Try {Source} by YuNuArticle {yunuProduct.YuNuArticle}", nameof(GetProduct), yunuProduct.YuNuArticle);
+
+
             var products = existingProducts.Where(e => e.Sku == yunuProduct.YuNuArticle).ToList();
 
             if (products.Count == 0)
@@ -96,7 +102,7 @@ namespace XMS.Application.Services
                 logger.LogDebug("{Source} Product Exists {@Product}", nameof(GetProduct), product);
                 return product;
             }
-            else if(products.Count > 1)
+            else if (products.Count > 1)
             {
                 logger.LogError("{Source} Products сount greater than 1 {@Products}", nameof(GetProduct), products);
                 return null;
