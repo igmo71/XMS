@@ -24,7 +24,7 @@ namespace XMS.Infrastructure.Integration.OneS.BuhGodoo.Application
 
             string marketplaceSku = (yunuRelation.Sku ?? yunuRelation.NmId)!;
 
-            var relation = new InformationRegister_НоменклатураМаркетплейсов
+            var relationToCreate = new InformationRegister_НоменклатураМаркетплейсов
             {
                 Маркетплейс = MarketplaceMap.FromYuNu[yunuRelation.Marketplace],
                 ИдентификаторТовара = marketplaceSku,
@@ -33,30 +33,37 @@ namespace XMS.Infrastructure.Integration.OneS.BuhGodoo.Application
                 Организация_Key = companyId
             };
 
-            var newMarketplaceRelation = await client.PostValueAsync(relation, nameof(InformationRegister_НоменклатураМаркетплейсов), ct);
+            var relationCreated = await client.PostValueAsync(relationToCreate, nameof(InformationRegister_НоменклатураМаркетплейсов), ct);
 
-            logger.LogInformation("{Source} - Ok {@НоменклатураМаркетплейсов}", nameof(CreateMarketplaceRelationAsync), newMarketplaceRelation);
+            if (relationCreated is not null)
+                logger.LogInformation("{Source} - Ok {@RelationCreated}", nameof(CreateMarketplaceRelationAsync), relationCreated);
+            else
+                logger.LogError("{Source} - Error {@RelationToCreate}", nameof(CreateMarketplaceRelationAsync), relationToCreate);
         }
 
         public async Task<Product?> CreateProductAsync(Result yunuProduct, CancellationToken ct = default)
         {
-            Catalog_Номенклатура catalog_Номенклатура = new()
+            Catalog_Номенклатура newCatalog_Номенклатура = new()
             {
                 Description = yunuProduct.ProductName,
                 НаименованиеПолное = yunuProduct.ProductName,
                 Артикул = yunuProduct.YuNuArticle
             };
 
-            var newCatalog_Номенклатура = await client.PostValueAsync(catalog_Номенклатура, nameof(Catalog_Номенклатура), ct);
+            var createdCatalog_Номенклатура = await client.PostValueAsync(newCatalog_Номенклатура, nameof(Catalog_Номенклатура), ct);
 
-            if (newCatalog_Номенклатура is null)
+            if (createdCatalog_Номенклатура is null)
+            {
+                logger.LogInformation("{Source} - Error {@ProductToCreate}", nameof(CreateProductAsync), newCatalog_Номенклатура);
+
                 return null;
+            }
 
             var result = new Product
             {
-                Id = newCatalog_Номенклатура.Ref_Key,
-                Name = newCatalog_Номенклатура.Description,
-                Sku = newCatalog_Номенклатура.Артикул
+                Id = createdCatalog_Номенклатура.Ref_Key,
+                Name = createdCatalog_Номенклатура.Description,
+                Sku = createdCatalog_Номенклатура.Артикул
             };
 
             logger.LogInformation("{Source} - Ok {@Product}", nameof(CreateProductAsync), result);
