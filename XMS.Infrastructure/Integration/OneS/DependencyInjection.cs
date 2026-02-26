@@ -6,6 +6,8 @@ using System.Text;
 using XMS.Application.Abstractions.Integration;
 using XMS.Infrastructure.Integration.OneS.Buh.Application;
 using XMS.Infrastructure.Integration.OneS.Buh.Infrastructure;
+using XMS.Infrastructure.Integration.OneS.BuhGodoo.Application;
+using XMS.Infrastructure.Integration.OneS.BuhGodoo.Infrastructure;
 using XMS.Infrastructure.Integration.OneS.Ut.Application;
 using XMS.Infrastructure.Integration.OneS.Ut.Infrastructure;
 using XMS.Infrastructure.Integration.OneS.Zup.Application;
@@ -20,10 +22,12 @@ namespace XMS.Infrastructure.Integration.OneS
             services.AddOneSClient<UtClient, UtClientConfig>(configuration);
             services.AddOneSClient<BuhClient, BuhClientConfig>(configuration);
             services.AddOneSClient<ZupClient, ZupClientConfig>(configuration);
+            services.AddOneSClient<GodooBuhClient, GodooBuhClientConfig>(configuration);
 
             services.AddScoped<IOneSUtService, UtService>();
             services.AddScoped<IOneSBuhService, BuhService>();
             services.AddScoped<IOneSZupService, ZupService>();
+            services.AddScoped<IGodooOneSBuhService, GodooBuhService>();
 
             return services;
         }
