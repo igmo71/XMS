@@ -35,33 +35,13 @@ namespace XMS.Web
                     .ReadFrom.Services(services);
             });
 
-            builder.Services.AddOpenTelemetry()
-                .ConfigureResource(resource =>
-                {
-                    resource.AddService(AppTelemetry.ServiceName);
-                    resource.AddAttributes(new Dictionary<string, object> { ["Application"] = "XMS" });
-                })
-                .WithTracing(tracing => tracing
-                    .SetSampler(new AppTraceSampler())
-                    .AddSource(AppTelemetry.SourceName)
-                    .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddSqlClientInstrumentation()
-                    //.AddEntityFrameworkCoreInstrumentation()
-                    .AddOtlpExporter(options =>
-                    {
-                        //options.Endpoint = new Uri("http://vm-igmo-dev:5341/ingest/otlp/v1/traces");
-                        var endpoint = new Uri($"{builder.Configuration["Serilog:WriteTo:1:Args:serverUrl"]}/ingest/otlp/v1/traces");
-                        options.Endpoint = (endpoint);
-                        options.Protocol = OtlpExportProtocol.HttpProtobuf;
-                    }));
-
             // Add services to the container.
-            builder.Services.AddMudServices();
-            builder.Services.AddMudTranslations();
 
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+
+            builder.Services.AddMudServices();
+            builder.Services.AddMudTranslations();
 
             builder.Services.AddCascadingAuthenticationState();
             builder.Services.AddScoped<IdentityRedirectManager>();
