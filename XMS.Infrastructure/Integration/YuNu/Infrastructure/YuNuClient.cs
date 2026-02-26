@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using XMS.Domain.Models;
+using XMS.Domain.Models.Godoo;
 
 namespace XMS.Infrastructure.Integration.YuNu.Infrastructure
 {
@@ -22,7 +22,7 @@ namespace XMS.Infrastructure.Integration.YuNu.Infrastructure
 
             response.EnsureSuccessStatusCode();
 
-            var content = await response.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync(ct);
 
             var relation = JsonSerializer.Deserialize<YuNuArticleRelation>(content);
 

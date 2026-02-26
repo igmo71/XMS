@@ -7,7 +7,7 @@ namespace XMS.Api.Endpoints
     {
         public static IEndpointRouteBuilder MapGodooEndpoints(this IEndpointRouteBuilder endpoints)
         {
-            endpoints.MapGet("/integration/godoo", async ([FromServices] IGodooService service, CancellationToken ct) =>
+            endpoints.MapGet("/integration/godoo/reload", async ([FromServices] IGodooService service, CancellationToken ct) =>
             {
                 await service.Reload("godoo", ct);
                 return Results.NoContent();

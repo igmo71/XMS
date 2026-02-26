@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace XMS.Domain.Models
+namespace XMS.Domain.Models.Godoo
 {
     public class YuNuArticleRelation
     {
@@ -13,12 +13,12 @@ namespace XMS.Domain.Models
         [JsonPropertyName("product_id")] public int ProductId { get; set; }
         [JsonPropertyName("product_name")] public string? ProductName { get; set; }
         [JsonPropertyName("yunu_article")] public string? YuNuArticle { get; set; }
-        [JsonPropertyName("marketplace_relations")] public MarketplaceRelations[]? MarketplaceRelations { get; set; }
+        [JsonPropertyName("marketplace_relations")] public YuNuMarketplaceRelation[]? MarketplaceRelations { get; set; }
         [JsonPropertyName("barcodes")] public string[]? Barcodes { get; set; }
-        [JsonPropertyName("child_products")] public ChildProducts[]? ChildProducts { get; set; }
+        [JsonPropertyName("child_products")] public ChildProduct[]? ChildProducts { get; set; }
     }
 
-    public class MarketplaceRelations
+    public class YuNuMarketplaceRelation
     {
         [JsonPropertyName("cabinet_id")] public int CabinetId { get; set; }
         [JsonPropertyName("marketplace")] public string? Marketplace { get; set; }
@@ -29,7 +29,7 @@ namespace XMS.Domain.Models
         [JsonPropertyName("vendor_code")] public string? VendorCode { get; set; }
     }
 
-    public class ChildProducts
+    public class ChildProduct
     {
         [JsonPropertyName("product_id")] public int ProductId { get; set; }
         [JsonPropertyName("count")] public int Count { get; set; }

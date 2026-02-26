@@ -1,10 +1,15 @@
-﻿using XMS.Application.Abstractions.Integration;
+﻿using Microsoft.Extensions.Logging;
+using XMS.Application.Abstractions;
+using XMS.Application.Abstractions.Integration;
 using XMS.Application.Abstractions.Services;
 using XMS.Domain.Models.Godoo;
 
 namespace XMS.Application.Services
 {
-    internal class GodooService(IGodooOneSBuhService godooOneSBuhService, IYuNuService yunuService) : IGodooService
+    internal class GodooService(
+        IGodooOneSBuhService godooOneSBuhService,
+        IYuNuService yunuService,
+        ILogger<GodooService> logger) : BaseService, IGodooService
     {
         public async Task<IReadOnlyList<Company>> GetCompanyListAsync(CancellationToken ct)
         {
@@ -23,25 +28,89 @@ namespace XMS.Application.Services
 
         public async Task Reload(string apiKeyName, CancellationToken ct)
         {
-            var products = await godooOneSBuhService.GetProductListAsync(ct);
+            StartActivity();
 
-            var marketplaceRelation = await godooOneSBuhService.GetMarketplaceRelationListAsync(ct);
+            var existingProducts = await godooOneSBuhService.GetProductListAsync(ct);
 
-            var relationList = await yunuService.GetArticleRelationsAsync(ct);
+            var marketplaceRelations = await godooOneSBuhService.GetMarketplaceRelationListAsync(ct);
 
-            if (relationList is null)
+            var yunuArticleRelations = await yunuService.GetArticleRelationsAsync(ct);
+
+            if (yunuArticleRelations is null)
                 return;
 
-            var yunuArticleRelations = relationList
-                .Where(e => e.Result != null)
-                .SelectMany(e => e.Result!);
+            foreach (var yunuArticleRelation in yunuArticleRelations)
+            {
+                if (yunuArticleRelation.Value.Result is null)
+                {
+                    logger.LogError("{Source} YuNuArticleRelation Result is null", nameof(Reload));
+                    break;
+                }
 
-            var existingYuNuArticles = yunuArticleRelations.Select(e => e.YuNuArticle).ToList();
+                foreach (var yunuProduct in yunuArticleRelation.Value.Result)
+                {
+                    Product? product = await GetProduct(existingProducts, yunuProduct, ct);
 
-            // TODO: Проходим по всем existingYuNuArticles, смотрим если есть такая Номенклатура, то смотрим marketplaceRelation, при необходимости, добавляем
-            // TODO: marketplaceRelation проверяем по yunu_article, {nm_id (wildberries), sku (ozon), ???} -> MarketplaceSku (ИдентификаторТовара),  marketplace, barcode
-            // TODO: Маркетплейс в 1C это перечисление! (отправлять строку или число?) Gemini говорит строкой
-            // TODO: XMS.Worker
+                    if (product is null)
+                    {
+                        logger.LogError("{Source} Product is null", nameof(Reload));
+                        break;
+                    }
+
+                    if (yunuProduct.MarketplaceRelations?.Length > 0)
+                    {
+                        foreach (var yunuRelation in yunuProduct.MarketplaceRelations)
+                        {
+                            if (!marketplaceRelations.Any(e => yunuRelation.Marketplace != null
+                                && e.Marketplace == MarketplaceMap.FromYuNu[yunuRelation.Marketplace]
+                                && (e.MarketplaceSku == yunuRelation.Sku || e.MarketplaceSku == yunuRelation.NmId)
+                                && e.Barcode == yunuRelation.Barcode
+                                && e.ProductId == product.Id.ToString()
+                                && e.CompanyId == yunuArticleRelation.Key))
+                            {
+                                logger.LogDebug("{Source} YuNuMarketplaceRelation Not Exists {@YuNuMarketplaceRelation}", nameof(Reload), yunuRelation);
+                                await godooOneSBuhService.CreateMarketplaceRelationAsync(product, yunuRelation, yunuArticleRelation.Key, ct);
+                            }
+                            else
+                            {
+                                logger.LogDebug("{Source} YuNuMarketplaceRelation Exists {@YuNuMarketplaceRelation}", nameof(Reload), yunuRelation);
+                            }
+                        }
+                    }
+                }
+            }
         }
+
+        private async Task<Product?> GetProduct(IReadOnlyList<Product> existingProducts, Result yunuProduct, CancellationToken ct)
+        {
+            var products = existingProducts.Where(e => e.Sku == yunuProduct.YuNuArticle).ToList();
+
+            if (products.Count == 0)
+            {
+                logger.LogDebug("{Source} Product Not Exists", nameof(GetProduct));
+                return await godooOneSBuhService.CreateProductAsync(yunuProduct, ct);
+            }
+            else if (products.Count == 1)
+            {
+                var product = products.First();
+                logger.LogDebug("{Source} Product Exists {@Product}", nameof(GetProduct), product);
+                return product;
+            }
+            else if(products.Count > 1)
+            {
+                logger.LogError("{Source} Products сount greater than 1 {@Products}", nameof(GetProduct), products);
+                return null;
+            }
+            else
+            {
+                logger.LogError("{Source} Can't find or create product", nameof(GetProduct));
+                return null;
+            }
+        }
+
+        // TODO: Проходим по всем existingYuNuArticles, смотрим если есть такая Номенклатура, то смотрим marketplaceRelation, при необходимости, добавляем
+        // TODO: marketplaceRelation проверяем по yunu_article, {nm_id (wildberries), sku (ozon), ???} -> MarketplaceSku (ИдентификаторТовара),  marketplace, barcode
+        // TODO: Маркетплейс в 1C это перечисление! (отправлять строку или число?) Gemini говорит строкой
+        // TODO: XMS.Worker
     }
 }

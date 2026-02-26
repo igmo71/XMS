@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace XMS.Infrastructure.Integration.OneS.Ut.Infrastructure
 {
-    internal class UtClient(HttpClient httpClient, IOptions<UtClientConfig> options)
-        : OneSClient<UtClientConfig>(httpClient, options);
+    internal class UtClient(HttpClient httpClient, IOptions<UtClientConfig> options, ILogger<UtClient> logger)
+        : OneSClient<UtClientConfig>(httpClient, options, logger);
 }

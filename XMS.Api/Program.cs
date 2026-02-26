@@ -6,7 +6,6 @@ using XMS.Api.Endpoints;
 using XMS.Application;
 using XMS.Application.Common;
 using XMS.Infrastructure;
-using XMS.Infrastructure.Integration;
 
 namespace XMS.Api
 {

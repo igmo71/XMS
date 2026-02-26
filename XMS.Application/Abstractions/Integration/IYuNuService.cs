@@ -1,4 +1,4 @@
-﻿using XMS.Domain.Models;
+﻿using XMS.Domain.Models.Godoo;
 
 namespace XMS.Application.Abstractions.Integration
 {
@@ -6,6 +6,6 @@ namespace XMS.Application.Abstractions.Integration
     {
         Task<YuNuArticleRelation?> GetArticleRelationsAsync(string apiKeyName, CancellationToken ct = default);
 
-        Task<IReadOnlyList<YuNuArticleRelation>?> GetArticleRelationsAsync(CancellationToken ct = default);
+        Task<Dictionary<string, YuNuArticleRelation>?> GetArticleRelationsAsync(CancellationToken ct = default);
     }
 }

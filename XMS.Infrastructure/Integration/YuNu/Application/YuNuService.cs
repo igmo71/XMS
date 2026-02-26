@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using XMS.Application.Abstractions.Integration;
-using XMS.Domain.Models;
+using XMS.Domain.Models.Godoo;
 using XMS.Infrastructure.Integration.YuNu.Infrastructure;
 
 namespace XMS.Infrastructure.Integration.YuNu.Application
@@ -8,16 +8,17 @@ namespace XMS.Infrastructure.Integration.YuNu.Application
     internal class YuNuService(YuNuClient client, IOptions<YuNuClientConfig> options) : IYuNuService
     {
         private readonly YuNuClientConfig _yunuConfig = options.Value;
-        public async Task<IReadOnlyList<YuNuArticleRelation>?> GetArticleRelationsAsync(CancellationToken ct = default)
+
+        public async Task<Dictionary<string, YuNuArticleRelation>?> GetArticleRelationsAsync(CancellationToken ct = default)
         {
-            List<YuNuArticleRelation> result = [];
+            Dictionary<string, YuNuArticleRelation> result = [];
 
-            foreach (var key in _yunuConfig.ApiKeys)
+            foreach (var apiKey in _yunuConfig.ApiKeys)
             {
-                var relation = await client.GetArticleRelationsAsync(key.Name, ct);
+                var relation = await client.GetArticleRelationsAsync(apiKey.Name, ct);
 
-                if (relation != null)
-                    result.Add(relation);
+                if (relation?.Status == "OK")
+                    result.Add(apiKey.CompanyId, relation);
             }
             return result;
         }

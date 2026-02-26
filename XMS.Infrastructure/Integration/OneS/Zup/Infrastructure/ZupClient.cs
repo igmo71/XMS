@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace XMS.Infrastructure.Integration.OneS.Zup.Infrastructure
 {
-    internal class ZupClient(HttpClient httpClient, IOptions<ZupClientConfig> options)
-        : OneSClient<ZupClientConfig>(httpClient, options);
+    internal class ZupClient(HttpClient httpClient, IOptions<ZupClientConfig> options, ILogger<ZupClient> logger)
+        : OneSClient<ZupClientConfig>(httpClient, options, logger);
 }
