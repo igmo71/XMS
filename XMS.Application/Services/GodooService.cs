@@ -44,7 +44,7 @@ namespace XMS.Application.Services
                 if (yunuArticleRelation.Value.Result is null)
                 {
                     logger.LogError("{Source} YuNuArticleRelation Result is null", nameof(Reload));
-                    break;
+                    continue;
                 }
 
                 foreach (var yunuProduct in yunuArticleRelation.Value.Result)
@@ -54,7 +54,7 @@ namespace XMS.Application.Services
                     if (product is null)
                     {
                         logger.LogError("{Source} Product is null", nameof(Reload));
-                        break;
+                        continue;
                     }
 
                     if (yunuProduct.MarketplaceRelations?.Length > 0)
@@ -104,8 +104,9 @@ namespace XMS.Application.Services
             }
             else if (products.Count > 1)
             {
-                logger.LogError("{Source} Products сount greater than 1 {@Products}", nameof(GetProduct), products);
-                return null;
+                var product = products.First();
+                logger.LogWarning("{Source} Products Count greater than 1. Take first. {@Products}  {@Product}", nameof(GetProduct), products, product);
+                return product;
             }
             else
             {

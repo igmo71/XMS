@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <Folder Include="Integration\YuNu\" />
+    <Folder Include="NewFolder\" />
   </ItemGroup>
 
 </Project>
