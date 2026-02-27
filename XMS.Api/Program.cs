@@ -1,7 +1,8 @@
-﻿using Serilog;
-using XMS.Api.Endpoints;
+﻿using Scalar.AspNetCore;
+using Serilog;
 using XMS.Application;
 using XMS.Infrastructure;
+using XMS.Modules;
 
 namespace XMS.Api
 {
@@ -22,6 +23,7 @@ namespace XMS.Api
             builder.Services.AddAuthorization();
             builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddApplicationServices();
+            builder.Services.AddApplicationModules(builder.Configuration);
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
@@ -29,17 +31,17 @@ namespace XMS.Api
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            //if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.MapScalarApiReference();
             }
 
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
-            app.MapYuNuEndpoints();
-            app.MapGodooEndpoints();
+            app.MapModulesEndpoints();
 
             app.Run();
         }

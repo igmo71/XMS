@@ -17,7 +17,6 @@ namespace XMS.Application
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IEmployeeBuhService, EmployeeBuhService>();
             services.AddScoped<IEmployeeZupService, EmployeeZupService>();
-            services.AddScoped<IGodooService, GodooService>();
             services.AddScoped<IJobTitleService, JobTitleService>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<ISkuInventoryUtService, SkuInventoryUtService>();

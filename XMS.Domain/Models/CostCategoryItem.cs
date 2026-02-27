@@ -1,5 +1,8 @@
 ﻿namespace XMS.Domain.Models
 {
+    /// <summary>
+    /// Статьи Затпрат по Категориям
+    /// </summary>
     public class CostCategoryItem
     {
         public Guid CategoryId { get; set; }

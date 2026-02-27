@@ -2,7 +2,7 @@
 
 namespace XMS.Infrastructure.Integration.OneS
 {
-    internal class RootObject<TValue>
+    public class RootObject<TValue>
     {
         [JsonPropertyName("odata.metadata")] public string? ODataMetadata { get; set; }
         [JsonPropertyName("odata.count")] public string? ODataCount { get; set; }

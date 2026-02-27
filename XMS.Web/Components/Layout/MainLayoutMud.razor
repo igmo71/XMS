@@ -18,7 +18,7 @@
 			@foreach (var section in _sections)
 			{
 				string tabPanelBackground = _isDarkMode ? _myCustomTheme.PaletteDark.AppbarBackground.Value : _myCustomTheme.PaletteLight.AppbarBackground.Value;
-				<MudTabPanel Text="@(section.Title)" Style="@($"background: {tabPanelBackground}")" />
+				<MudTabPanel Text="@(section.Title)" Icon="@(section.Icon)" Style="@($"background: {tabPanelBackground}")" />
 			}
 		</MudTabs>
 		<MudSpacer />

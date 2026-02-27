@@ -12,6 +12,7 @@ using XMS.Application.Common;
 using XMS.Domain.Models;
 using XMS.Infrastructure;
 using XMS.Infrastructure.Data;
+using XMS.Modules;
 using XMS.Web.Components;
 using XMS.Web.Components.Account;
 using XMS.Web.Components.Layout.Sections;
@@ -89,6 +90,7 @@ namespace XMS.Web
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
             builder.Services.AddApplicationServices();
+            builder.Services.AddApplicationModules(builder.Configuration);
 
             builder.Services.AddScoped<AuthService>();
 

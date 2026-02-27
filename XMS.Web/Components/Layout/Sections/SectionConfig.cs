@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace XMS.Web.Components.Layout.Sections
 {
@@ -6,6 +7,7 @@ namespace XMS.Web.Components.Layout.Sections
     {
         public string Key => "config";
         public string Title => "Конфигурация";
+        public string Icon => Icons.Material.Filled.SettingsApplications;
 
         public RenderFragment Menu => builder =>
         {

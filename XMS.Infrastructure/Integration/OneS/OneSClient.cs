@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace XMS.Infrastructure.Integration.OneS
 {
-    internal abstract class OneSClient<TConfig>(HttpClient httpClient, IOptions<TConfig> options, ILogger<OneSClient<TConfig>> logger)
+    public abstract class OneSClient<TConfig>(HttpClient httpClient, IOptions<TConfig> options, ILogger<OneSClient<TConfig>> logger)
         where TConfig : OneSClientConfig
     {
         protected readonly TConfig _clientConfig = options.Value;

@@ -2,6 +2,9 @@
 
 namespace XMS.Domain.Models
 {
+    /// <summary>
+    /// Статья Затрат
+    /// </summary>
     public class CostItem : BaseEntity, IHasName, ISoftDeletable
     {
         public string Name { get; set; } = string.Empty;

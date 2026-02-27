@@ -12,11 +12,17 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Scalar.AspNetCore" Version="2.12.48" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\XMS.Application\XMS.Application.csproj" />
     <ProjectReference Include="..\XMS.Infrastructure\XMS.Infrastructure.csproj" />
+    <ProjectReference Include="..\XMS.Modules\XMS.Modules.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Endpoints\" />
   </ItemGroup>
 
 </Project>

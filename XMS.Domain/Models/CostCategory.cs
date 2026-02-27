@@ -2,6 +2,9 @@
 
 namespace XMS.Domain.Models
 {
+    /// <summary>
+    /// Категория Статей Затрат
+    /// </summary>
     public class CostCategory : BaseEntity, IHasName, ITreeNode<CostCategory>, ISoftDeletable
     {
         public string Name { get; set; } = string.Empty;

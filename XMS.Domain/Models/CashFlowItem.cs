@@ -2,6 +2,9 @@
 
 namespace XMS.Domain.Models
 {
+    /// <summary>
+    /// Статьи Движения Денежных Средств
+    /// </summary>
     public class CashFlowItem : BaseEntity, IHasName, ISoftDeletable//, ITreeNode<CashFlowItem>
     {
         public string Name { get; set; } = string.Empty;
