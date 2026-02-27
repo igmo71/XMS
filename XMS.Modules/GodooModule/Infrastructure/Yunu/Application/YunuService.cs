@@ -11,9 +11,9 @@ namespace XMS.Modules.GodooModule.Infrastructure.Yunu.Application
 
         public YunuClientConfig YunuConfig => _yunuConfig;
 
-        public async Task<Dictionary<string, YuNuArticleRelation>?> GetArticleRelationsAsync(CancellationToken ct = default)
+        public async Task<Dictionary<string, YunuArticleRelation>?> GetArticleRelationsAsync(CancellationToken ct = default)
         {
-            Dictionary<string, YuNuArticleRelation> result = [];
+            Dictionary<string, YunuArticleRelation> result = [];
 
             foreach (var apiKey in _yunuConfig.ApiKeys)
             {
@@ -25,7 +25,7 @@ namespace XMS.Modules.GodooModule.Infrastructure.Yunu.Application
             return result;
         }
 
-        public Task<YuNuArticleRelation?> GetArticleRelationsAsync(string apiKeyName, CancellationToken ct = default)
+        public Task<YunuArticleRelation?> GetArticleRelationsAsync(string apiKeyName, CancellationToken ct = default)
         {
             var apiKey = GetApiKey(apiKeyName);
 

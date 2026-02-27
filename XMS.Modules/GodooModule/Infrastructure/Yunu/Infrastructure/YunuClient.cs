@@ -9,7 +9,7 @@ namespace XMS.Modules.GodooModule.Infrastructure.Yunu.Infrastructure
     {
         private readonly YunuClientConfig clientConfig = options.Value;
 
-        public async Task<YuNuArticleRelation?> GetArticleRelationsAsync(string apiKeyValue, CancellationToken ct = default)
+        public async Task<YunuArticleRelation?> GetArticleRelationsAsync(string apiKeyValue, CancellationToken ct = default)
         {
             using var request = new HttpRequestMessage(HttpMethod.Get, clientConfig.ArticleRelations);
 
@@ -21,7 +21,7 @@ namespace XMS.Modules.GodooModule.Infrastructure.Yunu.Infrastructure
 
             var content = await response.Content.ReadAsStringAsync(ct);
 
-            var relation = JsonSerializer.Deserialize<YuNuArticleRelation>(content);
+            var relation = JsonSerializer.Deserialize<YunuArticleRelation>(content);
 
             return relation;
         }

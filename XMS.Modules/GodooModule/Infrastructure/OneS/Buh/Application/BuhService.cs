@@ -9,26 +9,19 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh.Application
 {
     internal class BuhService(GodooBuhClient client, ILogger<BuhService> logger) : IGodooOneSBuhService
     {
-        public async Task CreateMarketplaceRelationAsync(Product product, YuNuMarketplaceRelation yunuRelation, string companyId, CancellationToken ct = default)
+        public async Task CreateMarketplaceRelationAsync(Product product, YunuProduct yunuProduct, YunuMarketplaceRelation yunuRelation, string companyId, CancellationToken ct = default)
         {
             if (yunuRelation.Marketplace is null)
             {
-                logger.LogError("{Source} YuNuMarketplaceRelation Marketplace is null", nameof(CreateMarketplaceRelationAsync));
+                logger.LogError("{Source} YunuMarketplaceRelation Marketplace is null", nameof(CreateMarketplaceRelationAsync));
                 return;
             }
-
-            if (string.IsNullOrEmpty(yunuRelation.Sku) && string.IsNullOrEmpty(yunuRelation.NmId))
-            {
-                logger.LogError("{Source} YuNuMarketplaceRelation Sku and NmId is null", nameof(CreateMarketplaceRelationAsync));
-                return;
-            }
-
-            string marketplaceSku = (yunuRelation.Sku ?? yunuRelation.NmId)!;
 
             var relationToCreate = new InformationRegister_НоменклатураМаркетплейсов
             {
-                Маркетплейс = MarketplaceMap.FromYuNu[yunuRelation.Marketplace],
-                ИдентификаторТовара = marketplaceSku,
+                Маркетплейс = MarketplaceMap.FromYunu[yunuRelation.Marketplace],
+                //ИдентификаторТовара = yunuProduct.YunuArticle ?? string.Empty,
+                ИдентификаторТовара = yunuProduct.ProductId.ToString(),
                 Штрихкод = yunuRelation.Barcode,
                 Номенклатура_Key = product.Id.ToString(),
                 Организация_Key = companyId
@@ -42,13 +35,13 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh.Application
                 logger.LogError("{Source} - Error {@RelationToCreate}", nameof(CreateMarketplaceRelationAsync), relationToCreate);
         }
 
-        public async Task<Product?> CreateProductAsync(Result yunuProduct, CancellationToken ct = default)
+        public async Task<Product?> CreateProductAsync(YunuProduct yunuProduct, CancellationToken ct = default)
         {
             Catalog_Номенклатура newCatalog_Номенклатура = new()
             {
                 Description = yunuProduct.ProductName,
                 НаименованиеПолное = yunuProduct.ProductName,
-                Артикул = yunuProduct.YuNuArticle
+                Артикул = yunuProduct.YunuArticle
             };
 
             var createdCatalog_Номенклатура = await client.PostValueAsync(newCatalog_Номенклатура, nameof(Catalog_Номенклатура), ct);
@@ -92,7 +85,7 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh.Application
 
             var result = rootObject?.Value?.Select(e => new MarketplaceRelation
             {
-                MarketplaceSku = e.ИдентификаторТовара,
+                YunuProductId = e.ИдентификаторТовара,
                 Marketplace = e.Маркетплейс,
                 Barcode = e.Штрихкод,
                 ProductId = e.Номенклатура_Key,

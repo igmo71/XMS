@@ -13,7 +13,7 @@
         /// <summary>
         /// ИдентификаторТовара
         /// </summary>
-        public required string MarketplaceSku { get; set; }
+        public string? YunuProductId { get; set; }
 
         /// <summary>
         /// Штрихкод

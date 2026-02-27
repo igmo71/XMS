@@ -15,7 +15,7 @@ namespace XMS.Modules.GodooModule.Infrastructure.Yunu
             services.Configure<YunuClientConfig>(configSection);
 
             var config = configSection.Get<YunuClientConfig>()
-                ?? throw new InvalidOperationException("YuNuClientConfig not found");
+                ?? throw new InvalidOperationException("YunuClientConfig not found");
 
             services.AddHttpClient<YunuClient>(client =>
             {
