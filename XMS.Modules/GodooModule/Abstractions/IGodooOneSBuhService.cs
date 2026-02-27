@@ -5,11 +5,10 @@ namespace XMS.Modules.GodooModule.Abstractions
     public interface IGodooOneSBuhService
     {
         Task<IReadOnlyList<Catalog_Организации>> GetCompanyListAsync(CancellationToken ct = default);
-        //Task<IReadOnlyList<Catalog_Номенклатура>> GetProductListAsync(CancellationToken ct = default);
 
-        Task<IReadOnlyList<Catalog_Номенклатура>> GetProductListAsync (string refKey, CancellationToken ct = default);
+        Task<IReadOnlyList<Catalog_Номенклатура>> GetProductListAsync (string refKey, CancellationToken ct = default);        
+        Task<Catalog_Номенклатура?> CreateProductAsync(YunuProduct yunuProduct, CancellationToken ct = default);
 
-        //Task<IReadOnlyList<InformationRegister_НоменклатураМаркетплейсов>> GetMarketplaceRelationListAsync(CancellationToken ct = default);
         Task<IReadOnlyList<InformationRegister_НоменклатураМаркетплейсов>> GetMarketplaceRelationListAsync(
             string? yunuProductId,
             string? marketplace,
@@ -17,7 +16,12 @@ namespace XMS.Modules.GodooModule.Abstractions
             string? oneSProductKey,
             string? companyId,
             CancellationToken ct = default);
-        Task<Catalog_Номенклатура?> CreateProductAsync(YunuProduct yunuProduct, CancellationToken ct = default);
-        Task CreateMarketplaceRelationAsync(Catalog_Номенклатура oneSProduct, YunuProduct yunuProduct, YunuMarketplaceRelation yunuRelation, string companyId, CancellationToken ct = default);
+        
+        Task CreateMarketplaceRelationAsync(
+            YunuProduct yunuProduct, 
+            YunuMarketplaceRelation yunuRelation, 
+            string companyId,
+            Catalog_Номенклатура oneSProduct,
+            CancellationToken ct = default);
     }
 }

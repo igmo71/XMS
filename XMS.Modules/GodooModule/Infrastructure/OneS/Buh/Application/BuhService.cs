@@ -8,7 +8,29 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh.Application
 {
     internal class BuhService(GodooBuhClient client, ILogger<BuhService> logger) : IGodooOneSBuhService
     {
-        public async Task CreateMarketplaceRelationAsync(Catalog_Номенклатура oneSProduct, YunuProduct yunuProduct, YunuMarketplaceRelation yunuRelation, string companyId, CancellationToken ct = default)
+        //public async Task<IReadOnlyList<InformationRegister_НоменклатураМаркетплейсов>> GetMarketplaceRelationListAsync(CancellationToken ct = default)
+        //{
+        //    var rootObject = await client.GetValueAsync<RootObject<InformationRegister_НоменклатураМаркетплейсов>>(InformationRegister_НоменклатураМаркетплейсов.Uri, ct);
+        //    return rootObject?.Value ?? [];
+        //}
+
+        public Task<IReadOnlyList<InformationRegister_НоменклатураМаркетплейсов>> GetMarketplaceRelationListAsync(
+            string? yunuProductId,
+            string? marketplace,
+            string? barcode,
+            string? oneSProductKey,
+            string? companyId,
+            CancellationToken ct = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task CreateMarketplaceRelationAsync(
+            YunuProduct yunuProduct, 
+            YunuMarketplaceRelation yunuRelation, 
+            string companyId,
+            Catalog_Номенклатура oneSProduct,
+            CancellationToken ct = default)
         {
             if (yunuRelation.Marketplace is null)
             {
@@ -34,6 +56,24 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh.Application
                 logger.LogError("{Source} - Error {@RelationToCreate}", nameof(CreateMarketplaceRelationAsync), relationToCreate);
         }
 
+        public async Task<IReadOnlyList<Catalog_Организации>> GetCompanyListAsync(CancellationToken ct = default)
+        {
+            var rootObject = await client.GetValueAsync<RootObject<Catalog_Организации>>(Catalog_Организации.Uri, ct);
+
+            return rootObject?.Value ?? [];
+        }
+
+        //public async Task<IReadOnlyList<Catalog_Номенклатура>> GetProductListAsync(CancellationToken ct = default)
+        //{
+        //    var rootObject = await client.GetValueAsync<RootObject<Catalog_Номенклатура>>(Catalog_Номенклатура.Uri, ct);
+        //    return rootObject?.Value ?? [];
+        //}
+
+        public async Task<IReadOnlyList<Catalog_Номенклатура>> GetProductListAsync(string refKey, CancellationToken ct = default)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Catalog_Номенклатура?> CreateProductAsync(YunuProduct yunuProduct, CancellationToken ct = default)
         {
             Catalog_Номенклатура newCatalog_Номенклатура = new()
@@ -49,40 +89,5 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh.Application
 
             return createdCatalog_Номенклатура;
         }
-
-        public async Task<IReadOnlyList<Catalog_Организации>> GetCompanyListAsync(CancellationToken ct = default)
-        {
-            var rootObject = await client.GetValueAsync<RootObject<Catalog_Организации>>(Catalog_Организации.Uri, ct);                       
-
-            return rootObject?.Value ?? [];
-        }
-
-        public Task<IReadOnlyList<InformationRegister_НоменклатураМаркетплейсов>> GetMarketplaceRelationListAsync(
-            string yunuProductId, 
-            string marketplace, 
-            string barcode, 
-            string oneSProductKey, 
-            string companyId, 
-            CancellationToken ct = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        //public async Task<IReadOnlyList<InformationRegister_НоменклатураМаркетплейсов>> GetMarketplaceRelationListAsync(CancellationToken ct = default)
-        //{
-        //    var rootObject = await client.GetValueAsync<RootObject<InformationRegister_НоменклатураМаркетплейсов>>(InformationRegister_НоменклатураМаркетплейсов.Uri, ct);
-        //    return rootObject?.Value ?? [];
-        //}
-
-        public async Task<IReadOnlyList<Catalog_Номенклатура>> GetProductListAsync(string refKey, CancellationToken ct = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        //public async Task<IReadOnlyList<Catalog_Номенклатура>> GetProductListAsync(CancellationToken ct = default)
-        //{
-        //    var rootObject = await client.GetValueAsync<RootObject<Catalog_Номенклатура>>(Catalog_Номенклатура.Uri, ct);
-        //    return rootObject?.Value ?? [];
-        //}
     }
 }
