@@ -8,7 +8,7 @@ namespace XMS.Modules.GodooModule.Domain
     public class YunuArticleRelation
     {
         [JsonPropertyName("status")] public string? Status { get; set; }
-        [JsonPropertyName("result")] public YunuProduct[]? Result { get; set; }
+        [JsonPropertyName("result")] public YunuProduct[]? Products { get; set; }
     }
 
     public class YunuProduct

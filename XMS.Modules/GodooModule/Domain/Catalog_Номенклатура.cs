@@ -1,8 +1,8 @@
-﻿namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh.Domain
+﻿namespace XMS.Modules.GodooModule.Domain
 {
     public class Catalog_Номенклатура
     {
-        public Guid Ref_Key { get; set; }
+        public string? Ref_Key { get; set; }
         public string? Description { get; set; }
         public string? НаименованиеПолное { get; set; }
         public string? Code { get; set; }
