@@ -9,14 +9,11 @@ namespace XMS.Modules.GodooModule.Infrastructure.Yunu.Infrastructure
     {
         private readonly YunuClientConfig clientConfig = options.Value;
 
-        public async Task<YuNuArticleRelation?> GetArticleRelationsAsync(string apiKeyName, CancellationToken ct = default)
+        public async Task<YuNuArticleRelation?> GetArticleRelationsAsync(string apiKeyValue, CancellationToken ct = default)
         {
             using var request = new HttpRequestMessage(HttpMethod.Get, clientConfig.ArticleRelations);
 
-            var apiKey = clientConfig.ApiKeys.FirstOrDefault(e => e.Name.Equals(apiKeyName))
-                ?? throw new InvalidOperationException($"ApiKey {apiKeyName} not found.");
-
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey.Value);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKeyValue);
 
             using var response = await httpClient.SendAsync(request, ct);
 

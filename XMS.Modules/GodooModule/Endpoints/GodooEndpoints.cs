@@ -10,29 +10,39 @@ namespace XMS.Modules.GodooModule.Endpoints
     {
         public static IEndpointRouteBuilder MapGodooEndpoints(this IEndpointRouteBuilder endpoints)
         {
-            endpoints.MapGet("/integration/godoo/reload", async ([FromServices] IGodooService service, CancellationToken ct) =>
+            // Godoo
+            var godooGroup = endpoints.MapGroup("/api/godoo").WithTags("Godoo");
+
+            godooGroup.MapGet("/marketplace-relations/reload/godoo", async (
+                [FromServices] IGodooService service, CancellationToken ct) =>
             {
                 await service.Reload("godoo", ct);
                 return Results.NoContent();
-            })
-                .WithName("ReloadGodoo")
-                .WithTags("Godoo");
+            }).WithName("ReloadGodoo");
 
-            endpoints.MapGet("/integration/yunu/article-relations/godoo", async ([FromServices] IYunuService service, CancellationToken ct) =>
+            godooGroup.MapGet("/marketplace-relations/reload/ip", async (
+                [FromServices] IGodooService service, CancellationToken ct) =>
+            {
+                await service.Reload("ip", ct);
+                return Results.NoContent();
+            }).WithName("ReloadIp");
+
+            // Yunu
+            var yunuGroup = endpoints.MapGroup("/integration/yunu").WithTags("Yunu");
+
+            yunuGroup.MapGet("/article-relations/godoo", async (
+                [FromServices] IYunuService service, CancellationToken ct) =>
             {
                 var result = await service.GetArticleRelationsAsync("godoo", ct);
                 return Results.Ok(result);
-            })
-                .WithName("GetYunuArticleRelations_godoo")
-                .WithTags("Yunu");
+            }).WithName("GetYunuArticleRelations_godoo");
 
-            endpoints.MapGet("/integration/yunu/article-relations/ip", async ([FromServices] IYunuService service, CancellationToken ct) =>
+            yunuGroup.MapGet("/article-relations/ip", async (
+                [FromServices] IYunuService service, CancellationToken ct) =>
             {
                 var result = await service.GetArticleRelationsAsync("ip", ct);
                 return Results.Ok(result);
-            })
-                .WithName("GetYunuArticleRelations_ip")
-                .WithTags("Yunu");
+            }).WithName("GetYunuArticleRelations_ip");
 
             return endpoints;
         }

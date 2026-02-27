@@ -9,6 +9,8 @@ namespace XMS.Modules.GodooModule.Infrastructure.Yunu.Application
     {
         private readonly YunuClientConfig _yunuConfig = options.Value;
 
+        public YunuClientConfig YunuConfig => _yunuConfig;
+
         public async Task<Dictionary<string, YuNuArticleRelation>?> GetArticleRelationsAsync(CancellationToken ct = default)
         {
             Dictionary<string, YuNuArticleRelation> result = [];
@@ -25,7 +27,16 @@ namespace XMS.Modules.GodooModule.Infrastructure.Yunu.Application
 
         public Task<YuNuArticleRelation?> GetArticleRelationsAsync(string apiKeyName, CancellationToken ct = default)
         {
-            return client.GetArticleRelationsAsync(apiKeyName, ct);
+            var apiKey = GetApiKey(apiKeyName);
+
+            return client.GetArticleRelationsAsync(apiKey.Value, ct);
+        }
+
+        public ApiKey GetApiKey(string apiKeyName)
+        {
+            var apiKey = _yunuConfig.ApiKeys.FirstOrDefault(e => e.Name.Equals(apiKeyName))
+                ?? throw new InvalidOperationException($"ApiKey {apiKeyName} not found.");
+            return apiKey;
         }
     }
 }

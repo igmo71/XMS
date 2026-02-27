@@ -33,6 +33,57 @@ namespace XMS.Modules.GodooModule.Application
 
             var marketplaceRelations = await godooOneSBuhService.GetMarketplaceRelationListAsync(ct);
 
+            var yunuApiKey = yunuService.GetApiKey(apiKeyName);
+
+            var yunuArticleRelation = await yunuService.GetArticleRelationsAsync(apiKeyName, ct);            
+
+            if (yunuArticleRelation?.Result == null)
+            {
+                logger.LogError("{Source} Failed to YuNuArticleRelation", nameof(Reload));
+                return;
+            }
+
+            foreach (var yunuProduct in yunuArticleRelation.Result)
+            {
+                Product? product = await GetProduct(existingProducts, yunuProduct, ct);
+
+                if (product is null)
+                {
+                    logger.LogError("{Source} Product is null", nameof(Reload));
+                    continue;
+                }
+
+                if (yunuProduct.MarketplaceRelations?.Length > 0)
+                {
+                    foreach (var yunuRelation in yunuProduct.MarketplaceRelations)
+                    {
+                        if (!marketplaceRelations.Any(e => yunuRelation.Marketplace != null
+                            && e.Marketplace == MarketplaceMap.FromYuNu[yunuRelation.Marketplace]
+                            && (e.MarketplaceSku == yunuRelation.Sku || e.MarketplaceSku == yunuRelation.NmId)
+                            && e.Barcode == yunuRelation.Barcode
+                            && e.ProductId == product.Id.ToString()
+                            && e.CompanyId == yunuApiKey.CompanyId))
+                        {
+                            logger.LogDebug("{Source} YuNuMarketplaceRelation Not Exists {@YuNuMarketplaceRelation}", nameof(Reload), yunuRelation);
+                            await godooOneSBuhService.CreateMarketplaceRelationAsync(product, yunuRelation, yunuApiKey.CompanyId, ct);
+                        }
+                        else
+                        {
+                            logger.LogDebug("{Source} YuNuMarketplaceRelation Exists {@YuNuMarketplaceRelation}", nameof(Reload), yunuRelation);
+                        }
+                    }
+                }
+            }
+        }
+
+        public async Task Reload(CancellationToken ct)
+        {
+            StartActivity();
+
+            var existingProducts = await godooOneSBuhService.GetProductListAsync(ct);
+
+            var marketplaceRelations = await godooOneSBuhService.GetMarketplaceRelationListAsync(ct);
+
             var yunuArticleRelations = await yunuService.GetArticleRelationsAsync(ct);
 
             if (yunuArticleRelations is null)
@@ -113,10 +164,5 @@ namespace XMS.Modules.GodooModule.Application
                 return null;
             }
         }
-
-        // TODO: Проходим по всем existingYuNuArticles, смотрим если есть такая Номенклатура, то смотрим marketplaceRelation, при необходимости, добавляем
-        // TODO: marketplaceRelation проверяем по yunu_article, {nm_id (wildberries), sku (ozon), ???} -> MarketplaceSku (ИдентификаторТовара),  marketplace, barcode
-        // TODO: Маркетплейс в 1C это перечисление! (отправлять строку или число?) Gemini говорит строкой
-        // TODO: XMS.Worker
     }
 }
