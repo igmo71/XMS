@@ -8,70 +8,69 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh.Application
 {
     internal class BuhService(GodooBuhClient client, ILogger<BuhService> logger) : IGodooOneSBuhService
     {
-        //public async Task<IReadOnlyList<InformationRegister_НоменклатураМаркетплейсов>> GetMarketplaceRelationListAsync(CancellationToken ct = default)
-        //{
-        //    var rootObject = await client.GetValueAsync<RootObject<InformationRegister_НоменклатураМаркетплейсов>>(InformationRegister_НоменклатураМаркетплейсов.Uri, ct);
-        //    return rootObject?.Value ?? [];
-        //}
 
-        public Task<IReadOnlyList<InformationRegister_НоменклатураМаркетплейсов>> GetMarketplaceRelationListAsync(
+        public async Task<IReadOnlyList<InformationRegister_НоменклатураМаркетплейсов>> GetMarketplaceRelationListAsync(
             string? yunuProductId,
             string? marketplace,
             string? barcode,
             string? oneSProductKey,
-            string? companyId,
+            string? companyKey,
             CancellationToken ct = default)
         {
-            throw new NotImplementedException();
-        }
+            string uri = InformationRegister_НоменклатураМаркетплейсов.GetUri(
+                yunuProductId: yunuProductId,
+                marketplace: marketplace,
+                barcode: barcode,
+                oneSProductKey: oneSProductKey,
+                companyKey: companyKey);
 
-        public async Task CreateMarketplaceRelationAsync(
-            YunuProduct yunuProduct, 
-            YunuMarketplaceRelation yunuRelation, 
-            string companyId,
-            Catalog_Номенклатура oneSProduct,
-            CancellationToken ct = default)
-        {
-            if (yunuRelation.Marketplace is null)
-            {
-                logger.LogError("{Source} YunuMarketplaceRelation Marketplace is null", nameof(CreateMarketplaceRelationAsync));
-                return;
-            }
+            var rootObject = await client.GetValueAsync<RootObject<InformationRegister_НоменклатураМаркетплейсов>>(uri, ct);
 
-            var relationToCreate = new InformationRegister_НоменклатураМаркетплейсов
-            {
-                //ИдентификаторТовара = yunuProduct.YunuArticle ?? string.Empty,
-                ИдентификаторТовара = yunuProduct.ProductId.ToString(),
-                Маркетплейс = MarketplaceMap.FromYunu[yunuRelation.Marketplace],
-                Штрихкод = yunuRelation.Barcode,
-                Номенклатура_Key = oneSProduct.Ref_Key,
-                Организация_Key = companyId
-            };
-
-            var relationCreated = await client.PostValueAsync(relationToCreate, nameof(InformationRegister_НоменклатураМаркетплейсов), ct);
-
-            if (relationCreated is not null)
-                logger.LogInformation("{Source} - Ok {@RelationCreated}", nameof(CreateMarketplaceRelationAsync), relationCreated);
+            if (rootObject?.Value?.Length == 0)
+                logger.LogDebug("{Source} - Not Found by {uri}", nameof(GetMarketplaceRelationListAsync), uri);
             else
-                logger.LogError("{Source} - Error {@RelationToCreate}", nameof(CreateMarketplaceRelationAsync), relationToCreate);
-        }
-
-        public async Task<IReadOnlyList<Catalog_Организации>> GetCompanyListAsync(CancellationToken ct = default)
-        {
-            var rootObject = await client.GetValueAsync<RootObject<Catalog_Организации>>(Catalog_Организации.Uri, ct);
+                logger.LogDebug("{Source} - Found by {uri}", nameof(GetMarketplaceRelationListAsync), uri);
 
             return rootObject?.Value ?? [];
         }
 
-        //public async Task<IReadOnlyList<Catalog_Номенклатура>> GetProductListAsync(CancellationToken ct = default)
-        //{
-        //    var rootObject = await client.GetValueAsync<RootObject<Catalog_Номенклатура>>(Catalog_Номенклатура.Uri, ct);
-        //    return rootObject?.Value ?? [];
-        //}
-
-        public async Task<IReadOnlyList<Catalog_Номенклатура>> GetProductListAsync(string refKey, CancellationToken ct = default)
+        public async Task CreateMarketplaceRelationAsync(
+            string? yunuProductId,
+            string? marketplace,
+            string? barcode,
+            string? oneSProductKey,
+            string? companyKey,
+            CancellationToken ct = default)
         {
-            throw new NotImplementedException();
+            var relationToCreate = new InformationRegister_НоменклатураМаркетплейсов
+            {
+                ИдентификаторТовара = yunuProductId,
+                Маркетплейс = marketplace,
+                Штрихкод = barcode,
+                Номенклатура_Key = oneSProductKey,
+                Организация_Key = companyKey
+            };
+
+            var relationCreated = await client.PostValueAsync(relationToCreate, nameof(InformationRegister_НоменклатураМаркетплейсов), ct);
+
+            if (relationCreated is null)
+                logger.LogError("{Source} - Error {@RelationToCreate}", nameof(CreateMarketplaceRelationAsync), relationToCreate);
+            else
+                logger.LogInformation("{Source} - Ok {@RelationCreated}", nameof(CreateMarketplaceRelationAsync), relationCreated);
+        }
+
+        public async Task<IReadOnlyList<Catalog_Номенклатура>> GetProductListAsync(string yunuProductId, CancellationToken ct = default)
+        {
+            string uri = Catalog_Номенклатура.GetUri(yunuProductId);
+
+            var rootObject = await client.GetValueAsync<RootObject<Catalog_Номенклатура>>(uri, ct);
+
+            if (rootObject?.Value?.Length == 0)
+                logger.LogDebug("{Source} - Not Found by {uri}", nameof(GetProductListAsync), uri);
+            else
+                logger.LogDebug("{Source} - Found by {uri}", nameof(GetProductListAsync), uri);
+
+            return rootObject?.Value ?? [];
         }
 
         public async Task<Catalog_Номенклатура?> CreateProductAsync(YunuProduct yunuProduct, CancellationToken ct = default)
@@ -83,11 +82,21 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh.Application
                 Артикул = yunuProduct.ProductId.ToString()
             };
 
-            var createdCatalog_Номенклатура = await client.PostValueAsync(newCatalog_Номенклатура, nameof(Catalog_Номенклатура), ct);            
+            var createdCatalog_Номенклатура = await client.PostValueAsync(newCatalog_Номенклатура, nameof(Catalog_Номенклатура), ct);
 
-            logger.LogInformation("{Source} - Ok {@Product}", nameof(CreateProductAsync), createdCatalog_Номенклатура);
+            if (createdCatalog_Номенклатура is null)
+                logger.LogError("{Source} - Error {@ProductToCreate}", nameof(CreateProductAsync), newCatalog_Номенклатура);
+            else
+                logger.LogInformation("{Source} - Ok {@ProductCreated}", nameof(CreateProductAsync), createdCatalog_Номенклатура);
 
             return createdCatalog_Номенклатура;
+        }
+
+        public async Task<IReadOnlyList<Catalog_Организации>> GetCompanyListAsync(CancellationToken ct = default)
+        {
+            var rootObject = await client.GetValueAsync<RootObject<Catalog_Организации>>(Catalog_Организации.Uri, ct);
+
+            return rootObject?.Value ?? [];
         }
     }
 }

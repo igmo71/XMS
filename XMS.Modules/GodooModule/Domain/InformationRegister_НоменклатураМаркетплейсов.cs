@@ -8,6 +8,22 @@
         public string? Номенклатура_Key { get; set; }
         public string? Организация_Key { get; set; }
 
-        public static string Uri => "InformationRegister_НоменклатураМаркетплейсов?$format=json&$inlinecount=allpages";
+        public static string Uri => $"InformationRegister_НоменклатураМаркетплейсов?$format=json&$inlinecount=allpages&$filter=ИдентификаторТовара eq '100000009051' and Маркетплейс eq 'Мегамаркет' and Штрихкод eq '' and Номенклатура_Key eq guid'd83087f2-1906-11ef-ba82-00155d01d111' and Организация_Key eq guid'246b903a-2be8-11e7-80d7-0cc47adeb012'";
+
+        internal static string GetUri(
+            string? yunuProductId, 
+            string? marketplace, 
+            string? barcode, 
+            string? oneSProductKey, 
+            string? companyKey)
+        {
+            string uri = $"InformationRegister_НоменклатураМаркетплейсов?$format=json&$inlinecount=allpages" +
+                $"&$filter=ИдентификаторТовара eq '{yunuProductId}' " +
+                $"and Маркетплейс eq '{marketplace}' " +
+                $"and Штрихкод eq '{barcode}' " +
+                $"and Номенклатура_Key eq guid'{oneSProductKey}' " +
+                $"and Организация_Key eq guid'{companyKey}'";
+            return uri ;
+        }
     }
 }

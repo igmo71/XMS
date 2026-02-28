@@ -21,7 +21,7 @@ namespace XMS.Modules.GodooModule.Application
 
             if (yunuArticleRelation?.Products == null)
             {
-                logger.LogError("{Source} Failed to YunuArticleRelation", nameof(Reload));
+                logger.LogError("{Source} Failed to load YunuArticleRelation", nameof(Reload));
                 return;
             }
 
@@ -29,11 +29,7 @@ namespace XMS.Modules.GodooModule.Application
             {
                 Catalog_Номенклатура? oneSProduct = await GetOrCreateProduct(yunuProduct, ct);
 
-                if (oneSProduct is null)
-                {
-                    logger.LogError("{Source} Catalog_Номенклатура is null", nameof(Reload));
-                    continue;
-                }
+                if (oneSProduct is null) continue;
 
                 if (yunuProduct.MarketplaceRelations?.Length > 0)
                 {
@@ -47,9 +43,7 @@ namespace XMS.Modules.GodooModule.Application
 
         private async Task<Catalog_Номенклатура?> GetOrCreateProduct(YunuProduct yunuProduct, CancellationToken ct)
         {
-            var existingProducts = await godooOneSBuhService.GetProductListAsync(yunuProduct.ProductId.ToString(), ct);
-
-            var products = existingProducts.Where(e => e.Артикул == yunuProduct.ProductId.ToString()).ToList();
+            var products = await godooOneSBuhService.GetProductListAsync(yunuProduct.ProductId.ToString(), ct);
 
             if (products.Count == 0)
             {
@@ -58,19 +52,20 @@ namespace XMS.Modules.GodooModule.Application
             }
             else if (products.Count == 1)
             {
-                var product = products.First();
+                var product = products[0];
                 logger.LogDebug("{Source} Product Exists {@Product}", nameof(GetOrCreateProduct), product);
                 return product;
             }
             else if (products.Count > 1)
             {
-                var product = products.First();
-                logger.LogWarning("{Source} Products Count greater than 1. Take first. {@Products}  {@Product}", nameof(GetOrCreateProduct), products, product);
+                var product = products[0];
+                logger.LogWarning("{Source} Products Count greater than 1. Take first. {@Products} {@Product}",
+                    nameof(GetOrCreateProduct), products, product);
                 return product;
             }
             else
             {
-                logger.LogError("{Source} Can't find or create product", nameof(GetOrCreateProduct));
+                logger.LogError("{Source} Can't find or create Product", nameof(GetOrCreateProduct));
                 return null;
             }
         }
@@ -83,21 +78,30 @@ namespace XMS.Modules.GodooModule.Application
             CancellationToken ct)
         {
             var marketplaceRelation = await godooOneSBuhService.GetMarketplaceRelationListAsync(
-                yunuProduct.ProductId.ToString(),
-                MarketplaceMap.FromYunu[yunuRelation.Marketplace ?? string.Empty],
-                yunuRelation.Barcode,
-                yunuApiKey.CompanyId,
-                oneSProduct.Ref_Key,
+                yunuProductId: yunuProduct.ProductId.ToString(),
+                marketplace: MarketplaceMap.FromYunu[yunuRelation.Marketplace ?? string.Empty],
+                barcode: yunuRelation.Barcode ?? string.Empty,
+                oneSProductKey: oneSProduct.Ref_Key,
+                companyKey: yunuApiKey.CompanyId,
                 ct);
 
             if (marketplaceRelation.Count == 0)
             {
-                logger.LogDebug("{Source} YunuMarketplaceRelation Not Exists {@YunuMarketplaceRelation}", nameof(Reload), yunuRelation);
-                await godooOneSBuhService.CreateMarketplaceRelationAsync(yunuProduct, yunuRelation, yunuApiKey.CompanyId, oneSProduct, ct);
+                logger.LogDebug("{Source} Not Exists {@yunuProduct} {@yunuRelation} {@yunuApiKey} {@oneSProduct}",
+                    nameof(Reload), yunuProduct, yunuRelation, yunuApiKey, oneSProduct);
+
+                await godooOneSBuhService.CreateMarketplaceRelationAsync(
+                    yunuProductId: yunuProduct.ProductId.ToString(),
+                    marketplace: MarketplaceMap.FromYunu[yunuRelation.Marketplace ?? string.Empty],
+                    barcode: yunuRelation.Barcode ?? string.Empty,
+                    oneSProductKey: oneSProduct.Ref_Key,
+                    companyKey: yunuApiKey.CompanyId,
+                    ct);
             }
             else
             {
-                logger.LogDebug("{Source} YunuMarketplaceRelation Exists {@YunuMarketplaceRelation}", nameof(Reload), yunuRelation);
+                logger.LogDebug("{Source} Exists {@yunuProduct} {@yunuRelation} {@yunuApiKey} {@oneSProduct}",
+                    nameof(Reload), yunuProduct, yunuRelation, yunuApiKey, oneSProduct);
             }
         }
     }

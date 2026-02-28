@@ -22,6 +22,14 @@
 
         public static string Uri => "Catalog_Номенклатура?$format=json&$inlinecount=allpages&$select=Ref_Key,Description,Артикул";
 
+        internal static string GetUri(string yunuProductId)
+        {
+            string uri = $"Catalog_Номенклатура?$format=json&$inlinecount=allpages" +
+                $"&$select=Ref_Key,Description,Артикул" +
+                $"&$filter=Артикул eq '{yunuProductId}'";
+            return uri;
+        }
+
         //public bool IsFolder { get; set; }
         //public string DataVersion { get; set; }
         //public bool DeletionMark { get; set; }

@@ -3,7 +3,9 @@ using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
 using System.Net.Mime;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Unicode;
 
 namespace XMS.Infrastructure.Integration.OneS
 {
@@ -12,6 +14,11 @@ namespace XMS.Infrastructure.Integration.OneS
     {
         protected readonly TConfig _clientConfig = options.Value;
         protected readonly HttpClient _httpClient = httpClient;
+        protected readonly JsonSerializerOptions _serializerOptions = new ()
+        {
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+            //Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        };
 
         public Task<TValue?> GetValueAsync<TValue>(string? uri, CancellationToken ct = default)
         {
@@ -20,7 +27,7 @@ namespace XMS.Infrastructure.Integration.OneS
 
         public async Task<TValue?> PostValueAsync<TValue>(TValue value, string? uri, CancellationToken ct = default)
         {
-            var jsonString = JsonSerializer.Serialize(value);
+            var jsonString = JsonSerializer.Serialize(value, _serializerOptions);
 
             using var stringContent = new StringContent(jsonString, Encoding.UTF8, MediaTypeNames.Application.Json);
 
@@ -31,7 +38,7 @@ namespace XMS.Infrastructure.Integration.OneS
             if (!response.IsSuccessStatusCode)
             {
                 var error = JsonSerializer.Deserialize<OneSError>(content);
-                logger.LogError("{Source} {Uri} {@Value} {@Error}", nameof(PostValueAsync), uri, value, error);
+                logger.LogError("{Source} {Uri} {JsonString} {@Value} {@Error}", nameof(PostValueAsync), uri, jsonString, value, error);
                 return default;
             }
 

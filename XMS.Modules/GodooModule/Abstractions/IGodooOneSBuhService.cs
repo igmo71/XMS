@@ -14,14 +14,15 @@ namespace XMS.Modules.GodooModule.Abstractions
             string? marketplace,
             string? barcode,
             string? oneSProductKey,
-            string? companyId,
+            string? companyKey,
             CancellationToken ct = default);
         
         Task CreateMarketplaceRelationAsync(
-            YunuProduct yunuProduct, 
-            YunuMarketplaceRelation yunuRelation, 
-            string companyId,
-            Catalog_Номенклатура oneSProduct,
+            string? yunuProductId,
+            string? marketplace,
+            string? barcode,
+            string? oneSProductKey,
+            string? companyKey,
             CancellationToken ct = default);
     }
 }
