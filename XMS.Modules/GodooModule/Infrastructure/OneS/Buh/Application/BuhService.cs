@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using XMS.Infrastructure.Integration.OneS;
 using XMS.Modules.GodooModule.Abstractions;
+using XMS.Modules.GodooModule.Application;
 using XMS.Modules.GodooModule.Domain;
 using XMS.Modules.GodooModule.Infrastructure.OneS.Buh.Infrastructure;
 
@@ -10,19 +11,10 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh.Application
     {
 
         public async Task<IReadOnlyList<InformationRegister_НоменклатураМаркетплейсов>> GetMarketplaceRelationListAsync(
-            string? yunuProductId,
-            string? marketplace,
-            string? barcode,
-            string? oneSProductKey,
-            string? companyKey,
+            GodooMarketplaceRelation godooMarketplaceRelation,
             CancellationToken ct = default)
         {
-            string uri = InformationRegister_НоменклатураМаркетплейсов.GetUri(
-                yunuProductId: yunuProductId,
-                marketplace: marketplace,
-                barcode: barcode,
-                oneSProductKey: oneSProductKey,
-                companyKey: companyKey);
+            string uri = InformationRegister_НоменклатураМаркетплейсов.GetUri(godooMarketplaceRelation);
 
             var rootObject = await client.GetValueAsync<RootObject<InformationRegister_НоменклатураМаркетплейсов>>(uri, ct);
 
@@ -34,21 +26,16 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh.Application
             return rootObject?.Value ?? [];
         }
 
-        public async Task CreateMarketplaceRelationAsync(
-            string? yunuProductId,
-            string? marketplace,
-            string? barcode,
-            string? oneSProductKey,
-            string? companyKey,
+        public async Task CreateMarketplaceRelationAsync(GodooMarketplaceRelation godooMarketplaceRelation,
             CancellationToken ct = default)
         {
             var relationToCreate = new InformationRegister_НоменклатураМаркетплейсов
             {
-                ИдентификаторТовара = yunuProductId,
-                Маркетплейс = marketplace,
-                Штрихкод = barcode,
-                Номенклатура_Key = oneSProductKey,
-                Организация_Key = companyKey
+                ИдентификаторТовара = godooMarketplaceRelation.YunuProductId,
+                Маркетплейс = godooMarketplaceRelation.Marketplace,
+                Штрихкод = godooMarketplaceRelation.Barcode,
+                Номенклатура_Key = godooMarketplaceRelation.OneSProductKey,
+                Организация_Key = godooMarketplaceRelation.CompanyKey
             };
 
             var relationCreated = await client.PostValueAsync(relationToCreate, nameof(InformationRegister_НоменклатураМаркетплейсов), ct);

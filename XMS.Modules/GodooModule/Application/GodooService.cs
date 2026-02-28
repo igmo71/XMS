@@ -2,7 +2,6 @@
 using XMS.Application.Abstractions;
 using XMS.Modules.GodooModule.Abstractions;
 using XMS.Modules.GodooModule.Domain;
-using XMS.Modules.GodooModule.Infrastructure.Yunu.Infrastructure;
 
 namespace XMS.Modules.GodooModule.Application
 {
@@ -35,7 +34,14 @@ namespace XMS.Modules.GodooModule.Application
                 {
                     foreach (var yunuRelation in yunuProduct.MarketplaceRelations)
                     {
-                        await CreateMarketplaceRelationIfNotExists(yunuProduct, yunuRelation, yunuApiKey, oneSProduct, ct);
+                        GodooMarketplaceRelation godooMarketplaceRelation = new(
+                            YunuProductId: yunuProduct.ProductId.ToString(),
+                            Marketplace: MarketplaceMap.FromYunu[yunuRelation.Marketplace ?? string.Empty],
+                            Barcode: yunuRelation.Barcode ?? string.Empty,
+                            OneSProductKey: oneSProduct.Ref_Key,
+                            CompanyKey: yunuApiKey.CompanyId);
+
+                        await CreateMarketplaceRelationIfNotExists(godooMarketplaceRelation, ct);
                     }
                 }
             }
@@ -70,38 +76,19 @@ namespace XMS.Modules.GodooModule.Application
             }
         }
 
-        private async Task CreateMarketplaceRelationIfNotExists(
-            YunuProduct yunuProduct,
-            YunuMarketplaceRelation yunuRelation,
-            ApiKey yunuApiKey,
-            Catalog_Номенклатура oneSProduct,
-            CancellationToken ct)
+        private async Task CreateMarketplaceRelationIfNotExists(GodooMarketplaceRelation godooMarketplaceRelation, CancellationToken ct)
         {
-            var marketplaceRelation = await godooOneSBuhService.GetMarketplaceRelationListAsync(
-                yunuProductId: yunuProduct.ProductId.ToString(),
-                marketplace: MarketplaceMap.FromYunu[yunuRelation.Marketplace ?? string.Empty],
-                barcode: yunuRelation.Barcode ?? string.Empty,
-                oneSProductKey: oneSProduct.Ref_Key,
-                companyKey: yunuApiKey.CompanyId,
-                ct);
+            var marketplaceRelation = await godooOneSBuhService.GetMarketplaceRelationListAsync(godooMarketplaceRelation, ct);
 
             if (marketplaceRelation.Count == 0)
             {
-                logger.LogDebug("{Source} Not Exists {@yunuProduct} {@yunuRelation} {@yunuApiKey} {@oneSProduct}",
-                    nameof(Reload), yunuProduct, yunuRelation, yunuApiKey, oneSProduct);
+                logger.LogDebug("{Source} Not Exists {@GodooMarketplaceRelation}", nameof(Reload), godooMarketplaceRelation);
 
-                await godooOneSBuhService.CreateMarketplaceRelationAsync(
-                    yunuProductId: yunuProduct.ProductId.ToString(),
-                    marketplace: MarketplaceMap.FromYunu[yunuRelation.Marketplace ?? string.Empty],
-                    barcode: yunuRelation.Barcode ?? string.Empty,
-                    oneSProductKey: oneSProduct.Ref_Key,
-                    companyKey: yunuApiKey.CompanyId,
-                    ct);
+                await godooOneSBuhService.CreateMarketplaceRelationAsync(godooMarketplaceRelation, ct);
             }
             else
             {
-                logger.LogDebug("{Source} Exists {@yunuProduct} {@yunuRelation} {@yunuApiKey} {@oneSProduct}",
-                    nameof(Reload), yunuProduct, yunuRelation, yunuApiKey, oneSProduct);
+                logger.LogDebug("{Source} Exists {@GodooMarketplaceRelation}", nameof(Reload), godooMarketplaceRelation);
             }
         }
     }

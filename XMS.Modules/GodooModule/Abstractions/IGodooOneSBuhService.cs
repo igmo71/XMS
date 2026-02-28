@@ -1,4 +1,5 @@
-﻿using XMS.Modules.GodooModule.Domain;
+﻿using XMS.Modules.GodooModule.Application;
+using XMS.Modules.GodooModule.Domain;
 
 namespace XMS.Modules.GodooModule.Abstractions
 {
@@ -6,23 +7,13 @@ namespace XMS.Modules.GodooModule.Abstractions
     {
         Task<IReadOnlyList<Catalog_Организации>> GetCompanyListAsync(CancellationToken ct = default);
 
-        Task<IReadOnlyList<Catalog_Номенклатура>> GetProductListAsync (string refKey, CancellationToken ct = default);        
+        Task<IReadOnlyList<Catalog_Номенклатура>> GetProductListAsync(string refKey, CancellationToken ct = default);
         Task<Catalog_Номенклатура?> CreateProductAsync(YunuProduct yunuProduct, CancellationToken ct = default);
 
         Task<IReadOnlyList<InformationRegister_НоменклатураМаркетплейсов>> GetMarketplaceRelationListAsync(
-            string? yunuProductId,
-            string? marketplace,
-            string? barcode,
-            string? oneSProductKey,
-            string? companyKey,
+            GodooMarketplaceRelation godooMarketplaceRelation,
             CancellationToken ct = default);
-        
-        Task CreateMarketplaceRelationAsync(
-            string? yunuProductId,
-            string? marketplace,
-            string? barcode,
-            string? oneSProductKey,
-            string? companyKey,
-            CancellationToken ct = default);
+
+        Task CreateMarketplaceRelationAsync(GodooMarketplaceRelation godooMarketplaceRelation, CancellationToken ct = default);
     }
 }
