@@ -1,11 +1,15 @@
-﻿<MudNavMenu>
+﻿@inject IHostEnvironment Environment
+
+<MudNavMenu>
 	<MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Главная</MudNavLink>
 	<AuthorizeView Roles="Admin">
-		<MudNavLink Href="http://localhost:5152/scalar/#tag/godoo" Target="_blank" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Api">Godoo</MudNavLink>
-		<MudNavLink Href="http://localhost:5152/scalar/#tag/yunu" Target="_blank" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Api">Yunu</MudNavLink>
+
+		<MudNavLink Href="@(Environment.IsDevelopment() ? "http://localhost:5152/scalar/#tag/godoo" : "http://vm-xms-dev:8201/scalar/#tag/godoo")"
+					Target="_blank" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Api">Godoo</MudNavLink>
+		<MudNavLink Href="@(Environment.IsDevelopment() ? "http://localhost:5152/scalar/#tag/yunu" : "http://vm-xms-dev:8201/scalar/#tag/yunu")"
+					Target="_blank" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Api">Yunu</MudNavLink>
 	</AuthorizeView>
 	<AuthInNavMenu />
 </MudNavMenu>
 @code {
-	
 }

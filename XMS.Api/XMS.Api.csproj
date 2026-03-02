@@ -1,32 +1,35 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>81058172-f3dc-40bd-8217-da0be6a29da5</UserSecretsId>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>81058172-f3dc-40bd-8217-da0be6a29da5</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<ContainerRepository>xms-api</ContainerRepository>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Endpoints\**" />
-    <Content Remove="Endpoints\**" />
-    <EmbeddedResource Remove="Endpoints\**" />
-    <None Remove="Endpoints\**" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Endpoints\**" />
+		<Content Remove="Endpoints\**" />
+		<EmbeddedResource Remove="Endpoints\**" />
+		<None Remove="Endpoints\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Scalar.AspNetCore" Version="2.12.48" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
+		<PackageReference Include="Scalar.AspNetCore" Version="2.12.48" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\XMS.Application\XMS.Application.csproj" />
-    <ProjectReference Include="..\XMS.Infrastructure\XMS.Infrastructure.csproj" />
-    <ProjectReference Include="..\XMS.Modules\XMS.Modules.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\XMS.Application\XMS.Application.csproj" />
+		<ProjectReference Include="..\XMS.Infrastructure\XMS.Infrastructure.csproj" />
+		<ProjectReference Include="..\XMS.Modules\XMS.Modules.csproj" />
+	</ItemGroup>
 
 </Project>
