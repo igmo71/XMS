@@ -8,6 +8,7 @@
             services.AddScoped<IAppSection, SectionWarehouse>();
             services.AddScoped<IAppSection, SectionConfig>();
             services.AddScoped<IAppSection, SectionAdmin>();
+            services.AddScoped<IAppSection, SectionApi>();
 
             return services;
         }
