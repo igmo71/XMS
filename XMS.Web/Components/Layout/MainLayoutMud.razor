@@ -20,7 +20,6 @@
 				 Rounded="true"
 				 Color="Color.Inherit"
 				 Class="ml-5">
-
 			@foreach (var section in _sections)
 			{
 				string tabPanelBackground = _isDarkMode ? _myCustomTheme.PaletteDark.AppbarBackground.Value : _myCustomTheme.PaletteLight.AppbarBackground.Value;
@@ -29,12 +28,10 @@
 		</MudTabs>
 		<MudSpacer />
 		<AuthOnAppBar />
-		@* <MudToggleIconButton @bind-Toggled="@_isDarkMode" Icon="@Icons.Material.Filled.LightMode" Color="Color.Inherit" ToggledIcon="@Icons.Material.Filled.DarkMode" ToggledColor="Color.Inherit" /> *@
 		<MudIconButton Icon="@_themeIcon" Color="Color.Inherit" OnClick="@CycleTheme" title="@_themeTitle" />
 		<MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
 	</MudAppBar>
 	<MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-		@* <NavMenuMud /> *@
 		@_currentSection?.Menu
 	</MudDrawer>
 	<MudMainContent>
@@ -61,26 +58,20 @@
 		PaletteLight = new PaletteLight()
 		{
 			// Акценты (Indigo)
-			//Primary = "#4F46E5",          // Indigo 600 (основной)
-			Primary = "#6366F1",          // Indigo 500 (чуть мягче 600-го)
-			//Secondary = "#475569",        // Slate 600 (второстепенный)
+			Primary = "#6366F1",          // Indigo 500
 			Secondary = "#64748B",        // Slate 500
 
 			// Поверхности
-			//Background = "#F8FAFC",       // Slate 50 (фон страницы)
-			Background = "#F1F5F9",       // Slate 100 (мягкий серый вместо резкого белого)
-			//AppbarBackground = "#1E293B", // Slate 800 (шапка - темный контраст)
-			AppbarBackground = "#E2E8F0", // Фон шапки теперь совпадает с фоном или чуть темнее
+			Background = "#F1F5F9",       // Slate 100
+			AppbarBackground = "#E2E8F0",
 			AppbarText = "#1E293B",
 			DrawerBackground = "#FFFFFF", // Белый сайдбар
 			Surface = "#FFFFFF",          // Карточки
 
 			// Текст и линии
-			//TextPrimary = "#0F172A",      // Slate 900
-			TextPrimary = "#334155",      // Slate 700 (вместо черного 900 — меньше нагрузка на глаза)
+			TextPrimary = "#334155",      // Slate 700 
 			TextSecondary = "#64748B",    // Slate 500
 			LinesDefault = "#E2E8F0",     // Slate 200 (сетка таблицы)
-			//TableStriped = "#F1F5F9",     // Slate 100 (мягкие полоски)
 			TableStriped = "#F8FAFC",
 			Divider = "#E2E8F0",
 
@@ -93,17 +84,16 @@
 		PaletteDark = new PaletteDark()
 		{
 			// Акценты (Indigo Light)
-			Primary = "#818CF8",          // Indigo 400 (светлее для контраста)
+			Primary = "#818CF8",          // Indigo 400
 			Secondary = "#94A3B8",        // Slate 400
 
 			// Поверхности
 			Background = "#0F172A",       // Slate 900 (глубокий синий)
 			Surface = "#1E293B",          // Slate 800 (карточки)
-		    AppbarBackground = "#1E293B", // Slate 800
+			AppbarBackground = "#1E293B", // Slate 800
 			DrawerBackground = "#1E293B", // Slate 800
 
 			// Текст и линии
-			//TextPrimary = "#F8FAFC",      // Slate 50
 			TextPrimary = "#F1F5F9",
 			TextSecondary = "#94A3B8",    // Slate 400
 			LinesDefault = "#334155",     // Slate 700 (тонкие границы)
@@ -131,7 +121,7 @@
 		PreventDuplicates = false,
 	};
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		_sections = Sections.ToList();
 		_currentSection = _sections.First();
