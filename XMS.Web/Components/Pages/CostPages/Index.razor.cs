@@ -27,10 +27,12 @@ namespace XMS.Web.Components.Pages.CostPages
         private IEnumerable<Department> _departments = [];
         private IEnumerable<Employee> _employees = [];
         private HashSet<Guid> _expandedCategoryIds = [];
+        private HashSet<Guid> _showDetailsCategoryIds = [];
         private bool _expandedAll;
         private bool _isLoading;
         private bool _isProcessing;
         private bool _includeDeleted = false;
+        private bool _isShowDetails = false;
 
         protected override async Task OnInitializedAsync()
         {
@@ -417,7 +419,29 @@ namespace XMS.Web.Components.Pages.CostPages
             return result is { Canceled: false };
         }
 
-        //
+        private async Task ToggleShowDetails(ITreeItemData<object> node)
+        {
+            if (node.Value is CostCategory category)
+            {
+                if (_showDetailsCategoryIds.Contains(category.Id))
+                    _showDetailsCategoryIds.Remove(category.Id);
+                else
+                    _showDetailsCategoryIds.Add(category.Id);
+
+                await SessionStorage.SetAsync(nameof(_showDetailsCategoryIds), _showDetailsCategoryIds);
+            }
+        }
+
+        private async Task ToggleShowDetails(bool args)
+        {
+            _isShowDetails = args;
+            if (_isShowDetails)
+                _showDetailsCategoryIds = _costCategories.Select(e => e.Id).ToHashSet();
+            else
+                _showDetailsCategoryIds.Clear();
+
+            await SessionStorage.SetAsync(nameof(_showDetailsCategoryIds), _showDetailsCategoryIds);
+        }
 
         public void Dispose()
         {

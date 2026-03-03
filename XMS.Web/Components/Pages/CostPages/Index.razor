@@ -5,18 +5,22 @@
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="pt-4">
 	<MudStack Row="true">
-		<MudPaper Style="max-height: calc(100vh - 96px); overflow-y: auto;">
+		<MudPaper Style="min-width:600px; max-height: calc(100vh - 96px); overflow-y: auto;">
 			<MudToolBar>
 				<MudStack Row="true" Spacing="6">
 					<MudText Typo="Typo.h5">Категории и Статьи Затрат</MudText>
 					<MudFab Color="Color.Primary" Size="Size.Small"
 							StartIcon="@(_expandedAll? Icons.Material.Filled.VerticalAlignCenter : Icons.Material.Filled.Expand)"
-							OnClick="@(_expandedAll ? CollapseAll : ExpandAll)" 
+							OnClick="@(_expandedAll ? CollapseAll : ExpandAll)"
 							title="@(_expandedAll ? "Свернуть все" : "Развернуть все")" />
-					<MudSwitch T="bool" ValueChanged="ToggleIncludeDelete" Color="Color.Primary">Показать удаленные</MudSwitch>
 				</MudStack>
 			</MudToolBar>
-			<MudTreeView Items="_costTree" T="object" Dense="true">
+			<MudStack Row="true" Class="d-flex justify-space-around flex-grow-1 gap-4">
+				<MudSwitch T="bool" ValueChanged="ToggleIncludeDelete" Color="Color.Primary">Показать удаленные</MudSwitch>
+				<MudSwitch T="bool" ValueChanged="ToggleShowDetails" Color="Color.Primary">Показать детали</MudSwitch>
+			</MudStack>
+			<hr class="my-0"/>
+			<MudTreeView Items="_costTree" T="object" Dense="true" Class="mt-2">
 				<ItemTemplate Context="node">
 					<MudTreeViewItem Expanded="@node.Expanded"
 									 ExpandedChanged="@((expanded) => ExpandedChanged(node, expanded))"
@@ -26,7 +30,7 @@
 							<MudTreeViewItemToggleButton Expanded="@node.Expanded"
 														 Visible="@node.HasChildren"
 														 ExpandedChanged="@((expanded) => ExpandedChanged(node, expanded))" />
-							<div class="d-flex align-center">
+							<div class="d-flex align-center" @onclick="() => ToggleShowDetails(node)">
 								@if (node.Value is CostCategory category)
 								{
 									<MudIcon Icon="@(node.Expanded? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder)" Size="Size.Medium"
@@ -50,6 +54,11 @@
 											}
 										}
 									</MudMenu>
+									@if (_showDetailsCategoryIds.Contains(category.Id))
+									{
+										<MudText Typo="Typo.body2" Class="ml-3">@category.Employee?.Name </MudText>
+										<MudText Typo="Typo.body2" Class="ml-3">@category.Department?.Name</MudText>
+									}
 
 								}
 								else if (node.Value is CostItem costItem)
