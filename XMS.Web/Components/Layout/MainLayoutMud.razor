@@ -1,6 +1,8 @@
 ﻿@using XMS.Web.Components.Layout.Sections
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inherits LayoutComponentBase
 @inject IEnumerable<IAppSection> Sections
+@inject ProtectedLocalStorage ProtectedLocalStorage
 
 <MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" Theme="_myCustomTheme" />
 <MudSnackbarProvider @bind-Configuration="snackbarConfig" />
@@ -16,7 +18,7 @@
 				 Elevation="0"
 				 ApplyEffectsToContainer="true"
 				 Rounded="true"
-				 Color="Color.Transparent"
+				 Color="Color.Inherit"
 				 Class="ml-5">
 
 			@foreach (var section in _sections)
@@ -59,26 +61,26 @@
 		PaletteLight = new PaletteLight()
 		{
 			// Акценты (Indigo)
-		  //Primary = "#4F46E5",          // Indigo 600 (основной)
+			//Primary = "#4F46E5",          // Indigo 600 (основной)
 			Primary = "#6366F1",          // Indigo 500 (чуть мягче 600-го)
-		  //Secondary = "#475569",        // Slate 600 (второстепенный)
+			//Secondary = "#475569",        // Slate 600 (второстепенный)
 			Secondary = "#64748B",        // Slate 500
 
 			// Поверхности
-		  //Background = "#F8FAFC",       // Slate 50 (фон страницы)
+			//Background = "#F8FAFC",       // Slate 50 (фон страницы)
 			Background = "#F1F5F9",       // Slate 100 (мягкий серый вместо резкого белого)
-		  //AppbarBackground = "#1E293B", // Slate 800 (шапка - темный контраст)
-			AppbarBackground = "#F1F5F9", // Фон шапки теперь совпадает с фоном или чуть темнее
+			//AppbarBackground = "#1E293B", // Slate 800 (шапка - темный контраст)
+			AppbarBackground = "#E2E8F0", // Фон шапки теперь совпадает с фоном или чуть темнее
 			AppbarText = "#1E293B",
 			DrawerBackground = "#FFFFFF", // Белый сайдбар
 			Surface = "#FFFFFF",          // Карточки
 
 			// Текст и линии
-		  //TextPrimary = "#0F172A",      // Slate 900
+			//TextPrimary = "#0F172A",      // Slate 900
 			TextPrimary = "#334155",      // Slate 700 (вместо черного 900 — меньше нагрузка на глаза)
 			TextSecondary = "#64748B",    // Slate 500
 			LinesDefault = "#E2E8F0",     // Slate 200 (сетка таблицы)
-		  //TableStriped = "#F1F5F9",     // Slate 100 (мягкие полоски)
+			//TableStriped = "#F1F5F9",     // Slate 100 (мягкие полоски)
 			TableStriped = "#F8FAFC",
 			Divider = "#E2E8F0",
 
@@ -101,7 +103,7 @@
 			DrawerBackground = "#1E293B", // Slate 800
 
 			// Текст и линии
-		  //TextPrimary = "#F8FAFC",      // Slate 50
+			//TextPrimary = "#F8FAFC",      // Slate 50
 			TextPrimary = "#F1F5F9",
 			TextSecondary = "#94A3B8",    // Slate 400
 			LinesDefault = "#334155",     // Slate 700 (тонкие границы)
@@ -140,7 +142,9 @@
 	{
 		if (firstRender)
 		{
-			_isDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
+			var result = await ProtectedLocalStorage.GetAsync<int>(nameof(_themeMode));
+			_themeMode = result.Success ? result.Value : 0;
+			await ApplyThemeMode();
 			StateHasChanged();
 		}
 	}
@@ -172,7 +176,6 @@
 		{
 			case 0: // Системная
 				_isDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
-				// _themeIcon = Icons.Material.Filled.SettingsBrightness;
 				_themeIcon = Icons.Material.Filled.LightMode;
 				_themeTitle = "Светлая тема";
 				break;
@@ -187,6 +190,7 @@
 				_themeTitle = "Системная тема";
 				break;
 		}
-	}
 
+		await ProtectedLocalStorage.SetAsync(nameof(_themeMode), _themeMode);
+	}
 }
