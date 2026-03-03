@@ -64,7 +64,8 @@ namespace XMS.Web.Components.Pages.CostPages
             _isLoading = true;
             try
             {
-                await Task.WhenAll(LoadCostCategories(),
+                await Task.WhenAll(
+                    LoadCostCategories(),
                     LoadCostItems(),
                     LoadDepartments(),
                     LoadEmployees());
@@ -78,7 +79,7 @@ namespace XMS.Web.Components.Pages.CostPages
         }
 
         private async Task LoadCostCategories() => _costCategories = await CategoryService.GetListAsync(_includeDeleted, _cts.Token);
-        private async Task LoadCostItems() => _costItems = await ItemService.GetListAsync(true, _cts.Token);
+        private async Task LoadCostItems() => _costItems = await ItemService.GetListAsync(true, _cts.Token);        
         private async Task LoadDepartments() => _departments = await DepartmentService.GetListAsync(false, _cts.Token);
         private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync(false, _cts.Token);
 
@@ -147,6 +148,30 @@ namespace XMS.Web.Components.Pages.CostPages
             _includeDeleted = args;
 
             await LoadDataAndBuildTreeAsync();
+        }
+
+        private async Task ToggleShowDetails(ITreeItemData<object> node)
+        {
+            if (node.Value is CostCategory category)
+            {
+                if (_showDetailsCategoryIds.Contains(category.Id))
+                    _showDetailsCategoryIds.Remove(category.Id);
+                else
+                    _showDetailsCategoryIds.Add(category.Id);
+
+                await SessionStorage.SetAsync(nameof(_showDetailsCategoryIds), _showDetailsCategoryIds);
+            }
+        }
+
+        private async Task ToggleShowDetails(bool args)
+        {
+            _isShowDetails = args;
+            if (_isShowDetails)
+                _showDetailsCategoryIds = _costCategories.Select(e => e.Id).ToHashSet();
+            else
+                _showDetailsCategoryIds.Clear();
+
+            await SessionStorage.SetAsync(nameof(_showDetailsCategoryIds), _showDetailsCategoryIds);
         }
 
         // CostCategory Operations //
@@ -417,30 +442,6 @@ namespace XMS.Web.Components.Pages.CostPages
             var result = await dialog.Result;
 
             return result is { Canceled: false };
-        }
-
-        private async Task ToggleShowDetails(ITreeItemData<object> node)
-        {
-            if (node.Value is CostCategory category)
-            {
-                if (_showDetailsCategoryIds.Contains(category.Id))
-                    _showDetailsCategoryIds.Remove(category.Id);
-                else
-                    _showDetailsCategoryIds.Add(category.Id);
-
-                await SessionStorage.SetAsync(nameof(_showDetailsCategoryIds), _showDetailsCategoryIds);
-            }
-        }
-
-        private async Task ToggleShowDetails(bool args)
-        {
-            _isShowDetails = args;
-            if (_isShowDetails)
-                _showDetailsCategoryIds = _costCategories.Select(e => e.Id).ToHashSet();
-            else
-                _showDetailsCategoryIds.Clear();
-
-            await SessionStorage.SetAsync(nameof(_showDetailsCategoryIds), _showDetailsCategoryIds);
         }
 
         public void Dispose()

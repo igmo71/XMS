@@ -4,7 +4,7 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<UserSecretsId>81058172-f3dc-40bd-8217-da0be6a29da5</UserSecretsId>
+		<UserSecretsId>aspnet-XMS-cee2082e-7e6f-4a49-9b2a-29fe78cd37e3</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<ContainerRepository>xms-api</ContainerRepository>
 	</PropertyGroup>

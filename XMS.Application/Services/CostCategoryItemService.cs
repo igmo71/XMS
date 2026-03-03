@@ -52,5 +52,19 @@ namespace XMS.Application.Services
             if (toAdd?.Count > 0)
                 await dbContext.Set<CostCategoryItem>().AddRangeAsync(toAdd, ct);
         }
+
+        public async Task<IReadOnlyList<CostCategoryItem>> GetListAsync(bool hasCashFlowOnly = false, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var query = dbContext.Set<CostCategoryItem>().AsNoTracking();
+
+            if (hasCashFlowOnly)
+                query = query.Where(e => e.CashFlowItemId != null);
+
+            var result = await query.ToListAsync();
+
+            return result;
+        }
     }
 }

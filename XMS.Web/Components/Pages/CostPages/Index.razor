@@ -19,7 +19,7 @@
 				<MudSwitch T="bool" ValueChanged="ToggleIncludeDelete" Color="Color.Primary">Показать удаленные</MudSwitch>
 				<MudSwitch T="bool" ValueChanged="ToggleShowDetails" Color="Color.Primary">Показать детали</MudSwitch>
 			</MudStack>
-			<hr class="my-0"/>
+			<hr class="my-0" />
 			<MudTreeView Items="_costTree" T="object" Dense="true" Class="mt-2">
 				<ItemTemplate Context="node">
 					<MudTreeViewItem Expanded="@node.Expanded"
@@ -56,7 +56,7 @@
 									</MudMenu>
 									@if (_showDetailsCategoryIds.Contains(category.Id))
 									{
-										<MudText Typo="Typo.body2" Class="ml-3">@category.Employee?.Name </MudText>
+										<MudText Typo="Typo.body2" Class="ml-3">@category.Employee?.Name</MudText>
 										<MudText Typo="Typo.body2" Class="ml-3">@category.Department?.Name</MudText>
 									}
 
