@@ -13,7 +13,11 @@
 		
 		<MudTabs ActivePanelIndex="_activeIndex"
 				 ActivePanelIndexChanged="SetSection"
-				 Elevation="0" Rounded="true" Color="Color.Transparent" Class="ml-5">
+				 Elevation="0"
+				 ApplyEffectsToContainer="true"
+				 Rounded="true"
+				 Color="Color.Transparent"
+				 Class="ml-5">
 
 			@foreach (var section in _sections)
 			{
@@ -23,11 +27,8 @@
 		</MudTabs>
 		<MudSpacer />
 		<AuthOnAppBar />
-		<MudToggleIconButton @bind-Toggled="@_isDarkMode"
-							 Icon="@Icons.Material.Filled.LightMode"
-							 Color="Color.Inherit"
-							 ToggledIcon="@Icons.Material.Filled.DarkMode"
-							 ToggledColor="Color.Inherit" />
+		@* <MudToggleIconButton @bind-Toggled="@_isDarkMode" Icon="@Icons.Material.Filled.LightMode" Color="Color.Inherit" ToggledIcon="@Icons.Material.Filled.DarkMode" ToggledColor="Color.Inherit" /> *@
+		<MudIconButton Icon="@_themeIcon" Color="Color.Inherit" OnClick="@CycleTheme" title="@_themeTitle" />
 		<MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
 	</MudAppBar>
 	<MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
@@ -49,25 +50,37 @@
 
 	private MudThemeProvider _mudThemeProvider = default!;
 
+	private int _themeMode = 0;
+	private string _themeIcon = Icons.Material.Filled.LightMode;
+	private string _themeTitle = "Светлая тема";
+
 	private MudTheme _myCustomTheme = new MudTheme()
 	{
 		PaletteLight = new PaletteLight()
 		{
 			// Акценты (Indigo)
-			Primary = "#4F46E5",          // Indigo 600 (основной)
-			Secondary = "#475569",        // Slate 600 (второстепенный)
+		  //Primary = "#4F46E5",          // Indigo 600 (основной)
+			Primary = "#6366F1",          // Indigo 500 (чуть мягче 600-го)
+		  //Secondary = "#475569",        // Slate 600 (второстепенный)
+			Secondary = "#64748B",        // Slate 500
 
 			// Поверхности
-			Background = "#F8FAFC",       // Slate 50 (фон страницы)
-			AppbarBackground = "#1E293B", // Slate 800 (шапка - темный контраст)
+		  //Background = "#F8FAFC",       // Slate 50 (фон страницы)
+			Background = "#F1F5F9",       // Slate 100 (мягкий серый вместо резкого белого)
+		  //AppbarBackground = "#1E293B", // Slate 800 (шапка - темный контраст)
+			AppbarBackground = "#F1F5F9", // Фон шапки теперь совпадает с фоном или чуть темнее
+			AppbarText = "#1E293B",
 			DrawerBackground = "#FFFFFF", // Белый сайдбар
 			Surface = "#FFFFFF",          // Карточки
 
 			// Текст и линии
-			TextPrimary = "#0F172A",      // Slate 900
+		  //TextPrimary = "#0F172A",      // Slate 900
+			TextPrimary = "#334155",      // Slate 700 (вместо черного 900 — меньше нагрузка на глаза)
 			TextSecondary = "#64748B",    // Slate 500
 			LinesDefault = "#E2E8F0",     // Slate 200 (сетка таблицы)
-			TableStriped = "#F1F5F9",     // Slate 100 (мягкие полоски)
+		  //TableStriped = "#F1F5F9",     // Slate 100 (мягкие полоски)
+			TableStriped = "#F8FAFC",
+			Divider = "#E2E8F0",
 
 			// Статусы (Muted)
 			Success = "#10B981",          // Emerald 500
@@ -84,11 +97,12 @@
 			// Поверхности
 			Background = "#0F172A",       // Slate 900 (глубокий синий)
 			Surface = "#1E293B",          // Slate 800 (карточки)
-			AppbarBackground = "#1E293B", // Slate 800
+		    AppbarBackground = "#1E293B", // Slate 800
 			DrawerBackground = "#1E293B", // Slate 800
 
 			// Текст и линии
-			TextPrimary = "#F8FAFC",      // Slate 50
+		  //TextPrimary = "#F8FAFC",      // Slate 50
+			TextPrimary = "#F1F5F9",
 			TextSecondary = "#94A3B8",    // Slate 400
 			LinesDefault = "#334155",     // Slate 700 (тонкие границы)
 			TableStriped = "#242F3E",     // Кастомный Slate 850 (едва заметный)
@@ -145,4 +159,34 @@
 		_currentSection = _sections[index];
 		_drawerOpen = true;
 	}
+
+	private async Task CycleTheme()
+	{
+		_themeMode = (_themeMode + 1) % 3;
+		await ApplyThemeMode();
+	}
+
+	private async Task ApplyThemeMode()
+	{
+		switch (_themeMode)
+		{
+			case 0: // Системная
+				_isDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
+				// _themeIcon = Icons.Material.Filled.SettingsBrightness;
+				_themeIcon = Icons.Material.Filled.LightMode;
+				_themeTitle = "Светлая тема";
+				break;
+			case 1: // Светлая
+				_isDarkMode = false;
+				_themeIcon = Icons.Material.Filled.DarkMode;
+				_themeTitle = "Темная тема";
+				break;
+			case 2: // Темная
+				_isDarkMode = true;
+				_themeIcon = Icons.Material.Filled.SettingsBrightness;
+				_themeTitle = "Системная тема";
+				break;
+		}
+	}
+
 }
