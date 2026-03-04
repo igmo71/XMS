@@ -3,10 +3,9 @@
 @using XMS.Domain.Models
 @attribute [Authorize]
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="pt-4">
-	<MudPaper Style=" max-height: calc(100vh - 96px); overflow-y: auto;">
-		<RecursiveTable CostCategories="_costCategories"
-						CostItems="_costItems"
+<MudContainer MaxWidth="MaxWidth.Medium" Class="pt-4">
+	<MudPaper Style="max-height: calc(100vh - 96px); overflow-y: auto;">
+		<RecursiveTable @ref="_recursiveTable" CostCategories="_costCategories"
 						CostCategoryItems="_costCategoryItems"
 						CashFlowItems="_cashFlowItems"
 						ParentId="null" 

@@ -17,14 +17,15 @@ namespace XMS.Web.Components.Pages.CostPages
         [Inject] public ISnackbar Snackbar { get; set; } = default!;
 
         private readonly CancellationTokenSource _cts = new();
-        private IEnumerable<CostItem> _costItems = [];
+        //private IEnumerable<CostItem> _costItems = [];
         private IReadOnlyList<CostCategory> _costCategories = [];
         private IReadOnlyList<CostCategoryItem> _costCategoryItems = [];
         private IReadOnlyList<CashFlowItem> _cashFlowItems = [];
-        private IEnumerable<Department> _departments = [];
-        private IEnumerable<Employee> _employees = [];
+        //private IEnumerable<Department> _departments = [];
+        //private IEnumerable<Employee> _employees = [];
         private bool _isLoading;
         private bool _includeDeleted = false;
+        private RecursiveTable? _recursiveTable;
 
         protected override async Task OnInitializedAsync()
         {
@@ -39,11 +40,12 @@ namespace XMS.Web.Components.Pages.CostPages
             {
                 await Task.WhenAll(
                     LoadCostCategories(),
-                    LoadCostItems(),
+                    //LoadCostItems(),
                     LoadCostCategoryItems(),
-                    LoadCashFlowItems(),
-                    LoadDepartments(),
-                    LoadEmployees());
+                    LoadCashFlowItems()
+                    //LoadDepartments(),
+                    //LoadEmployees()
+                    );
             }
             finally
             {
@@ -53,21 +55,27 @@ namespace XMS.Web.Components.Pages.CostPages
             }
         }
 
-
         private async Task LoadCostCategories() => _costCategories = await CategoryService.GetListAsync(_includeDeleted, _cts.Token);
-        private async Task LoadCostItems() => _costItems = await ItemService.GetListAsync(true, _cts.Token);
+        //private async Task LoadCostItems() => _costItems = await ItemService.GetListAsync(true, _cts.Token);
         private async Task LoadCostCategoryItems() => _costCategoryItems = await CategodyItemService.GetListAsync(hasCashFlowOnly: false, _cts.Token);
         private async Task LoadCashFlowItems() => _cashFlowItems = await CashFlowItemService.GetListAsync(false, _cts.Token);
-        private async Task LoadDepartments() => _departments = await DepartmentService.GetListAsync(false, _cts.Token);
-        private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync(false, _cts.Token);
-		
-        private Task DeleteCashFlowItemLink(CostCategoryItem args)
+        //private async Task LoadDepartments() => _departments = await DepartmentService.GetListAsync(false, _cts.Token);
+        //private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync(false, _cts.Token);
+		        
+		private async Task AddCashFlowItemLink(CostCategoryItem args)
 		{
-			throw new NotImplementedException();
-		}
-		private Task AddCashFlowItemLink(Guid args)
-		{
-			throw new NotImplementedException();
-		}
+            await CategodyItemService.AddCashFlowItemLinkAsync(args, _cts.Token);
+            await LoadCostCategories();
+            await Task.Delay(10);
+            _recursiveTable?.Refresh();
+            StateHasChanged();
+        }
+
+        private async Task DeleteCashFlowItemLink(CostCategoryItem args)
+        {
+            await CategodyItemService.DeleteCashFlowItemLinkAsync(args, _cts.Token);
+            await LoadCostCategories();
+            StateHasChanged();
+        }
     }
 }

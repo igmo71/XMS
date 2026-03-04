@@ -1,49 +1,61 @@
 ﻿@using XMS.Domain.Models
-
 <MudMenu AnchorOrigin="Origin.CenterRight" TransformOrigin="Origin.CenterLeft">
 	<ActivatorContent>
 		<MudIconButton Variant="Variant.Outlined" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@context.ToggleAsync" />
 	</ActivatorContent>
 	<ChildContent>
-		<MudTreeView Items="@(_cashFlowTreeItems)" T="CashFlowItem" Dense="true">
-			<ItemTemplate Context="item">
-				<MudTreeViewItem Expanded="@item.Expanded"
-								 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
-								 Items="@item.Children"
-								 Value="@item.Value">
-					<Content>
-						<MudTreeViewItemToggleButton Expanded="@item.Expanded"
-													 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
-													 Visible="@item.HasChildren" />
-						<MudIcon Icon="@GetIcon(item)"
-								 Class="@(item.Value?.IsDeleted == true ? "mr-2 text-secondary" : "mr-2")" />
+		<MudPaper Style="max-height: calc(100vh - 200px); overflow-y: auto;">
+			<div>@CostCategoryId</div>
+			<div>@CostItemId</div>
+			<MudTreeView Items="@(_cashFlowTreeItems)" T="CashFlowItem" Dense="true">
+				<ItemTemplate Context="item">
+					<MudTreeViewItem Expanded="@item.Expanded"
+									 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
+									 Items="@item.Children"
+									 Value="@item.Value">
+						<Content>
+							<MudTreeViewItemToggleButton Expanded="@item.Expanded"
+														 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
+														 Visible="@item.HasChildren" />
+							<MudIcon Icon="@GetIcon(item)"
+									 Class="@(item.Value?.IsDeleted == true ? "mr-2 text-secondary" : "mr-2")" />
 													
-						<MudStack Row="true" Class="d-flex justify-space-between flex-grow-1 gap-4">
-							<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)"
-									 Class="@(item.Value?.IsDeleted == true ? "text-secondary text-decoration-line-through" : "")">
+							<MudStack Row="true" Class="d-flex justify-space-between flex-grow-1 gap-4">
 								@if (item.Value?.IsFolder == false)
 								{
-									<MudMenuItem Class="py-0" OnClick="@(() => OnAddCashFlowItemLink.InvokeAsync(item.Value.Id))">
-										@item.Value?.Name
+									<MudMenuItem OnClick="@(() => AddCashFlowItemLink(item.Value))">
+										<MudText Typo="Typo.body1">@item.Value?.Name</MudText>
 									</MudMenuItem>
 								}
 								else
 								{
-									@item.Value?.Name
+									<MudText Typo="Typo.body1">@item.Value?.Name</MudText>
 								}
-							</MudText>
-							<MudText>@item.Value?.Code</MudText>
-						</MudStack>
-					</Content>
-				</MudTreeViewItem>
-			</ItemTemplate>
-		</MudTreeView>
+								<MudText>@item.Value?.Code</MudText>
+							</MudStack>
+						</Content>
+					</MudTreeViewItem>
+				</ItemTemplate>
+			</MudTreeView>
+		</MudPaper>
 	</ChildContent>
 </MudMenu>
 
 @code {
 	[Parameter] public IReadOnlyList<CashFlowItem> CashFlowItems { get; set; } = default!;
-	[Parameter] public EventCallback<Guid> OnAddCashFlowItemLink { get; set; }
+	[Parameter] public Guid CostCategoryId { get; set; } = default!;
+	[Parameter] public Guid CostItemId { get; set; } = default!;
+	[Parameter] public EventCallback<CostCategoryItem> OnAddCashFlowItemLink { get; set; }
+
+	private async Task AddCashFlowItemLink(CashFlowItem cashFlowItem)
+	{
+		await OnAddCashFlowItemLink.InvokeAsync(new CostCategoryItem
+		{
+			CategoryId = CostCategoryId,
+			ItemId = CostItemId,
+			CashFlowItemId = cashFlowItem.Id
+		});
+	}
 
 	private IReadOnlyList<TreeItemData<CashFlowItem>> _cashFlowTreeItems = [];
 	private HashSet<Guid> _expandedCashFlowItemIds = [];
@@ -75,6 +87,7 @@
 
 		return result;
 	}
+
 	private async Task ExpandedChanged(ITreeItemData<CashFlowItem?> node, bool expanded)
 	{
 		node.Expanded = expanded;

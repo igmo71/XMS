@@ -1,9 +1,9 @@
 ﻿@using XMS.Domain.Models
 
-<MudTable Items="@(new List<string> { "" })" CustomHeader="true" Hover="true" Dense="true" Elevation="0" Bordered="true">
+<MudTable @ref="_mudTable" Items="@([string.Empty])" CustomHeader="true" Hover="true" Dense="true" Elevation="0" Bordered="true">
 	<HeaderContent>
 		<MudTh>
-			<div class="d-flex align-center justify-space-between w-50">
+			<div class="d-flex align-center justify-space-between w-100">
 				<MudText>Категории / Статьи затрат</MudText>
 				<MudText>Статьи ДДС (1С Бух)</MudText>
 			</div>
@@ -13,7 +13,6 @@
 	</RowTemplate>
 	<ChildRowContent>
 		<RecursiveRow CostCategories="CostCategories"
-					  CostItems="CostItems"
 					  CostCategoryItems="CostCategoryItems"
 					  CashFlowItems="CashFlowItems"
 					  ParentId="null"
@@ -26,10 +25,16 @@
 
 @code {
 	[Parameter] public IReadOnlyList<CostCategory> CostCategories { get; set; } = default!;
-	[Parameter] public IEnumerable<CostItem> CostItems { get; set; } = default!;
 	[Parameter] public IReadOnlyList<CostCategoryItem> CostCategoryItems { get; set; } = default!;
 	[Parameter] public IReadOnlyList<CashFlowItem> CashFlowItems { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }
-	[Parameter] public EventCallback<Guid> OnAddCashFlowItemLink { get; set; }
+	[Parameter] public EventCallback<CostCategoryItem> OnAddCashFlowItemLink { get; set; }
 	[Parameter] public EventCallback<CostCategoryItem> OnDeleteCashFlowItemLink { get; set; }
+
+	private MudTable<string>? _mudTable;
+
+	public void Refresh()
+	{
+		StateHasChanged();
+	}
 }

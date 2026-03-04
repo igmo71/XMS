@@ -66,5 +66,35 @@ namespace XMS.Application.Services
 
             return result;
         }
+
+        public async Task DeleteCashFlowItemLinkAsync(CostCategoryItem args, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var costCategoryItem = await dbContext.Set<CostCategoryItem>()
+                .FirstOrDefaultAsync(e => e.CategoryId == args.CategoryId && e.ItemId == args.ItemId, cancellationToken: ct);
+
+            if (costCategoryItem is null)
+                return;
+
+            costCategoryItem.CashFlowItemId = null;
+
+            await dbContext.SaveChangesAsync(ct);
+        }
+
+        public async Task AddCashFlowItemLinkAsync(CostCategoryItem args, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var costCategoryItem = await dbContext.Set<CostCategoryItem>()
+                .FirstOrDefaultAsync(e => e.CategoryId == args.CategoryId && e.ItemId == args.ItemId, cancellationToken: ct);
+
+            if (costCategoryItem is null)
+                return;
+
+            costCategoryItem.CashFlowItemId = args.CashFlowItemId;
+
+            await dbContext.SaveChangesAsync(ct);
+        }
     }
 }
