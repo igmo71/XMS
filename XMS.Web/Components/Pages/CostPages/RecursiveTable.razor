@@ -7,19 +7,21 @@
 				<MudText>Категории / Статьи затрат</MudText>
 				<MudText>Статьи ДДС (1С Бух)</MudText>
 			</div>
-		</MudTh>				
+		</MudTh>
 	</HeaderContent>
 	<RowTemplate>
 	</RowTemplate>
 	<ChildRowContent>
-		<RecursiveRow CostCategories="CostCategories"
-					  CostCategoryItems="CostCategoryItems"
-					  CashFlowItems="CashFlowItems"
-					  ParentId="null"
-					  Level="1"
-					  OnAddCashFlowItemLink="OnAddCashFlowItemLink"
-					  OnDeleteCashFlowItemLink="OnDeleteCashFlowItemLink">
-		</RecursiveRow>
+		<div @key="CostCategoryItems">
+			<RecursiveRow CostCategories="CostCategories"
+						  CostCategoryItems="CostCategoryItems"
+						  CashFlowItems="CashFlowItems"
+						  ParentId="null"
+						  Level="1"
+						  OnAddCashFlowItemLink="OnAddCashFlowItemLink"
+						  OnDeleteCashFlowItemLink="OnDeleteCashFlowItemLink">
+			</RecursiveRow>
+		</div>
 	</ChildRowContent>
 </MudTable>
 
@@ -32,9 +34,4 @@
 	[Parameter] public EventCallback<CostCategoryItem> OnDeleteCashFlowItemLink { get; set; }
 
 	private MudTable<string>? _mudTable;
-
-	public void Refresh()
-	{
-		StateHasChanged();
-	}
 }

@@ -9,7 +9,7 @@
 						 Class="@(category.IsDeleted ? "mr-2 text-secondary" : "mr-2")" Title="Категория Затрат" />
 				<MudText Typo="Typo.body1"
 						 Class="@(category.IsDeleted ? "text-secondary text-decoration-line-through" : "")">
-					@category.Name @* (@category.Id) *@
+					@category.Name
 				</MudText>
 			</div>
 		</MudTd>
@@ -28,11 +28,10 @@
 	{
 		foreach (var item in category.Items.OrderBy(e => e.Name))
 		{
-			// Оставляем это для чистоты захвата переменной в лямбда-выражениях
 			Guid costCategoryId = category.Id;
 			Guid costItemId = item.Id;
 
-			<MudTr>
+			<MudTr Style="width: 100%; display: table; table-layout: fixed;">
 				<MudTd DataLabel="Наименование" Style="@($"padding-left: {(Level + 1) * 24}px;")">
 					<div class="d-flex align-center justify-space-between w-100">
 						<div class="d-flex align-center">
@@ -42,7 +41,7 @@
 									 Class="mr-2" Title="Статья Затрат" />
 							<MudText Typo="Typo.body2"
 									 Class="@(item.IsDeleted ? "text-secondary text-decoration-line-through" : "")">
-								@item.Name @* (@costCategoryId, @costItemId) *@
+								@item.Name
 							</MudText>
 						</div>
 						@{
@@ -52,7 +51,7 @@
 						{
 							<MudButton Variant="Variant.Outlined" EndIcon="@Icons.Material.Outlined.Delete" IconColor="Color.Warning" Color="Color.Primary"
 									   OnClick="() => DeleteCashFlowItemLink(costCategoryId, costItemId, cashFlowItem)">
-								@cashFlowItem.Name 
+								@cashFlowItem.Name
 							</MudButton>
 						}
 						else
