@@ -1,13 +1,28 @@
 ﻿@using XMS.Domain.Models
 
-<table class="border-1">
-	<RecursiveRow CostCategories="CostCategories"
-				  CostItems="CostItems"
-				  CostCategoryItems="CostCategoryItems"
-				  CashFlowItems="CashFlowItems"
-				  ParentId="null">
-	</RecursiveRow>
-</table>
+<MudTable Items="@(new List<string> { "" })" CustomHeader="true" Hover="true" Dense="true" Elevation="0" Bordered="true">
+	<HeaderContent>
+		<MudTh>
+			<div class="d-flex align-center justify-space-between w-50">
+				<MudText>Категории / Статьи затрат</MudText>
+				<MudText>Статьи ДДС (1С Бух)</MudText>
+			</div>
+		</MudTh>
+				
+	</HeaderContent>
+	<RowTemplate>
+		@* Оставляем пустым, так как RecursiveRow сам генерирует MudTr *@
+	</RowTemplate>
+	<ChildRowContent>
+		<RecursiveRow CostCategories="CostCategories"
+					  CostItems="CostItems"
+					  CostCategoryItems="CostCategoryItems"
+					  CashFlowItems="CashFlowItems"
+					  ParentId="null"
+					  Level="1">
+		</RecursiveRow>
+	</ChildRowContent>
+</MudTable>
 
 @code {
 	[Parameter] public IReadOnlyList<CostCategory> CostCategories { get; set; } = default!;
@@ -15,17 +30,4 @@
 	[Parameter] public IReadOnlyList<CostCategoryItem> CostCategoryItems { get; set; } = default!;
 	[Parameter] public IReadOnlyList<CashFlowItem> CashFlowItems { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }
-
-	private string? GetCashFlowItem(CostCategory costCategory, CostItem costItem)
-	{
-		var costCategoryItem = CostCategoryItems.FirstOrDefault(e => e.CategoryId == costCategory.Id && e.ItemId == costItem.Id);
-
-		if (costCategoryItem is null) return null;
-
-		var cashFlowItem = CashFlowItems.FirstOrDefault(e => e.Id == costCategoryItem.CashFlowItemId);
-
-		var result = cashFlowItem?.Name;
-
-		return result;
-	}
 }
