@@ -60,5 +60,14 @@ namespace XMS.Web.Components.Pages.CostPages
         private async Task LoadCashFlowItems() => _cashFlowItems = await CashFlowItemService.GetListAsync(false, _cts.Token);
         private async Task LoadDepartments() => _departments = await DepartmentService.GetListAsync(false, _cts.Token);
         private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync(false, _cts.Token);
+		
+        private Task DeleteCashFlowItemLink(CostCategoryItem args)
+		{
+			throw new NotImplementedException();
+		}
+		private Task AddCashFlowItemLink(Guid args)
+		{
+			throw new NotImplementedException();
+		}
     }
 }

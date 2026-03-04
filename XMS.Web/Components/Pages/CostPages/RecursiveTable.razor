@@ -7,11 +7,9 @@
 				<MudText>Категории / Статьи затрат</MudText>
 				<MudText>Статьи ДДС (1С Бух)</MudText>
 			</div>
-		</MudTh>
-				
+		</MudTh>				
 	</HeaderContent>
 	<RowTemplate>
-		@* Оставляем пустым, так как RecursiveRow сам генерирует MudTr *@
 	</RowTemplate>
 	<ChildRowContent>
 		<RecursiveRow CostCategories="CostCategories"
@@ -19,7 +17,9 @@
 					  CostCategoryItems="CostCategoryItems"
 					  CashFlowItems="CashFlowItems"
 					  ParentId="null"
-					  Level="1">
+					  Level="1"
+					  OnAddCashFlowItemLink="OnAddCashFlowItemLink"
+					  OnDeleteCashFlowItemLink="OnDeleteCashFlowItemLink">
 		</RecursiveRow>
 	</ChildRowContent>
 </MudTable>
@@ -30,4 +30,6 @@
 	[Parameter] public IReadOnlyList<CostCategoryItem> CostCategoryItems { get; set; } = default!;
 	[Parameter] public IReadOnlyList<CashFlowItem> CashFlowItems { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }
+	[Parameter] public EventCallback<Guid> OnAddCashFlowItemLink { get; set; }
+	[Parameter] public EventCallback<CostCategoryItem> OnDeleteCashFlowItemLink { get; set; }
 }

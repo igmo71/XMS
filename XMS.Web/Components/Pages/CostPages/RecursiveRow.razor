@@ -29,10 +29,7 @@
 		{
 			<MudTr>
 				<MudTd DataLabel="Наименование" Style="@($"padding-left: {(Level + 1) * 24}px;")">
-					@* Обертка для позиционирования *@
 					<div class="d-flex align-center justify-space-between w-50">
-                    
-						@* Левая часть: Иконка + Текст *@
 						<div class="d-flex align-center">
 							<MudIcon Icon="@Icons.Material.Filled.Description"
 									 Size="Size.Small"
@@ -43,57 +40,19 @@
 								@item.Name
 							</MudText>
 						</div>
-
-						@* Правая часть: Чип *@
 						@{
-							var cashFlowName = GetCashFlowItem(category, item);
+							var cashFlowItem = GetCashFlowItemName(category, item);
 						}
-						@if (!string.IsNullOrEmpty(cashFlowName))
+						@if (!string.IsNullOrEmpty(cashFlowItem?.Name))
 						{
-							<MudButton Variant="Variant.Outlined" EndIcon="@Icons.Material.Filled.Delete" Color="Color.Primary">@cashFlowName</MudButton>
+							<MudButton Variant="Variant.Outlined" EndIcon="@Icons.Material.Outlined.Delete" IconColor="Color.Warning" Color="Color.Primary"
+									   OnClick="() => DeleteCashFlowItemLink(category, item, cashFlowItem)">
+								@cashFlowItem.Name
+							</MudButton>
 						}
 						else
 						{
-							<MudMenu AnchorOrigin="Origin.CenterRight" TransformOrigin="Origin.CenterLeft">
-								<ActivatorContent>
-									<MudIconButton Variant="Variant.Outlined" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@context.ToggleAsync" />
-								</ActivatorContent>
-								<ChildContent>
-									<MudTreeView Items="@(_cashFlowtreeItems)" T="CashFlowItem" Dense="true">
-										<ItemTemplate Context="item">
-											<MudTreeViewItem Expanded="@item.Expanded"
-															 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
-															 Items="@item.Children"
-															 Value="@item.Value">
-												<Content>
-													<MudTreeViewItemToggleButton Expanded="@item.Expanded"
-																				 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
-																				 Visible="@item.HasChildren" />
-													<MudIcon Icon="@GetIcon(item)"
-															 Class="@(item.Value?.IsDeleted == true ? "mr-2 text-secondary" : "mr-2")" />
-													
-													<MudStack Row="true" Class="d-flex justify-space-between flex-grow-1 gap-4">
-														<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)"
-																 Class="@(item.Value?.IsDeleted == true ? "text-secondary text-decoration-line-through" : "")">
-															@if (item.Value?.IsFolder == false)
-															{
-																<MudMenuItem Class="py-0">
-																	@item.Value?.Name
-																</MudMenuItem>
-															}
-															else
-															{
-																@item.Value?.Name
-															}
-														</MudText>
-														<MudText>@item.Value?.Code</MudText>
-													</MudStack>
-												</Content>
-											</MudTreeViewItem>
-										</ItemTemplate>
-									</MudTreeView>
-								</ChildContent>
-							</MudMenu>
+							<TreeViewMenu CashFlowItems="CashFlowItems" OnAddCashFlowItemLink="OnAddCashFlowItemLink" />
 						}
 					</div>
 				</MudTd>
@@ -109,70 +68,27 @@
 	[Parameter] public IReadOnlyList<CashFlowItem> CashFlowItems { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }
 	[Parameter] public int Level { get; set; } = 0;
+	[Parameter] public EventCallback<Guid> OnAddCashFlowItemLink { get; set; }
+	[Parameter] public EventCallback<CostCategoryItem> OnDeleteCashFlowItemLink { get; set; }
 
-	private IReadOnlyList<TreeItemData<CashFlowItem>> _cashFlowtreeItems = [];
+	private IReadOnlyList<TreeItemData<CashFlowItem>> _cashFlowTreeItems = [];
 	private HashSet<Guid> _expandedCashFlowItemIds = [];
 
-	private string? GetCashFlowItem(CostCategory costCategory, CostItem costItem)
+	private CashFlowItem? GetCashFlowItemName(CostCategory costCategory, CostItem costItem)
 	{
 		var costCategoryItem = CostCategoryItems.FirstOrDefault(e => e.CategoryId == costCategory.Id && e.ItemId == costItem.Id);
 
-		if (costCategoryItem is null) return null;
-
-		var cashFlowItem = CashFlowItems.FirstOrDefault(e => e.Id == costCategoryItem.CashFlowItemId);
-
-		return cashFlowItem?.Name;
+		return CashFlowItems.FirstOrDefault(e => costCategoryItem != null && e.Id == costCategoryItem.CashFlowItemId);
 	}
 
-	protected override void OnInitialized()
+	private async Task DeleteCashFlowItemLink(CostCategory category, CostItem item, CashFlowItem cashFlowItem)
 	{
-		BuildTree();
-	}
-
-	private void BuildTree()
-	{
-		_cashFlowtreeItems = ExecuteBuildTree(CashFlowItems, Guid.Parse("00000000-0000-0000-0000-000000000000"));
-
-		StateHasChanged();
-	}
-
-	private static List<TreeItemData<CashFlowItem>> ExecuteBuildTree(IEnumerable<CashFlowItem> allItems, Guid? parentId)
-	{
-		var list = allItems
-			.Where(e => e.ParentId == parentId).ToList();
-		var result = list
-		.Select(e => new TreeItemData<CashFlowItem>
+		await OnDeleteCashFlowItemLink.InvokeAsync(new CostCategoryItem
 		{
-			Value = e,
-			Text = e.Name,
-			Expanded = false,
-			Children = ExecuteBuildTree(allItems, e.Id)
-		})
-		.ToList();
-
-		return result;
+			CategoryId = category.Id,
+			ItemId = item.Id,
+			CashFlowItemId = cashFlowItem.Id
+		});
 	}
-	private async Task ExpandedChanged(ITreeItemData<CashFlowItem?> node, bool expanded)
-	{
-		node.Expanded = expanded;
-
-		if (node.Value is CashFlowItem cashFlowItem)
-
-		{
-			if (expanded)
-				_expandedCashFlowItemIds.Add(cashFlowItem.Id);
-			else
-				_expandedCashFlowItemIds.Remove(cashFlowItem.Id);
-		}
-	}
-
-	private static string GetIcon(ITreeItemData<CashFlowItem> item)
-	{
-		if (item.HasChildren)
-			return item.Expanded ? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder;
-
-		return Icons.Material.Filled.Description;
-	}
-
 }
 
