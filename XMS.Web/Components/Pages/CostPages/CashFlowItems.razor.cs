@@ -20,7 +20,7 @@ namespace XMS.Web.Components.Pages.CostPages
         private IEnumerable<CostItem> _costItems = [];
         private IReadOnlyList<CostCategory> _costCategories = [];
         private IReadOnlyList<CostCategoryItem> _costCategoryItems = [];
-        private IReadOnlyList<CashFlowItem> _сashFlowItems = [];
+        private IReadOnlyList<CashFlowItem> _cashFlowItems = [];
         private IEnumerable<Department> _departments = [];
         private IEnumerable<Employee> _employees = [];
         private bool _isLoading;
@@ -57,7 +57,7 @@ namespace XMS.Web.Components.Pages.CostPages
         private async Task LoadCostCategories() => _costCategories = await CategoryService.GetListAsync(_includeDeleted, _cts.Token);
         private async Task LoadCostItems() => _costItems = await ItemService.GetListAsync(true, _cts.Token);
         private async Task LoadCostCategoryItems() => _costCategoryItems = await CategodyItemService.GetListAsync(hasCashFlowOnly: false, _cts.Token);
-        private async Task LoadCashFlowItems() => _сashFlowItems = await CashFlowItemService.GetListAsync(false, _cts.Token);
+        private async Task LoadCashFlowItems() => _cashFlowItems = await CashFlowItemService.GetListAsync(false, _cts.Token);
         private async Task LoadDepartments() => _departments = await DepartmentService.GetListAsync(false, _cts.Token);
         private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync(false, _cts.Token);
     }
