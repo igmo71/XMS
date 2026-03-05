@@ -34,8 +34,12 @@ namespace XMS.Modules.GodooModule.Application
                 {
                     foreach (var yunuRelation in yunuProduct.MarketplaceRelations)
                     {
+                        var yunuProductId = GetYunuProductId(yunuRelation);
+                        if (string.IsNullOrEmpty(yunuProductId))
+                            logger.LogError("OfferId or VendorCode Not Found {yunuProduct}", yunuProduct);
+
                         GodooMarketplaceRelation godooMarketplaceRelation = new(
-                            YunuProductId: yunuProduct.ProductId.ToString(),
+                            YunuProductId: yunuProductId,
                             Marketplace: MarketplaceMap.FromYunu[yunuRelation.Marketplace ?? string.Empty],
                             Barcode: yunuRelation.Barcode ?? string.Empty,
                             OneSProductKey: oneSProduct.Ref_Key,
@@ -45,6 +49,16 @@ namespace XMS.Modules.GodooModule.Application
                     }
                 }
             }
+        }
+
+        private string? GetYunuProductId(YunuMarketplaceRelation yunuRelation)
+        {
+            return yunuRelation.Marketplace switch
+            {
+                "ozon" or "yandex_market" or "mega_market" => yunuRelation.OfferId,
+                "wildberries" => yunuRelation.VendorCode,
+                _ => null,
+            };
         }
 
         private async Task<Catalog_Номенклатура?> GetOrCreateProduct(YunuProduct yunuProduct, CancellationToken ct)

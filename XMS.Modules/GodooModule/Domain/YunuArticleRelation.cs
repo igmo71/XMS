@@ -24,12 +24,17 @@ namespace XMS.Modules.GodooModule.Domain
     public class YunuMarketplaceRelation
     {
         [JsonPropertyName("cabinet_id")] public int CabinetId { get; set; }
-        [JsonPropertyName("marketplace")] public string? Marketplace { get; set; }
-        [JsonPropertyName("offer_id")] public object? OfferId { get; set; } // string and int ???
-        [JsonPropertyName("sku")] public string? Sku { get; set; }
         [JsonPropertyName("barcode")] public string? Barcode { get; set; }
-        [JsonPropertyName("nm_id")] public string? NmId { get; set; }
+        [JsonPropertyName("marketplace")] public string? Marketplace { get; set; }
+
+        // ozon, yandex_market, mega_market
+        [JsonConverter(typeof(FlexibleStringConverter))]
+        [JsonPropertyName("offer_id")] public string? OfferId { get; set; }
+        [JsonPropertyName("sku")] public string? Sku { get; set; }
+
+        // wildberries
         [JsonPropertyName("vendor_code")] public string? VendorCode { get; set; }
+        [JsonPropertyName("nm_id")] public string? NmId { get; set; }
     }
 
     public class ChildProduct
