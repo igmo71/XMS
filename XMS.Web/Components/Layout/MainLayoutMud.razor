@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inherits LayoutComponentBase
 @inject IEnumerable<IAppSection> Sections
-@inject ProtectedLocalStorage ProtectedLocalStorage
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
 <MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" Theme="_myCustomTheme" />
 <MudSnackbarProvider @bind-Configuration="snackbarConfig" />
@@ -69,7 +69,7 @@
 			Surface = "#FFFFFF",          // Карточки
 
 			// Текст и линии
-			TextPrimary = "#334155",      // Slate 700 
+			TextPrimary = "#334155",      // Slate 700
 			TextSecondary = "#64748B",    // Slate 500
 			LinesDefault = "#E2E8F0",     // Slate 200 (сетка таблицы)
 			TableStriped = "#F8FAFC",
@@ -132,8 +132,7 @@
 	{
 		if (firstRender)
 		{
-			var result = await ProtectedLocalStorage.GetAsync<int>(nameof(_themeMode));
-			_themeMode = result.Success ? result.Value : 0;
+			_themeMode = await LocalStorage.GetItemAsync<int>(nameof(_themeMode));
 			await ApplyThemeMode();
 			StateHasChanged();
 		}
@@ -180,7 +179,7 @@
 				_themeTitle = "Системная тема";
 				break;
 		}
-
-		await ProtectedLocalStorage.SetAsync(nameof(_themeMode), _themeMode);
+		
+		await LocalStorage.SetItemAsync(nameof(_themeMode), _themeMode);
 	}
 }

@@ -1,3 +1,4 @@
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor.Services;
@@ -40,6 +41,8 @@ namespace XMS.Web
 
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+
+            builder.Services.AddBlazoredLocalStorage();
 
             builder.Services.AddMudServices();
             builder.Services.AddMudTranslations();
