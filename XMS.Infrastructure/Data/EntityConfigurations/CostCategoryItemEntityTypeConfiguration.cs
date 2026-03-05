@@ -9,16 +9,17 @@ namespace XMS.Infrastructure.Data.EntityConfigurations
         public override void Configure(EntityTypeBuilder<CostCategoryItem> builder)
         {
             base.Configure(builder);
-            //builder.HasKey(x => new { x.CategoryId, x.ItemId });
 
             builder.HasOne(e => e.Category)
                 .WithMany(e => e.CategoryItems) 
                 .HasForeignKey(e => e.CategoryId)
+                .HasPrincipalKey(e => e.Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(e => e.Item)
                 .WithMany(e => e.CategoryItems) 
                 .HasForeignKey(e => e.ItemId)
+                .HasPrincipalKey(e => e.Id)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

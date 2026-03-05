@@ -12,6 +12,7 @@ namespace XMS.Domain.Models
         public bool IsFolder { get; set; }
 
         public Guid? ParentId { get; set; }
+
         //public CashFlowItem? Parent { get; set; }
 
         //public virtual ICollection<CashFlowItem> Children { get; set; } = [];

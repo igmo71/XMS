@@ -23,7 +23,7 @@ namespace XMS.Domain.Models
         /// <summary>
         /// Статья Затрат
         /// </summary>
-        public CostItem? Item { get; set; }
+        public CostItem? Item { get; set; }        
 
         /// <summary>
         /// Статьи Движения Денежных Средств - Id

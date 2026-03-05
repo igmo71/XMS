@@ -11,6 +11,7 @@ namespace XMS.Infrastructure.Data
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options), IApplicationDbContext
     {
         public DbSet<CashFlowItem> CashFlowItems { get; set; }
+        public DbSet<CashFlowCost> CashFlowCost { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<CostCategory> CostCategories { get; set; }
         public DbSet<CostCategoryItem> CostCategoryItems { get; set; }

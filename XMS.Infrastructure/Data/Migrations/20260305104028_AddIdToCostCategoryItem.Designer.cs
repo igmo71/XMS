@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using XMS.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using XMS.Infrastructure.Data;
 namespace XMS.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260305104028_AddIdToCostCategoryItem")]
+    partial class AddIdToCostCategoryItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -256,27 +259,6 @@ namespace XMS.Web.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("XMS.Domain.Models.CashFlowCost", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CashFlowItemId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CostCategoryItemId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CashFlowItemId");
-
-                    b.HasIndex("CostCategoryItemId");
-
-                    b.ToTable("CashFlowCost");
                 });
 
             modelBuilder.Entity("XMS.Domain.Models.CashFlowItem", b =>
@@ -801,25 +783,6 @@ namespace XMS.Web.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("XMS.Domain.Models.CashFlowCost", b =>
-                {
-                    b.HasOne("XMS.Domain.Models.CashFlowItem", "CashFlowItem")
-                        .WithMany()
-                        .HasForeignKey("CashFlowItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("XMS.Domain.Models.CostCategoryItem", "CostCategoryItem")
-                        .WithMany()
-                        .HasForeignKey("CostCategoryItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CashFlowItem");
-
-                    b.Navigation("CostCategoryItem");
                 });
 
             modelBuilder.Entity("XMS.Domain.Models.CostCategory", b =>
