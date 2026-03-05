@@ -1,9 +1,11 @@
-﻿namespace XMS.Domain.Models
+﻿using XMS.Domain.Abstractions;
+
+namespace XMS.Domain.Models
 {
     /// <summary>
     /// Статьи Затпрат по Категориям
     /// </summary>
-    public class CostCategoryItem
+    public class CostCategoryItem : BaseEntity
     {
         /// <summary>
         /// Категория Статей Затрат - Id

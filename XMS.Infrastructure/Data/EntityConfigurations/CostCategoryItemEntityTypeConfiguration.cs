@@ -4,11 +4,12 @@ using XMS.Domain.Models;
 
 namespace XMS.Infrastructure.Data.EntityConfigurations
 {
-    public class CostCategoryItemEntityTypeConfiguration : IEntityTypeConfiguration<CostCategoryItem>
+    public class CostCategoryItemEntityTypeConfiguration : BaseEntityTypeConfiguration<CostCategoryItem>
     {
-        public void Configure(EntityTypeBuilder<CostCategoryItem> builder)
+        public override void Configure(EntityTypeBuilder<CostCategoryItem> builder)
         {
-            builder.HasKey(x => new { x.CategoryId, x.ItemId });
+            base.Configure(builder);
+            //builder.HasKey(x => new { x.CategoryId, x.ItemId });
 
             builder.HasOne(e => e.Category)
                 .WithMany(e => e.CategoryItems) 
