@@ -22,7 +22,6 @@ namespace XMS.Web.Components.Pages.CostPages
         private IReadOnlyList<CashFlowItem> _cashFlowItems = [];
         private bool _isLoading;
         private bool _includeDeleted = false;
-        private RecursiveTable? _recursiveTable;
 
         protected override async Task OnInitializedAsync()
         {
