@@ -1,15 +1,15 @@
 ﻿@using XMS.Domain.Models
 
-@foreach (var category in CostCategories.Where(e => e.ParentId == ParentId).OrderBy(e => e.Name))
+@foreach (var costCategory in CostCategories.Where(e => e.ParentId == ParentId).OrderBy(e => e.Name))
 {
 	<MudTr>
 		<MudTd DataLabel="Наименование" Style="@($"padding-left: {(Level * 24)}px;")">
 			<div class="d-flex align-center">
 				<MudIcon Icon="@Icons.Material.Filled.FolderOpen"
-						 Class="@(category.IsDeleted ? "mr-2 text-secondary" : "mr-2")" Title="Категория Затрат" />
+						 Class="@(costCategory.IsDeleted ? "mr-2 text-secondary" : "mr-2")" Title="Категория Затрат" />
 				<MudText Typo="Typo.body1"
-						 Class="@(category.IsDeleted ? "text-secondary text-decoration-line-through" : "")">
-					@category.Name
+						 Class="@(costCategory.IsDeleted ? "text-secondary text-decoration-line-through" : "")">
+					@costCategory.Name
 				</MudText>
 			</div>
 		</MudTd>
@@ -18,100 +18,91 @@
 	<RecursiveRow CostCategories="CostCategories"
 				  CostCategoryItems="CostCategoryItems"
 				  CashFlowItems="CashFlowItems"
-				  ParentId="category.Id"
+				  CashFlowCosts="CashFlowCosts"
+				  ParentId="costCategory.Id"
 				  Level="@(Level + 1)"
-				  OnAddCashFlowItemLink="OnAddCashFlowItemLink"
-				  OnDeleteCashFlowItemLink="OnDeleteCashFlowItemLink">
+				  OnAddCashFlowCosts="OnAddCashFlowCosts"
+				  OnDeleteCashFlowCost="OnDeleteCashFlowCost">
 	</RecursiveRow>
 
-	@if (category.Items?.Count > 0)
+	@if (costCategory.Items?.Count > 0)
 	{
-		foreach (var item in category.Items.OrderBy(e => e.Name))
+		foreach (var costItem in costCategory.Items.OrderBy(e => e.Name))
 		{
-			Guid costCategoryId = category.Id;
-			Guid costItemId = item.Id;
-
 			<MudTr Style="width: 100%; display: table; table-layout: fixed;">
 				<MudTd DataLabel="Наименование" Style="@($"padding-left: {(Level + 1) * 24}px;")">
 					<div class="d-flex align-center justify-space-between w-100">
 						<div class="d-flex align-center">
 							<MudIcon Icon="@Icons.Material.Filled.Description"
 									 Size="Size.Small"
-									 Color="@(item.IsDeleted ? Color.Secondary : Color.Default)"
+									 Color="@(costItem.IsDeleted ? Color.Secondary : Color.Default)"
 									 Class="mr-2" Title="Статья Затрат" />
 							<MudText Typo="Typo.body2"
-									 Class="@(item.IsDeleted ? "text-secondary text-decoration-line-through" : "")">
-								@item.Name
+									 Class="@(costItem.IsDeleted ? "text-secondary text-decoration-line-through" : "")">
+								@costItem.Name
 							</MudText>
 						</div>
-						@{
-							var cashFlowItem = GetCashFlowItem(category, item);
-						}
-						@if (!string.IsNullOrEmpty(cashFlowItem?.Name))
-						{
-							<MudButton Variant="Variant.Outlined" EndIcon="@Icons.Material.Outlined.Delete" IconColor="Color.Warning" Color="Color.Primary"
-									   OnClick="() => DeleteCashFlowItemLink(costCategoryId, costItemId, cashFlowItem)">
-								@cashFlowItem.Name
-							</MudButton>
-						}
-						else
-						{
-							@* <TreeViewMenu CashFlowItems="@CashFlowItems"
-										  CostCategoryId="@costCategoryId"
-										  CostItemId="@costItemId"
-										  OnAddCashFlowItemLink="@OnAddCashFlowItemLink" /> *@
-							<MudToggleIconButton @bind-Toggled="@_open"
-												 Icon="@Icons.Material.Filled.Fullscreen"
-												 Color="@Color.Primary"
-												 ToggledIcon="@Icons.Material.Filled.FullscreenExit"
-												 ToggledColor="@Color.Secondary" />
-							<TreeViewPopover CashFlowItems="@CashFlowItems"
-											 CostCategoryId="@costCategoryId"
-											 CostItemId="@costItemId"
-											 OnAddCashFlowItemLink="@OnAddCashFlowItemLink" />
-						}
+						<MudSpacer />
+						<div>
+							@{
+								var currentCashFlowCosts = GetCashFlowCosts(costCategory, costItem);
+							}
+							@if (currentCashFlowCosts?.Count() > 0)
+							{
+								foreach (var currentCashFlowCost in currentCashFlowCosts)
+								{
+									<MudButton Variant="Variant.Outlined" EndIcon="@Icons.Material.Outlined.Delete" IconColor="Color.Warning" Color="Color.Primary"
+											   OnClick="() => DeleteCashFlowCost(currentCashFlowCost)">
+										@currentCashFlowCost.CashFlowItem?.Name
+									</MudButton>
+								}
+							}
+							else
+							{
+								<TreeViewPopover CashFlowItems="@CashFlowItems"
+									
+												 CostCategoryItemId="@GetCostCategoryItemId(costCategory, costItem)"
+												 OnAddCashFlowCosts="@OnAddCashFlowCosts" />
+							}
+						</div>
 					</div>
 				</MudTd>
 			</MudTr>
 		}
 	}
 }
-<MudPopover Open="@_open" Fixed="true" Class="px-4 pt-4">
-	<div class="d-flex flex-column">
-		<MudText>Content of the popover can be anything.</MudText>
-		<MudButton OnClick="@ToggleOpen" Class="ml-auto mr-n3 mb-1" Color="Color.Error">Close</MudButton>
-	</div>
-</MudPopover>
 
 @code {
 	[Parameter] public IReadOnlyList<CostCategory> CostCategories { get; set; } = default!;
 	[Parameter] public IReadOnlyList<CostCategoryItem> CostCategoryItems { get; set; } = default!;
 	[Parameter] public IReadOnlyList<CashFlowItem> CashFlowItems { get; set; } = default!;
+	[Parameter] public IReadOnlyList<CashFlowCost> CashFlowCosts { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }
 	[Parameter] public int Level { get; set; } = 0;
-	[Parameter] public EventCallback<CostCategoryItem> OnAddCashFlowItemLink { get; set; }
-	[Parameter] public EventCallback<CostCategoryItem> OnDeleteCashFlowItemLink { get; set; }
+	[Parameter] public EventCallback<List<CashFlowCost>> OnAddCashFlowCosts { get; set; }
+	[Parameter] public EventCallback<Guid> OnDeleteCashFlowCost { get; set; }
 
 	private IReadOnlyList<TreeItemData<CashFlowItem>> _cashFlowTreeItems = [];
 	private HashSet<Guid> _expandedCashFlowItemIds = [];
-	private bool _open;
-	private void ToggleOpen() => _open = !_open;
 
-	private CashFlowItem? GetCashFlowItem(CostCategory costCategory, CostItem costItem)
+
+	private IEnumerable<CashFlowCost>? GetCashFlowCosts(CostCategory costCategory, CostItem costItem)
 	{
 		var costCategoryItem = CostCategoryItems.FirstOrDefault(e => e.CategoryId == costCategory.Id && e.ItemId == costItem.Id);
 
-		return CashFlowItems.FirstOrDefault(e => costCategoryItem != null && e.Id == costCategoryItem.CashFlowItemId);
+		var currentCashFlowCosts = CashFlowCosts.Where(e => costCategoryItem != null && e.CostCategoryItemId == costCategoryItem.Id);
+
+		return currentCashFlowCosts;
 	}
 
-	private async Task DeleteCashFlowItemLink(Guid costCategoryId, Guid costItemId, CashFlowItem cashFlowItem)
+	private Guid GetCostCategoryItemId(CostCategory costCategory, CostItem costItem)
 	{
-		await OnDeleteCashFlowItemLink.InvokeAsync(new CostCategoryItem
-		{
-			CategoryId = costCategoryId,
-			ItemId = costItemId,
-			CashFlowItemId = cashFlowItem.Id
-		});
+		return CostCategoryItems.FirstOrDefault(e => e.CategoryId == costCategory.Id && e.ItemId == costItem.Id).Id;
+	}
+
+	private async Task DeleteCashFlowCost(CashFlowCost cashFlowCost)
+	{
+		await OnDeleteCashFlowCost.InvokeAsync(cashFlowCost.Id);
 	}
 }
 

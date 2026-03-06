@@ -6,5 +6,6 @@ namespace XMS.Application.Abstractions.Services
     {
         Task AddCashFlowCostLinkAsync(CostCategoryItem args, CancellationToken token);
         Task DeleteCashFlowCostLinkAsync(CostCategoryItem args, CancellationToken token);
+        Task<IReadOnlyList<CashFlowCost>> GetListAsync(bool includeDeleted, CancellationToken token);
     }
 }

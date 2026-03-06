@@ -24,10 +24,5 @@ namespace XMS.Domain.Models
         /// Статья Затрат
         /// </summary>
         public CostItem? Item { get; set; }        
-
-        /// <summary>
-        /// Статьи Движения Денежных Средств - Id
-        /// </summary>
-        public Guid? CashFlowItemId { get; set; }
     }
 }

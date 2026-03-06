@@ -1,12 +1,13 @@
 ﻿@using XMS.Domain.Models
-<MudMenu>
-	<ActivatorContent>
-		<MudIconButton Variant="Variant.Outlined" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="@context.ToggleAsync" />
-	</ActivatorContent>
-	<ChildContent>
-		<MudPaper Style="max-height: calc(100vh - 200px); overflow-y: auto;">
-			<div>@CostCategoryId</div>
-			<div>@CostItemId</div>
+<MudToggleIconButton @bind-Toggled="@_open"
+					 Icon="@Icons.Material.Filled.Add"
+					 Color="@Color.Primary"
+					 ToggledIcon="@Icons.Material.Filled.FullscreenExit"
+					 ToggledColor="@Color.Secondary" />
+
+<MudPopover Open="@_open" Fixed="false" Class="px-4 pt-4">
+	@* <div class="d-flex flex-column"> *@
+		<MudPaper Style="max-height: calc(100vh - 300px); overflow-y: auto;">
 			<MudTreeView Items="@(_cashFlowTreeItems)" T="CashFlowItem" Dense="true">
 				<ItemTemplate Context="item">
 					<MudTreeViewItem Expanded="@item.Expanded"
@@ -23,9 +24,11 @@
 							<MudStack Row="true" Class="d-flex justify-space-between flex-grow-1 gap-4">
 								@if (item.Value?.IsFolder == false)
 								{
-									<MudMenuItem OnClick="@(() => AddCashFlowItemLink(item.Value))">
+									<MudCheckBox T="bool"
+												 Value="@(_selectedCashFlowItemIds.Contains(item.Value.Id))"
+												 ValueChanged="@((bool isChecked) => CheckBoxChanged(isChecked, item.Value.Id))">
 										<MudText Typo="Typo.body1">@item.Value?.Name</MudText>
-									</MudMenuItem>
+									</MudCheckBox>
 								}
 								else
 								{
@@ -38,27 +41,25 @@
 				</ItemTemplate>
 			</MudTreeView>
 		</MudPaper>
-	</ChildContent>
-</MudMenu>
+		<MudStack Row="true" Class="mt-2">
+			<MudButton OnClick="@AddCashFlowСosts" Class="ml-auto mr-n3 mb-1" Color="Color.Primary">Сохранить</MudButton>
+			<MudButton OnClick="@ToggleOpen" Class="ml-auto mr-n3 mb-1" Color="Color.Secondary">Закрыть</MudButton>
+		</MudStack>
+	@* </div> *@
+</MudPopover>
 
 @code {
 	[Parameter] public IReadOnlyList<CashFlowItem> CashFlowItems { get; set; } = default!;
-	[Parameter] public Guid CostCategoryId { get; set; } = default!;
-	[Parameter] public Guid CostItemId { get; set; } = default!;
-	[Parameter] public EventCallback<CostCategoryItem> OnAddCashFlowItemLink { get; set; }
+	[Parameter] public Guid CostCategoryItemId { get; set; } = default!;
+	[Parameter] public EventCallback<List<CashFlowCost>> OnAddCashFlowCosts { get; set; }
 
-	private async Task AddCashFlowItemLink(CashFlowItem cashFlowItem)
-	{
-		await OnAddCashFlowItemLink.InvokeAsync(new CostCategoryItem
-		{
-			CategoryId = CostCategoryId,
-			ItemId = CostItemId,
-			CashFlowItemId = cashFlowItem.Id
-		});
-	}
-
+	private bool _open;
+	private void ToggleOpen() => _open = !_open;
 	private IReadOnlyList<TreeItemData<CashFlowItem>> _cashFlowTreeItems = [];
 	private HashSet<Guid> _expandedCashFlowItemIds = [];
+	private HashSet<Guid> _selectedCashFlowItemIds = [];
+
+
 	protected override void OnInitialized()
 	{
 		BuildTree();
@@ -108,5 +109,28 @@
 			return item.Expanded ? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder;
 
 		return Icons.Material.Filled.Description;
+	}
+
+	private void CheckBoxChanged(bool isChecked, Guid itemId)
+	{
+		if (isChecked)
+		{
+			_selectedCashFlowItemIds.Add(itemId);
+		}
+		else
+		{
+			_selectedCashFlowItemIds.Remove(itemId);
+		}
+	}
+
+	private async Task AddCashFlowСosts()
+	{
+		var newCashFlowCostList = _selectedCashFlowItemIds
+			.Select(e => new CashFlowCost { CashFlowItemId = e, CostCategoryItemId = CostCategoryItemId })
+			.ToList();
+
+		await OnAddCashFlowCosts.InvokeAsync(newCashFlowCostList);
+		
+		ToggleOpen();
 	}
 }
