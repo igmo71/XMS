@@ -187,7 +187,8 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh.Application
             {
                 Номенклатура = product.Ref_Key,
                 Наименование = product.Description,
-                Артикул = product.Артикул,
+                //Артикул = product.Артикул,
+                Артикул = ProductIdMap.From(yunuRelation)?.ToLower(),
                 Номенклатура_Type = "StandardODATA.Catalog_Номенклатура",
                 Владелец_Key = ProductOwnerKeyMap.From[yunuRelation.Marketplace ?? string.Empty],
                 //Идентификатор = yunuRelation.Sku ?? yunuRelation.NmId,
