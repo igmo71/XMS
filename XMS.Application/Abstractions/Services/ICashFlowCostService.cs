@@ -4,8 +4,8 @@ namespace XMS.Application.Abstractions.Services
 {
     public interface ICashFlowCostService
     {
-        Task AddCashFlowCostLinkAsync(CostCategoryItem args, CancellationToken token);
-        Task DeleteCashFlowCostLinkAsync(CostCategoryItem args, CancellationToken token);
+        Task AddCashFlowCostRangeAsync(List<CashFlowCost> items, CancellationToken token);
+        Task DeleteCashFlowCostAsync(Guid itemId, CancellationToken token);
         Task<IReadOnlyList<CashFlowCost>> GetListAsync(bool includeDeleted, CancellationToken token);
     }
 }

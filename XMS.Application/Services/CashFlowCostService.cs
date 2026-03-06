@@ -7,12 +7,16 @@ namespace XMS.Application.Services
 {
     internal class CashFlowCostService(IDbContextFactoryProxy dbFactory) : ICashFlowCostService
     {
-        public Task AddCashFlowCostLinkAsync(CostCategoryItem args, CancellationToken ct)
+        public async Task AddCashFlowCostRangeAsync(List<CashFlowCost> items, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            using var dbContext = dbFactory.CreateDbContext();
+
+            await dbContext.Set<CashFlowCost>().AddRangeAsync(items, ct);
+
+            await dbContext.SaveChangesAsync(ct);
         }
 
-        public Task DeleteCashFlowCostLinkAsync(CostCategoryItem args, CancellationToken ct)
+        public Task DeleteCashFlowCostAsync(Guid itemId, CancellationToken ct)
         {
             throw new NotImplementedException();
         }

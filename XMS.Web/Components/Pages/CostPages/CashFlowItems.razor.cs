@@ -67,13 +67,16 @@ namespace XMS.Web.Components.Pages.CostPages
         //    await LoadDataAsync();
         //    StateHasChanged();
         //}
+        
         private Task DeleteAddCashFlowCost(Guid args)
 		{
 			throw new NotImplementedException();
 		}
-		private Task AddAddCashFlowCosts(List<CashFlowCost> args)
+
+		private async Task AddAddCashFlowCosts(List<CashFlowCost> items)
 		{
-			throw new NotImplementedException();
-		}
+            await CashFlowCostService.AddCashFlowCostRangeAsync(items, _cts.Token);
+
+        }
     }
 }
