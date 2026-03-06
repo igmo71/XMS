@@ -7,12 +7,12 @@ namespace XMS.Application.Services
 {
     internal class CostCategoryItemService(IDbContextFactoryProxy dbFactory) : ICostCategoryItemService
     {
-        public async Task DeleteByCategoryAsync(Guid valueId, CancellationToken ct = default)
+        public async Task DeleteByCategoryAsync(Guid categoryId, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
             await dbContext.Set<CostCategoryItem>()
-                .Where(e => e.CategoryId == valueId).
+                .Where(e => e.CategoryId == categoryId).
                 ExecuteDeleteAsync(ct);
         }
 
@@ -53,48 +53,14 @@ namespace XMS.Application.Services
                 await dbContext.Set<CostCategoryItem>().AddRangeAsync(toAdd, ct);
         }
 
-        public async Task<IReadOnlyList<CostCategoryItem>> GetListAsync(bool hasCashFlowOnly = false, CancellationToken ct = default)
+        public async Task<IReadOnlyList<CostCategoryItem>> GetListAsync(CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var query = dbContext.Set<CostCategoryItem>().AsNoTracking();
-
-            if (hasCashFlowOnly)
-                query = query.Where(e => e.CashFlowItemId != null);
-
-            var result = await query.ToListAsync();
+            var result = await dbContext.Set<CostCategoryItem>().AsNoTracking()
+                .ToListAsync(cancellationToken: ct);
 
             return result;
-        }
-
-        public async Task DeleteCashFlowItemLinkAsync(CostCategoryItem args, CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
-
-            var costCategoryItem = await dbContext.Set<CostCategoryItem>()
-                .FirstOrDefaultAsync(e => e.CategoryId == args.CategoryId && e.ItemId == args.ItemId, cancellationToken: ct);
-
-            if (costCategoryItem is null)
-                return;
-
-            costCategoryItem.CashFlowItemId = null;
-
-            await dbContext.SaveChangesAsync(ct);
-        }
-
-        public async Task AddCashFlowItemLinkAsync(CostCategoryItem args, CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
-
-            var costCategoryItem = await dbContext.Set<CostCategoryItem>()
-                .FirstOrDefaultAsync(e => e.CategoryId == args.CategoryId && e.ItemId == args.ItemId, cancellationToken: ct);
-
-            if (costCategoryItem is null)
-                return;
-
-            costCategoryItem.CashFlowItemId = args.CashFlowItemId;
-
-            await dbContext.SaveChangesAsync(ct);
-        }
+        }        
     }
 }

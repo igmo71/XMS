@@ -8,6 +8,7 @@ namespace XMS.Application
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
+            services.AddScoped<ICashFlowCostService, CashFlowCostService>();
             services.AddScoped<ICashFlowItemService, CashFlowItemService>();
             services.AddScoped<ICityService, CityService>();
             services.AddScoped<ICostCategoryItemService, CostCategoryItemService>();

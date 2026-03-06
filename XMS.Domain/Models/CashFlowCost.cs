@@ -11,12 +11,18 @@ namespace XMS.Domain.Models
         /// Статья Движения Денежных Средств - Id
         /// </summary>
         public Guid CashFlowItemId { get; set; }
+        /// <summary>
+        /// Статья Движения Денежных Средств
+        /// </summary>
         public CashFlowItem? CashFlowItem { get; set; }
 
         /// <summary>
         /// Категория и Статья Затрат - Id
         /// </summary>
         public  Guid CostCategoryItemId { get; set; }
+        /// <summary>
+        /// Категория и Статья Затрат
+        /// </summary>
         public CostCategoryItem? CostCategoryItem { get; set; }
     }
 }

@@ -12,6 +12,7 @@ namespace XMS.Web.Components.Pages.CostPages
         [Inject] public ICostCategoryItemService CategodyItemService { get; set; } = default!;
         [Inject] public ICashFlowItemService CashFlowItemService { get; set; } = default!;
         [Inject] public IDepartmentService DepartmentService { get; set; } = default!;
+        [Inject] public ICashFlowCostService CashFlowCostService { get; set; } = default!;
         [Inject] public IEmployeeService EmployeeService { get; set; } = default!;
         [Inject] public IDialogService DialogService { get; set; } = default!;
         [Inject] public ISnackbar Snackbar { get; set; } = default!;
@@ -48,19 +49,19 @@ namespace XMS.Web.Components.Pages.CostPages
         }
 
         private async Task LoadCostCategories() => _costCategories = await CategoryService.GetListAsync(_includeDeleted, _cts.Token);
-        private async Task LoadCostCategoryItems() => _costCategoryItems = await CategodyItemService.GetListAsync(hasCashFlowOnly: false, _cts.Token);
-        private async Task LoadCashFlowItems() => _cashFlowItems = await CashFlowItemService.GetListAsync(false, _cts.Token);
+        private async Task LoadCostCategoryItems() => _costCategoryItems = await CategodyItemService.GetListAsync(_cts.Token);
+        private async Task LoadCashFlowItems() => _cashFlowItems = await CashFlowItemService.GetListAsync(includeDeleted: false, _cts.Token);
 
-        private async Task AddCashFlowItemLink(CostCategoryItem args)
+        private async Task AddCashFlowCostLink(CostCategoryItem args)
         {
-            await CategodyItemService.AddCashFlowItemLinkAsync(args, _cts.Token);
+            await CashFlowCostService.AddCashFlowCostLinkAsync(args, _cts.Token);
             await LoadDataAsync();
             StateHasChanged();
         }
 
         private async Task DeleteCashFlowItemLink(CostCategoryItem args)
         {
-            await CategodyItemService.DeleteCashFlowItemLinkAsync(args, _cts.Token);
+            await CashFlowCostService.DeleteCashFlowCostLinkAsync(args, _cts.Token);
             await LoadDataAsync();
             StateHasChanged();
         }
