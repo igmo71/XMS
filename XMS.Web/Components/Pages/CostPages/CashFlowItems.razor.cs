@@ -39,7 +39,8 @@ namespace XMS.Web.Components.Pages.CostPages
                 await Task.WhenAll(
                     LoadCostCategories(),
                     LoadCostCategoryItems(),
-                    LoadCashFlowItems());
+                    LoadCashFlowItems(),
+                    LoadCashFlowCosts());
             }
             finally
             {
@@ -52,31 +53,20 @@ namespace XMS.Web.Components.Pages.CostPages
         private async Task LoadCostCategories() => _costCategories = await CategoryService.GetListAsync(_includeDeleted, _cts.Token);
         private async Task LoadCostCategoryItems() => _costCategoryItems = await CategodyItemService.GetListAsync(_cts.Token);
         private async Task LoadCashFlowItems() => _cashFlowItems = await CashFlowItemService.GetListAsync(includeDeleted: false, _cts.Token);
-        private async Task LoadCashFlowCostss() => _cashFlowCosts = await CashFlowCostService.GetListAsync(includeDeleted: false, _cts.Token);
-
-        //private async Task AddCashFlowCostLink(CostCategoryItem args)
-        //{
-        //    await CashFlowCostService.AddCashFlowCostLinkAsync(args, _cts.Token);
-        //    await LoadDataAsync();
-        //    StateHasChanged();
-        //}
-
-        //private async Task DeleteCashFlowItemLink(CostCategoryItem args)
-        //{
-        //    await CashFlowCostService.DeleteCashFlowCostLinkAsync(args, _cts.Token);
-        //    await LoadDataAsync();
-        //    StateHasChanged();
-        //}
+        private async Task LoadCashFlowCosts() => _cashFlowCosts = await CashFlowCostService.GetListAsync(includeDeleted: false, _cts.Token);
         
-        private Task DeleteAddCashFlowCost(Guid args)
+        private async Task DeleteAddCashFlowCost(Guid itemId)
 		{
-			throw new NotImplementedException();
-		}
+            await CashFlowCostService.DeleteCashFlowCostAsync(itemId, _cts.Token);
+            await LoadDataAsync();
+            StateHasChanged();
+        }
 
-		private async Task AddAddCashFlowCosts(List<CashFlowCost> items)
+        private async Task AddAddCashFlowCosts(List<CashFlowCost> items)
 		{
             await CashFlowCostService.AddCashFlowCostRangeAsync(items, _cts.Token);
-
+            await LoadDataAsync();
+            StateHasChanged();
         }
     }
 }

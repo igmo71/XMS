@@ -16,17 +16,22 @@ namespace XMS.Application.Services
             await dbContext.SaveChangesAsync(ct);
         }
 
-        public Task DeleteCashFlowCostAsync(Guid itemId, CancellationToken ct)
+        public async Task DeleteCashFlowCostAsync(Guid itemId, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            using var dbContext = dbFactory.CreateDbContext();
+
+            await dbContext.Set<CashFlowCost>()
+                .Where(x => x.Id == itemId)
+                .ExecuteDeleteAsync(ct);
         }
 
         public async Task<IReadOnlyList<CashFlowCost>> GetListAsync(bool includeDeleted, CancellationToken ct)
         {
-
             using var dbContext = dbFactory.CreateDbContext();
 
-            var result = await dbContext.Set<CashFlowCost>().AsNoTracking()
+            var result = await dbContext.Set<CashFlowCost>()
+                .AsNoTracking()
+                .Include(e => e.CashFlowItem)
                 .ToListAsync(cancellationToken: ct);
 
             return result;

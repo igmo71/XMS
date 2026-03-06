@@ -29,6 +29,9 @@
 	{
 		foreach (var costItem in costCategory.Items.OrderBy(e => e.Name))
 		{
+			Guid costCategoryId = costCategory.Id;
+			Guid costItemId = costItem.Id;
+
 			<MudTr Style="width: 100%; display: table; table-layout: fixed;">
 				<MudTd DataLabel="Наименование" Style="@($"padding-left: {(Level + 1) * 24}px;")">
 					<div class="d-flex align-center justify-space-between w-100">
@@ -45,24 +48,24 @@
 						<MudSpacer />
 						<div>
 							@{
-								var currentCashFlowCosts = GetCashFlowCosts(costCategory, costItem);
+								var cashFlowCosts = GetCashFlowCosts(costCategoryId, costItemId);
 							}
-							@if (currentCashFlowCosts?.Count() > 0)
+							@if (cashFlowCosts?.Count() > 0)
 							{
-								foreach (var currentCashFlowCost in currentCashFlowCosts)
+								foreach (var cashFlowCost in cashFlowCosts)
 								{
-									<MudButton Variant="Variant.Outlined" EndIcon="@Icons.Material.Outlined.Delete" IconColor="Color.Warning" Color="Color.Primary"
-											   OnClick="() => DeleteCashFlowCost(currentCashFlowCost)">
-										@currentCashFlowCost.CashFlowItem?.Name
-									</MudButton>
+									var cashFlowCostId = cashFlowCost.Id;
+
+									<MudChip T="string" Variant="Variant.Outlined" Icon="@Icons.Material.Outlined.Delete" IconColor="Color.Warning" Color="Color.Primary" Size="Size.Small"
+											 OnClick="() => DeleteCashFlowCost(cashFlowCostId)">
+										@cashFlowCost.CashFlowItem?.Name
+									</MudChip>
 								}
 							}
-							else
-							{
-								<TreeViewPopover CashFlowItems="@CashFlowItems"
-												 CostCategoryItemId="@GetCostCategoryItemId(costCategory, costItem)"
-												 OnAddCashFlowCosts="@OnAddCashFlowCosts" />
-							}
+														
+							<TreeViewPopover CashFlowItems="@CashFlowItems"
+											 CostCategoryItemId="@GetCostCategoryItemId(costCategoryId, costItemId)"
+											 OnAddCashFlowCosts="@OnAddCashFlowCosts" />
 						</div>
 					</div>
 				</MudTd>
@@ -85,23 +88,25 @@
 	private HashSet<Guid> _expandedCashFlowItemIds = [];
 
 
-	private IEnumerable<CashFlowCost>? GetCashFlowCosts(CostCategory costCategory, CostItem costItem)
+	private IEnumerable<CashFlowCost>? GetCashFlowCosts(Guid costCategoryId, Guid costItemId)
 	{
-		var costCategoryItem = CostCategoryItems.FirstOrDefault(e => e.CategoryId == costCategory.Id && e.ItemId == costItem.Id);
+		var costCategoryItemId = GetCostCategoryItemId(costCategoryId, costItemId);
 
-		var currentCashFlowCosts = CashFlowCosts.Where(e => costCategoryItem != null && e.CostCategoryItemId == costCategoryItem.Id);
+		var cashFlowCosts = CashFlowCosts.Where(e => e.CostCategoryItemId == costCategoryItemId).OrderBy(e => e.CashFlowItem?.Name);
 
-		return currentCashFlowCosts;
+		return cashFlowCosts;
 	}
 
-	private Guid GetCostCategoryItemId(CostCategory costCategory, CostItem costItem)
+	private Guid GetCostCategoryItemId(Guid costCategoryId, Guid costItemId)
 	{
-		return CostCategoryItems.FirstOrDefault(e => e.CategoryId == costCategory.Id && e.ItemId == costItem.Id).Id;
+		var costCategoryItem = CostCategoryItems.FirstOrDefault(e => e.CategoryId == costCategoryId && e.ItemId == costItemId);
+
+		return costCategoryItem!.Id; // TODO: return costCategoryItem!.Id; ???
 	}
 
-	private async Task DeleteCashFlowCost(CashFlowCost cashFlowCost)
+	private async Task DeleteCashFlowCost(Guid cashFlowCostId)
 	{
-		await OnDeleteCashFlowCost.InvokeAsync(cashFlowCost.Id);
+		await OnDeleteCashFlowCost.InvokeAsync(cashFlowCostId);
 	}
 }
 
