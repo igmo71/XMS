@@ -27,6 +27,13 @@ namespace XMS.Modules.GodooModule.Endpoints
                 return Results.NoContent();
             }).WithName("ReloadIp");
 
+            godooGroup.MapPut("/product-of-partners/load/ip", async(
+                [FromServices] IGodooService service, CancellationToken ct) =>
+            {
+                await service.LoadProductOfPartners("ip", ct);
+                return Results.NoContent();
+            });
+
             // Yunu
             var yunuGroup = endpoints.MapGroup("/integration/yunu").WithTags("Yunu");
 

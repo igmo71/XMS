@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace XMS.Infrastructure.Integration.OneS
 {
@@ -39,6 +40,30 @@ namespace XMS.Infrastructure.Integration.OneS
             {
                 var error = JsonSerializer.Deserialize<OneSError>(content);
                 logger.LogError("{Source} {Uri} {JsonString} {@Value} {@Error}", nameof(PostValueAsync), uri, jsonString, value, error);
+                return default;
+            }
+
+            var result = JsonSerializer.Deserialize<TValue>(content);
+
+            logger.LogDebug("{Source} - Ok {Uri} {JsonString} {@Value} {@Result}", nameof(PostValueAsync), uri, jsonString, value, result);
+
+            return result;
+        }
+
+        public async Task<TValue?> PatchValueAsync<TValue>(TValue value, string? uri, CancellationToken ct = default)
+        {
+            var jsonString = JsonSerializer.Serialize(value, _serializerOptions);
+
+            using var stringContent = new StringContent(jsonString, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+            using var response = await _httpClient.PatchAsync($"{_clientConfig.ServiceUri}/{uri}", stringContent, ct);
+
+            var content = await response.Content.ReadAsStringAsync(ct);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = JsonSerializer.Deserialize<OneSError>(content);
+                logger.LogError("{Source} {Uri} {JsonString} {@Value} {@Error}", nameof(PatchValueAsync), uri, jsonString, value, error);
                 return default;
             }
 

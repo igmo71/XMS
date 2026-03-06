@@ -26,7 +26,7 @@
         {
             string uri = $"Catalog_Номенклатура?$format=json&$inlinecount=allpages" +
                 $"&$select=Ref_Key,Description,Артикул" +
-                $"&$filter=Артикул eq '{yunuProductId}'";
+                $"&$filter=Артикул eq '{yunuProductId}' and DeletionMark eq false";
             return uri;
         }
 
