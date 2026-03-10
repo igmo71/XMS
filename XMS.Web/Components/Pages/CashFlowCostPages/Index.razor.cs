@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using System.Diagnostics;
 using XMS.Application.Abstractions.Services;
 using XMS.Domain.Models;
 
@@ -11,6 +12,7 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
         [Inject] public ICostCategoryItemService CategodyItemService { get; set; } = default!;
         [Inject] public ICashFlowItemService CashFlowItemService { get; set; } = default!;
         [Inject] public ICashFlowCostService CashFlowCostService { get; set; } = default!;
+        [Inject] public ILogger<Index> Logger { get; set; } = default!;
 
         private readonly CancellationTokenSource _cts = new();
         private IReadOnlyList<CostCategory> _costCategories = [];
@@ -29,6 +31,8 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
 
         private async Task LoadDataAsync()
         {
+            var startingTimestamp = Stopwatch.GetTimestamp();
+
             if (_isLoading) return;
 
             _isLoading = true;
@@ -41,6 +45,8 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
                     LoadCashFlowCosts());
 
                 BuildCashFlowItemsTree();
+
+                Logger.LogDebug("{Source} {Elapsed}", nameof(LoadDataAsync), Stopwatch.GetElapsedTime(startingTimestamp));
             }
             finally
             {

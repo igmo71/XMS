@@ -24,7 +24,12 @@
 						  OnDeleteCashFlowCost="OnDeleteCashFlowCost">
 			</RecursiveRow>
 		</div>
-	</ChildRowContent>
+	</ChildRowContent>	
+	<LoadingContent>
+		<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
+			Загрузка из БД...
+		</MudAlert>
+	</LoadingContent>
 </MudTable>
 
 @code {
