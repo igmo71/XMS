@@ -21,6 +21,7 @@ namespace XMS.Web.Components.Pages.CostPages
         private IReadOnlyList<CostCategory> _costCategories = [];
         private IReadOnlyList<CostCategoryItem> _costCategoryItems = [];
         private IReadOnlyList<CashFlowItem> _cashFlowItems = [];
+        private IReadOnlyList<TreeItemData<CashFlowItem>> _cashFlowItemsTree = [];
         private IReadOnlyList<CashFlowCost> _cashFlowCosts = [];
         private bool _isLoading;
         private bool _includeDeleted = false;
@@ -29,6 +30,7 @@ namespace XMS.Web.Components.Pages.CostPages
         {
             await LoadDataAsync();
         }
+
         private async Task LoadDataAsync()
         {
             if (_isLoading) return;
@@ -41,6 +43,8 @@ namespace XMS.Web.Components.Pages.CostPages
                     LoadCostCategoryItems(),
                     LoadCashFlowItems(),
                     LoadCashFlowCosts());
+
+                BuildCashFlowItemsTree();
             }
             finally
             {
@@ -54,7 +58,31 @@ namespace XMS.Web.Components.Pages.CostPages
         private async Task LoadCostCategoryItems() => _costCategoryItems = await CategodyItemService.GetListAsync(_cts.Token);
         private async Task LoadCashFlowItems() => _cashFlowItems = await CashFlowItemService.GetListAsync(includeDeleted: false, _cts.Token);
         private async Task LoadCashFlowCosts() => _cashFlowCosts = await CashFlowCostService.GetListAsync(includeDeleted: false, _cts.Token);
-        
+
+        private void BuildCashFlowItemsTree()
+        {
+            _cashFlowItemsTree = ExecuteBuildTree(_cashFlowItems, Guid.Parse("00000000-0000-0000-0000-000000000000"));
+
+            StateHasChanged();
+        }
+
+        private static List<TreeItemData<CashFlowItem>> ExecuteBuildTree(IEnumerable<CashFlowItem> allItems, Guid? parentId)
+        {
+            var list = allItems
+                .Where(e => e.ParentId == parentId).ToList();
+            var result = list
+            .Select(e => new TreeItemData<CashFlowItem>
+            {
+                Value = e,
+                Text = e.Name,
+                Expanded = false,
+                Children = ExecuteBuildTree(allItems, e.Id)
+            })
+            .ToList();
+
+            return result;
+        }
+
         private async Task DeleteAddCashFlowCost(Guid itemId)
 		{
             await CashFlowCostService.DeleteCashFlowCostAsync(itemId, _cts.Token);
@@ -62,9 +90,9 @@ namespace XMS.Web.Components.Pages.CostPages
             StateHasChanged();
         }
 
-        private async Task AddAddCashFlowCosts(List<CashFlowCost> items)
+        private async Task UpdateCashFlowCosts(List<CashFlowCost> items)
 		{
-            await CashFlowCostService.AddCashFlowCostRangeAsync(items, _cts.Token);
+            await CashFlowCostService.UpdateRangeCashFlowCostAsync(items, _cts.Token);
             await LoadDataAsync();
             StateHasChanged();
         }

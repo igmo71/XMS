@@ -9,8 +9,11 @@
 					 ToggledColor="@Color.Secondary"
 					 Size="Size.Small" />
 
-<MudPopover Open="@_open" Fixed="false" Class="px-4 pt-4">
-	<MudPaper Style="max-height: calc(100vh - 300px); overflow-y: auto;">
+<MudDrawer @bind-Open="@_open" Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary" OverlayAutoClose="false" Width="800px" Class="me-5">
+	<MudDrawerHeader>
+		<MudText Typo="Typo.h6">Статьи ДДС</MudText>
+	</MudDrawerHeader>
+	<MudPaper Style="max-height: calc(100vh - 200px); overflow-y: auto;">
 		<MudTreeView Items="@(CashFlowItemsTree)" T="CashFlowItem" Dense="true">
 			<ItemTemplate Context="item">
 				<MudTreeViewItem Expanded="@item.Expanded"
@@ -43,29 +46,25 @@
 			</ItemTemplate>
 		</MudTreeView>
 	</MudPaper>
-	<MudStack Row="true" Class="mt-2">
-		<MudButton OnClick="@UpdateCashFlowСosts" Class="ml-auto mr-n3 mb-1" Color="Color.Primary">Сохранить</MudButton>
-		<MudButton OnClick="@ToggleOpen" Class="ml-auto mr-n3 mb-1" Color="Color.Secondary">Закрыть</MudButton>
+	<MudStack Row="true" Class="mt-2" Justify="Justify.SpaceAround">
+		<MudButton OnClick="@UpdateCashFlowСosts" Color="Color.Primary" Variant="Variant.Filled">Сохранить</MudButton>
+		<MudButton OnClick="@ToggleOpen" Color="Color.Secondary" Variant="Variant.Filled">Закрыть</MudButton>
 	</MudStack>
-</MudPopover>
+</MudDrawer>
 
 @code {
-	[Parameter] public IReadOnlyList<CashFlowItem> CashFlowItems { get; set; } = default!;
 	[Parameter] public Guid CostCategoryItemId { get; set; } = default!;
-	[Parameter] public EventCallback<List<CashFlowCost>> OnUpdateCashFlowCosts { get; set; }
 	[Parameter] public IReadOnlyList<TreeItemData<CashFlowItem>> CashFlowItemsTree { get; set; } = default!;
+	[Parameter] public EventCallback<List<CashFlowCost>> OnUpdateCashFlowCosts { get; set; }
 
-	private bool _open;
-	private void ToggleOpen() => _open = !_open;
-	//private IReadOnlyList<TreeItemData<CashFlowItem>> _cashFlowTreeItems = [];
 	private HashSet<Guid> _expandedCashFlowItemIds = [];
 	private HashSet<Guid> _selectedCashFlowItemIds = [];
 
+	private bool _open;
 
 	protected override async Task OnInitializedAsync()
 	{
 		await GetSelectedCashFlowItemIds();
-		//BuildTree();
 	}
 
 	private async Task GetSelectedCashFlowItemIds()
@@ -73,29 +72,7 @@
 		_selectedCashFlowItemIds = await CashFlowCostService.GetSelectedCashFlowItemIds(CostCategoryItemId);
 	}
 
-	// private void BuildTree()
-	// {
-	// 	_cashFlowTreeItems = ExecuteBuildTree(CashFlowItems, Guid.Parse("00000000-0000-0000-0000-000000000000"));
-
-	// 	StateHasChanged();
-	// }
-
-	// private static List<TreeItemData<CashFlowItem>> ExecuteBuildTree(IEnumerable<CashFlowItem> allItems, Guid? parentId)
-	// {
-	// 	var list = allItems
-	// 		.Where(e => e.ParentId == parentId).ToList();
-	// 	var result = list
-	// 	.Select(e => new TreeItemData<CashFlowItem>
-	// 	{
-	// 		Value = e,
-	// 		Text = e.Name,
-	// 		Expanded = false,
-	// 		Children = ExecuteBuildTree(allItems, e.Id)
-	// 	})
-	// 	.ToList();
-
-	// 	return result;
-	// }
+	private void ToggleOpen() => _open = !_open;
 
 	private async Task ExpandedChanged(ITreeItemData<CashFlowItem?> node, bool expanded)
 	{
@@ -138,7 +115,7 @@
 			.ToList();
 
 		await OnUpdateCashFlowCosts.InvokeAsync(newCashFlowCostList);
-		
+
 		ToggleOpen();
 	}
 }

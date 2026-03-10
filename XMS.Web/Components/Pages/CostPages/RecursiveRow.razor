@@ -21,8 +21,9 @@
 				  CashFlowCosts="CashFlowCosts"
 				  ParentId="costCategory.Id"
 				  Level="@(Level + 1)"
-				  OnAddCashFlowCosts="OnAddCashFlowCosts"
-				  OnDeleteCashFlowCost="OnDeleteCashFlowCost">
+				  OnUpdateCashFlowCosts="OnUpdateCashFlowCosts"
+				  OnDeleteCashFlowCost="OnDeleteCashFlowCost"
+				  CashFlowItemsTree="CashFlowItemsTree">
 	</RecursiveRow>
 
 	@if (costCategory.Items?.Count > 0)
@@ -56,16 +57,26 @@
 								{
 									var cashFlowCostId = cashFlowCost.Id;
 
-									<MudChip T="string" Variant="Variant.Outlined" Icon="@Icons.Material.Outlined.Delete" IconColor="Color.Warning" Color="Color.Primary" Size="Size.Small"
-											 OnClick="() => DeleteCashFlowCost(cashFlowCostId)">
-										@cashFlowCost.CashFlowItem?.Name
+									<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">
+										<MudText>@cashFlowCost.CashFlowItem?.Name</MudText>
+										<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Warning" OnClick="() => DeleteCashFlowCost(cashFlowCostId)" Size="Size.Small" />
+
 									</MudChip>
 								}
 							}
 														
-							<TreeViewPopover CashFlowItems="@CashFlowItems"
+							@* <TreeViewPopover CashFlowItems="@CashFlowItems"
 											 CostCategoryItemId="@GetCostCategoryItemId(costCategoryId, costItemId)"
-											 OnAddCashFlowCosts="@OnAddCashFlowCosts" />
+											 OnUpdateCashFlowCosts="@OnUpdateCashFlowCosts"
+											 CashFlowItemsTree="CashFlowItemsTree" /> *@
+
+							<TreeViewDrawer CashFlowItemsTree="CashFlowItemsTree"
+											CostCategoryItemId="@GetCostCategoryItemId(costCategoryId, costItemId)" 
+											OnUpdateCashFlowCosts="OnUpdateCashFlowCosts" />
+
+							
+
+
 						</div>
 					</div>
 				</MudTd>
@@ -81,8 +92,9 @@
 	[Parameter] public IReadOnlyList<CashFlowCost> CashFlowCosts { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }
 	[Parameter] public int Level { get; set; } = 0;
-	[Parameter] public EventCallback<List<CashFlowCost>> OnAddCashFlowCosts { get; set; }
+	[Parameter] public EventCallback<List<CashFlowCost>> OnUpdateCashFlowCosts { get; set; }
 	[Parameter] public EventCallback<Guid> OnDeleteCashFlowCost { get; set; }
+	[Parameter] public IReadOnlyList<TreeItemData<CashFlowItem>> CashFlowItemsTree { get; set; } = default!;
 
 	private IReadOnlyList<TreeItemData<CashFlowItem>> _cashFlowTreeItems = [];
 	private HashSet<Guid> _expandedCashFlowItemIds = [];

@@ -19,8 +19,9 @@
 						  CashFlowCosts="CashFlowCosts"
 						  ParentId="null"
 						  Level="1"
-						  OnAddCashFlowCosts="OnAddCashFlowCosts"
-						  OnDeleteCashFlowCost="OnDeleteCashFlowCost">
+						  OnUpdateCashFlowCosts="OnUpdateCashFlowCosts"
+						  OnDeleteCashFlowCost="OnDeleteCashFlowCost"
+						  CashFlowItemsTree="CashFlowItemsTree">
 			</RecursiveRow>
 		</div>
 	</ChildRowContent>
@@ -32,8 +33,9 @@
 	[Parameter] public IReadOnlyList<CashFlowItem> CashFlowItems { get; set; } = default!;
 	[Parameter] public IReadOnlyList<CashFlowCost> CashFlowCosts { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }
-	[Parameter] public EventCallback<List<CashFlowCost>> OnAddCashFlowCosts { get; set; }
+	[Parameter] public EventCallback<List<CashFlowCost>> OnUpdateCashFlowCosts { get; set; }
 	[Parameter] public EventCallback<Guid> OnDeleteCashFlowCost { get; set; }
+	[Parameter] public IReadOnlyList<TreeItemData<CashFlowItem>> CashFlowItemsTree { get; set; } = default!;
 
 	private MudTable<string>? _mudTable;
 }
