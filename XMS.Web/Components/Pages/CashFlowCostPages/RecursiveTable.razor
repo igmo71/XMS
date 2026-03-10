@@ -12,18 +12,17 @@
 	<RowTemplate>
 	</RowTemplate>
 	<ChildRowContent>
-		<div @key="CostCategoryItems">
+		
 			<RecursiveRow CostCategories="CostCategories"
-						  CostCategoryItems="CostCategoryItems"
+						  CostCategoryItemMap="CostCategoryItemMap"
 						  CashFlowCostLookup="CashFlowCostLookup"
 						  ParentId="null"
 						  Level="1"
-						  CashFlowItemsTree="CashFlowItemsTree"
-						  SelectedCashFlowItemIds="SelectedCashFlowItemIds"
+						  CashFlowItemsTree="CashFlowItemsTree"						  
 						  OnUpdateCashFlowCosts="OnUpdateCashFlowCosts"
 						  OnDeleteCashFlowCost="OnDeleteCashFlowCost">
 			</RecursiveRow>
-		</div>
+		
 	</ChildRowContent>	
 	<LoadingContent>
 		<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
@@ -34,10 +33,9 @@
 
 @code {
 	[Parameter] public IReadOnlyList<CostCategory> CostCategories { get; set; } = default!;
-	[Parameter] public IReadOnlyList<CostCategoryItem> CostCategoryItems { get; set; } = default!;
+	[Parameter] public Dictionary<(Guid CostCategoryId, Guid CostItemId), Guid> CostCategoryItemMap { get; set; } = default!;
 	[Parameter] public ILookup<Guid, CashFlowCost> CashFlowCostLookup { get; set; } = default!;
 	[Parameter] public IReadOnlyList<TreeItemData<CashFlowItem>> CashFlowItemsTree { get; set; } = default!;
-	[Parameter] public HashSet<Guid> SelectedCashFlowItemIds { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }
 	[Parameter] public EventCallback<List<CashFlowCost>> OnUpdateCashFlowCosts { get; set; }
 	[Parameter] public EventCallback<Guid> OnDeleteCashFlowCost { get; set; }

@@ -16,8 +16,9 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
 
         private readonly CancellationTokenSource _cts = new();
         private IReadOnlyList<CostCategory> _costCategories = [];
-        private IReadOnlyList<CostCategoryItem> _costCategoryItems = [];
+        //private IReadOnlyList<CostCategoryItem> _costCategoryItems = [];
         private ILookup<Guid, CashFlowCost> _cashFlowCostLookup = default!;
+        private Dictionary<(Guid CostCategoryId, Guid CostItemId), Guid> _costCategoryItemMap = default!;
         private IReadOnlyList<CashFlowItem> _cashFlowItems = [];
         private IReadOnlyList<TreeItemData<CashFlowItem>> _cashFlowItemsTree = [];
 
@@ -59,11 +60,20 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
         }
 
         private async Task LoadCostCategories() => _costCategories = await CategoryService.GetListAsync(_includeDeleted, _cts.Token);
-        private async Task LoadCostCategoryItems() => _costCategoryItems = await CategodyItemService.GetListAsync(_cts.Token);
+        
+
         private async Task LoadCashFlowItems() => _cashFlowItems = await CashFlowItemService.GetListAsync(includeDeleted: false, _cts.Token);
+
+        private async Task LoadCostCategoryItems()
+        {
+            var costCategoryItems = await CategodyItemService.GetListAsync(_cts.Token);
+            _costCategoryItemMap = costCategoryItems
+                .GroupBy(e => (e.CategoryId, e.ItemId))
+                .ToDictionary(g => g.Key, g => g.First().Id);
+        }
         private async Task LoadCashFlowCosts()
         {
-            IReadOnlyList<CashFlowCost> cashFlowCostList = await CashFlowCostService.GetListAsync(_cts.Token);
+            var cashFlowCostList = await CashFlowCostService.GetListAsync(_cts.Token);
             _cashFlowCostLookup = cashFlowCostList.ToLookup(e => e.CostCategoryItemId);
         }
 

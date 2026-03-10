@@ -2,6 +2,7 @@
 
 @foreach (var costCategory in CostCategories.Where(e => e.ParentId == ParentId).OrderBy(e => e.Name))
 {
+	var currentCostCategory = costCategory;
 	<MudTr>
 		<MudTd DataLabel="Наименование" Style="@($"padding-left: {(Level * 24)}px;")">
 			<div class="d-flex align-center">
@@ -16,28 +17,27 @@
 	</MudTr>
 	
 	<RecursiveRow CostCategories="CostCategories"
-				  CostCategoryItems="CostCategoryItems"
 				  CashFlowCostLookup="CashFlowCostLookup"
+				  CostCategoryItemMap="CostCategoryItemMap"
 				  ParentId="costCategory.Id"
 				  Level="@(Level + 1)"
 				  CashFlowItemsTree="CashFlowItemsTree"
-				  SelectedCashFlowItemIds="SelectedCashFlowItemIds"
 				  OnUpdateCashFlowCosts="OnUpdateCashFlowCosts"
 				  OnDeleteCashFlowCost="OnDeleteCashFlowCost">
 	</RecursiveRow>
 
-	@if (costCategory.Items?.Count > 0)
+	@if (currentCostCategory.Items?.Count > 0)
 	{
-		foreach (var costItem in costCategory.Items.OrderBy(e => e.Name))
+		foreach (var costItem in currentCostCategory.Items.OrderBy(e => e.Name))
 		{
-			Guid costCategoryId = costCategory.Id;
+			Guid costCategoryId = currentCostCategory.Id;
 			Guid costItemId = costItem.Id;
 			Guid costCategoryItemId = GetCostCategoryItemId(costCategoryId, costItemId);
 
 			<MudTr Style="width: 100%; display: table; table-layout: fixed;">
 				<MudTd DataLabel="Наименование" Style="@($"padding-left: {(Level + 1) * 24}px;")">
-					<div class="d-flex align-center justify-space-between w-100">
-						<div class="d-flex align-center">
+					<MudStack Row Justify="Justify.SpaceBetween">
+						<MudStack Row Justify="Justify.Center">
 							<MudIcon Icon="@Icons.Material.Filled.Description"
 									 Size="Size.Small"
 									 Color="@(costItem.IsDeleted ? Color.Secondary : Color.Default)"
@@ -46,39 +46,34 @@
 									 Class="@(costItem.IsDeleted ? "text-secondary text-decoration-line-through" : "")">
 								@costItem.Name
 							</MudText>
-						</div>
+						</MudStack>
 						
 						<div>
-							@{
-								var selectedCashFlowCosts = CashFlowCostLookup[costCategoryItemId];
-							}
-							@if (selectedCashFlowCosts?.Count() > 0)
+							@foreach (var selectedCashFlowCost in CashFlowCostLookup[costCategoryItemId])
 							{
-								foreach (var selectedCashFlowCost in selectedCashFlowCosts)
-								{
-									var selectedCashFlowCostId = selectedCashFlowCost.Id;
+								var selectedCashFlowCostId = selectedCashFlowCost.Id;
 
-									<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">
+								<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">
 
-										<MudText Typo="Typo.body2">@selectedCashFlowCost.CashFlowItem?.Name</MudText>
+									<MudText Typo="Typo.body2">@selectedCashFlowCost.CashFlowItem?.Name</MudText>
 
-										@if (_isDeleting && _deletingCashFlowCostId == selectedCashFlowCostId)
-										{
-											<MudProgressCircular Color="Color.Warning" Size="Size.Small" Indeterminate="true" />
-										}
-										else
-										{											
-											<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Warning" Size="Size.Small"
-														   OnClick="() => DeleteCashFlowCost(selectedCashFlowCostId)" />										}
-									</MudChip>
-								}
+									@if (selectedCashFlowCostId == _deletingCashFlowCostId)
+									{
+										<MudProgressCircular Color="Color.Warning" Size="Size.Small" Indeterminate="true" />
+									}
+									else
+									{
+										<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Warning" Size="Size.Small"
+													   OnClick="() => DeleteCashFlowCost(selectedCashFlowCostId)" />
+									}
+								</MudChip>
 							}
 							<TreeViewDrawer CostCategoryItemId="@costCategoryItemId"
 											CashFlowItemsTree="CashFlowItemsTree"
-											SelectedCashFlowItemIds="selectedCashFlowCosts?.Select(e => e.CashFlowItemId).ToHashSet()"
+											SelectedCashFlowItemIds="CashFlowCostLookup[costCategoryItemId]?.Select(e => e.CashFlowItemId).ToHashSet()"
 											OnUpdateCashFlowCosts="OnUpdateCashFlowCosts" />
 						</div>
-					</div>
+					</MudStack>
 				</MudTd>
 			</MudTr>
 		}
@@ -87,32 +82,37 @@
 
 @code {
 	[Parameter] public IReadOnlyList<CostCategory> CostCategories { get; set; } = default!;
-	[Parameter] public IReadOnlyList<CostCategoryItem> CostCategoryItems { get; set; } = default!;
+	//[Parameter] public IReadOnlyList<CostCategoryItem> CostCategoryItems { get; set; } = default!;
 	[Parameter] public ILookup<Guid, CashFlowCost> CashFlowCostLookup { get; set; } = default!;
+	[Parameter] public Dictionary<(Guid CostCategoryId, Guid CostItemId), Guid> CostCategoryItemMap { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }
 	[Parameter] public int Level { get; set; } = 0;
 	[Parameter] public IReadOnlyList<TreeItemData<CashFlowItem>> CashFlowItemsTree { get; set; } = default!;
-	[Parameter] public HashSet<Guid> SelectedCashFlowItemIds { get; set; } = default!;
 	[Parameter] public EventCallback<List<CashFlowCost>> OnUpdateCashFlowCosts { get; set; }
 	[Parameter] public EventCallback<Guid> OnDeleteCashFlowCost { get; set; }
 
-	private bool _isDeleting;
 	private Guid? _deletingCashFlowCostId;
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+	}
 
 	private Guid GetCostCategoryItemId(Guid costCategoryId, Guid costItemId)
 	{
-		var costCategoryItem = CostCategoryItems.FirstOrDefault(e => e.CategoryId == costCategoryId && e.ItemId == costItemId);
-
-		return costCategoryItem!.Id;
+		if (CostCategoryItemMap.TryGetValue((costCategoryId, costItemId), out Guid costCategoryItemId))
+			return costCategoryItemId;
+		else
+		{
+			return Guid.Empty;
+		}
 	}
 
 	private async Task DeleteCashFlowCost(Guid cashFlowCostId)
 	{
 		_deletingCashFlowCostId = cashFlowCostId;
-		_isDeleting = true;
 		await OnDeleteCashFlowCost.InvokeAsync(cashFlowCostId);
 		_deletingCashFlowCostId = null;
-		_isDeleting = false;
 	}
 }
 
