@@ -26,7 +26,9 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
 
         protected override async Task OnInitializedAsync()
         {
+            var startingTimestamp = Stopwatch.GetTimestamp();
             await LoadDataAsync();
+            Logger.LogDebug("{Source} {Elapsed}", nameof(OnInitializedAsync), Stopwatch.GetElapsedTime(startingTimestamp));
         }
 
         private async Task LoadDataAsync()
