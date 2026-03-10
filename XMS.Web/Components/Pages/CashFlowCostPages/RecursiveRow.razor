@@ -1,0 +1,115 @@
+﻿@using XMS.Domain.Models
+
+@foreach (var costCategory in CostCategories.Where(e => e.ParentId == ParentId).OrderBy(e => e.Name))
+{
+	<MudTr>
+		<MudTd DataLabel="Наименование" Style="@($"padding-left: {(Level * 24)}px;")">
+			<div class="d-flex align-center">
+				<MudIcon Icon="@Icons.Material.Filled.FolderOpen"
+						 Class="@(costCategory.IsDeleted ? "mr-2 text-secondary" : "mr-2")" Title="Категория Затрат" />
+				<MudText Typo="Typo.body1"
+						 Class="@(costCategory.IsDeleted ? "text-secondary text-decoration-line-through" : "")">
+					@costCategory.Name
+				</MudText>
+			</div>
+		</MudTd>
+	</MudTr>
+	
+	<RecursiveRow CostCategories="CostCategories"
+				  CostCategoryItems="CostCategoryItems"
+				  CashFlowCosts="CashFlowCosts"
+				  ParentId="costCategory.Id"
+				  Level="@(Level + 1)"				  
+				  CashFlowItemsTree="CashFlowItemsTree"
+				  SelectedCashFlowItemIds="SelectedCashFlowItemIds"
+				  OnUpdateCashFlowCosts="OnUpdateCashFlowCosts"
+				  OnDeleteCashFlowCost="OnDeleteCashFlowCost">
+	</RecursiveRow>
+
+	@if (costCategory.Items?.Count > 0)
+	{
+		foreach (var costItem in costCategory.Items.OrderBy(e => e.Name))
+		{
+			Guid costCategoryId = costCategory.Id;
+			Guid costItemId = costItem.Id;
+			Guid costCategoryItemId = GetCostCategoryItemId(costCategoryId, costItemId);
+
+			<MudTr Style="width: 100%; display: table; table-layout: fixed;">
+				<MudTd DataLabel="Наименование" Style="@($"padding-left: {(Level + 1) * 24}px;")">
+					<div class="d-flex align-center justify-space-between w-100">
+						<div class="d-flex align-center">
+							<MudIcon Icon="@Icons.Material.Filled.Description"
+									 Size="Size.Small"
+									 Color="@(costItem.IsDeleted ? Color.Secondary : Color.Default)"
+									 Class="mr-2" Title="Статья Затрат" />
+							<MudText Typo="Typo.body2"
+									 Class="@(costItem.IsDeleted ? "text-secondary text-decoration-line-through" : "")">
+								@costItem.Name
+							</MudText>
+						</div>
+						<MudSpacer />
+						<div>
+							@{
+								var selectedCashFlowCosts = GetSelectedCashFlowCosts(costCategoryItemId);
+							}
+							@if (selectedCashFlowCosts?.Count() > 0)
+							{
+								foreach (var selectedCashFlowCost in selectedCashFlowCosts)
+								{
+									var selectedCashFlowCostId = selectedCashFlowCost.Id;
+
+									<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">
+										<MudText>@selectedCashFlowCost.CashFlowItem?.Name</MudText>
+										<MudIconButton Icon="@Icons.Material.Filled.Clear"
+													   Color="Color.Warning"
+													   Size="Size.Small"
+													   OnClick="() => DeleteCashFlowCost(selectedCashFlowCostId)" />
+									</MudChip>
+								}
+							}
+							<TreeViewDrawer CostCategoryItemId="@costCategoryItemId"
+											CashFlowItemsTree="CashFlowItemsTree"
+											SelectedCashFlowItemIds="selectedCashFlowCosts?.Select(e => e.CashFlowItemId).ToHashSet()"
+											OnUpdateCashFlowCosts="OnUpdateCashFlowCosts" />
+						</div>
+					</div>
+				</MudTd>
+			</MudTr>
+		}
+	}
+}
+
+@code {
+	[Parameter] public IReadOnlyList<CostCategory> CostCategories { get; set; } = default!;
+	[Parameter] public IReadOnlyList<CostCategoryItem> CostCategoryItems { get; set; } = default!;
+	[Parameter] public IReadOnlyList<CashFlowCost> CashFlowCosts { get; set; } = default!;
+	[Parameter] public Guid? ParentId { get; set; }
+	[Parameter] public int Level { get; set; } = 0;
+	[Parameter] public IReadOnlyList<TreeItemData<CashFlowItem>> CashFlowItemsTree { get; set; } = default!;
+	[Parameter] public HashSet<Guid> SelectedCashFlowItemIds { get; set; } = default!;
+
+	[Parameter] public EventCallback<List<CashFlowCost>> OnUpdateCashFlowCosts { get; set; }
+	[Parameter] public EventCallback<Guid> OnDeleteCashFlowCost { get; set; }
+
+	private HashSet<Guid> _expandedCashFlowItemIds = [];
+	
+	private Guid GetCostCategoryItemId(Guid costCategoryId, Guid costItemId)
+	{
+		var costCategoryItem = CostCategoryItems.FirstOrDefault(e => e.CategoryId == costCategoryId && e.ItemId == costItemId);
+
+		return costCategoryItem!.Id;
+	}
+	
+	private IEnumerable<CashFlowCost>? GetSelectedCashFlowCosts(Guid costCategoryItemId)
+	{
+		var cashFlowCosts = CashFlowCosts.Where(e => e.CostCategoryItemId == costCategoryItemId).OrderBy(e => e.CashFlowItem?.Name);
+
+		return cashFlowCosts;
+	}
+
+	private async Task DeleteCashFlowCost(Guid cashFlowCostId)
+	{
+		await OnDeleteCashFlowCost.InvokeAsync(cashFlowCostId);
+	}
+}
+

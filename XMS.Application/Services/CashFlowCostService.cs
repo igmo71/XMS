@@ -48,7 +48,7 @@ namespace XMS.Application.Services
                 .ExecuteDeleteAsync(ct);
         }
 
-        public async Task<IReadOnlyList<CashFlowCost>> GetListAsync(bool includeDeleted, CancellationToken ct)
+        public async Task<IReadOnlyList<CashFlowCost>> GetListAsync(CancellationToken ct)
         {
             using var dbContext = dbFactory.CreateDbContext();
 

@@ -1,0 +1,17 @@
+﻿@page "/cashflow-cost"
+@using Microsoft.AspNetCore.Authorization
+@using XMS.Domain.Models
+@attribute [Authorize]
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="pt-4">
+	<MudPaper Style="max-height: calc(100vh - 96px); overflow-y: auto;">
+		<RecursiveTable CostCategories="_costCategories"
+						CostCategoryItems="_costCategoryItems"
+						CashFlowCosts="_cashFlowCosts"
+						CashFlowItemsTree="_cashFlowItemsTree"
+						ParentId="null" 
+						OnUpdateCashFlowCosts="UpdateCashFlowCosts"
+						OnDeleteCashFlowCost="DeleteAddCashFlowCost">
+		</RecursiveTable>
+	</MudPaper>
+</MudContainer>
