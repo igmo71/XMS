@@ -16,9 +16,8 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
 
         private readonly CancellationTokenSource _cts = new();
         private IReadOnlyList<CostCategory> _costCategories = [];
-        //private IReadOnlyList<CostCategoryItem> _costCategoryItems = [];
         private ILookup<Guid, CashFlowCost> _cashFlowCostLookup = default!;
-        private Dictionary<(Guid CostCategoryId, Guid CostItemId), Guid> _costCategoryItemMap = default!;
+        private Dictionary<(Guid CostCategoryId, Guid CostItemId), Guid> _costCategoryItemMap = [];
         private IReadOnlyList<CashFlowItem> _cashFlowItems = [];
         private IReadOnlyList<TreeItemData<CashFlowItem>> _cashFlowItemsTree = [];
 
@@ -71,6 +70,7 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
                 .GroupBy(e => (e.CategoryId, e.ItemId))
                 .ToDictionary(g => g.Key, g => g.First().Id);
         }
+
         private async Task LoadCashFlowCosts()
         {
             var cashFlowCostList = await CashFlowCostService.GetListAsync(_cts.Token);

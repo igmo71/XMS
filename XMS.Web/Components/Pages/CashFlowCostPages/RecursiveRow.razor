@@ -2,7 +2,6 @@
 
 @foreach (var costCategory in CostCategories.Where(e => e.ParentId == ParentId).OrderBy(e => e.Name))
 {
-	var currentCostCategory = costCategory;
 	<MudTr>
 		<MudTd DataLabel="Наименование" Style="@($"padding-left: {(Level * 24)}px;")">
 			<div class="d-flex align-center">
@@ -26,13 +25,11 @@
 				  OnDeleteCashFlowCost="OnDeleteCashFlowCost">
 	</RecursiveRow>
 
-	@if (currentCostCategory.Items?.Count > 0)
+	@if (costCategory.Items?.Count > 0)
 	{
-		foreach (var costItem in currentCostCategory.Items.OrderBy(e => e.Name))
+		foreach (var costItem in costCategory.Items.OrderBy(e => e.Name))
 		{
-			Guid costCategoryId = currentCostCategory.Id;
-			Guid costItemId = costItem.Id;
-			Guid costCategoryItemId = GetCostCategoryItemId(costCategoryId, costItemId);
+			Guid costCategoryItemId = GetCostCategoryItemId(costCategory.Id, costItem.Id);
 
 			<MudTr Style="width: 100%; display: table; table-layout: fixed;">
 				<MudTd DataLabel="Наименование" Style="@($"padding-left: {(Level + 1) * 24}px;")">
@@ -82,7 +79,6 @@
 
 @code {
 	[Parameter] public IReadOnlyList<CostCategory> CostCategories { get; set; } = default!;
-	//[Parameter] public IReadOnlyList<CostCategoryItem> CostCategoryItems { get; set; } = default!;
 	[Parameter] public ILookup<Guid, CashFlowCost> CashFlowCostLookup { get; set; } = default!;
 	[Parameter] public Dictionary<(Guid CostCategoryId, Guid CostItemId), Guid> CostCategoryItemMap { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }
