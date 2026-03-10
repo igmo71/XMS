@@ -9,7 +9,14 @@
 					 ToggledColor="@Color.Secondary"
 					 Size="Size.Small" />
 
-<MudDrawer @bind-Open="@_open" Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary" OverlayAutoClose="false" Width="800px" Class="me-5">
+<MudDrawer @bind-Open="@_open"
+		   Anchor="Anchor.End"
+		   ClipMode="DrawerClipMode.Always"
+		   Elevation="1"
+		   Variant="@DrawerVariant.Temporary"
+		   OverlayAutoClose="false"
+		   Width="800px"
+		   Class="me-5">
 	<MudDrawerHeader>
 		<MudText Typo="Typo.h6">Статьи ДДС</MudText>
 	</MudDrawerHeader>
