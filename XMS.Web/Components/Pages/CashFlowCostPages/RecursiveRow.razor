@@ -17,9 +17,9 @@
 	
 	<RecursiveRow CostCategories="CostCategories"
 				  CostCategoryItems="CostCategoryItems"
-				  CashFlowCosts="CashFlowCosts"
+				  CashFlowCostLookup="CashFlowCostLookup"
 				  ParentId="costCategory.Id"
-				  Level="@(Level + 1)"				  
+				  Level="@(Level + 1)"
 				  CashFlowItemsTree="CashFlowItemsTree"
 				  SelectedCashFlowItemIds="SelectedCashFlowItemIds"
 				  OnUpdateCashFlowCosts="OnUpdateCashFlowCosts"
@@ -47,10 +47,10 @@
 								@costItem.Name
 							</MudText>
 						</div>
-						<MudSpacer />
+						
 						<div>
 							@{
-								var selectedCashFlowCosts = GetSelectedCashFlowCosts(costCategoryItemId);
+								var selectedCashFlowCosts = CashFlowCostLookup[costCategoryItemId];
 							}
 							@if (selectedCashFlowCosts?.Count() > 0)
 							{
@@ -59,11 +59,17 @@
 									var selectedCashFlowCostId = selectedCashFlowCost.Id;
 
 									<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">
-										<MudText>@selectedCashFlowCost.CashFlowItem?.Name</MudText>
-										<MudIconButton Icon="@Icons.Material.Filled.Clear"
-													   Color="Color.Warning"
-													   Size="Size.Small"
-													   OnClick="() => DeleteCashFlowCost(selectedCashFlowCostId)" />
+
+										<MudText Typo="Typo.body2">@selectedCashFlowCost.CashFlowItem?.Name</MudText>
+
+										@if (_isDeleting && _deletingCashFlowCostId == selectedCashFlowCostId)
+										{
+											<MudProgressCircular Color="Color.Warning" Size="Size.Small" Indeterminate="true" />
+										}
+										else
+										{											
+											<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Warning" Size="Size.Small"
+														   OnClick="() => DeleteCashFlowCost(selectedCashFlowCostId)" />										}
 									</MudChip>
 								}
 							}
@@ -82,34 +88,31 @@
 @code {
 	[Parameter] public IReadOnlyList<CostCategory> CostCategories { get; set; } = default!;
 	[Parameter] public IReadOnlyList<CostCategoryItem> CostCategoryItems { get; set; } = default!;
-	[Parameter] public IReadOnlyList<CashFlowCost> CashFlowCosts { get; set; } = default!;
+	[Parameter] public ILookup<Guid, CashFlowCost> CashFlowCostLookup { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }
 	[Parameter] public int Level { get; set; } = 0;
 	[Parameter] public IReadOnlyList<TreeItemData<CashFlowItem>> CashFlowItemsTree { get; set; } = default!;
 	[Parameter] public HashSet<Guid> SelectedCashFlowItemIds { get; set; } = default!;
-
 	[Parameter] public EventCallback<List<CashFlowCost>> OnUpdateCashFlowCosts { get; set; }
 	[Parameter] public EventCallback<Guid> OnDeleteCashFlowCost { get; set; }
 
-	private HashSet<Guid> _expandedCashFlowItemIds = [];
-	
+	private bool _isDeleting;
+	private Guid? _deletingCashFlowCostId;
+
 	private Guid GetCostCategoryItemId(Guid costCategoryId, Guid costItemId)
 	{
 		var costCategoryItem = CostCategoryItems.FirstOrDefault(e => e.CategoryId == costCategoryId && e.ItemId == costItemId);
 
 		return costCategoryItem!.Id;
 	}
-	
-	private IEnumerable<CashFlowCost>? GetSelectedCashFlowCosts(Guid costCategoryItemId)
-	{
-		var cashFlowCosts = CashFlowCosts.Where(e => e.CostCategoryItemId == costCategoryItemId).OrderBy(e => e.CashFlowItem?.Name);
-
-		return cashFlowCosts;
-	}
 
 	private async Task DeleteCashFlowCost(Guid cashFlowCostId)
 	{
+		_deletingCashFlowCostId = cashFlowCostId;
+		_isDeleting = true;
 		await OnDeleteCashFlowCost.InvokeAsync(cashFlowCostId);
+		_deletingCashFlowCostId = null;
+		_isDeleting = false;
 	}
 }
 

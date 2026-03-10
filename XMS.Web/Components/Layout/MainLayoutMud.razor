@@ -5,7 +5,7 @@
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
 <MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" Theme="_myCustomTheme" />
-<MudSnackbarProvider @bind-Configuration="snackbarConfig" />
+<MudSnackbarProvider />
 <MudDialogProvider />
 <MudPopoverProvider />
 <MudLayout>
@@ -111,15 +111,15 @@
 		}
 	};
 
-	private SnackbarConfiguration snackbarConfig = new SnackbarConfiguration()
-	{
-		VisibleStateDuration = 5000,
-		ShowCloseIcon = true,
-		SnackbarVariant = Variant.Outlined,
-		PositionClass = Defaults.Classes.Position.BottomRight,
-		NewestOnTop = true,
-		PreventDuplicates = false,
-	};
+	// private SnackbarConfiguration snackbarConfig = new SnackbarConfiguration()
+	// {
+	// 	VisibleStateDuration = 5000,
+	// 	ShowCloseIcon = true,
+	// 	SnackbarVariant = Variant.Outlined,
+	// 	PositionClass = Defaults.Classes.Position.BottomRight,
+	// 	NewestOnTop = true,
+	// 	PreventDuplicates = false,
+	// };
 
 	protected override async Task OnInitializedAsync()
 	{

@@ -15,7 +15,7 @@
 		<div @key="CostCategoryItems">
 			<RecursiveRow CostCategories="CostCategories"
 						  CostCategoryItems="CostCategoryItems"
-						  CashFlowCosts="CashFlowCosts"
+						  CashFlowCostLookup="CashFlowCostLookup"
 						  ParentId="null"
 						  Level="1"
 						  CashFlowItemsTree="CashFlowItemsTree"
@@ -35,7 +35,7 @@
 @code {
 	[Parameter] public IReadOnlyList<CostCategory> CostCategories { get; set; } = default!;
 	[Parameter] public IReadOnlyList<CostCategoryItem> CostCategoryItems { get; set; } = default!;
-	[Parameter] public IReadOnlyList<CashFlowCost> CashFlowCosts { get; set; } = default!;
+	[Parameter] public ILookup<Guid, CashFlowCost> CashFlowCostLookup { get; set; } = default!;
 	[Parameter] public IReadOnlyList<TreeItemData<CashFlowItem>> CashFlowItemsTree { get; set; } = default!;
 	[Parameter] public HashSet<Guid> SelectedCashFlowItemIds { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }

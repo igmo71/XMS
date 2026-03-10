@@ -3,15 +3,19 @@
 @using XMS.Domain.Models
 @attribute [Authorize]
 
-<MudContainer MaxWidth="MaxWidth.Medium" Class="pt-4">
+<MudContainer MaxWidth="MaxWidth.Large" Class="pt-4">
 	<MudPaper Style="max-height: calc(100vh - 96px); overflow-y: auto;">
 		<RecursiveTable CostCategories="_costCategories"
 						CostCategoryItems="_costCategoryItems"
-						CashFlowCosts="_cashFlowCosts"
+						CashFlowCostLookup="_cashFlowCostLookup"
 						CashFlowItemsTree="_cashFlowItemsTree"
-						ParentId="null" 
+						ParentId="null"
 						OnUpdateCashFlowCosts="UpdateCashFlowCosts"
 						OnDeleteCashFlowCost="DeleteAddCashFlowCost">
 		</RecursiveTable>
+		@if (_isLoading)
+		{
+			<MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+		}
 	</MudPaper>
 </MudContainer>

@@ -51,8 +51,12 @@
 					</Content>
 				</MudTreeViewItem>
 			</ItemTemplate>
-		</MudTreeView>
-	</MudPaper>
+		</MudTreeView>		
+	</MudPaper>	
+	@if (_isProcessing)
+	{
+		<MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+	}
 	<MudStack Row="true" Class="mt-2" Justify="Justify.SpaceAround">
 		<MudButton OnClick="@UpdateCashFlowСosts" Color="Color.Primary" Variant="Variant.Filled">Сохранить</MudButton>
 		<MudButton OnClick="@ToggleOpen" Color="Color.Secondary" Variant="Variant.Filled">Закрыть</MudButton>
@@ -69,6 +73,7 @@
 	private HashSet<Guid> _selectedCashFlowItemIds = [];
 
 	private bool _open;
+	private bool _isProcessing;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -113,12 +118,14 @@
 
 	private async Task UpdateCashFlowСosts()
 	{
+		_isProcessing = true;
 		var newCashFlowCostList = _selectedCashFlowItemIds
 			.Select(e => new CashFlowCost { CashFlowItemId = e, CostCategoryItemId = CostCategoryItemId })
 			.ToList();
 
 		await OnUpdateCashFlowCosts.InvokeAsync(newCashFlowCostList);
-
+		
+		_isProcessing = false;
 		ToggleOpen();
 	}
 }
