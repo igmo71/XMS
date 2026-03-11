@@ -92,45 +92,14 @@ namespace XMS.Modules.GodooModule.Application
 
             if (marketplaceRelation.Count == 0)
             {
-                logger.LogDebug("{Source} Not Exists {@GodooMarketplaceRelation}", nameof(Reload), godooMarketplaceRelation);
+                logger.LogDebug("{Source} Not Exists {@GodooMarketplaceRelation}", nameof(CreateMarketplaceRelationIfNotExists), godooMarketplaceRelation);
 
                 await godooOneSBuhService.CreateMarketplaceRelationAsync(godooMarketplaceRelation, ct);
             }
             else
             {
-                logger.LogDebug("{Source} Exists {@GodooMarketplaceRelation}", nameof(Reload), godooMarketplaceRelation);
+                logger.LogDebug("{Source} Exists {@GodooMarketplaceRelation}", nameof(RelCreateMarketplaceRelationIfNotExistsoad), godooMarketplaceRelation);
             }
-        }
-
-        public async Task LoadProductOfPartners(string apiKeyName, CancellationToken ct)
-        {
-            StartActivity();
-
-            var yunuApiKey = yunuService.GetApiKey(apiKeyName);
-
-            var yunuArticleRelation = await yunuService.GetArticleRelationsAsync(apiKeyName, ct);
-
-            if (yunuArticleRelation?.Products == null)
-            {
-                logger.LogError("{Source} Failed to load YunuArticleRelation", nameof(LoadProductOfPartners));
-                return;
-            }
-
-            foreach (var yunuProduct in yunuArticleRelation.Products)
-            {
-                var products = await godooOneSBuhService.GetProductOfPartnerListAsync(yunuProduct.ProductId.ToString(), ct);
-
-                if (products.Count == 0)
-                {
-                    logger.LogDebug("{Source} Product Not Exists", nameof(GetOrCreateProduct));
-                    await godooOneSBuhService.CreateProductOfPartnerAsync(yunuProduct, ct);
-                }                
-                else
-                {
-                    logger.LogDebug("{Source} Product Exists", nameof(GetOrCreateProduct));
-                    continue;
-                }
-            }
-        }
+        }        
     }
 }
