@@ -35,7 +35,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\XMS.Application\XMS.Application.csproj" />
-    <ProjectReference Include="..\XMS.Domain\XMS.Domain.csproj" />
   </ItemGroup>
 
 </Project>
