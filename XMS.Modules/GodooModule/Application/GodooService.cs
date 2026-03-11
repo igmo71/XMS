@@ -98,7 +98,7 @@ namespace XMS.Modules.GodooModule.Application
             }
             else
             {
-                logger.LogDebug("{Source} Exists {@GodooMarketplaceRelation}", nameof(RelCreateMarketplaceRelationIfNotExistsoad), godooMarketplaceRelation);
+                logger.LogDebug("{Source} Exists {@GodooMarketplaceRelation}", nameof(CreateMarketplaceRelationIfNotExists), godooMarketplaceRelation);
             }
         }        
     }
