@@ -37,7 +37,7 @@
 							@if (item.Value?.IsFolder == false)
 							{
 								<MudCheckBox T="bool"
-											 Value="@(_selectedCashFlowItemIds.Contains(item.Value.Id))"
+											 Value="@(SelectedCashFlowItemIds.Contains(item.Value.Id))"
 											 ValueChanged="@((bool isChecked) => CheckBoxChanged(isChecked, item.Value.Id))">
 									<MudText Typo="Typo.body1">@item.Value?.Name</MudText>
 								</MudCheckBox>
@@ -70,15 +70,9 @@
 	[Parameter] public EventCallback<List<CashFlowCost>> OnUpdateCashFlowCosts { get; set; }
 
 	private HashSet<Guid> _expandedCashFlowItemIds = [];
-	private HashSet<Guid> _selectedCashFlowItemIds = [];
 
 	private bool _open;
 	private bool _isProcessing;
-
-	protected override async Task OnInitializedAsync()
-	{
-		_selectedCashFlowItemIds = SelectedCashFlowItemIds;
-	}
 
 	private void ToggleOpen() => _open = !_open;
 
@@ -108,18 +102,18 @@
 	{
 		if (isChecked)
 		{
-			_selectedCashFlowItemIds.Add(itemId);
+			SelectedCashFlowItemIds.Add(itemId);
 		}
 		else
 		{
-			_selectedCashFlowItemIds.Remove(itemId);
+			SelectedCashFlowItemIds.Remove(itemId);
 		}
 	}
 
 	private async Task UpdateCashFlowСosts()
 	{
 		_isProcessing = true;
-		var newCashFlowCostList = _selectedCashFlowItemIds
+		var newCashFlowCostList = SelectedCashFlowItemIds
 			.Select(e => new CashFlowCost { CashFlowItemId = e, CostCategoryItemId = CostCategoryItemId })
 			.ToList();
 
