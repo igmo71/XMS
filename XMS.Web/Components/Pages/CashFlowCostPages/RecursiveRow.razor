@@ -2,16 +2,16 @@
 
 @foreach (var costCategory in CostCategories.Where(e => e.ParentId == ParentId).OrderBy(e => e.Name))
 {
-	<MudTr>
+	<MudTr Style="width: 100%; display: table; table-layout: fixed;">
 		<MudTd DataLabel="Наименование" Style="@($"padding-left: {(Level * 24)}px;")">
-			<div class="d-flex align-center">
+			<MudStack Row Justify="Justify.FlexStart">
 				<MudIcon Icon="@Icons.Material.Filled.FolderOpen"
 						 Class="@(costCategory.IsDeleted ? "mr-2 text-secondary" : "mr-2")" Title="Категория Затрат" />
 				<MudText Typo="Typo.body1"
 						 Class="@(costCategory.IsDeleted ? "text-secondary text-decoration-line-through" : "")">
 					@costCategory.Name
 				</MudText>
-			</div>
+			</MudStack>
 		</MudTd>
 	</MudTr>
 	
@@ -34,7 +34,7 @@
 			<MudTr Style="width: 100%; display: table; table-layout: fixed;">
 				<MudTd DataLabel="Наименование" Style="@($"padding-left: {(Level + 1) * 24}px;")">
 					<MudStack Row Justify="Justify.SpaceBetween">
-						<MudStack Row Justify="Justify.Center">
+						<MudStack Row Justify="Justify.FlexStart">
 							<MudIcon Icon="@Icons.Material.Filled.Description"
 									 Size="Size.Small"
 									 Color="@(costItem.IsDeleted ? Color.Secondary : Color.Default)"
@@ -43,9 +43,8 @@
 									 Class="@(costItem.IsDeleted ? "text-secondary text-decoration-line-through" : "")">
 								@costItem.Name
 							</MudText>
-						</MudStack>
-						
-						<div>
+						</MudStack>						
+						<MudItem>
 							@foreach (var selectedCashFlowCost in CashFlowCostLookup[costCategoryItemId])
 							{
 								var selectedCashFlowCostId = selectedCashFlowCost.Id;
@@ -67,9 +66,9 @@
 							}
 							<TreeViewDrawer CostCategoryItemId="@costCategoryItemId"
 											CashFlowItemsTree="CashFlowItemsTree"
-											SelectedCashFlowItemIds="CashFlowCostLookup[costCategoryItemId]?.Select(e => e.CashFlowItemId).ToHashSet()"
+											SelectedCashFlowItemIds="CashFlowCostLookup[costCategoryItemId].Select(e => e.CashFlowItemId).ToHashSet()"
 											OnUpdateCashFlowCosts="OnUpdateCashFlowCosts" />
-						</div>
+						</MudItem>
 					</MudStack>
 				</MudTd>
 			</MudTr>
