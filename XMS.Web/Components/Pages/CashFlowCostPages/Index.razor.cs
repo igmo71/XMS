@@ -101,7 +101,7 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
             return result;
         }
 
-        private async Task DeleteAddCashFlowCost(Guid itemId)
+        private async Task DeleteCashFlowCost(Guid itemId)
         {
             await CashFlowCostService.DeleteCashFlowCostAsync(itemId, _cts.Token);
             await LoadDataAsync();

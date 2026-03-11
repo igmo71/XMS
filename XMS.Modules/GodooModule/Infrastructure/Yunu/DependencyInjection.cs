@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using XMS.Modules.GodooModule.Abstractions;
-using XMS.Modules.GodooModule.Infrastructure.Yunu.Application;
-using XMS.Modules.GodooModule.Infrastructure.Yunu.Infrastructure;
 
 namespace XMS.Modules.GodooModule.Infrastructure.Yunu
 {

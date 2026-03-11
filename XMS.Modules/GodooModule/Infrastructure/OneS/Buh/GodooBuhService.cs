@@ -1,14 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
-using XMS.Infrastructure.Integration.OneS;
+using XMS.Application.Common.Integration;
 using XMS.Modules.GodooModule.Abstractions;
 using XMS.Modules.GodooModule.Application;
 using XMS.Modules.GodooModule.Application.Mapping;
 using XMS.Modules.GodooModule.Domain;
-using XMS.Modules.GodooModule.Infrastructure.OneS.Buh.Infrastructure;
 
-namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh.Application
+namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh
 {
-    internal class BuhService(GodooBuhClient client, ILogger<BuhService> logger) : IGodooOneSBuhService
+    internal class GodooBuhService(GodooBuhClient client, ILogger<GodooBuhService> logger) : IGodooBuhService
     {
 
         public async Task<IReadOnlyList<InformationRegister_НоменклатураМаркетплейсов>> GetMarketplaceRelationListAsync(

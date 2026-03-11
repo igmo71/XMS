@@ -1,5 +1,5 @@
 ﻿using XMS.Modules.GodooModule.Domain;
-using XMS.Modules.GodooModule.Infrastructure.Yunu.Infrastructure;
+using XMS.Modules.GodooModule.Infrastructure.Yunu;
 
 namespace XMS.Modules.GodooModule.Abstractions
 {

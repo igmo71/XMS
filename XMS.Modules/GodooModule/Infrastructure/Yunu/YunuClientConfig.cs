@@ -1,4 +1,4 @@
-﻿namespace XMS.Modules.GodooModule.Infrastructure.Yunu.Infrastructure
+﻿namespace XMS.Modules.GodooModule.Infrastructure.Yunu
 {
     internal class YunuClientConfig
     {

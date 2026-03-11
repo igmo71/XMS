@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using XMS.Application.Abstractions.Integration;
+using XMS.Application.Common.Integration;
 using XMS.Domain.Models;
 using XMS.Infrastructure.Integration.OneS.Ut.Models;
 

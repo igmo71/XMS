@@ -7,7 +7,7 @@ using XMS.Modules.GodooModule.Domain;
 namespace XMS.Modules.GodooModule.Application
 {
     internal class GodooService(
-        IGodooOneSBuhService godooOneSBuhService,
+        IGodooBuhService godooOneSBuhService,
         IYunuService yunuService,
         ILogger<GodooService> logger) : BaseService, IGodooService
     {

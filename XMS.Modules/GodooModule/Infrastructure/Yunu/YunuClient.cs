@@ -3,7 +3,7 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using XMS.Modules.GodooModule.Domain;
 
-namespace XMS.Modules.GodooModule.Infrastructure.Yunu.Infrastructure
+namespace XMS.Modules.GodooModule.Infrastructure.Yunu
 {
     internal class YunuClient(HttpClient httpClient, IOptions<YunuClientConfig> options)
     {

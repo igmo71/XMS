@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
 using XMS.Modules.GodooModule.Abstractions;
 using XMS.Modules.GodooModule.Domain;
-using XMS.Modules.GodooModule.Infrastructure.Yunu.Infrastructure;
 
-namespace XMS.Modules.GodooModule.Infrastructure.Yunu.Application
+namespace XMS.Modules.GodooModule.Infrastructure.Yunu
 {
     internal class YunuService(YunuClient client, IOptions<YunuClientConfig> options) : IYunuService
     {

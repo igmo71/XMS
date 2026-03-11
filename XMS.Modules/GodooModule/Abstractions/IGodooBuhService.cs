@@ -3,7 +3,7 @@ using XMS.Modules.GodooModule.Domain;
 
 namespace XMS.Modules.GodooModule.Abstractions
 {
-    public interface IGodooOneSBuhService
+    public interface IGodooBuhService
     {
         Task<IReadOnlyList<Catalog_Организации>> GetCompanyListAsync(CancellationToken ct = default);
 

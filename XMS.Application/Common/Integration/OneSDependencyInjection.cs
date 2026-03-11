@@ -3,24 +3,12 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
-using XMS.Application.Common.Integration;
-using XMS.Modules.GodooModule.Abstractions;
 
-namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh
+namespace XMS.Application.Common.Integration
 {
-    public static class DependencyInjection
+    public static class OneSDependencyInjection
     {
-        public static IServiceCollection AddOneSServices(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddOneSClient<GodooBuhClient, GodooBuhClientConfig>(configuration);
-
-
-            services.AddScoped<IGodooBuhService, GodooBuhService>();
-
-            return services;
-        }
-
-        private static IServiceCollection AddOneSClient<TClient, TConfig>(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddOneSClient<TClient, TConfig>(this IServiceCollection services, IConfiguration configuration)
             where TClient : class
             where TConfig : OneSClientConfig
         {
