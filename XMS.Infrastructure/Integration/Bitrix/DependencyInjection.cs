@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using XMS.Infrastructure.Integration.Bitrix.Application;
-using XMS.Infrastructure.Integration.Bitrix.Infrastructure;
 
 namespace XMS.Infrastructure.Integration.Bitrix
 {

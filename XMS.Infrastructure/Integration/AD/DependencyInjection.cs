@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using XMS.Application.Abstractions.Integration;
-using XMS.Infrastructure.Integration.AD.Application;
-using XMS.Infrastructure.Integration.AD.Infrastructure;
 
 namespace XMS.Infrastructure.Integration.AD
 {

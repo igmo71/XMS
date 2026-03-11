@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
+using XMS.Application.Common.Integration;
 using XMS.Infrastructure.Integration.OneS;
 using XMS.Modules.GodooModule.Abstractions;
 using XMS.Modules.GodooModule.Infrastructure.OneS.Buh.Application;

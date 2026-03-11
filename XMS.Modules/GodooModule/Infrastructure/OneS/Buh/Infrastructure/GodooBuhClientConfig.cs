@@ -1,4 +1,5 @@
-﻿using XMS.Infrastructure.Integration.OneS;
+﻿using XMS.Application.Common.Integration;
+using XMS.Infrastructure.Integration.OneS;
 
 namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh.Infrastructure
 {

@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using XMS.Domain.Models;
-using XMS.Infrastructure.Integration.Bitrix.Application;
-using XMS.Infrastructure.Integration.Bitrix.Domain;
+using XMS.Infrastructure.Integration.Bitrix;
+using XMS.Infrastructure.Integration.Bitrix.Models;
 
 namespace XMS.Web.Components.Account
 {

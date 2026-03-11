@@ -7,7 +7,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
 
-namespace XMS.Infrastructure.Integration.OneS
+namespace XMS.Application.Common.Integration
 {
     public abstract class OneSClient<TConfig>(HttpClient httpClient, IOptions<TConfig> options, ILogger<OneSClient<TConfig>> logger)
         where TConfig : OneSClientConfig

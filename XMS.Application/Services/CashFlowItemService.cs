@@ -6,6 +6,11 @@ using XMS.Domain.Models;
 
 namespace XMS.Application.Services
 {
+    /// <summary>
+    /// Catalog_СтатьиДвиженияДенежныхСредств Service
+    /// </summary>
+    /// <param name="oneSUtService"></param>
+    /// <param name="dbFactory"></param>
     internal class CashFlowItemService(IOneSUtService oneSUtService, IDbContextFactoryProxy dbFactory) : ICashFlowItemService
     {
         public async Task<IReadOnlyList<CashFlowItem>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)

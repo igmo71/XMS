@@ -4,12 +4,9 @@ using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
 using XMS.Application.Abstractions.Integration;
-using XMS.Infrastructure.Integration.OneS.Buh.Application;
-using XMS.Infrastructure.Integration.OneS.Buh.Infrastructure;
-using XMS.Infrastructure.Integration.OneS.Ut.Application;
-using XMS.Infrastructure.Integration.OneS.Ut.Infrastructure;
-using XMS.Infrastructure.Integration.OneS.Zup.Application;
-using XMS.Infrastructure.Integration.OneS.Zup.Infrastructure;
+using XMS.Infrastructure.Integration.OneS.Buh;
+using XMS.Infrastructure.Integration.OneS.Ut;
+using XMS.Infrastructure.Integration.OneS.Zup;
 
 namespace XMS.Infrastructure.Integration.OneS
 {
