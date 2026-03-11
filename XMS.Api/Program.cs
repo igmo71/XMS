@@ -21,6 +21,7 @@ namespace XMS.Api
 
             // Add services to the container.
             builder.Services.AddAuthorization();
+
             builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddApplicationServices();
             builder.Services.AddApplicationModules(builder.Configuration);

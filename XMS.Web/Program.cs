@@ -60,8 +60,7 @@ namespace XMS.Web
 
 
             builder.Services.AddHttpContextAccessor();
-
-            builder.Services.AddInfrastructure(builder.Configuration);
+            
 
             builder.Services.AddIdentityCore<ApplicationUser>(options =>
                 {
@@ -92,6 +91,7 @@ namespace XMS.Web
 
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+            builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddApplicationServices();
             builder.Services.AddApplicationModules(builder.Configuration);
 
