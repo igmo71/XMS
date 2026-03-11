@@ -13,26 +13,19 @@ namespace XMS.Modules.GodooModule.Endpoints
             // Godoo
             var godooGroup = endpoints.MapGroup("/api/godoo").WithTags("Godoo");
 
-            godooGroup.MapGet("/marketplace-relations/reload/godoo", async (
+            godooGroup.MapPut("/marketplace-relations/reload/godoo", async (
                 [FromServices] IGodooService service, CancellationToken ct) =>
             {
                 await service.Reload("godoo", ct);
                 return Results.NoContent();
             }).WithName("ReloadGodoo");
 
-            godooGroup.MapGet("/marketplace-relations/reload/ip", async (
+            godooGroup.MapPut("/marketplace-relations/reload/ip", async (
                 [FromServices] IGodooService service, CancellationToken ct) =>
             {
                 await service.Reload("ip", ct);
                 return Results.NoContent();
-            }).WithName("ReloadIp");
-
-            godooGroup.MapPut("/product-of-partners/load/ip", async(
-                [FromServices] IGodooService service, CancellationToken ct) =>
-            {
-                await service.LoadProductOfPartners("ip", ct);
-                return Results.NoContent();
-            });
+            }).WithName("ReloadIp");            
 
             // Yunu
             var yunuGroup = endpoints.MapGroup("/integration/yunu").WithTags("Yunu");

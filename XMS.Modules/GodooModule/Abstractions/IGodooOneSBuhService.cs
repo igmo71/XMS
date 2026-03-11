@@ -16,9 +16,6 @@ namespace XMS.Modules.GodooModule.Abstractions
 
         Task CreateMarketplaceRelationAsync(GodooMarketplaceRelation godooMarketplaceRelation, CancellationToken ct = default);
 
-        Task<IReadOnlyList<Catalog_НоменклатураКонтрагентов>> GetProductOfPartnerListAsync(string refKey, CancellationToken ct = default);
-        Task<IReadOnlyList<Catalog_НоменклатураКонтрагентов>?> CreateProductOfPartnerAsync(YunuProduct yunuProduct, CancellationToken ct = default);
-
         Task CreateInformationRegister_НоменклатураКонтрагентовБЭД(
             Catalog_Номенклатура oneSProduct,
             YunuProduct yunuProduct,
