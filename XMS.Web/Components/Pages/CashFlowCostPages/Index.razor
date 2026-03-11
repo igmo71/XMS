@@ -4,21 +4,20 @@
 @attribute [Authorize]
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="pt-4">
-	<MudPaper Style="max-height: calc(100vh - 96px); overflow-y: auto;">				
+	<MudPaper Style="max-height: calc(100vh - 96px); overflow-y: auto;">
 		@if (_isLoading)
 		{
-			<MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+			<MudProgressLinear Color="Color.Primary" Indeterminate="true"/>
 		}
-		else
-		{
-			<RecursiveTable CostCategories="_costCategories"
-							CostCategoryItemMap="_costCategoryItemMap"
-							CashFlowCostLookup="_cashFlowCostLookup"
-							CashFlowItemsTree="_cashFlowItemsTree"
-							ParentId="null"
-							OnUpdateCashFlowCosts="UpdateCashFlowCosts"
-							OnDeleteCashFlowCost="DeleteAddCashFlowCost">
-			</RecursiveTable>
-		}
+		
+		<RecursiveTable CostCategories="_costCategories"
+						CostCategoryItemMap="_costCategoryItemMap"
+						CashFlowCostLookup="_cashFlowCostLookup"
+						CashFlowItemsTree="_cashFlowItemsTree"
+						ParentId="null"
+						OnUpdateCashFlowCosts="UpdateCashFlowCosts"
+						OnDeleteCashFlowCost="DeleteAddCashFlowCost">
+		</RecursiveTable>
+		
 	</MudPaper>
 </MudContainer>
