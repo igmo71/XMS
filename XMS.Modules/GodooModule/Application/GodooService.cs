@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using XMS.Application.Abstractions;
 using XMS.Modules.GodooModule.Abstractions;
+using XMS.Modules.GodooModule.Application.Mapping;
 using XMS.Modules.GodooModule.Domain;
 
 namespace XMS.Modules.GodooModule.Application
@@ -34,8 +35,16 @@ namespace XMS.Modules.GodooModule.Application
                 {
                     foreach (var yunuRelation in yunuProduct.MarketplaceRelations)
                     {
+                        var yunuProductId = ProductIdMap.From(yunuRelation);
+
+                        if (string.IsNullOrEmpty(yunuProductId))
+                            logger.LogError("OfferId or VendorCode Not Found {yunuProduct}", yunuProduct);
+
+                        await godooOneSBuhService.CreateInformationRegister_НоменклатураКонтрагентовБЭД(
+                            oneSProduct, yunuProduct, yunuRelation, ct);
+
                         GodooMarketplaceRelation godooMarketplaceRelation = new(
-                            YunuProductId: yunuProduct.ProductId.ToString(),
+                            YunuProductId: yunuProductId,
                             Marketplace: MarketplaceMap.FromYunu[yunuRelation.Marketplace ?? string.Empty],
                             Barcode: yunuRelation.Barcode ?? string.Empty,
                             OneSProductKey: oneSProduct.Ref_Key,
@@ -46,6 +55,7 @@ namespace XMS.Modules.GodooModule.Application
                 }
             }
         }
+        
 
         private async Task<Catalog_Номенклатура?> GetOrCreateProduct(YunuProduct yunuProduct, CancellationToken ct)
         {
@@ -89,6 +99,37 @@ namespace XMS.Modules.GodooModule.Application
             else
             {
                 logger.LogDebug("{Source} Exists {@GodooMarketplaceRelation}", nameof(Reload), godooMarketplaceRelation);
+            }
+        }
+
+        public async Task LoadProductOfPartners(string apiKeyName, CancellationToken ct)
+        {
+            StartActivity();
+
+            var yunuApiKey = yunuService.GetApiKey(apiKeyName);
+
+            var yunuArticleRelation = await yunuService.GetArticleRelationsAsync(apiKeyName, ct);
+
+            if (yunuArticleRelation?.Products == null)
+            {
+                logger.LogError("{Source} Failed to load YunuArticleRelation", nameof(LoadProductOfPartners));
+                return;
+            }
+
+            foreach (var yunuProduct in yunuArticleRelation.Products)
+            {
+                var products = await godooOneSBuhService.GetProductOfPartnerListAsync(yunuProduct.ProductId.ToString(), ct);
+
+                if (products.Count == 0)
+                {
+                    logger.LogDebug("{Source} Product Not Exists", nameof(GetOrCreateProduct));
+                    await godooOneSBuhService.CreateProductOfPartnerAsync(yunuProduct, ct);
+                }                
+                else
+                {
+                    logger.LogDebug("{Source} Product Exists", nameof(GetOrCreateProduct));
+                    continue;
+                }
             }
         }
     }

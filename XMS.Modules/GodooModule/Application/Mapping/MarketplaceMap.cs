@@ -1,4 +1,4 @@
-﻿namespace XMS.Modules.GodooModule.Domain
+﻿namespace XMS.Modules.GodooModule.Application.Mapping
 {
     public static class MarketplaceMap
     {
