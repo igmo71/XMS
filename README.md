@@ -128,3 +128,6 @@ OpenAPI/Scalar поднимаются при старте приложения.
 docker build -t xms-web -f XMS.Web/Dockerfile .
 docker build -t xms-api -f XMS.Api/Dockerfile .
 ```
+
+<img width="1862" height="926" alt="изображение" src="https://github.com/user-attachments/assets/6c926bc9-a986-4a0d-9c36-7070fd69d473" />
+
