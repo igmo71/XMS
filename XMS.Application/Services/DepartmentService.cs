@@ -95,10 +95,22 @@ namespace XMS.Application.Services
 
             var query = dbContext.Set<Department>().AsNoTracking();
 
-            if(!includeDeleted)
+            if (!includeDeleted)
                 query = query.Where(e => !e.IsDeleted);
 
             return await query.OrderBy(x => x.Name).ToListAsync(ct);
+        }
+
+        public async Task<IReadOnlyList<Department>> GetListAsync(QueryParameters queryParameters, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var result = await dbContext.Set<Department>()
+                .AsNoTracking()
+                .HandleQueryParameters(queryParameters)
+                .ToListAsync(ct);
+
+            return result;
         }
     }
 }

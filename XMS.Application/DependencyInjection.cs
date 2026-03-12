@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using XMS.Application.Abstractions.Services;
+using XMS.Application.Endpoints;
 using XMS.Application.Services;
 
 namespace XMS.Application
@@ -25,6 +27,13 @@ namespace XMS.Application
             services.AddScoped<IUserUtService, UserUtService>();
 
             return services;
+        }
+
+        public static IEndpointRouteBuilder MapApplicationEndpints(this IEndpointRouteBuilder routeBuilder)
+        {
+            routeBuilder.MapEmployeeEndpints();
+
+            return routeBuilder;
         }
     }
 }

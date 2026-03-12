@@ -91,5 +91,28 @@ namespace XMS.Application.Services
                 .OrderBy(x => x.Name)
                 .ToListAsync(ct);
         }
+
+        public async Task<IReadOnlyList<Employee>> GetListAsync(QueryParameters queryParameters, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var result = await dbContext.Set<Employee>()
+                .AsNoTracking()
+                .HandleQueryParameters(queryParameters)
+                .Include(e => e.City)
+                .Include(e => e.Department)
+                .Include(e => e.EmployeeBuh)
+                .Include(e => e.EmployeeZup)
+                .Include(e => e.JobTitle)
+                .Include(e => e.Location)
+                .Include(e => e.UserAd)
+                .Include(e => e.UserUt)
+                .Include(e => e.LocationManager)
+                .Include(e => e.OperationManager)
+                .OrderBy(x => x.Name)
+                .ToListAsync(ct);
+
+            return result;
+        }
     }
 }

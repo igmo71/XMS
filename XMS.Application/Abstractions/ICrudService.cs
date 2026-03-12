@@ -1,4 +1,5 @@
-﻿using XMS.Application.Common;
+﻿using Microsoft.AspNetCore.Mvc;
+using XMS.Application.Common;
 
 namespace XMS.Application.Abstractions
 {
@@ -10,5 +11,6 @@ namespace XMS.Application.Abstractions
         Task<ServiceResult> RestoreAsync(Guid id, CancellationToken ct = default);
         Task<TEntity?> GetByIdAsync(Guid id, CancellationToken ct = default);
         Task<IReadOnlyList<TEntity>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default);
+        Task<IReadOnlyList<TEntity>> GetListAsync(QueryParameters searchParameters, CancellationToken ct = default);
     }
 }

@@ -42,6 +42,7 @@ namespace XMS.Api
 
             app.UseAuthorization();
 
+            app.MapApplicationEndpints();
             app.MapModulesEndpoints();
 
             app.Run();

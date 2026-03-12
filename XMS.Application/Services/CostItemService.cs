@@ -78,5 +78,17 @@ namespace XMS.Application.Services
 
             return await query.OrderBy(x => x.Name).ToListAsync(ct);
         }
+
+        public async Task<IReadOnlyList<CostItem>> GetListAsync(QueryParameters queryParameters, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var result = await dbContext.Set<CostItem>()
+                .AsNoTracking()
+                .HandleQueryParameters(queryParameters)
+                .ToListAsync(ct);
+
+            return result;
+        }
     }
 }

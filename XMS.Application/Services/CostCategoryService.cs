@@ -109,6 +109,21 @@ namespace XMS.Application.Services
                 .ToListAsync(ct);
 
         }
+
+        public async Task<IReadOnlyList<CostCategory>> GetListAsync(QueryParameters queryParameters, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var result = await dbContext.Set<CostCategory>()
+                .AsNoTracking()
+                .HandleQueryParameters(queryParameters)
+                .Include(e => e.Items)
+                .Include(e => e.Department)
+                .Include(e => e.Employee)
+                .ToListAsync(ct);
+
+            return result;
+        }
     }
 }
 
