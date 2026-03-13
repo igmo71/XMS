@@ -114,5 +114,19 @@ namespace XMS.Application.Services
 
             return result;
         }
+
+        public async Task<Employee?> GetByAdLoginAsync(string login, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            return await dbContext.Set<Employee>().FirstOrDefaultAsync(e => e.UserAd != null && e.UserAd.Login == login, ct);
+        }
+
+        public async Task<Employee?> GetByUtRefKeyAsync(string refKey, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            return await dbContext.Set<Employee>().FirstOrDefaultAsync(e => e.UserUtId.ToString() == refKey, ct);
+        }
     }
 }
