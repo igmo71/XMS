@@ -128,5 +128,64 @@ namespace XMS.Application.Services
 
             return await dbContext.Set<Employee>().FirstOrDefaultAsync(e => e.UserUtId.ToString() == refKey, ct);
         }
+
+        public async Task<IReadOnlyList<Employee>> GetManagersByEmployeeIdAsync(Guid id, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var employees = await dbContext.Set<Employee>().AsNoTracking().ToListAsync(cancellationToken: ct);
+
+            var employee = employees.FirstOrDefault(e => e.Id == id);
+
+            if (employee == null) return [];
+
+            var managers = GetManagers(employee, employees, []);
+
+            return managers;
+        }
+
+        private static List<Employee> GetManagers(Employee employee, List<Employee> employees, List<Employee> result)
+        {
+            var manager = employees.FirstOrDefault(e => e.Id == employee.OperationalManagerId);
+
+            if (manager is not null)
+            {
+                result.Add(manager);
+
+                return GetManagers(manager, employees, result);
+            }
+
+            return result;
+        }
+
+        public async Task<IReadOnlyList<Employee>> GetEmployeesByManagerIdAsync(Guid id, CancellationToken ct = default)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var employees = await dbContext.Set<Employee>().AsNoTracking().ToListAsync(cancellationToken: ct);
+
+            var manager = employees.FirstOrDefault(e => e.Id == id);
+
+            if (manager == null) return [];
+
+            var subordinates = GetSubordinates(manager, employees, []);
+
+            return subordinates;
+        }
+
+        private static List<Employee> GetSubordinates(Employee manager, List<Employee> employees, List<Employee> result)
+        {
+            var subordinates = employees.Where(e => e.OperationalManagerId == manager.Id).ToList();
+
+            if (subordinates.Count > 0)
+            {
+                result.AddRange(subordinates);
+                foreach (var subordinate in subordinates)
+                {
+                    return GetSubordinates(subordinate, employees, result);
+                }
+            }
+            return result;
+        }
     }
 }
