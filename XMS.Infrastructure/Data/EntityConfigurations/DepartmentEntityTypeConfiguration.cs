@@ -12,6 +12,10 @@ namespace XMS.Infrastructure.Data.EntityConfigurations
 
             builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
             builder.HasOne(x => x.Parent).WithMany(x => x.Children).HasForeignKey(x => x.ParentId).OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(e => e.Manager).WithMany()
+                .HasForeignKey(e => e.ManagerId).HasPrincipalKey(e => e.Id)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

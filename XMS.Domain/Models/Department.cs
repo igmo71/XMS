@@ -6,6 +6,9 @@ namespace XMS.Domain.Models
     {
         public string Name { get; set; } = string.Empty;
 
+        public Guid? ManagerId { get; set; }
+        public Employee? Manager { get; set; }
+
         public Guid? ParentId { get; set; }
         public Department? Parent { get; set; }
 

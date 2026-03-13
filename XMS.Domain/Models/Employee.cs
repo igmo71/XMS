@@ -38,8 +38,5 @@ namespace XMS.Domain.Models
 
         public Guid? LocationManagerId { get; set; }
         public Employee? LocationManager { get; set; }
-
-        //public Guid? CostItemId { get; set; }
-        //public CostItem? CostItem { get; set; }
     }
 }

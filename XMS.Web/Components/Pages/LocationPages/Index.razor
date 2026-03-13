@@ -5,6 +5,7 @@
 @using XMS.Web.Components.Common
 @implements IDisposable
 @inject ILocationService Service
+@inject IEmployeeService EmployeeService
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @attribute [Authorize]
@@ -39,9 +40,28 @@
 						<MudText Class="@(context.Item.IsDeleted ? "text-secondary text-decoration-line-through" : "")">@context.Item.Name</MudText>
 					</CellTemplate>
 				</PropertyColumn>
+				<PropertyColumn Property="@(x => x.Manager == null ? string.Empty : x.Manager.Name)" Title="Руководитель">
+					<CellTemplate>
+						@(context.Item.Manager?.Name == null ? string.Empty : context.Item.Manager?.Name)
+					</CellTemplate>
+					<EditTemplate>
+						<MudAutocomplete @bind-Value="context.Item.ManagerId" T="Guid?"
+										 ToStringFunc="GetEmployeeName"
+										 SearchFunc="SearchEmployeeIds"
+										 Variant="Variant.Outlined" Label="Подбор Сотрудника ЗУП"
+										 Clearable="true" Dense="true"
+										 RelativeWidth="DropdownWidth.Ignore" FullWidth="true">
+							<ItemTemplate Context="id">
+								<MudText Typo="Typo.body2" Style="white-space: nowrap">
+									@GetEmployeeName(id)
+								</MudText>
+							</ItemTemplate>
+						</MudAutocomplete>
+					</EditTemplate>
+				</PropertyColumn>
 				<PropertyColumn Property="x => x.IsDeleted" Title="Удален">
 					<CellTemplate>
-						<MudChip T="string" Color="@(context.Item.IsDeleted? Color.Secondary: Color.Info)" Size="Size.Small" Variant="Variant.Text">
+						<MudChip T="string" Color="@(context.Item.IsDeleted ? Color.Secondary : Color.Info)" Size="Size.Small" Variant="Variant.Text">
 							@(context.Item.IsDeleted ? "Удален" : "Активен")
 						</MudChip>
 					</CellTemplate>
@@ -84,6 +104,7 @@
 	private bool _isLoading;
 	private bool _isProcessing;
 	private bool _includeDeleted = true;
+	private IReadOnlyList<Employee> _employees = [];
 
 	protected async override Task OnInitializedAsync()
 	{
@@ -96,6 +117,7 @@
 		try
 		{
 			_items = await Service.GetListAsync(_includeDeleted, _cts.Token);
+			_employees = await EmployeeService.GetListAsync(includeDeleted: false, _cts.Token);
 		}
 		finally
 		{
@@ -130,7 +152,7 @@
 		catch (Exception ex)
 		{
 			Snackbar.Add($"Ошибка при сохранении {item.Name}: {ex.Message}", Severity.Error);
-			
+
 			return DataGridEditFormAction.KeepOpen;
 		}
 	}
@@ -236,6 +258,24 @@
 		var result = await dialog.Result;
 
 		return result is { Canceled: false };
+	}
+
+	private string? GetEmployeeName(Guid? id)
+	{
+		return _employees.FirstOrDefault(e => e.Id == id)?.Name;
+	}
+
+	private Task<IEnumerable<Guid?>> SearchEmployeeIds(string value, CancellationToken token)
+	{
+		if (_employees is null)
+			return Task.FromResult(Enumerable.Empty<Guid?>());
+
+		if (string.IsNullOrEmpty(value))
+			return Task.FromResult(_employees.Select(e => e.Id as Guid?));
+
+		return Task.FromResult(_employees
+			.Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+			.Select(e => e.Id as Guid?));
 	}
 
 	public void Dispose()

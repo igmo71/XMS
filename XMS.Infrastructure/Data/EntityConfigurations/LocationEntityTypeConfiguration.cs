@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Domain.Models;
 
 namespace XMS.Infrastructure.Data.EntityConfigurations
@@ -10,6 +11,10 @@ namespace XMS.Infrastructure.Data.EntityConfigurations
             base.Configure(builder);
 
             builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
+
+            builder.HasOne(e => e.Manager).WithMany()
+                .HasForeignKey(e => e.ManagerId).HasPrincipalKey(e => e.Id)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

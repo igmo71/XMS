@@ -78,7 +78,10 @@ namespace XMS.Application.Services
             if (!includeDeleted)
                 query = query.Where(x => !x.IsDeleted);
 
-            return await query.OrderBy(x => x.Name).ToListAsync(ct);
+            return await query
+                .Include(e => e.Manager)
+                .OrderBy(x => x.Name)
+                .ToListAsync(ct);
         }
 
         public async Task<IReadOnlyList<Location>> GetListAsync(QueryParameters queryParameters, CancellationToken ct = default)
