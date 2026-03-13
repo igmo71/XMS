@@ -17,6 +17,7 @@ namespace XMS.Application.Endpoints
 
             employeesGroup.MapGet("/", GetEmployeeList).WithName(nameof(GetEmployeeList));
             employeesGroup.MapGet("/{id}", GetEmployeeById).WithName(nameof(GetEmployeeById));
+            employeeGroup.MapGet("/by-ut-refkey/{refKey}", GetEmployeeByUtRefKey).WithName(nameof(GetEmployeeByUtRefKey));
 
             return routeBuilder;
         }
