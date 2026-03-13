@@ -33,8 +33,8 @@ namespace XMS.Domain.Models
         public Guid? EmployeeZupId { get; set; }
         public EmployeeZup? EmployeeZup { get; set; }
 
-        public Guid? OperationManagerId { get; set; }
-        public Employee? OperationManager { get; set; }
+        public Guid? OperationalManagerId { get; set; }
+        public Employee? OperationalManager { get; set; }
 
         public Guid? LocationManagerId { get; set; }
         public Employee? LocationManager { get; set; }

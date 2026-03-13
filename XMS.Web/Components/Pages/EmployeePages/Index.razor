@@ -217,14 +217,14 @@
 						</MudAutocomplete>
 					</EditTemplate>
 				</PropertyColumn>
-				<PropertyColumn Property="x => x.OperationManager == null ? string.Empty : x.OperationManager.Name" Title="Оперативный Руководитель" Required="false">
+				<PropertyColumn Property="x => x.OperationalManager == null ? string.Empty : x.OperationalManager.Name" Title="Оперативный Руководитель" Required="false">
 					<CellTemplate>
 						<div style="cursor: pointer; width: 100%; height: 100%; display: flex; align-items: center; min-height: 32px" @ondblclick="@(() => StartEditing(context.Item))">
-							@context.Item.OperationManager?.Name
+							@context.Item.OperationalManager?.Name
 						</div>
 					</CellTemplate>
 					<EditTemplate>
-						<MudAutocomplete @bind-Value="context.Item.OperationManagerId" T="Guid?"
+						<MudAutocomplete @bind-Value="context.Item.OperationalManagerId" T="Guid?"
 										 ToStringFunc="GetEmployeeName"
 										 SearchFunc="SearchEmployeeIds"
 										 Variant="Variant.Outlined" Label="Подбор Оперативного Руководителя"

@@ -87,7 +87,7 @@ namespace XMS.Application.Services
                 .Include(e => e.UserAd)
                 .Include(e => e.UserUt)
                 .Include(e => e.LocationManager)
-                .Include(e => e.OperationManager)
+                .Include(e => e.OperationalManager)
                 .OrderBy(x => x.Name)
                 .ToListAsync(ct);
         }
@@ -108,7 +108,7 @@ namespace XMS.Application.Services
                 .Include(e => e.UserAd)
                 .Include(e => e.UserUt)
                 .Include(e => e.LocationManager)
-                .Include(e => e.OperationManager)
+                .Include(e => e.OperationalManager)
                 .OrderBy(x => x.Name)
                 .ToListAsync(ct);
 

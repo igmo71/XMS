@@ -20,7 +20,7 @@ namespace XMS.Infrastructure.Data.EntityConfigurations
             builder.HasOne(x => x.UserUt).WithMany().HasForeignKey(x => x.UserUtId).OnDelete(DeleteBehavior.SetNull);
             builder.HasOne(x => x.EmployeeBuh).WithMany().HasForeignKey(x => x.EmployeeBuhId).OnDelete(DeleteBehavior.SetNull);
             builder.HasOne(x => x.EmployeeZup).WithMany().HasForeignKey(x => x.EmployeeZupId).OnDelete(DeleteBehavior.SetNull); ;
-            builder.HasOne(x => x.OperationManager).WithMany().HasForeignKey(x => x.OperationManagerId).OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(x => x.OperationalManager).WithMany().HasForeignKey(x => x.OperationalManagerId).OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.LocationManager).WithMany().HasForeignKey(x => x.LocationManagerId).OnDelete(DeleteBehavior.Restrict);
             //builder.HasOne(x => x.CostItem).WithMany().HasForeignKey(x => x.CostItemId);
         }

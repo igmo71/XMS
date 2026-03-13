@@ -26,7 +26,7 @@ namespace XMS.Application.Endpoints.Dto
 
         public Guid? EmployeeZupId { get; set; }
 
-        public Guid? OperationManagerId { get; set; }
+        public Guid? OperationalManagerId { get; set; }
 
         public Guid? LocationManagerId { get; set; }
 
@@ -45,7 +45,7 @@ namespace XMS.Application.Endpoints.Dto
                 UserAdId = employee.UserAdId,
                 UserUtId = employee.UserUtId,
                 LocationManagerId = employee.LocationManagerId,
-                OperationManagerId = employee.OperationManagerId,
+                OperationalManagerId = employee.OperationalManagerId,
                 IsDeleted = employee.IsDeleted
             };
         }
