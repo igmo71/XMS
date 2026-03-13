@@ -44,7 +44,7 @@
 								@costItem.Name
 							</MudText>
 						</MudStack>						
-						<MudItem>
+						<div>
 							@foreach (var selectedCashFlowCost in CashFlowCostLookup[costCategoryItemId])
 							{
 								var selectedCashFlowCostId = selectedCashFlowCost.Id;
@@ -68,7 +68,7 @@
 											CashFlowItemsTree="CashFlowItemsTree"
 											SelectedCashFlowItemIds="CashFlowCostLookup[costCategoryItemId].Select(e => e.CashFlowItemId).ToHashSet()"
 											OnUpdateCashFlowCosts="OnUpdateCashFlowCosts" />
-						</MudItem>
+						</div>
 					</MudStack>
 				</MudTd>
 			</MudTr>

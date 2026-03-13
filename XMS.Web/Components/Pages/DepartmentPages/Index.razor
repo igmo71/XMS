@@ -6,13 +6,14 @@
 <MudContainer MaxWidth="MaxWidth.Medium" Class="pt-4">
 	<MudPaper Style="max-height: calc(100vh - 96px); overflow-y: auto;">
 		<MudToolBar>
-			<MudStack Row="true" Spacing="6">
+			<MudStack Row Class="w-100" Justify="Justify.SpaceEvenly">
 				<MudText Typo="Typo.h5">Схема предприятия</MudText>
 				<MudFab Color="Color.Primary" Size="Size.Small"
 						StartIcon="@(_expandedAll ? Icons.Material.Filled.VerticalAlignCenter : Icons.Material.Filled.Expand)"
 						OnClick="@(_expandedAll ? CollapseAll : ExpandAll)"
 						title="@(_expandedAll ? "Свернуть все" : "Развернуть все")" />
 				<MudSwitch T="bool" ValueChanged="ToggleIncludeDelete" Color="Color.Primary">Показать удаленные</MudSwitch>
+				<MudText Typo="Typo.h6">Руководитель</MudText>
 			</MudStack>
 		</MudToolBar>
 		<MudTreeView Items="_treeItems" T="Department" Dense="true">
@@ -25,27 +26,34 @@
 						<MudTreeViewItemToggleButton Expanded="@item.Expanded"
 													 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
 													 Visible="@item.HasChildren" />
-						<MudIcon Icon="@GetIcon(item)" Size="@(item.HasChildren? Size.Medium: Size.Small)"
-								 Class="@(item.Value?.IsDeleted == true ? "mr-2 text-secondary" : "mr-2")" />
-						<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)"
-								 Class="@(item.Value?.IsDeleted == true ? "text-secondary text-decoration-line-through" : "")">
-							@item.Value?.Name
-						</MudText>
-						<MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Medium" AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopLeft" Dense="true">
-							@if (item.Value?.IsDeleted == true)
-							{
-								<MudMenuItem Label="Восстановить" Icon="@Icons.Material.Filled.RestoreFromTrash" IconColor="Color.Info" OnClick="() => RestoreDepartmentAsync(item.Value)" />
-							}
-							else
-							{
-								<MudMenuItem Label="Добавить " Icon="@Icons.Material.Outlined.CreateNewFolder" IconColor="Color.Primary" OnClick="() => NewDepartmentAsync(item.Value)" />
-								@if (item.Value is Department department && department.ParentId is not null)
-								{
-									<MudMenuItem Label="Изменить" Icon="@Icons.Material.Outlined.Edit" IconColor="Color.Primary" OnClick="() => EditDepartmentAsync(item.Value)" />
-									<MudMenuItem Label="Удалить" Icon="@Icons.Material.Outlined.Delete" IconColor="Color.Warning" OnClick="() => DeleteDepartmentAsync(item.Value)" />
-								}
-							}
-						</MudMenu>
+						
+						<MudStack Row Justify="Justify.SpaceBetween" Style="width: 88%; display: table; table-layout: fixed;" Class="border-bottom">
+								<MudStack Row Justify="Justify.FlexStart" Spacing="2">
+									<MudIcon Icon="@GetIcon(item)" Size="@(item.HasChildren ? Size.Medium : Size.Small)"
+											 Class="@(item.Value?.IsDeleted == true ? "mr-2 text-secondary" : "mr-2")" />
+									<MudText Typo="@(item.HasChildren ? Typo.body1 : Typo.body2)"
+											 Class="@(item.Value?.IsDeleted == true ? "text-secondary text-decoration-line-through" : "")">
+										@item.Value?.Name
+									</MudText>
+									<MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Medium" AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopLeft" Dense="true">
+										@if (item.Value?.IsDeleted == true)
+										{
+											<MudMenuItem Label="Восстановить" Icon="@Icons.Material.Filled.RestoreFromTrash" IconColor="Color.Info" OnClick="() => RestoreDepartmentAsync(item.Value)" />
+										}
+										else
+										{
+											<MudMenuItem Label="Добавить " Icon="@Icons.Material.Outlined.CreateNewFolder" IconColor="Color.Primary" OnClick="() => NewDepartmentAsync(item.Value)" />
+											@if (item.Value is Department department && department.ParentId is not null)
+											{
+												<MudMenuItem Label="Изменить" Icon="@Icons.Material.Outlined.Edit" IconColor="Color.Primary" OnClick="() => EditDepartmentAsync(item.Value)" />
+												<MudMenuItem Label="Удалить" Icon="@Icons.Material.Outlined.Delete" IconColor="Color.Warning" OnClick="() => DeleteDepartmentAsync(item.Value)" />
+											}
+										}
+									</MudMenu>
+								</MudStack>
+								<MudElement>@item.Value?.Manager?.Name</MudElement>
+							</MudStack>
+						
 					</Content>
 				</MudTreeViewItem>
 			</ItemTemplate>

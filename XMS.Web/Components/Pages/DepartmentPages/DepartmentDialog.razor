@@ -28,6 +28,18 @@
 					<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
 				}
 			</MudSelect>
+			<MudAutocomplete @bind-Value="Department.ManagerId" T="Guid?"
+							 ToStringFunc="GetEmployeeName"
+							 SearchFunc="SearchEmployeeIds"
+							 Variant="Variant.Outlined" Label="Подбор Сотрудника ЗУП"
+							 Clearable="true" Dense="true"
+							 RelativeWidth="DropdownWidth.Ignore" FullWidth="true">
+				<ItemTemplate Context="id">
+					<MudText Typo="Typo.body2" Style="white-space: nowrap">
+						@GetEmployeeName(id)
+					</MudText>
+				</ItemTemplate>
+			</MudAutocomplete>
 		</MudForm>
 	</DialogContent>
 	<DialogActions>
@@ -41,6 +53,7 @@
 	[Parameter] public string? TitleIcon { get; set; }
 	[Parameter] public Department Department { get; set; } = new();
 	[Parameter] public IEnumerable<Department> Departments { get; set; } = [];
+	[Parameter] public IReadOnlyList<Employee> Employees { get; set; } = [];
 
 	private IEnumerable<Department> _departmentsFlattenedTree = [];
 	private MudForm _form = default!;
@@ -56,12 +69,28 @@
 
 	private async Task Submit()
 	{
-		await _form.Validate();
+		//await _form.Validate();
 		if (_form.IsValid)
 		{
-			//CostCategory.Items = _selectedItems.ToList();
-
 			MudDialog.Close(DialogResult.Ok(Department));
 		}
+	}
+
+	private string? GetEmployeeName(Guid? id)
+	{
+		return Employees.FirstOrDefault(e => e.Id == id)?.Name;
+	}
+
+	private Task<IEnumerable<Guid?>> SearchEmployeeIds(string value, CancellationToken token)
+	{
+		if (Employees is null)
+			return Task.FromResult(Enumerable.Empty<Guid?>());
+
+		if (string.IsNullOrEmpty(value))
+			return Task.FromResult(Employees.Select(e => e.Id as Guid?));
+
+		return Task.FromResult(Employees
+			.Where(x => x.Name != null && x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+			.Select(e => e.Id as Guid?));
 	}
 }

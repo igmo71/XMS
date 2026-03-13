@@ -11,6 +11,7 @@ namespace XMS.Web.Components.Pages.DepartmentPages
     public partial class Index : IDisposable
     {
         [Inject] public IDepartmentService Service { get; set; } = default!;
+        [Inject] public IEmployeeService EmployeeService { get; set; } = default!;
         [Inject] public IDialogService DialogService { get; set; } = default!;
         [Inject] public ISnackbar Snackbar { get; set; } = default!;
         [Inject] public ProtectedSessionStorage SessionStorage { get; set; } = default!;
@@ -23,6 +24,7 @@ namespace XMS.Web.Components.Pages.DepartmentPages
         private bool _isLoading;
         private bool _isProcessing;
         private bool _includeDeleted = false;
+        private IReadOnlyList<Employee> _employees = [];
 
         protected override async Task OnInitializedAsync()
         {
@@ -56,6 +58,7 @@ namespace XMS.Web.Components.Pages.DepartmentPages
             try
             {
                 _departments = await Service.GetListAsync(_includeDeleted, _cts.Token);
+                _employees = await EmployeeService.GetListAsync(includeDeleted: false, _cts.Token);
             }
             finally
             {
@@ -158,7 +161,8 @@ namespace XMS.Web.Components.Pages.DepartmentPages
             {
                 { x => x.TitleIcon, isNew ? Icons.Material.Filled.AddCircleOutline : Icons.Material.Filled.Edit },
                 { x => x.Department, department },
-                { x => x.Departments, _departments }
+                { x => x.Departments, _departments },
+                { x => x.Employees, _employees }
             };
 
             var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
@@ -283,6 +287,8 @@ namespace XMS.Web.Components.Pages.DepartmentPages
 
             await LoadDataAndBuildTreeAsync();
         }
+        
+
 
         public void Dispose()
         {
