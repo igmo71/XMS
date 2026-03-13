@@ -44,6 +44,7 @@ namespace XMS.Infrastructure
 
                 options.UseSqlServer(connectionString);
             });
+
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddScoped<IDbContextFactoryProxy, DbContextFactoryProxy>();

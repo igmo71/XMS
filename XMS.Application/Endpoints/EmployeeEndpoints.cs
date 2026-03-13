@@ -11,7 +11,9 @@ namespace XMS.Application.Endpoints
     {
         public static IEndpointRouteBuilder MapEmployeeEndpints(this IEndpointRouteBuilder routeBuilder)
         {
-            var employeesGroup = routeBuilder.MapGroup("/api/employees").WithTags("XMS");
+            var employeesGroup = routeBuilder.MapGroup("/api/employees")
+                .WithTags("XMS.Api.Employee")
+                .AddEndpointFilter<ApiKeyAuthFilter>();
 
             employeesGroup.MapGet("/", GetEmployeeList).WithName(nameof(GetEmployeeList));
             employeesGroup.MapGet("/{id}", GetEmployeeById).WithName(nameof(GetEmployeeById));
@@ -19,20 +21,22 @@ namespace XMS.Application.Endpoints
             return routeBuilder;
         }
 
-        static async Task<IResult> GetEmployeeList(
+        static async Task<IResult> GetEmployeeList(HttpContext httpContext,
             [FromServices] IEmployeeService service,
             [FromQuery] int? skip,
             [FromQuery] int? take,
             [FromQuery] bool? includeDeleted)
         {
+            var clientName = httpContext.Items["ClientName"];
             var result = await service.GetListAsync(new QueryParameters(skip, take, includeDeleted));
             return TypedResults.Ok(result);
         }
 
-        static async Task<IResult> GetEmployeeById(
+        static async Task<IResult> GetEmployeeById(HttpContext httpContext,
             [FromServices] IEmployeeService service,
             [FromRoute] Guid id)
         {
+            var clientName = httpContext.Items["ClientName"];
             var result = await service.GetByIdAsync(id);
             return TypedResults.Ok(result);
         }
