@@ -13,7 +13,7 @@ namespace XMS.Application.Endpoints
         public static IEndpointRouteBuilder MapEmployeeEndpints(this IEndpointRouteBuilder routeBuilder)
         {
             var employeeGroup = routeBuilder.MapGroup("/api/employees")
-                .WithTags("XMS.Api.Employee")
+                .WithTags("XMS Employees")
                 .AddEndpointFilter<ApiKeyAuthFilter>();
 
             employeeGroup.MapGet("/", GetEmployeeList).WithName(nameof(GetEmployeeList));
