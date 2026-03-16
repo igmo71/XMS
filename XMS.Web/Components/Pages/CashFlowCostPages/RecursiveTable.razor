@@ -1,5 +1,4 @@
-﻿
-@using XMS.Modules.CostModule.Domain
+﻿@using XMS.Modules.CostModule.Domain
 
 <MudTable @ref="_mudTable" Items="@([string.Empty])" CustomHeader="true" Hover="true" Dense="true" Elevation="0" Bordered="true">
 	<HeaderContent>
@@ -14,17 +13,18 @@
 	</RowTemplate>
 	<ChildRowContent>
 		
-			<RecursiveRow CostCategories="CostCategories"
-						  CostCategoryItemMap="CostCategoryItemMap"
-						  CashFlowCostLookup="CashFlowCostLookup"
-						  ParentId="null"
-						  Level="1"
-						  CashFlowItemsTree="CashFlowItemsTree"						  
-						  OnUpdateCashFlowCosts="OnUpdateCashFlowCosts"
-						  OnDeleteCashFlowCost="OnDeleteCashFlowCost">
-			</RecursiveRow>
+		<RecursiveRow CostCategories="CostCategories"
+					  CostCategoryItemMap="CostCategoryItemMap"
+					  CashFlowCostLookup="CashFlowCostLookup"
+					  ParentId="null"
+					  Level="1"
+					  CashFlowItemsTree="CashFlowItemsTree"
+					  OnUpdateCashFlowCosts="OnUpdateCashFlowCosts"
+					  OnDeleteCashFlowCost="OnDeleteCashFlowCost"
+					  CostCategoriesLookup="CostCategoriesLookup">
+		</RecursiveRow>
 		
-	</ChildRowContent>	
+	</ChildRowContent>
 	<LoadingContent>
 		<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
 			Загрузка из БД...
@@ -40,6 +40,7 @@
 	[Parameter] public Guid? ParentId { get; set; }
 	[Parameter] public EventCallback<List<CashFlowCost>> OnUpdateCashFlowCosts { get; set; }
 	[Parameter] public EventCallback<Guid> OnDeleteCashFlowCost { get; set; }
+	[Parameter] public ILookup<Guid?, CostCategory> CostCategoriesLookup { get; set; } = default!;
 
 	private MudTable<string>? _mudTable;
 }

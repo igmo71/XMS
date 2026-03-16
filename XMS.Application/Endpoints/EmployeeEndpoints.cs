@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
+using System.Text.Json;
 using XMS.Application.Abstractions.Services;
 using XMS.Application.Common;
 using XMS.Application.Endpoints.Dto;
@@ -26,6 +28,12 @@ namespace XMS.Application.Endpoints
             employeeGroup.MapGet("/by-ad-login/{login}", GetEmployeeByAdLogin).WithName(nameof(GetEmployeeByAdLogin));
             //employeeGroup.MapGet("/by-manager-id/{id}", GetEmployeesByManagerId).WithName(nameof(GetEmployeesByManagerId));
             employeeGroup.MapGet("/managers-by-employee-id/{id}", GetManagersByEmployeeId).WithName(nameof(GetManagersByEmployeeId));
+
+            routeBuilder.MapPost("/api/test-body", (HttpContext httpContext, ILogger<ServiceResult> logger , [FromBody] JsonElement testBody) =>
+            {
+                logger.LogDebug("testBody {testBody}", testBody);
+                return TypedResults.Ok( testBody);
+            });
 
             return routeBuilder;
         }
