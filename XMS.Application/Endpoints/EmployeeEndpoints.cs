@@ -21,7 +21,7 @@ namespace XMS.Application.Endpoints
             employeeGroup.MapGet("/{id}", GetEmployeeById).WithName(nameof(GetEmployeeById));
             employeeGroup.MapGet("/by-ut-refkey/{refKey}", GetEmployeeByUtRefKey).WithName(nameof(GetEmployeeByUtRefKey));
             employeeGroup.MapGet("/by-ad-login/{login}", GetEmployeeByAdLogin).WithName(nameof(GetEmployeeByAdLogin));
-            employeeGroup.MapGet("/by-manager-id/{id}", GetEmployeesByManagerId).WithName(nameof(GetEmployeesByManagerId));
+            //employeeGroup.MapGet("/by-manager-id/{id}", GetEmployeesByManagerId).WithName(nameof(GetEmployeesByManagerId));
             employeeGroup.MapGet("/managers-by-employee-id/{id}",GetManagersByEmployeeId).WithName(nameof(GetManagersByEmployeeId));
 
             return routeBuilder;

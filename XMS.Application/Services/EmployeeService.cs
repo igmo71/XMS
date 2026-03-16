@@ -139,24 +139,51 @@ namespace XMS.Application.Services
 
             if (employee == null) return [];
 
-            var managers = GetManagers(employee, employees, []);
+            var managers = GetAllManagers(employee.Id, employees);
 
             return managers;
         }
 
-        private static List<Employee> GetManagers(Employee employee, List<Employee> employees, List<Employee> result)
+        //private static List<Employee> GetManagers(Employee employee, List<Employee> employees, List<Employee> result)
+        //{
+        //    var manager = employees.FirstOrDefault(e => e.Id == employee.OperationalManagerId);
+        //    if (manager is not null)
+        //    {
+        //        result.Add(manager);
+        //        return GetManagers(manager, employees, result);
+        //    }
+        //    return result;
+        //}
+
+
+        // DeepSeek //
+        public static List<Employee> GetAllManagers(Guid employeeId, List<Employee> employees)
         {
-            var manager = employees.FirstOrDefault(e => e.Id == employee.OperationalManagerId);
+            var employeesById = employees.ToDictionary(e => e.Id);
 
-            if (manager is not null)
+            var managers = new List<Employee>();
+            var visited = new HashSet<Guid>();
+            var currentId = employeeId;
+
+            while (employeesById.TryGetValue(currentId, out var current) && current.OperationalManagerId.HasValue)
             {
-                result.Add(manager);
+                var managerId = current.OperationalManagerId.Value;
 
-                return GetManagers(manager, employees, result);
+                // Защита от циклов
+                if (!visited.Add(managerId))
+                    break;
+
+                if (!employeesById.TryGetValue(managerId, out var manager))
+                    break;
+
+                managers.Add(manager);
+
+                currentId = managerId;
             }
 
-            return result;
+            return managers;
         }
+        // //
 
         public async Task<IReadOnlyList<Employee>> GetEmployeesByManagerIdAsync(Guid id, CancellationToken ct = default)
         {
@@ -168,24 +195,100 @@ namespace XMS.Application.Services
 
             if (manager == null) return [];
 
-            var subordinates = GetSubordinates(manager, employees, []);
+            var subordinates = GetAllSubordinatesBFS(manager.Id, employees);
 
             return subordinates;
         }
 
-        private static List<Employee> GetSubordinates(Employee manager, List<Employee> employees, List<Employee> result)
-        {
-            var subordinates = employees.Where(e => e.OperationalManagerId == manager.Id).ToList();
+        //private static List<Employee> GetSubordinates(Guid managerId, List<Employee> employees, List<Employee> result)
+        //{
+        //    var subordinates = employees.Where(e => e.OperationalManagerId == managerId).ToList();
+        //    if (subordinates.Count == 0)
+        //        return [];
+        //    foreach (var subordinate in subordinates)
+        //    {
+        //        result.Add(subordinate);
+        //        GetSubordinates(subordinate.Id, employees, result);
+        //    }
+        //    return result;
+        //}
 
-            if (subordinates.Count > 0)
+
+        // Gemini //
+        public static List<Employee> GetAllSubordinates(Guid managerId, List<Employee> employees)
+        {
+            // Создаем быстрый индекс: ManagerId -> Список его людей
+            var lookup = employees.ToLookup(e => e.OperationalManagerId);
+            var result = new List<Employee>();
+
+            void Traverse(Guid id)
             {
-                result.AddRange(subordinates);
-                foreach (var subordinate in subordinates)
+                foreach (var sub in lookup[id])
                 {
-                    return GetSubordinates(subordinate, employees, result);
+                    result.Add(sub);
+                    Traverse(sub.Id);
                 }
             }
+
+            Traverse(managerId);
             return result;
         }
+
+        public static IEnumerable<Employee> GetAllSubordinatesOptimized(Guid managerId, IEnumerable<Employee> allEmployees)
+        {
+            // Группируем сотрудников по ManagerId один раз (O(n))
+            var lookup = allEmployees.ToLookup(e => e.OperationalManagerId);
+
+            // Локальная функция для рекурсивного обхода
+            IEnumerable<Employee> Traverse(Guid id)
+            {
+                foreach (var sub in lookup[id])
+                {
+                    yield return sub; // Возвращаем прямого подчиненного
+                    foreach (var descendant in Traverse(sub.Id))
+                    {
+                        yield return descendant; // Возвращаем его подчиненных
+                    }
+                }
+            }
+
+            return Traverse(managerId);
+        }
+        public static IEnumerable<Employee> GetAllSubordinatesLinq(Guid managerId, IEnumerable<Employee> allEmployees)
+        {
+            // 1. Находим прямых подчиненных для текущего managerId
+            var directSubordinates = allEmployees.Where(e => e.OperationalManagerId == managerId).ToList();
+
+            // 2. Для каждого подчиненного рекурсивно ищем его собственных подчиненных
+            return directSubordinates.Concat(
+                directSubordinates.SelectMany(s => GetAllSubordinatesLinq(s.Id, allEmployees))
+            );
+        }
+        // //
+
+        // DeepSeek
+        private static List<Employee> GetAllSubordinatesBFS(Guid managerId, List<Employee> employees)
+        {
+            // 1. Создаем структуру для быстрого доступа к подчиненным
+            var employeesByManager = employees.ToLookup(e => e.OperationalManagerId);
+
+            var result = new List<Employee>();
+            var queue = new Queue<Guid>();
+
+            queue.Enqueue(managerId);
+
+            // 2. BFS обход
+            while (queue.TryDequeue(out var currentManagerId))
+            {
+                foreach (var subordinate in employeesByManager[currentManagerId])
+                {
+                    result.Add(subordinate);
+                    queue.Enqueue(subordinate.Id);
+                }
+            }
+
+            return result;
+        }
+        // //
     }
 }
