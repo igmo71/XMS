@@ -15,7 +15,6 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
         [Inject] public ILogger<Index> Logger { get; set; } = default!;
 
         private readonly CancellationTokenSource _cts = new();
-        private IReadOnlyList<CostCategory> _costCategories = [];
         private ILookup<Guid?, CostCategory> _costCategoriesLookup = default!;
         private ILookup<Guid, CashFlowCost> _cashFlowCostLookup = default!;
         private Dictionary<(Guid CostCategoryId, Guid CostItemId), Guid> _costCategoryItemMap = [];
@@ -62,9 +61,9 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
 
         private async Task LoadCostCategories()
         {
-            _costCategories = await CategoryService.GetListAsync(_includeDeleted, _cts.Token);
+            var costCategories = await CategoryService.GetListAsync(_includeDeleted, _cts.Token);
 
-            _costCategoriesLookup = _costCategories.ToLookup(e => e.ParentId);
+            _costCategoriesLookup = costCategories.ToLookup(e => e.ParentId);
         }
 
         private async Task LoadCashFlowItems() => _cashFlowItems = await CashFlowItemService.GetListAsync(includeDeleted: false, _cts.Token);

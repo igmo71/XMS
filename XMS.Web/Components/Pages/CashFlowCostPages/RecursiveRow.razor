@@ -1,6 +1,5 @@
 ﻿@using XMS.Modules.CostModule.Domain
 
-@* @foreach (var costCategory in CostCategories.Where(e => e.ParentId == ParentId).OrderBy(e => e.Name)) *@
 @if (CashFlowCostLookup != null)
 {
 	@foreach (var costCategory in CostCategoriesLookup[ParentId].OrderBy(e => e.Name))
@@ -9,24 +8,24 @@
 			<MudTd DataLabel="Наименование" Style="@($"padding-left: {(Level * 24)}px;")">
 				<MudStack Row Justify="Justify.FlexStart">
 					<MudIcon Icon="@Icons.Material.Filled.FolderOpen"
-					Class="@(costCategory.IsDeleted ? "mr-2 text-secondary" : "mr-2")" Title="Категория Затрат" />
+							 Class="@(costCategory.IsDeleted ? "mr-2 text-secondary" : "mr-2")" Title="Категория Затрат" />
 					<MudText Typo="Typo.body1"
-					Class="@(costCategory.IsDeleted ? "text-secondary text-decoration-line-through" : "")">
+							 Class="@(costCategory.IsDeleted ? "text-secondary text-decoration-line-through" : "")">
 						@costCategory.Name
 					</MudText>
 				</MudStack>
 			</MudTd>
 		</MudTr>
 
-		<RecursiveRow @key="costCategory.Id" CostCategories="CostCategories"
-		CashFlowCostLookup="CashFlowCostLookup"
-		CostCategoryItemMap="CostCategoryItemMap"
-		ParentId="costCategory.Id"
-		Level="@(Level + 1)"
-		CashFlowItemsTree="CashFlowItemsTree"
-		OnUpdateCashFlowCosts="OnUpdateCashFlowCosts"
-		OnDeleteCashFlowCost="OnDeleteCashFlowCost"
-		CostCategoriesLookup="CostCategoriesLookup">
+		<RecursiveRow @key="costCategory.Id"
+					  CostCategoriesLookup="CostCategoriesLookup"
+					  CashFlowCostLookup="CashFlowCostLookup"
+					  CostCategoryItemMap="CostCategoryItemMap"
+					  ParentId="costCategory.Id"
+					  Level="@(Level + 1)"
+					  CashFlowItemsTree="CashFlowItemsTree"
+					  OnUpdateCashFlowCosts="OnUpdateCashFlowCosts"
+					  OnDeleteCashFlowCost="OnDeleteCashFlowCost">
 		</RecursiveRow>
 
 		@if (costCategory.Items?.Count > 0)
@@ -40,11 +39,11 @@
 						<MudStack Row Justify="Justify.SpaceBetween">
 							<MudStack Row Justify="Justify.FlexStart">
 								<MudIcon Icon="@Icons.Material.Filled.Description"
-								Size="Size.Small"
-								Color="@(costItem.IsDeleted ? Color.Secondary : Color.Default)"
-								Class="mr-2" Title="Статья Затрат" />
+										 Size="Size.Small"
+										 Color="@(costItem.IsDeleted ? Color.Secondary : Color.Default)"
+										 Class="mr-2" Title="Статья Затрат" />
 								<MudText Typo="Typo.body2"
-								Class="@(costItem.IsDeleted ? "text-secondary text-decoration-line-through" : "")">
+										 Class="@(costItem.IsDeleted ? "text-secondary text-decoration-line-through" : "")">
 									@costItem.Name
 								</MudText>
 							</MudStack>
@@ -64,14 +63,14 @@
 										else
 										{
 											<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Warning" Size="Size.Small"
-											OnClick="() => DeleteCashFlowCost(selectedCashFlowCostId)" />
+														   OnClick="() => DeleteCashFlowCost(selectedCashFlowCostId)" />
 										}
 									</MudChip>
 								}
 								<TreeViewDrawer CostCategoryItemId="@costCategoryItemId"
-								CashFlowItemsTree="CashFlowItemsTree"
-								SelectedCashFlowItemIds="CashFlowCostLookup[costCategoryItemId].Select(e => e.CashFlowItemId).ToHashSet()"
-								OnUpdateCashFlowCosts="OnUpdateCashFlowCosts" />
+												CashFlowItemsTree="CashFlowItemsTree"
+												SelectedCashFlowItemIds="CashFlowCostLookup[costCategoryItemId].Select(e => e.CashFlowItemId).ToHashSet()"
+												OnUpdateCashFlowCosts="OnUpdateCashFlowCosts" />
 							</div>
 						</MudStack>
 					</MudTd>
@@ -83,7 +82,7 @@
 
 
 @code {
-	[Parameter] public IReadOnlyList<CostCategory> CostCategories { get; set; } = default!;
+	[Parameter] public ILookup<Guid?, CostCategory> CostCategoriesLookup { get; set; } = default!;
 	[Parameter] public ILookup<Guid, CashFlowCost> CashFlowCostLookup { get; set; } = default!;
 	[Parameter] public Dictionary<(Guid CostCategoryId, Guid CostItemId), Guid> CostCategoryItemMap { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }
@@ -91,7 +90,6 @@
 	[Parameter] public IReadOnlyList<TreeItemData<CashFlowItem>> CashFlowItemsTree { get; set; } = default!;
 	[Parameter] public EventCallback<List<CashFlowCost>> OnUpdateCashFlowCosts { get; set; }
 	[Parameter] public EventCallback<Guid> OnDeleteCashFlowCost { get; set; }
-	[Parameter] public ILookup<Guid?, CostCategory> CostCategoriesLookup { get; set; } = default!;
 
 	private Guid? _deletingCashFlowCostId;
 

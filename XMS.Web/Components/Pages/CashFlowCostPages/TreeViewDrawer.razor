@@ -8,60 +8,62 @@
 					 ToggledIcon="@Icons.Material.Filled.FullscreenExit"
 					 ToggledColor="@Color.Secondary"
 					 Size="Size.Small" />
+@if (_open)
+{
+	<MudDrawer @bind-Open="@_open"
+			   Anchor="Anchor.End"
+			   ClipMode="DrawerClipMode.Always"
+			   Elevation="1"
+			   Variant="@DrawerVariant.Temporary"
+			   OverlayAutoClose="false"
+			   Width="800px"
+			   Class="me-5">
+		<MudDrawerHeader>
+			<MudText Typo="Typo.h6">Статьи ДДС (1С Бух)</MudText>
+		</MudDrawerHeader>
+		<MudPaper Style="max-height: calc(100vh - 200px); overflow-y: auto;">
+			<MudTreeView Items="@(CashFlowItemsTree)" T="CashFlowItem" Dense="true">
+				<ItemTemplate Context="item">
+					<MudTreeViewItem Expanded="@item.Expanded"
+									 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
+									 Items="@item.Children"
+									 Value="@item.Value">
+						<Content>
+							<MudTreeViewItemToggleButton Expanded="@item.Expanded"
+														 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
+														 Visible="@item.HasChildren" />
+							<MudIcon Icon="@GetIcon(item)" Class="@(item.Value?.IsDeleted == true ? "mr-2 text-secondary" : "mr-2")" />
 
-<MudDrawer @bind-Open="@_open"
-		   Anchor="Anchor.End"
-		   ClipMode="DrawerClipMode.Always"
-		   Elevation="1"
-		   Variant="@DrawerVariant.Temporary"
-		   OverlayAutoClose="false"
-		   Width="800px"
-		   Class="me-5">
-	<MudDrawerHeader>
-		<MudText Typo="Typo.h6">Статьи ДДС (1С Бух)</MudText>
-	</MudDrawerHeader>
-	<MudPaper Style="max-height: calc(100vh - 200px); overflow-y: auto;">
-		<MudTreeView Items="@(CashFlowItemsTree)" T="CashFlowItem" Dense="true">
-			<ItemTemplate Context="item">
-				<MudTreeViewItem Expanded="@item.Expanded"
-								 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
-								 Items="@item.Children"
-								 Value="@item.Value">
-					<Content>
-						<MudTreeViewItemToggleButton Expanded="@item.Expanded"
-													 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
-													 Visible="@item.HasChildren" />
-						<MudIcon Icon="@GetIcon(item)" Class="@(item.Value?.IsDeleted == true ? "mr-2 text-secondary" : "mr-2")" />
-													
-						<MudStack Row="true" Class="d-flex justify-space-between flex-grow-1 gap-4">
-							@if (item.Value?.IsFolder == false)
-							{
-								<MudCheckBox T="bool"
-											 Value="@(SelectedCashFlowItemIds.Contains(item.Value.Id))"
-											 ValueChanged="@((bool isChecked) => CheckBoxChanged(isChecked, item.Value.Id))">
+							<MudStack Row="true" Class="d-flex justify-space-between flex-grow-1 gap-4">
+								@if (item.Value?.IsFolder == false)
+								{
+									<MudCheckBox T="bool"
+												 Value="@(SelectedCashFlowItemIds.Contains(item.Value.Id))"
+												 ValueChanged="@((bool isChecked) => CheckBoxChanged(isChecked, item.Value.Id))">
+										<MudText Typo="Typo.body1">@item.Value?.Name</MudText>
+									</MudCheckBox>
+								}
+								else
+								{
 									<MudText Typo="Typo.body1">@item.Value?.Name</MudText>
-								</MudCheckBox>
-							}
-							else
-							{
-								<MudText Typo="Typo.body1">@item.Value?.Name</MudText>
-							}
-							<MudText>@item.Value?.Code</MudText>
-						</MudStack>
-					</Content>
-				</MudTreeViewItem>
-			</ItemTemplate>
-		</MudTreeView>		
-	</MudPaper>	
-	@if (_isProcessing)
-	{
-		<MudProgressLinear Color="Color.Primary" Indeterminate="true" />
-	}
-	<MudStack Row="true" Class="mt-2" Justify="Justify.SpaceAround">
-		<MudButton OnClick="@UpdateCashFlowСosts" Color="Color.Primary" Variant="Variant.Filled">Сохранить</MudButton>
-		<MudButton OnClick="@ToggleOpen" Color="Color.Secondary" Variant="Variant.Filled">Закрыть</MudButton>
-	</MudStack>
-</MudDrawer>
+								}
+								<MudText>@item.Value?.Code</MudText>
+							</MudStack>
+						</Content>
+					</MudTreeViewItem>
+				</ItemTemplate>
+			</MudTreeView>
+		</MudPaper>
+		@if (_isProcessing)
+		{
+			<MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+		}
+		<MudStack Row="true" Class="mt-2" Justify="Justify.SpaceAround">
+			<MudButton OnClick="@UpdateCashFlowСosts" Color="Color.Primary" Variant="Variant.Filled">Сохранить</MudButton>
+			<MudButton OnClick="@ToggleOpen" Color="Color.Secondary" Variant="Variant.Filled">Закрыть</MudButton>
+		</MudStack>
+	</MudDrawer>
+}
 
 @code {
 	[Parameter] public Guid CostCategoryItemId { get; set; } = default!;
