@@ -9,14 +9,7 @@ namespace XMS.Application.Abstractions.Integration
         /// </summary>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<IReadOnlyList<UserUt>> GetUserUtListAsync(CancellationToken ct = default);
-
-        /// <summary>
-        /// Get Catalog_СтатьиДвиженияДенежныхСредств
-        /// </summary>
-        /// <param name="ct"></param>
-        /// <returns></returns>
-        Task<IReadOnlyList<CashFlowItem>> GetCashFlowItemListAsync(CancellationToken ct = default);
+        Task<IReadOnlyList<UserUt>> GetUserUtListAsync(CancellationToken ct = default);        
 
         /// <summary>
         /// Get AccumulationRegister_ТоварыНаСкладах_Balance

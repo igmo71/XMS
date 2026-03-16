@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using XMS.Domain.Models;
+using XMS.Modules.CostModule.Domain;
 
 namespace XMS.Infrastructure.Data.EntityConfigurations
 {
@@ -10,14 +10,16 @@ namespace XMS.Infrastructure.Data.EntityConfigurations
         {
             base.Configure(builder);
 
+            builder.ToTable("CostCategoryItems");
+
             builder.HasOne(e => e.Category)
-                .WithMany(e => e.CategoryItems) 
+                .WithMany(e => e.CategoryItems)
                 .HasForeignKey(e => e.CategoryId)
                 .HasPrincipalKey(e => e.Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(e => e.Item)
-                .WithMany(e => e.CategoryItems) 
+                .WithMany(e => e.CategoryItems)
                 .HasForeignKey(e => e.ItemId)
                 .HasPrincipalKey(e => e.Id)
                 .OnDelete(DeleteBehavior.Cascade);

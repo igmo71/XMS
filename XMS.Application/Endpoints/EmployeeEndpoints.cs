@@ -22,7 +22,7 @@ namespace XMS.Application.Endpoints
 
             employeeGroup.MapGet("/", GetEmployeeList).WithName(nameof(GetEmployeeList));
             employeeGroup.MapGet("/{id}", GetEmployeeById).WithName(nameof(GetEmployeeById));
-            employeeGroup.MapGet("/by-ut-refkey/{refKey}", GetEmployeeByUtRefKey).WithName(nameof(GetEmployeeByUtRefKey));
+            employeeGroup.MapGet("/by-ut-refkey/{utRefKey}", GetEmployeeByUtRefKey).WithName(nameof(GetEmployeeByUtRefKey));
             employeeGroup.MapGet("/by-ad-login/{login}", GetEmployeeByAdLogin).WithName(nameof(GetEmployeeByAdLogin));
             //employeeGroup.MapGet("/by-manager-id/{id}", GetEmployeesByManagerId).WithName(nameof(GetEmployeesByManagerId));
             employeeGroup.MapGet("/managers-by-employee-id/{id}", GetManagersByEmployeeId).WithName(nameof(GetManagersByEmployeeId));
@@ -57,7 +57,7 @@ namespace XMS.Application.Endpoints
             [FromRoute] string utRefKey)
         {
             var employee = await service.GetByUtRefKeyAsync(utRefKey);
-            return employee is null ? TypedResults.NotFound($"No Employee fount by Ut User Ref_Key: {utRefKey}") : TypedResults.Ok(EmployeeDto.From(employee));
+            return employee is null ? TypedResults.NotFound($"No Employee fount by Ut User Ref_Key {utRefKey}") : TypedResults.Ok(EmployeeDto.From(employee));
         }
 
         static async Task<Results<Ok<EmployeeDto>, NotFound<string>>> GetEmployeeByAdLogin(HttpContext httpContext,

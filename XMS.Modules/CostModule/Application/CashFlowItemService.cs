@@ -1,17 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using XMS.Application.Abstractions;
-using XMS.Application.Abstractions.Integration;
-using XMS.Application.Abstractions.Services;
-using XMS.Domain.Models;
+using XMS.Modules.CostModule.Abstractions;
+using XMS.Modules.CostModule.Domain;
 
-namespace XMS.Application.Services
+namespace XMS.Modules.CostModule.Application
 {
     /// <summary>
     /// Catalog_СтатьиДвиженияДенежныхСредств Service
     /// </summary>
     /// <param name="oneSUtService"></param>
     /// <param name="dbFactory"></param>
-    internal class CashFlowItemService(IOneSUtService oneSUtService, IDbContextFactoryProxy dbFactory) : ICashFlowItemService
+    internal class CashFlowItemService(ICostUtService utService, IDbContextFactoryProxy dbFactory) : ICashFlowItemService
     {
         public async Task<IReadOnlyList<CashFlowItem>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
         {
@@ -19,7 +18,7 @@ namespace XMS.Application.Services
 
             var query = dbContext.Set<CashFlowItem>().AsNoTracking();
 
-            if(!includeDeleted)
+            if (!includeDeleted)
                 query = query.Where(e => !e.IsDeleted);
 
             return await query.OrderBy(x => x.Name).ToListAsync(ct);
@@ -27,7 +26,7 @@ namespace XMS.Application.Services
 
         public async Task<IReadOnlyList<CashFlowItem>> LoadListAsync(CancellationToken ct = default)
         {
-            return await oneSUtService.GetCashFlowItemListAsync(ct);
+            return await utService.GetCashFlowItemListAsync(ct);
         }
 
         public async Task ReloadListAsync(CancellationToken ct = default)

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Diagnostics;
-using XMS.Application.Abstractions.Services;
-using XMS.Domain.Models;
+using XMS.Modules.CostModule.Abstractions;
+using XMS.Modules.CostModule.Domain;
 
 namespace XMS.Web.Components.Pages.CashFlowCostPages
 {
@@ -27,7 +27,10 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
         protected override async Task OnInitializedAsync()
         {
             var startingTimestamp = Stopwatch.GetTimestamp();
+
             await LoadDataAsync();
+            BuildCashFlowItemsTree();
+
             Logger.LogDebug("{Source} {Elapsed}", nameof(OnInitializedAsync), Stopwatch.GetElapsedTime(startingTimestamp));
         }
 
@@ -45,21 +48,18 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
                     LoadCostCategoryItems(),
                     LoadCashFlowItems(),
                     LoadCashFlowCosts());
-
-                BuildCashFlowItemsTree();
-
-                Logger.LogDebug("{Source} {Elapsed}", nameof(LoadDataAsync), Stopwatch.GetElapsedTime(startingTimestamp));
             }
             finally
             {
                 _isLoading = false;
 
-                StateHasChanged();
+                //StateHasChanged();
             }
+
+            Logger.LogDebug("{Source} {Elapsed}", nameof(LoadDataAsync), Stopwatch.GetElapsedTime(startingTimestamp));
         }
 
         private async Task LoadCostCategories() => _costCategories = await CategoryService.GetListAsync(_includeDeleted, _cts.Token);
-        
 
         private async Task LoadCashFlowItems() => _cashFlowItems = await CashFlowItemService.GetListAsync(includeDeleted: false, _cts.Token);
 
@@ -79,24 +79,32 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
 
         private void BuildCashFlowItemsTree()
         {
-            _cashFlowItemsTree = ExecuteBuildTree(_cashFlowItems, Guid.Parse("00000000-0000-0000-0000-000000000000"));
+            var startingTimestamp = Stopwatch.GetTimestamp();
 
-            StateHasChanged();
+            if (_isLoading) return;
+
+            _isLoading = true;
+
+            ILookup<Guid?, CashFlowItem> cashFlowItemLookup = _cashFlowItems.ToLookup(e => e.ParentId);
+
+            _cashFlowItemsTree = ExecuteBuildTree(cashFlowItemLookup, Guid.Parse("00000000-0000-0000-0000-000000000000"));
+
+            //StateHasChanged();
+
+            _isLoading = false;
+
+            Logger.LogDebug("{Source} {Elapsed}", nameof(BuildCashFlowItemsTree), Stopwatch.GetElapsedTime(startingTimestamp));
         }
 
-        private static List<TreeItemData<CashFlowItem>> ExecuteBuildTree(IEnumerable<CashFlowItem> allItems, Guid? parentId)
+        private static List<TreeItemData<CashFlowItem>> ExecuteBuildTree(ILookup<Guid?, CashFlowItem> cashFlowItemLookup, Guid? parentId)
         {
-            var list = allItems
-                .Where(e => e.ParentId == parentId).ToList();
-            var result = list
-            .Select(e => new TreeItemData<CashFlowItem>
+            var result = cashFlowItemLookup[parentId].Select(e => new TreeItemData<CashFlowItem>
             {
                 Value = e,
                 Text = e.Name,
                 Expanded = false,
-                Children = ExecuteBuildTree(allItems, e.Id)
-            })
-            .ToList();
+                Children = ExecuteBuildTree(cashFlowItemLookup, e.Id)
+            }).ToList();
 
             return result;
         }

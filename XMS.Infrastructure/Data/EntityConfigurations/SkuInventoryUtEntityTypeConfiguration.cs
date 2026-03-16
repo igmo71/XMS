@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Domain.Models;
 
 namespace XMS.Infrastructure.Data.EntityConfigurations
@@ -8,6 +9,8 @@ namespace XMS.Infrastructure.Data.EntityConfigurations
         public override void Configure(EntityTypeBuilder<SkuInventoryUt> builder)
         {
             base.Configure(builder);
+
+            builder.ToTable("SkuInventoryUt");
 
             builder.HasIndex(x => new { x.ScuId, x.WarehouseId }).IsUnique();
             builder.Property(x => x.QuantityOnHand).HasPrecision(18, 3);

@@ -1,9 +1,9 @@
 ﻿@page "/costitems"
 @using Microsoft.AspNetCore.Authorization
-@using XMS.Domain.Models
+@using XMS.Modules.CostModule.Domain
 @attribute [Authorize]
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="pt-4">
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-4">
 	<MudStack Row="true">
 		<MudPaper Style="min-width:600px; max-height: calc(100vh - 96px); overflow-y: auto;">
 			<MudToolBar>

@@ -10,6 +10,8 @@ namespace XMS.Infrastructure.Data.EntityConfigurations
         {
             base.Configure(builder);
 
+            builder.ToTable("Locations");
+
             builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
 
             builder.HasOne(e => e.Manager).WithMany()

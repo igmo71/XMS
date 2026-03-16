@@ -8,6 +8,7 @@ using XMS.Application.Common.Integration;
 using XMS.Infrastructure.Integration.OneS.Buh;
 using XMS.Infrastructure.Integration.OneS.Ut;
 using XMS.Infrastructure.Integration.OneS.Zup;
+using XMS.Modules.CostModule.Abstractions;
 
 namespace XMS.Infrastructure.Integration.OneS
 {

@@ -1,6 +1,6 @@
 ﻿using XMS.Domain.Abstractions;
 
-namespace XMS.Domain.Models
+namespace XMS.Modules.CostModule.Domain
 {
     /// <summary>
     /// Статьи Движения Денежных Средств к Статьям Затрат

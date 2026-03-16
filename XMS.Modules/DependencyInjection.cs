@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using XMS.Modules.CostModule;
 using XMS.Modules.GodooModule;
 using XMS.Modules.GodooModule.Endpoints;
 
@@ -10,6 +11,7 @@ namespace XMS.Modules
     {
         public static IServiceCollection AddApplicationModules(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddCostModule(configuration);
             services.AddGodoModule(configuration);
 
             return services;

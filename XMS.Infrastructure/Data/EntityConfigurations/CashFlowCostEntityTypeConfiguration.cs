@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using XMS.Domain.Models;
+using XMS.Modules.CostModule.Domain;
 
 namespace XMS.Infrastructure.Data.EntityConfigurations
 {
@@ -9,6 +9,8 @@ namespace XMS.Infrastructure.Data.EntityConfigurations
         public override void Configure(EntityTypeBuilder<CashFlowCost> builder)
         {
             base.Configure(builder);
+
+            builder.ToTable("CashFlowCost");
 
             builder.HasOne(e => e.CashFlowItem)
                 .WithMany()

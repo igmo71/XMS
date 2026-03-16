@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using MudBlazor;
-using XMS.Application.Abstractions.Services;
-using XMS.Domain.Models;
+using XMS.Modules.CostModule.Abstractions;
+using XMS.Modules.CostModule.Domain;
 using XMS.Web.Components.Common;
 
 namespace XMS.Web.Components.Pages.CashFlowItemPages

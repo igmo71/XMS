@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using XMS.Application.Abstractions;
-using XMS.Application.Abstractions.Services;
 using XMS.Application.Common;
-using XMS.Domain.Models;
+using XMS.Modules.CostModule.Abstractions;
+using XMS.Modules.CostModule.Domain;
 
-namespace XMS.Application.Services
+namespace XMS.Modules.CostModule.Application
 {
     internal class CostCategoryService(IDbContextFactoryProxy dbFactory, ICostCategoryItemService costCategoryItemService) : ICostCategoryService
     {

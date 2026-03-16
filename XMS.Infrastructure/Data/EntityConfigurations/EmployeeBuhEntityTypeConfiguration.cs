@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Domain.Models;
 
 namespace XMS.Infrastructure.Data.EntityConfigurations
@@ -8,6 +9,8 @@ namespace XMS.Infrastructure.Data.EntityConfigurations
         public override void Configure(EntityTypeBuilder<EmployeeBuh> builder)
         {
             base.Configure(builder);
+
+            builder.ToTable("EmployeesBuh");
 
             builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
             builder.Property(x => x.Code).HasMaxLength(AppSettings.MaxLength.GUID);

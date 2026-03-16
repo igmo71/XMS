@@ -1,6 +1,7 @@
-﻿using XMS.Domain.Models;
+﻿using XMS.Application.Abstractions;
+using XMS.Modules.CostModule.Domain;
 
-namespace XMS.Application.Abstractions.Services
+namespace XMS.Modules.CostModule.Abstractions
 {
     public interface ICostCategoryItemService
     {

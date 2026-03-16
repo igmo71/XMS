@@ -1,4 +1,4 @@
-﻿@using XMS.Domain.Models
+﻿@using XMS.Modules.CostModule.Domain
 
 @foreach (var costCategory in CostCategories.Where(e => e.ParentId == ParentId).OrderBy(e => e.Name))
 {

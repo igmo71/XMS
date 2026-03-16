@@ -1,6 +1,6 @@
-﻿using XMS.Domain.Models;
+﻿using XMS.Modules.CostModule.Domain;
 
-namespace XMS.Application.Abstractions.Services
+namespace XMS.Modules.CostModule.Abstractions
 {
     public interface ICashFlowCostService
     {

@@ -1,6 +1,7 @@
 ﻿using XMS.Domain.Abstractions;
+using XMS.Domain.Models;
 
-namespace XMS.Domain.Models
+namespace XMS.Modules.CostModule.Domain
 {
     /// <summary>
     /// Категория Статей Затрат

@@ -10,6 +10,8 @@ namespace XMS.Infrastructure.Data.EntityConfigurations
         {
             base.Configure(builder);
 
+            builder.ToTable("Departments");
+
             builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
             builder.HasOne(x => x.Parent).WithMany(x => x.Children).HasForeignKey(x => x.ParentId).OnDelete(DeleteBehavior.Restrict);
 

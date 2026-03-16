@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using XMS.Application.Abstractions;
-using XMS.Application.Abstractions.Services;
-using XMS.Domain.Models;
+using XMS.Modules.CostModule.Abstractions;
+using XMS.Modules.CostModule.Domain;
 
-namespace XMS.Application.Services
+namespace XMS.Modules.CostModule.Application
 {
     internal class CostCategoryItemService(IDbContextFactoryProxy dbFactory) : ICostCategoryItemService
     {
@@ -31,7 +31,7 @@ namespace XMS.Application.Services
         }
 
         private static async Task ExecuteUpdateLogic(CostCategory selectedCostCategory, IApplicationDbContext dbContext, CancellationToken ct)
-        {         
+        {
             var existingValues = await dbContext.Set<CostCategoryItem>()
                 .Where(x => x.CategoryId == selectedCostCategory.Id)
                 .ToListAsync(ct);
@@ -61,6 +61,6 @@ namespace XMS.Application.Services
                 .ToListAsync(cancellationToken: ct);
 
             return result;
-        }        
+        }
     }
 }

@@ -8,6 +8,8 @@ namespace XMS.Infrastructure.Data.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<UserAd> builder)
         {
+            builder.ToTable("UsersAd");
+
             builder.HasKey(x => x.Sid);
             builder.Property(x => x.Sid).HasMaxLength(AppSettings.MaxLength.SID);
             builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
