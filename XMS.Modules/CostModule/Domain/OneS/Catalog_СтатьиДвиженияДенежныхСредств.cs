@@ -1,4 +1,4 @@
-﻿namespace XMS.Modules.CostModule.Infrastructure.OneS.Models
+﻿namespace XMS.Modules.CostModule.Domain.OneS
 {
     internal class Catalog_СтатьиДвиженияДенежныхСредств
     {

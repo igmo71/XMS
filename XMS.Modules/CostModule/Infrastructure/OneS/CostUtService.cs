@@ -1,7 +1,7 @@
 ﻿using XMS.Application.Common.Integration;
 using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Domain;
-using XMS.Modules.CostModule.Infrastructure.OneS.Models;
+using XMS.Modules.CostModule.Domain.OneS;
 
 namespace XMS.Modules.CostModule.Infrastructure.OneS
 {
@@ -37,12 +37,12 @@ namespace XMS.Modules.CostModule.Infrastructure.OneS
         /// <param name="end"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        public async Task<IReadOnlyList<Document_ЗаявкаНаРасходованиеДенежныхСредств>?> GetDocument_ЗаявкаНаРасходованиеДенежныхСредств_ByDateAsync(
-            DateTime? begin = null, DateTime? end = null, CancellationToken ct = default)
+        public async Task<IReadOnlyList<Document_СписаниеБезналичныхДенежныхСредств>?> GetDocument_СписаниеБезналичныхДенежныхСредств_ByDateAsync(
+            DateTime date, CancellationToken ct = default)
         {
-            var uri = Document_ЗаявкаНаРасходованиеДенежныхСредств.GetUriByDate(begin, end);
+            var uri = Document_СписаниеБезналичныхДенежныхСредств.GetUriByDate(date, date.AddDays(1));
 
-            var rootObject = await utClient.GetValueAsync<RootObject<Document_ЗаявкаНаРасходованиеДенежныхСредств>>(uri, ct);
+            var rootObject = await utClient.GetValueAsync<RootObject<Document_СписаниеБезналичныхДенежныхСредств>>(uri, ct);
 
             var result = rootObject?.Value?.ToList();
 
@@ -55,13 +55,13 @@ namespace XMS.Modules.CostModule.Infrastructure.OneS
         /// <param name="refKey"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        public async Task<Document_ЗаявкаНаРасходованиеДенежныхСредств?> GetDocument_ЗаявкаНаРасходованиеДенежныхСредств_ByRefKeyAsync(
+        public async Task<Document_СписаниеБезналичныхДенежныхСредств?> GetDocument_СписаниеБезналичныхДенежныхСредств_ByRefKeyAsync(
             string refKey, CancellationToken ct = default)
         {
-            var uri = Document_ЗаявкаНаРасходованиеДенежныхСредств.GetUriByRefKey(refKey);
+            var uri = Document_СписаниеБезналичныхДенежныхСредств.GetUriByRefKey(refKey);
 
             var rootObject = await utClient
-                .GetValueAsync<RootObject<Document_ЗаявкаНаРасходованиеДенежныхСредств>>(uri, ct);
+                .GetValueAsync<RootObject<Document_СписаниеБезналичныхДенежныхСредств>>(uri, ct);
 
             var result = rootObject?.Value?[0];
 

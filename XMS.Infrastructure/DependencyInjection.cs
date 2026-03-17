@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -43,6 +44,8 @@ namespace XMS.Infrastructure
                     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
                 options.UseSqlServer(connectionString);
+                options.EnableSensitiveDataLogging();
+                options.LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name });
             });
 
             services.AddDatabaseDeveloperPageExceptionFilter();

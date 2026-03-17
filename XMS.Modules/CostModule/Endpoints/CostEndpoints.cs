@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using XMS.Application.Common;
+using XMS.Modules.CostModule.Abstractions;
+using XMS.Modules.CostModule.Domain.OneS;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace XMS.Modules.CostModule.Endpoints
 {
@@ -27,6 +30,18 @@ namespace XMS.Modules.CostModule.Endpoints
                 .WithName(nameof(GetWriteOffNonCash))
                 .WithSummary(nameof(GetWriteOffNonCash))
                 .WithDescription("Get Document_СписаниеБезналичныхДенежныхСредств");
+
+            builder.MapGet("/integration/cost/write-off-non-cash", LoadWriteOffNonCashByDate)
+                .WithTags("XMS Cost")
+                .WithName(nameof(LoadWriteOffNonCashByDate))
+                .WithSummary(nameof(LoadWriteOffNonCashByDate))
+                .WithDescription("Load Document_СписаниеБезналичныхДенежныхСредств by Date from OneS Ut");
+
+            builder.MapPut("/integration/cost/write-off-non-cash/reload", ReLoadWriteOffNonCashByDate)
+                .WithTags("XMS Cost")
+                .WithName(nameof(ReLoadWriteOffNonCashByDate))
+                .WithSummary(nameof(ReLoadWriteOffNonCashByDate))
+                .WithDescription("Load Document_СписаниеБезналичныхДенежныхСредств by Date from OneS Ut"); ;
 
             return builder;
         }
@@ -71,6 +86,32 @@ namespace XMS.Modules.CostModule.Endpoints
             logger.LogDebug("{Source} {kefKey}", nameof(GetWriteOffNonCash), refKey);
 
             return TypedResults.Ok();
+        }
+
+        /// <summary>
+        /// Load Document_СписаниеБезналичныхДенежныхСредств from OneS Ut
+        /// </summary>
+        /// <param name="documentService"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        private static async Task<Results<Ok<IReadOnlyList<Document_СписаниеБезналичныхДенежныхСредств>>, BadRequest<string>>> LoadWriteOffNonCashByDate(
+            [FromServices] IDocument_СписаниеБезналичныхДенежныхСредств_Service documentService,
+            [FromQuery] DateTime date)
+        {
+            var result = await documentService.LoadListAsyncByDate(date);
+
+            return TypedResults.Ok(result);
+        }
+
+        private static async Task<Results<Ok<int>, BadRequest<string>>> ReLoadWriteOffNonCashByDate(
+            [FromServices] IDocument_СписаниеБезналичныхДенежныхСредств_Service documentService,
+            [FromQuery] DateTime from,
+            [FromQuery] DateTime to)
+        {
+            var result = await documentService.ReloadListAsync(from, to);
+
+            return TypedResults.Ok(result);
         }
     }
 }

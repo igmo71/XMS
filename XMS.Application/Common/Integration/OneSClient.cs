@@ -25,6 +25,20 @@ namespace XMS.Application.Common.Integration
             return _httpClient.GetFromJsonAsync<TValue>($"{_clientConfig.ServiceUri}/{uri}", ct);
         }
 
+        public async Task<TValue?> GetValueAsyncStd<TValue>(string? uri, CancellationToken ct = default)
+        {
+            var response = await _httpClient.GetAsync($"{_clientConfig.ServiceUri}/{uri}", ct);
+
+            var content = await response.Content.ReadAsStringAsync(ct);
+
+            if (string.IsNullOrEmpty(content))
+                return default;
+
+            var result = JsonSerializer.Deserialize<TValue>(content);
+
+            return result;
+        }
+
         public async Task<TValue?> PostValueAsync<TValue>(TValue value, string? uri, CancellationToken ct = default)
         {
             var jsonString = JsonSerializer.Serialize(value, _serializerOptions);

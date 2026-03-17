@@ -1,5 +1,5 @@
 ﻿using XMS.Modules.CostModule.Domain;
-using XMS.Modules.CostModule.Infrastructure.OneS.Models;
+using XMS.Modules.CostModule.Domain.OneS;
 
 namespace XMS.Modules.CostModule.Abstractions
 {
@@ -13,22 +13,20 @@ namespace XMS.Modules.CostModule.Abstractions
         Task<IReadOnlyList<CashFlowItem>> GetCashFlowItemListAsync(CancellationToken ct = default);
 
         /// <summary>
-        /// Get Document_ЗаявкаНаРасходованиеДенежныхСредств By Ref_Key
+        /// Get Document_СписаниеБезналичныхДенежныхСредств By Ref_Key
         /// </summary>
         /// <param name="refKey"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<Document_ЗаявкаНаРасходованиеДенежныхСредств?> GetDocument_ЗаявкаНаРасходованиеДенежныхСредств_ByRefKeyAsync(
-            string refKey, CancellationToken ct = default);
+        Task<Document_СписаниеБезналичныхДенежныхСредств?> GetDocument_СписаниеБезналичныхДенежныхСредств_ByRefKeyAsync(string refKey, CancellationToken ct = default);
 
         /// <summary>
-        /// Get Document_ЗаявкаНаРасходованиеДенежныхСредств By Date
+        /// Get Document_СписаниеБезналичныхДенежныхСредств By Date
         /// </summary>
         /// <param name="begin"></param>
         /// <param name="end"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<IReadOnlyList<Document_ЗаявкаНаРасходованиеДенежныхСредств>?> GetDocument_ЗаявкаНаРасходованиеДенежныхСредств_ByDateAsync(
-            DateTime? begin = null, DateTime? end = null, CancellationToken ct = default);
+        Task<IReadOnlyList<Document_СписаниеБезналичныхДенежныхСредств>?> GetDocument_СписаниеБезналичныхДенежныхСредств_ByDateAsync(DateTime date, CancellationToken ct = default);
     }
 }

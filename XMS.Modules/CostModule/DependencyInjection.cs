@@ -20,6 +20,8 @@ namespace XMS.Modules.CostModule
             services.AddScoped<ICostCategoryService, CostCategoryService>();
             services.AddScoped<ICostItemService, CostItemService>();
 
+            services.AddScoped<IDocument_СписаниеБезналичныхДенежныхСредств_Service, Document_СписаниеБезналичныхДенежныхСредств_Service>();
+
             return services;
         }
     }
