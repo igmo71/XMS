@@ -5,9 +5,11 @@
 	<AuthorizeView Roles="Admin">
 		<MudNavGroup Title="XMS" Icon="@Icons.Material.Filled.Api" Expanded="false">
 			<MudNavLink Href="@(Environment.IsDevelopment() ? "http://localhost:5152/scalar/#tag/xms-employees" : "http://vm-xms-dev:8201/scalar/#tag/xms-employees")"
-						Target="_blank" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Api">XMS Employees</MudNavLink>
+						Target="_blank" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Api">Employees</MudNavLink>
+			<MudNavLink Href="@(Environment.IsDevelopment() ? "http://localhost:5152/scalar/#tag/xms-cost" : "http://vm-xms-dev:8201/scalar/#tag/xms-cost")"
+						Target="_blank" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Api">Cost</MudNavLink>
 			<MudNavLink Href="@(Environment.IsDevelopment() ? "http://localhost:5152/scalar/#tag/xms-testbody" : "http://vm-xms-dev:8201/scalar/#tag/xms-testbody")"
-						Target="_blank" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Api">XMS TestBody</MudNavLink>
+						Target="_blank" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Api">TestBody</MudNavLink>
 		</MudNavGroup>
 		<MudNavLink Href="@(Environment.IsDevelopment() ? "http://localhost:5152/scalar/#tag/godoo" : "http://vm-xms-dev:8201/scalar/#tag/godoo")"
 					Target="_blank" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Api">Godoo</MudNavLink>

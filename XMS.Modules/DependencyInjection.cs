@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using XMS.Modules.CostModule;
+using XMS.Modules.CostModule.Endpoints;
 using XMS.Modules.GodooModule;
 using XMS.Modules.GodooModule.Endpoints;
 
@@ -19,6 +20,7 @@ namespace XMS.Modules
 
         public static IEndpointRouteBuilder MapModulesEndpoints(this IEndpointRouteBuilder endpoints)
         {
+            endpoints.MapCostEndpoints();
             endpoints.MapGodooEndpoints();
 
             return endpoints;

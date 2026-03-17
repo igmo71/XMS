@@ -7,7 +7,7 @@ using XMS.Modules.GodooModule.Domain;
 
 namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh
 {
-    internal class GodooBuhService(GodooBuhClient client, ILogger<GodooBuhService> logger) : IGodooBuhService
+    internal class GodooBuhService(GodooBuhClient buhClient, ILogger<GodooBuhService> logger) : IGodooBuhService
     {
 
         public async Task<IReadOnlyList<InformationRegister_НоменклатураМаркетплейсов>> GetMarketplaceRelationListAsync(
@@ -16,7 +16,7 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh
         {
             string uri = InformationRegister_НоменклатураМаркетплейсов.GetUri(godooMarketplaceRelation);
 
-            var rootObject = await client.GetValueAsync<RootObject<InformationRegister_НоменклатураМаркетплейсов>>(uri, ct);
+            var rootObject = await buhClient.GetValueAsync<RootObject<InformationRegister_НоменклатураМаркетплейсов>>(uri, ct);
 
             if (rootObject?.Value?.Length == 0)
                 logger.LogDebug("{Source} - Not Found by {uri}", nameof(GetMarketplaceRelationListAsync), uri);
@@ -38,7 +38,7 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh
                 Организация_Key = godooMarketplaceRelation.CompanyKey
             };
 
-            var relationCreated = await client.PostValueAsync(relationToCreate, nameof(InformationRegister_НоменклатураМаркетплейсов), ct);
+            var relationCreated = await buhClient.PostValueAsync(relationToCreate, nameof(InformationRegister_НоменклатураМаркетплейсов), ct);
 
             if (relationCreated is null)
                 logger.LogError("{Source} - Error {@RelationToCreate}", nameof(CreateMarketplaceRelationAsync), relationToCreate);
@@ -50,7 +50,7 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh
         {
             string uri = Catalog_Номенклатура.GetUri(yunuProductId);
 
-            var rootObject = await client.GetValueAsync<RootObject<Catalog_Номенклатура>>(uri, ct);
+            var rootObject = await buhClient.GetValueAsync<RootObject<Catalog_Номенклатура>>(uri, ct);
 
             if (rootObject?.Value?.Length == 0)
                 logger.LogDebug("{Source} - Not Found by {uri}", nameof(GetProductListAsync), uri);
@@ -69,7 +69,7 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh
                 Артикул = yunuProduct.ProductId.ToString()
             };
 
-            var createdProduct = await client.PostValueAsync(newProduct, nameof(Catalog_Номенклатура), ct);
+            var createdProduct = await buhClient.PostValueAsync(newProduct, nameof(Catalog_Номенклатура), ct);
 
             if (createdProduct is null)
                 logger.LogError("{Source} - Error {@ProductToCreate}", nameof(CreateProductAsync), newProduct);
@@ -81,7 +81,7 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh
 
         public async Task<IReadOnlyList<Catalog_Организации>> GetCompanyListAsync(CancellationToken ct = default)
         {
-            var rootObject = await client.GetValueAsync<RootObject<Catalog_Организации>>(Catalog_Организации.Uri, ct);
+            var rootObject = await buhClient.GetValueAsync<RootObject<Catalog_Организации>>(Catalog_Организации.Uri, ct);
 
             return rootObject?.Value ?? [];
         }
@@ -103,7 +103,7 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh
                 Номенклатура_Type = "StandardODATA.Catalog_Номенклатура"
             };
 
-            var createdRecord = await client.PostValueAsync(recordToCreate, nameof(InformationRegister_НоменклатураКонтрагентовБЭД), ct);
+            var createdRecord = await buhClient.PostValueAsync(recordToCreate, nameof(InformationRegister_НоменклатураКонтрагентовБЭД), ct);
 
             if (createdRecord is null)
                 logger.LogError("{Source} - Error {@RecordToCreate}", nameof(CreateInformationRegister_НоменклатураКонтрагентовБЭД), recordToCreate);
