@@ -12,7 +12,7 @@
 					 Style="max-height: calc(100vh - 96px); overflow-y: auto;"
 					 FixedHeader
 					 Loading="@_isLoading"
-					 ReadOnly="false"					 
+					 ReadOnly="false"
 					 CommittedItemChanges="@((item) => CommittedItemChanges(item))"
 					 QuickFilter="QuickFilter"
 					 EditMode="DataGridEditMode.Form"
@@ -31,7 +31,7 @@
 				<MudSpacer />
 				<MudButton Class="ms-5" StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Primary" OnClick="NewItemAsync">
 					Добавить
-				</MudButton>				
+				</MudButton>
 				<MudSpacer />
 				<MudSpacer />
 			</ToolBarContent>
@@ -54,7 +54,7 @@
 				<PropertyColumn Property="x => x.IsDeleted" Title="Удален">
 					<CellTemplate>
 						<div style="cursor: pointer; width: 100%; height: 100%; display: flex; align-items: center; min-height: 32px" @ondblclick="@(() => StartEditing(context.Item))">
-							<MudChip T="string" Color="@(context.Item.IsDeleted? Color.Secondary: Color.Info)" Size="Size.Small" Variant="Variant.Text">
+							<MudChip T="string" Color="@(context.Item.IsDeleted ? Color.Secondary : Color.Info)" Size="Size.Small" Variant="Variant.Text">
 								@(context.Item.IsDeleted ? "Удален" : "Активен")
 							</MudChip>
 						</div>

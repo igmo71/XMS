@@ -129,7 +129,13 @@ namespace XMS.Application.Services
             return await dbContext.Set<Employee>().FirstOrDefaultAsync(e => e.UserUtId.ToString() == refKey, ct);
         }
 
-        public async Task<IReadOnlyList<Employee>> GetManagersByEmployeeIdAsync(Guid id, CancellationToken ct = default)
+        /// <summary>
+        /// Поиск всех менеджеров Сотрудника
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        public async Task<ServiceResult<IReadOnlyList<Employee>>> GetManagersByEmployeeIdAsync(Guid id, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
@@ -137,7 +143,8 @@ namespace XMS.Application.Services
 
             var employee = employees.FirstOrDefault(e => e.Id == id);
 
-            if (employee == null) return [];
+            if (employee == null)
+                return ServiceError.NotFound.WithDescription($"Employee Not found by {id}");
 
             var managers = GetAllManagers(employee.Id, employees);
 
@@ -185,7 +192,13 @@ namespace XMS.Application.Services
         }
         // //
 
-        public async Task<IReadOnlyList<Employee>> GetEmployeesByManagerIdAsync(Guid id, CancellationToken ct = default)
+        /// <summary>
+        /// Поиск всех подчиненных Менеджера
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        public async Task<ServiceResult<IReadOnlyList<Employee>>> GetEmployeesByManagerIdAsync(Guid id, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
@@ -193,9 +206,14 @@ namespace XMS.Application.Services
 
             var manager = employees.FirstOrDefault(e => e.Id == id);
 
-            if (manager == null) return [];
+            if (manager == null)
+                return ServiceError.NotFound.WithDescription($"Manager Not found by {id}");
 
             var subordinates = GetAllSubordinatesBFS(manager.Id, employees);
+
+            // TODO: Костыль
+            if (subordinates.Count == AppSettings.MaxSubordinatesCount)
+                return ServiceError.InvalidOperation.WithDescription($"Return MaxSubordinatesCount {subordinates.Count}");
 
             return subordinates;
         }
@@ -283,6 +301,11 @@ namespace XMS.Application.Services
                 foreach (var subordinate in employeesByManager[currentManagerId])
                 {
                     result.Add(subordinate);
+
+                    // TODO: Костыль
+                    if (result.Count == AppSettings.MaxSubordinatesCount)
+                        return result;
+
                     queue.Enqueue(subordinate.Id);
                 }
             }

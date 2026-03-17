@@ -22,18 +22,30 @@ namespace XMS.Application.Endpoints
                 .ProducesProblem(401)
                 .ProducesValidationProblem();
 
-            employeeGroup.MapGet("/", GetEmployeeList).WithName(nameof(GetEmployeeList));
-            employeeGroup.MapGet("/{id}", GetEmployeeById).WithName(nameof(GetEmployeeById));
-            employeeGroup.MapGet("/by-ut-refkey/{utRefKey}", GetEmployeeByUtRefKey).WithName(nameof(GetEmployeeByUtRefKey));
-            employeeGroup.MapGet("/by-ad-login/{login}", GetEmployeeByAdLogin).WithName(nameof(GetEmployeeByAdLogin));
-            //employeeGroup.MapGet("/by-manager-id/{id}", GetEmployeesByManagerId).WithName(nameof(GetEmployeesByManagerId));
-            employeeGroup.MapGet("/managers-by-employee-id/{id}", GetManagersByEmployeeId).WithName(nameof(GetManagersByEmployeeId));
-
-            routeBuilder.MapPost("/api/test-body", (HttpContext httpContext, ILogger<ServiceResult> logger , [FromBody] JsonElement testBody) =>
-            {
-                logger.LogDebug("testBody {testBody}", testBody);
-                return TypedResults.Ok( testBody);
-            });
+            employeeGroup.MapGet("/", GetEmployeeList)
+                .WithName(nameof(GetEmployeeList))
+                .WithSummary(nameof(GetEmployeeList))
+                .WithDescription("Демо - Получить список всех Сотрудников со всеми зависимостями");
+            employeeGroup.MapGet("/{id}", GetEmployeeById)
+                .WithName(nameof(GetEmployeeById))
+                .WithSummary(nameof(GetEmployeeById))
+                .WithDescription("Получить Сотрудника по его Id");
+            employeeGroup.MapGet("/by-ut-refkey/{utRefKey}", GetEmployeeByUtRefKey)
+                .WithName(nameof(GetEmployeeByUtRefKey))
+                .WithSummary(nameof(GetEmployeeByUtRefKey))
+                .WithDescription("Получить Сотрудника по его Ref_Key пользователя 1С УТ");
+            employeeGroup.MapGet("/by-ad-login/{login}", GetEmployeeByAdLogin)
+                .WithName(nameof(GetEmployeeByAdLogin))
+                .WithSummary(nameof(GetEmployeeByAdLogin))
+                .WithDescription("Получить Сотрудника по его логину в AD");
+            employeeGroup.MapGet("/by-manager-id/{id}", GetEmployeesByManagerId)
+                .WithName(nameof(GetEmployeesByManagerId))
+                .WithSummary(nameof(GetEmployeesByManagerId))
+                .WithDescription("По Id Сотрудника получить список Id всех его подчиненных (может сломаться, если ссылки зациклены)");
+            employeeGroup.MapGet("/managers-by-employee-id/{id}", GetManagersByEmployeeId)
+                .WithName(nameof(GetManagersByEmployeeId))
+                .WithSummary(nameof(GetManagersByEmployeeId))
+                .WithDescription("По Id Сотрудника получить список Id всех его менеджеров");
 
             return routeBuilder;
         }
@@ -76,22 +88,26 @@ namespace XMS.Application.Endpoints
             return employee is null ? TypedResults.NotFound($"No Employee fount by AD User Login: {login}") : TypedResults.Ok(EmployeeDto.From(employee));
         }
 
-        static async Task<Ok<IEnumerable<Guid>>> GetManagersByEmployeeId(HttpContext httpContext,
+        static async Task<Results<Ok<IEnumerable<Guid>>, ProblemHttpResult>> GetManagersByEmployeeId(HttpContext httpContext,
             [FromServices] IEmployeeService service,
             [FromRoute] Guid id)
         {
-            IReadOnlyList<Employee> managers = await service.GetManagersByEmployeeIdAsync(id);
+            var result = await service.GetManagersByEmployeeIdAsync(id);
 
-            return TypedResults.Ok(managers.Select(e => e.Id));
+            return result.IsSuccess
+                    ? TypedResults.Ok(result.Value.Select(e => e.Id))
+                    : TypedResults.Problem(detail: result.Error.Description, title: result.Error.Name);
         }
 
-        static async Task<Ok<IEnumerable<Guid>>> GetEmployeesByManagerId(HttpContext httpContext,
+        static async Task<Results<Ok<IEnumerable<Guid>>, ProblemHttpResult>> GetEmployeesByManagerId(HttpContext httpContext,
             [FromServices] IEmployeeService service,
             [FromRoute] Guid id)
         {
-            IReadOnlyList<Employee> employees = await service.GetEmployeesByManagerIdAsync(id);
+            var result = await service.GetEmployeesByManagerIdAsync(id);
 
-            return TypedResults.Ok(employees.Select(e => e.Id));
+            return result.IsSuccess
+                    ? TypedResults.Ok(result.Value.Select(e => e.Id))
+                    : TypedResults.Problem(detail: result.Error.Description, title: result.Error.Name);
         }
     }
 }

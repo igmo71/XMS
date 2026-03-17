@@ -27,6 +27,7 @@ namespace XMS.Application
 
         public static IEndpointRouteBuilder MapApplicationEndpints(this IEndpointRouteBuilder routeBuilder)
         {
+            routeBuilder.MapTestBodyEndpint();
             routeBuilder.MapEmployeeEndpints();
 
             return routeBuilder;
