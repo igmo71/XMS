@@ -6,7 +6,7 @@ namespace XMS.Application.Common.Integration
 {
     public class OneSDocumentRepository
     {
-        public static async Task DeleteRangeDyDateAsync<TEntity>(IApplicationDbContext dbContext, DateTime from, DateTime to, CancellationToken ct) where TEntity : class, IOneSDocument
+        public static async Task DeleteRangeByDateAsync<TEntity>(IApplicationDbContext dbContext, DateTime from, DateTime to, CancellationToken ct) where TEntity : class, IOneSDocument
         {
             await dbContext.Set<TEntity>()
                 .Where(e => e.Date >= from && e.Date < to)

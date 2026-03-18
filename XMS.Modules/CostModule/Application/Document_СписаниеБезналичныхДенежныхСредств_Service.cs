@@ -10,6 +10,15 @@ namespace XMS.Modules.CostModule.Application
     internal class Document_СписаниеБезналичныхДенежныхСредств_Service(ICostUtService utService, IDbContextFactoryProxy dbFactory)
         : BaseService, IDocument_СписаниеБезналичныхДенежныхСредств_Service
     {
+        public async Task<Document_СписаниеБезналичныхДенежныхСредств?> GetAsync(string refKey, CancellationToken ct)
+        {
+            using var dbContext = dbFactory.CreateDbContext();
+
+            var result = await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>().FindAsync(refKey);
+
+            return result;
+        }
+
         public async Task<IReadOnlyList<Document_СписаниеБезналичныхДенежныхСредств>> GetListAsync(DocumentQueryParameters parameters, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
@@ -29,13 +38,18 @@ namespace XMS.Modules.CostModule.Application
             return documents ?? [];
         }
 
+        public Task<ServiceResult> NotifyAsync(OneSNotifyBody notifyBody)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<int> ReloadListAsync(DateTime from, DateTime to, CancellationToken ct = default)
         {
             StartActivity();
 
             using var dbContext = dbFactory.CreateDbContext();
 
-            await OneSDocumentRepository.DeleteRangeDyDateAsync<Document_СписаниеБезналичныхДенежныхСредств>(dbContext, from, to, ct);
+            await OneSDocumentRepository.DeleteRangeByDateAsync<Document_СписаниеБезналичныхДенежныхСредств>(dbContext, from, to, ct);
 
             var currentDay = from;
 

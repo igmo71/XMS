@@ -1,4 +1,5 @@
-﻿using XMS.Application.Abstractions.Integration;
+﻿using Microsoft.EntityFrameworkCore;
+using XMS.Application.Abstractions.Integration;
 using XMS.Domain.Abstractions;
 
 namespace XMS.Application.Common
@@ -30,7 +31,7 @@ namespace XMS.Application.Common
 
             if (!string.IsNullOrWhiteSpace(parameters.NumberTerm))
             {
-                query = query.Where(d => !string.IsNullOrEmpty(d.Number) && d.Number.Contains(parameters.NumberTerm));
+                query = query.Where(d => !string.IsNullOrEmpty(d.Number) && EF.Functions.Like(d.Number, parameters.NumberTerm));
             }
 
             if (parameters.From.HasValue)

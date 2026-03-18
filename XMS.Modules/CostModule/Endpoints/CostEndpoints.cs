@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using XMS.Application;
 using XMS.Application.Common;
 using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Domain.OneS;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace XMS.Modules.CostModule.Endpoints
 {
@@ -21,15 +21,17 @@ namespace XMS.Modules.CostModule.Endpoints
                 //.ProducesProblem(401)
                 .ProducesValidationProblem();
 
-            costGroup.MapPost("/notify/write-off-non-cash", NotifyWriteOffNonCash)
-                .WithName(nameof(NotifyWriteOffNonCash))
-                .WithSummary(nameof(NotifyWriteOffNonCash))
-                .WithDescription("Notify Document_СписаниеБезналичныхДенежныхСредств");
+            // Document_СписаниеБезналичныхДенежныхСредств: write-off-non-cash
 
-            costGroup.MapGet("/write-off-non-cash/{refKey}", GetWriteOffNonCash)
+            costGroup.MapGet("/write-off-non-cash", GetWriteOffNonCash)
                 .WithName(nameof(GetWriteOffNonCash))
                 .WithSummary(nameof(GetWriteOffNonCash))
-                .WithDescription("Get Document_СписаниеБезналичныхДенежныхСредств");
+                .WithDescription("Get Document_СписаниеБезналичныхДенежныхСредств by Ref_Key");
+
+            costGroup.MapGet("/write-off-non-cash/{refKey}", GetWriteOffNonCashByRefKey)
+                .WithName(nameof(GetWriteOffNonCashByRefKey))
+                .WithSummary(nameof(GetWriteOffNonCashByRefKey))
+                .WithDescription("Get Document_СписаниеБезналичныхДенежныхСредств by Ref_Key");
 
             builder.MapGet("/integration/cost/write-off-non-cash", LoadWriteOffNonCashByDate)
                 .WithTags("XMS Cost")
@@ -41,59 +43,72 @@ namespace XMS.Modules.CostModule.Endpoints
                 .WithTags("XMS Cost")
                 .WithName(nameof(ReLoadWriteOffNonCashByDate))
                 .WithSummary(nameof(ReLoadWriteOffNonCashByDate))
-                .WithDescription("Load Document_СписаниеБезналичныхДенежныхСредств by Date from OneS Ut"); ;
+                .WithDescription("Download Document_СписаниеБезналичныхДенежныхСредств from OneS Ut for a cpecific date period and save them to the DB");
+
+            costGroup.MapPost("/notify/write-off-non-cash", NotifyWriteOffNonCash)
+                .WithName(nameof(NotifyWriteOffNonCashAsync))
+                .WithSummary(nameof(NotifyWriteOffNonCashAsync))
+                .WithDescription("Notify Document_СписаниеБезналичныхДенежныхСредств");
 
             return builder;
         }
 
-        /// <summary>
-        /// Notify Document_СписаниеБезналичныхДенежныхСредств
-        /// </summary>
-        /// <param name="loggerFactory"></param>
-        /// <param name="notifyBody"></param>
-        /// <returns></returns>
-        private static Results<Ok, BadRequest<string>> NotifyWriteOffNonCash(
-            //[FromServices] IOneSNotifyService notifyService,
-            [FromServices] ILoggerFactory loggerFactory,
-            [FromBody] OneSNotifyBody notifyBody)
-        {
-            var logger = loggerFactory.CreateLogger(nameof(CostEndpoints));
 
-            if (!Guid.TryParse(notifyBody.Ref_Key, out Guid refKey))
-            {
-                logger.LogError("{Source} Unable to parse Ref_Key {NotifyBody}", nameof(NotifyWriteOffNonCash), notifyBody);
-                return TypedResults.BadRequest($"Unable to parse Ref_Key {notifyBody.Ref_Key}");
-            }
-
-            logger.LogDebug("{Source} {notifyBody}", nameof(NotifyWriteOffNonCash), notifyBody);
-
-            return TypedResults.Ok();
-        }
 
         /// <summary>
-        /// Get Document_СписаниеБезналичныхДенежныхСредств
+        /// Get Document_СписаниеБезналичныхДенежныхСредств list from DB by DocumentQueryParameters
         /// </summary>
         /// <param name="loggerFactory"></param>
         /// <param name="refKey"></param>
         /// <returns></returns>
-        private static Results<Ok, BadRequest<string>> GetWriteOffNonCash(
-           //[FromServices] IOneSNotifyService notifyService,
-           [FromServices] ILoggerFactory loggerFactory,
-           [FromQuery] string refKey)
+        private static async Task<Results<Ok<IReadOnlyList<Document_СписаниеБезналичныхДенежныхСредств>>, BadRequest<string>>> GetWriteOffNonCash(
+            [FromServices] IDocument_СписаниеБезналичныхДенежныхСредств_Service documentService,
+            [FromServices] ILoggerFactory loggerFactory,
+            [FromQuery] string? numberTerm = null,
+            [FromQuery] DateTime? from = null,
+            [FromQuery] DateTime? to = null,
+            [FromQuery] int? skip = AppSettings.Default.Skip,
+            [FromQuery] int? take = AppSettings.Default.Take,
+            CancellationToken ct = default)
         {
             var logger = loggerFactory.CreateLogger(nameof(CostEndpoints));
 
-            logger.LogDebug("{Source} {kefKey}", nameof(GetWriteOffNonCash), refKey);
+            var parameters = new DocumentQueryParameters(numberTerm, from, to, skip, take);
 
-            return TypedResults.Ok();
+            var result = await documentService.GetListAsync(parameters, ct);
+
+            logger.LogDebug("{Source} {DocumentQueryParameters} {Documents}", nameof(GetWriteOffNonCash), parameters, result);
+
+            return TypedResults.Ok(result);
+        }
+
+        /// <summary>
+        /// Get Document_СписаниеБезналичныхДенежныхСредств from DB by Ref_Key
+        /// </summary>
+        /// <param name="loggerFactory"></param>
+        /// <param name="refKey"></param>
+        /// <returns></returns>
+        private static async Task<Results<Ok<Document_СписаниеБезналичныхДенежныхСредств>, NotFound<string>>> GetWriteOffNonCashByRefKey(
+            [FromServices] IDocument_СписаниеБезналичныхДенежныхСредств_Service documentService,
+            [FromServices] ILoggerFactory loggerFactory,            
+            [FromRoute] string refKey,
+            CancellationToken ct = default)
+        {
+            var logger = loggerFactory.CreateLogger(nameof(CostEndpoints));
+
+            var result = await documentService.GetAsync(refKey, ct);
+
+            logger.LogDebug("{Source} {DocumentQueryParameters} {Document}", nameof(GetWriteOffNonCashByRefKey), refKey, result);
+
+            return result is null ? TypedResults.NotFound($"Document Not Found by Ref_Key {refKey}") : TypedResults.Ok(result);
         }
 
         /// <summary>
         /// Load Document_СписаниеБезналичныхДенежныхСредств from OneS Ut
+        /// Загрузить документы СписаниеБезналичныхДенежныхСредств за определенную дату из 1С УТ.
         /// </summary>
         /// <param name="documentService"></param>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
+        /// <param name="date"></param>
         /// <returns></returns>
         private static async Task<Results<Ok<IReadOnlyList<Document_СписаниеБезналичныхДенежныхСредств>>, BadRequest<string>>> LoadWriteOffNonCashByDate(
             [FromServices] IDocument_СписаниеБезналичныхДенежныхСредств_Service documentService,
@@ -104,6 +119,14 @@ namespace XMS.Modules.CostModule.Endpoints
             return TypedResults.Ok(result);
         }
 
+        /// <summary>
+        /// Download Document_СписаниеБезналичныхДенежныхСредств from OneS Ut for a cpecific date period and save them to the DB
+        /// Загрузить документы СписаниеБезналичныхДенежныхСредств за определенный период из 1С УТ и записать их БД
+        /// </summary>
+        /// <param name="documentService"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
         private static async Task<Results<Ok<int>, BadRequest<string>>> ReLoadWriteOffNonCashByDate(
             [FromServices] IDocument_СписаниеБезналичныхДенежныхСредств_Service documentService,
             [FromQuery] DateTime from,
@@ -112,6 +135,32 @@ namespace XMS.Modules.CostModule.Endpoints
             var result = await documentService.ReloadListAsync(from, to);
 
             return TypedResults.Ok(result);
+        }
+
+        /// <summary>
+        /// Notify Document_СписаниеБезналичныхДенежныхСредств from OneS
+        /// </summary>
+        /// <param name="loggerFactory"></param>
+        /// <param name="notifyBody"></param>
+        /// <returns></returns>
+        private static async Task<Results<Ok, BadRequest<string>>> NotifyWriteOffNonCashAsync(
+            [FromServices] IDocument_СписаниеБезналичныхДенежныхСредств_Service documentService,
+            [FromServices] ILoggerFactory loggerFactory,
+            [FromBody] OneSNotifyBody notifyBody)
+        {
+            var logger = loggerFactory.CreateLogger(nameof(CostEndpoints));
+
+            if (!Guid.TryParse(notifyBody.Ref_Key, out Guid refKey))
+            {
+                logger.LogError("{Source} Unable to parse Ref_Key {NotifyBody}", nameof(NotifyWriteOffNonCashAsync), notifyBody);
+                return TypedResults.BadRequest($"Unable to parse Ref_Key {notifyBody.Ref_Key}");
+            }
+
+            ServiceResult result = await documentService.NotifyAsync(notifyBody);
+
+            logger.LogDebug("{Source} {notifyBody}", nameof(NotifyWriteOffNonCashAsync), notifyBody);
+
+            return TypedResults.Ok();
         }
     }
 }
