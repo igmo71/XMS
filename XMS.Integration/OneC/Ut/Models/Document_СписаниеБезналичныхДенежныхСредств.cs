@@ -5,25 +5,25 @@ namespace XMS.Integration.OneC.Ut.Models
 {
     public class Document_СписаниеБезналичныхДенежныхСредств : IOneCDocument
     {
-        [MaxLength(AppSettings.OneS.GUID)] public required string Ref_Key { get; set; }
-        [MaxLength(AppSettings.OneS.VALUE)] public string? Number { get; set; }
+        public Guid Ref_Key { get; set; }
+        [MaxLength(OneCSettings.VALUE)] public string? Number { get; set; }
         public DateTime Date { get; set; }
-        [MaxLength(AppSettings.OneS.VALUE)] public string? ХозяйственнаяОперация { get; set; }
-        [MaxLength(AppSettings.OneS.GUID)] public string? Партнер_Key { get; set; }
-        [MaxLength(AppSettings.OneS.COMMENT)] public string? НазначениеПлатежа { get; set; }
-        [MaxLength(AppSettings.OneS.GUID)] public string? Автор_Key { get; set; }
-        [MaxLength(AppSettings.OneS.GUID)] public string? Организация_Key { get; set; }
-        [MaxLength(AppSettings.OneS.GUID)] public string? Подразделение_Key { get; set; }
-        [MaxLength(AppSettings.OneS.GUID)] public string? ДокументОснование { get; set; }
-        [MaxLength(AppSettings.OneS.VALUE)] public string? ДокументОснование_Type { get; set; }
-        [MaxLength(AppSettings.OneS.GUID)] public string? Договор { get; set; }
-        [MaxLength(AppSettings.OneS.VALUE)] public string? Договор_Type { get; set; }
-        [MaxLength(AppSettings.OneS.VALUE)] public string? НалогообложениеНДС { get; set; }
-        [MaxLength(AppSettings.OneS.GUID)] public string? СтатьяДвиженияДенежныхСредств_Key { get; set; }
-        [MaxLength(AppSettings.OneS.GUID)] public string? Контрагент_Key { get; set; }
-        [MaxLength(AppSettings.OneS.GUID)] public string? Валюта_Key { get; set; }
+        [MaxLength(OneCSettings.VALUE)] public string? ХозяйственнаяОперация { get; set; }
+        public Guid Партнер_Key { get; set; }
+        [MaxLength(OneCSettings.COMMENT)] public string? НазначениеПлатежа { get; set; }
+        public Guid Автор_Key { get; set; }
+        public Guid Организация_Key { get; set; }
+        public Guid Подразделение_Key { get; set; }
+        public Guid ДокументОснование { get; set; }
+        [MaxLength(OneCSettings.VALUE)] public string? ДокументОснование_Type { get; set; }
+        public Guid Договор { get; set; }
+        [MaxLength(OneCSettings.VALUE)] public string? Договор_Type { get; set; }
+        [MaxLength(OneCSettings.VALUE)] public string? НалогообложениеНДС { get; set; }
+        public Guid СтатьяДвиженияДенежныхСредств_Key { get; set; }
+        public Guid Контрагент_Key { get; set; }
+        public Guid Валюта_Key { get; set; }
         public decimal СуммаДокумента { get; set; }
-        [MaxLength(AppSettings.OneS.COMMENT)] public string? Комментарий { get; set; }
+        [MaxLength(OneCSettings.COMMENT)] public string? Комментарий { get; set; }
         public List<Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа>? РасшифровкаПлатежа { get; set; }
 
         public static string Uri => "Document_СписаниеБезналичныхДенежныхСредств?$format=json" +
@@ -31,9 +31,9 @@ namespace XMS.Integration.OneC.Ut.Models
             "ДокументОснование,ДокументОснование_Type,Договор,Договор_Type,НалогообложениеНДС,СтатьяДвиженияДенежныхСредств_Key,СуммаДокумента,Контрагент_Key," +
             "Валюта_Key,РасшифровкаПлатежа";
 
-        public static string GetUriByRefKey(string refKey)
+        public static string GetUriByRefKey(Guid refKey)
         {
-            string uri = $"{Uri}&$filter=Ref_Key eq guid'{refKey}'";
+            string uri = $"{Uri}&$filter=DeletionMark eq false and Posted eq true and Ref_Key eq guid'{refKey}'";
 
             return uri;
         }
@@ -165,19 +165,19 @@ namespace XMS.Integration.OneC.Ut.Models
 
     public class Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа : IOneCDocumentItem
     {
-        [MaxLength(AppSettings.OneS.GUID)] public required string Ref_Key { get; set; }
+        public Guid Ref_Key { get; set; }
         public int LineNumber { get; set; }
-        [MaxLength(AppSettings.OneS.GUID)] public string? Партнер_Key { get; set; }
-        [MaxLength(AppSettings.OneS.GUID)] public string? СтатьяРасходов { get; set; }
-        [MaxLength(AppSettings.OneS.VALUE)] public string? СтатьяРасходов_Type { get; set; }
-        [MaxLength(AppSettings.OneS.GUID)] public string? СтатьяДвиженияДенежныхСредств_Key { get; set; }
-        [MaxLength(AppSettings.OneS.COMMENT)] public string? Комментарий { get; set; }
-        [MaxLength(AppSettings.OneS.GUID)] public string? Подразделение_Key { get; set; }
-        [MaxLength(AppSettings.OneS.GUID)] public string? НаправлениеДеятельности_Key { get; set; }
-        [MaxLength(AppSettings.OneS.GUID)] public string? СтавкаНДС_Key { get; set; }
-        [MaxLength(AppSettings.OneS.GUID)] public string? ОбъектРасчетов_Key { get; set; }
+        public Guid Партнер_Key { get; set; }
+        public Guid СтатьяРасходов { get; set; }
+        [MaxLength(OneCSettings.VALUE)] public string? СтатьяРасходов_Type { get; set; }
+        public Guid СтатьяДвиженияДенежныхСредств_Key { get; set; }
+        [MaxLength(OneCSettings.COMMENT)] public string? Комментарий { get; set; }
+        public Guid Подразделение_Key { get; set; }
+        public Guid НаправлениеДеятельности_Key { get; set; }
+        public Guid СтавкаНДС_Key { get; set; }
+        public Guid ОбъектРасчетов_Key { get; set; }
         public decimal Сумма { get; set; }
-        [MaxLength(AppSettings.OneS.GUID)] public string? ВалютаВзаиморасчетов_Key { get; set; }
+        public Guid ВалютаВзаиморасчетов_Key { get; set; }
         public decimal СуммаВзаиморасчетов { get; set; }
 
         //public string? АналитикаРасходов { get; set; }

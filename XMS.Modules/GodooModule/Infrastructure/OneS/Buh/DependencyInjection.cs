@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
-using XMS.Application.Common.Integration;
 using XMS.Integration.OneC;
 using XMS.Modules.GodooModule.Abstractions;
 
@@ -23,7 +22,7 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh
 
         private static IServiceCollection AddOneSClient<TClient, TConfig>(this IServiceCollection services, IConfiguration configuration)
             where TClient : class
-            where TConfig : OneSClientConfig
+            where TConfig : OneCClientConfig
         {
             var sectionName = typeof(TConfig).Name;
             var configSection = configuration.GetSection(sectionName);

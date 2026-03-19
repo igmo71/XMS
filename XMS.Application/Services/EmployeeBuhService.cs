@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XMS.Application.Abstractions;
-using XMS.Application.Abstractions.Integration;
 using XMS.Application.Abstractions.Services;
+using XMS.Core.Abstractions.Data;
 using XMS.Domain.Models;
+using XMS.Integration.OneC.Abstractions;
 
 namespace XMS.Application.Services
 {
-    internal class EmployeeBuhService(IOneSBuhService oneSBuhService, IDbContextFactoryProxy dbFactory) : IEmployeeBuhService
+    internal class EmployeeBuhService(IOneCBuhService oneSBuhService, IDbContextFactoryProxy dbFactory) : IEmployeeBuhService
     {
         public async Task<IReadOnlyList<EmployeeBuh>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
         {

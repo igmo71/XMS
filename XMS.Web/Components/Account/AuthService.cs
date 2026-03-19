@@ -4,6 +4,8 @@ using System.Security.Claims;
 using XMS.Domain.Models;
 using XMS.Infrastructure.Integration.Bitrix;
 using XMS.Infrastructure.Integration.Bitrix.Models;
+using XMS.Integration.Bitrix;
+using XMS.Integration.Bitrix.Models;
 
 namespace XMS.Web.Components.Account
 {

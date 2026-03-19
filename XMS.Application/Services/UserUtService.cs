@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XMS.Application.Abstractions;
-using XMS.Application.Abstractions.Integration;
 using XMS.Application.Abstractions.Services;
+using XMS.Core.Abstractions.Data;
 using XMS.Domain.Models;
+using XMS.Integration.OneC.Abstractions;
 
 namespace XMS.Application.Services
 {
-    internal class UserUtService(IOneSUtService oneSUtService, IDbContextFactoryProxy dbFactory) : IUserUtService
+    internal class UserUtService(IOneCUtService oneSUtService, IDbContextFactoryProxy dbFactory) : IUserUtService
     {
         public async Task<IReadOnlyList<UserUt>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
         {
@@ -20,14 +20,14 @@ namespace XMS.Application.Services
             return await query.OrderBy(x => x.Name).ToListAsync(ct);
         }
 
-        public async Task<IReadOnlyList<UserUt>> LoadListAsync(CancellationToken ct = default)
+        public async Task<IReadOnlyList<UserUt>> FetchListAsync(CancellationToken ct = default)
         {
-            return await oneSUtService.GetUserUtListAsync(ct);
+            return await oneSUtService.FetchUserUtListAsync(ct);
         }
 
         public async Task ReloadListAsync(CancellationToken ct = default)
         {
-            var list = await LoadListAsync(ct);
+            var list = await FetchListAsync(ct);
 
             await SaveListAsync(list, ct);
         }

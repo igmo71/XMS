@@ -1,4 +1,6 @@
-﻿namespace XMS.Integration.OneC.Abstractions
+﻿using XMS.Domain.Models;
+
+namespace XMS.Integration.OneC.Abstractions
 {
     public interface IOneCZupService
     {

@@ -4,7 +4,9 @@ using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
 using XMS.Integration.OneC.Abstractions;
+using XMS.Integration.OneC.Buh;
 using XMS.Integration.OneC.Ut;
+using XMS.Integration.OneC.Zup;
 
 namespace XMS.Integration.OneC
 {
@@ -19,6 +21,8 @@ namespace XMS.Integration.OneC
             services.AddScoped<IOneCUtService, UtService>();
             services.AddScoped<IOneCBuhService, BuhService>();
             services.AddScoped<IOneCZupService, ZupService>();
+
+            return services;
         }
 
         public static IServiceCollection AddOneCClient<TClient, TConfig>(this IServiceCollection services, IConfiguration configuration)

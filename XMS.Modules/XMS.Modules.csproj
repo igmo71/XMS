@@ -12,10 +12,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\XMS.Application\XMS.Application.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="CostModule\Domain\OneS\" />
+	  <ProjectReference Include="..\XMS.Core\XMS.Core.csproj" />
 	</ItemGroup>
 
 </Project>

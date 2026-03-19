@@ -20,7 +20,6 @@ namespace XMS.Modules
 
         public static IEndpointRouteBuilder MapModulesEndpoints(this IEndpointRouteBuilder endpoints)
         {
-            endpoints.MapCostEndpoints();
             endpoints.MapGodooEndpoints();
 
             return endpoints;

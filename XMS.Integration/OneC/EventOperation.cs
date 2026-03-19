@@ -2,6 +2,6 @@
 {
     public enum EventOperation
     {
-        CreateOrUpdate, Delete
+        Changed, Delete
     }
 }

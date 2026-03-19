@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XMS.Application.Abstractions;
 using XMS.Application.Abstractions.Services;
 using XMS.Application.Common;
+using XMS.Core.Abstractions.Data;
+using XMS.Core.Common;
 using XMS.Domain.Models;
 
 namespace XMS.Application.Services
@@ -211,10 +212,6 @@ namespace XMS.Application.Services
 
             var subordinates = GetAllSubordinatesBFS(manager.Id, employees);
 
-            // TODO: Костыль
-            if (subordinates.Count == AppSettings.MaxSubordinatesCount)
-                return ServiceError.InvalidOperation.WithDescription($"Return MaxSubordinatesCount {subordinates.Count}");
-
             return subordinates;
         }
 
@@ -302,9 +299,9 @@ namespace XMS.Application.Services
                 {
                     result.Add(subordinate);
 
-                    // TODO: Костыль
-                    if (result.Count == AppSettings.MaxSubordinatesCount)
-                        return result;
+                    // TODO: GetAllSubordinatesBFS probably stuck in a loop - Костыль
+                    if (result.Count == 1000)
+                        throw new InvalidOperationException("GetAllSubordinatesBFS probably stuck in a loop.");
 
                     queue.Enqueue(subordinate.Id);
                 }

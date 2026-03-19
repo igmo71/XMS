@@ -1,6 +1,6 @@
 ﻿namespace XMS.Integration.OneC.Ut.Models
 {
-    internal class AccumulationRegister_ТоварыНаСкладах_Balance
+    public class AccumulationRegister_ТоварыНаСкладах_Balance
     {
         public Guid Номенклатура_Key { get; set; }
         public Guid Склад_Key { get; set; }

@@ -1,5 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using XMS.Integration.AD;
+using XMS.Integration.Bitrix;
+using XMS.Integration.OneC;
 
 namespace XMS.Integration
 {
@@ -7,9 +11,16 @@ namespace XMS.Integration
     {
         public static IServiceCollection AddIntegration(this IServiceCollection services, IConfiguration configuration)
         {
-
+            services.AddOneCServices(configuration);
+            services.AddAdServices(configuration);
+            services.AddBitrixServices(configuration);
 
             return services;
+        }
+
+        public static IEndpointRouteBuilder MapOneCEndpoints(this IEndpointRouteBuilder builder)
+        {
+            return builder;
         }
     }
 }

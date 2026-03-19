@@ -1,19 +1,18 @@
-﻿namespace XMS.Integration.OneC.Abstractions
+﻿using XMS.Domain.Models;
+using XMS.Integration.OneC.Ut.Models;
+
+namespace XMS.Integration.OneC.Abstractions
 {
     public interface IOneCUtService
     {
-        /// <summary>
-        /// Get Catalog_Пользователи
-        /// </summary>
-        /// <param name="ct"></param>
-        /// <returns></returns>
-        Task<IReadOnlyList<UserUt>> GetUserUtListAsync(CancellationToken ct = default);        
+        Task<IReadOnlyList<AccumulationRegister_ТоварыНаСкладах_Balance>> GetAccumulationRegister_ТоварыНаСкладах_Balance_Async(CancellationToken ct = default);
 
-        /// <summary>
-        /// Get AccumulationRegister_ТоварыНаСкладах_Balance
-        /// </summary>
-        /// <param name="ct"></param>
-        /// <returns></returns>
-        Task<IReadOnlyList<SkuInventoryUt>> GetStockBalanceUtListAsync(CancellationToken ct = default);
+        Task<IReadOnlyList<Catalog_СтатьиДвиженияДенежныхСредств>> GetCatalog_СтатьиДвиженияДенежныхСредств_Async(CancellationToken ct = default);
+
+        Task<IReadOnlyList<Document_СписаниеБезналичныхДенежныхСредств>> GetDocument_СписаниеБезналичныхДенежныхСредств_Async(DateTime date, CancellationToken ct = default);
+
+        Task<Document_СписаниеБезналичныхДенежныхСредств?> GetDocument_СписаниеБезналичныхДенежныхСредств_Async(string refKey, CancellationToken ct = default);
+
+        Task<IReadOnlyList<UserUt>> FetchUserUtListAsync(CancellationToken ct = default);
     }
 }

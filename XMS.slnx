@@ -1,6 +1,7 @@
 <Solution>
   <Project Path="XMS.Api/XMS.Api.csproj" Id="9d4e58bd-b3bf-48ee-932c-6458ae9647b4" />
   <Project Path="XMS.Application/XMS.Application.csproj" Id="fbccafe4-551e-4ec0-8990-78000b0586d7" />
+  <Project Path="XMS.Core/XMS.Core.csproj" Id="13aae374-99d8-4163-aed4-1f891c1a9aa6" />
   <Project Path="XMS.Domain/XMS.Domain.csproj" Id="26d8e2ef-6a2e-42bc-9654-a0027da2820c" />
   <Project Path="XMS.Infrastructure/XMS.Infrastructure.csproj" Id="ab60e870-3fbb-4e7e-a400-d144ee9df9b6" />
   <Project Path="XMS.Integration/XMS.Integration.csproj" Id="0a279b5e-48c1-486e-a236-4b50c74d67a4" />

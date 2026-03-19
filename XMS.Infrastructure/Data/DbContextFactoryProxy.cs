@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using XMS.Application.Abstractions;
+using XMS.Core.Abstractions.Data;
 
 namespace XMS.Infrastructure.Data
 {

@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using XMS.Application.Abstractions.Integration;
+﻿using XMS.Core;
 using XMS.Domain.Abstractions;
 
 namespace XMS.Application.Common
@@ -21,29 +20,6 @@ namespace XMS.Application.Common
 
             if (searchParameters.IncludeDeleted == true)
                 query = query.Where(x => !x.IsDeleted);
-            return query;
-        }
-
-        public static IQueryable<TEntity> HandleDocumentQueryParameters<TEntity>(this IQueryable<TEntity> query, DocumentQueryParameters parameters)
-            where TEntity : IOneSDocument
-        {
-            query = query.OrderBy(e => e.Number);
-
-            if (!string.IsNullOrWhiteSpace(parameters.NumberTerm))
-            {
-                query = query.Where(d => !string.IsNullOrEmpty(d.Number) && EF.Functions.Like(d.Number, parameters.NumberTerm));
-            }
-
-            if (parameters.From.HasValue)
-            {
-                query = query.Where(d => d.Date >= parameters.From.Value);
-            }
-
-            if (parameters.To.HasValue)
-            {
-                query = query.Where(d => d.Date < parameters.To.Value);
-            }
-
             return query;
         }
     }

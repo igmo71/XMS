@@ -4,11 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using XMS.Application.Abstractions;
-using XMS.Application.Common;
+using XMS.Core.Abstractions.Data;
+using XMS.Core.Common;
 using XMS.Infrastructure.Data;
 using XMS.Infrastructure.EventBus;
-using XMS.Infrastructure.Integration;
 
 namespace XMS.Infrastructure
 {
@@ -52,8 +51,6 @@ namespace XMS.Infrastructure
             services.AddEventBus(configuration);
 
             services.AddScoped<IDbContextFactoryProxy, DbContextFactoryProxy>();
-
-            services.AddIntegrationServices(configuration);
 
             return services;
         }

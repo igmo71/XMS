@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using XMS.Modules.CostModule.EventBus;
+using XMS.Integration.OneC;
 
 namespace XMS.Infrastructure.EventBus
 {
@@ -15,7 +15,7 @@ namespace XMS.Infrastructure.EventBus
                 var nameFormatter = new KebabCaseEndpointNameFormatter("xms", false);
                 config.SetEndpointNameFormatter(nameFormatter);
                 config.AddConsumers(Assembly.GetExecutingAssembly());
-                config.AddConsumers(typeof(Document_СписаниеБезналичныхДенежныхСредств_Consumer).Assembly);
+                config.AddConsumers(typeof(IOneCConsumer<>).Assembly);
 
                 config.UsingRabbitMq((context, cfg) =>
                 {

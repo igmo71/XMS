@@ -11,10 +11,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="AD\" />
-		<Folder Include="Bitrix\" />
-		<Folder Include="OneC\Buh\Models\" />
-		<Folder Include="OneC\Zup\Models\" />
+	  <PackageReference Include="MassTransit.RabbitMQ" Version="9.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\XMS.Core\XMS.Core.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XMS.Application.Abstractions;
 using XMS.Application.Abstractions.Services;
 using XMS.Application.Common;
+using XMS.Core.Abstractions.Data;
+using XMS.Core.Common;
 using XMS.Domain.Models;
 
 namespace XMS.Application.Services
@@ -57,12 +58,12 @@ namespace XMS.Application.Services
 
             var existing = await dbContext.Set<Department>()
                 .Include(e => e.Parent)
-                .FirstOrDefaultAsync(e => e.Id ==  id, ct);
+                .FirstOrDefaultAsync(e => e.Id == id, ct);
 
             if (existing is null)
                 return ServiceError.NotFound.WithDescription($"Подразделение не найдено ({id})");
 
-            if(existing.Parent?.IsDeleted == true)
+            if (existing.Parent?.IsDeleted == true)
                 return ServiceError.InvalidOperation.WithDescription("Подразделение вложено в удаленное Подразделения");
 
             existing.IsDeleted = false;

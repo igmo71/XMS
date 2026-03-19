@@ -2,6 +2,7 @@
 using Serilog;
 using XMS.Application;
 using XMS.Infrastructure;
+using XMS.Integration;
 using XMS.Modules;
 
 namespace XMS.Api
@@ -25,6 +26,7 @@ namespace XMS.Api
             builder.Services.AddProblemDetails();
 
             builder.Services.AddInfrastructure(builder.Configuration);
+            builder.Services.AddIntegration(builder.Configuration);
             builder.Services.AddApplicationServices();
             builder.Services.AddApplicationModules(builder.Configuration);
 

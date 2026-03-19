@@ -1,6 +1,8 @@
-﻿namespace XMS.Integration.OneC.Ut.Models
+﻿using XMS.Integration.OneC.Abstractions;
+
+namespace XMS.Integration.OneC.Ut.Models
 {
-    internal class Catalog_СтатьиДвиженияДенежныхСредств
+    public class Catalog_СтатьиДвиженияДенежныхСредств: IOneCCatalog
     {
         public Guid Ref_Key { get; set; }
         public string? Description { get; set; }
