@@ -1,10 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using XMS.Application.Abstractions;
-using XMS.Application.Abstractions.Integration;
-
-namespace XMS.Application.Common.Integration
+﻿namespace XMS.Integration.OneC
 {
-    public class OneSDocumentRepository
+    public class DocumentRepository
     {
         public static async Task DeleteRangeByDateAsync<TEntity>(IApplicationDbContext dbContext, DateTime from, DateTime to, CancellationToken ct) where TEntity : class, IOneSDocument
         {

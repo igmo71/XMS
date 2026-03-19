@@ -1,12 +1,10 @@
 ﻿using System.Security.Cryptography;
-using XMS.Application.Abstractions.Integration;
-using XMS.Application.Common.Integration;
-using XMS.Domain.Models;
-using XMS.Infrastructure.Integration.OneS.Ut.Models;
+using XMS.Integration.OneC.Abstractions;
+using XMS.Integration.OneC.Ut.Models;
 
-namespace XMS.Infrastructure.Integration.OneS.Ut
+namespace XMS.Integration.OneC.Ut
 {
-    internal class UtService(UtClient client) : IOneSUtService
+    internal class UtService(UtClient client) : IOneCUtService
     {
         /// <summary>
         /// Get Catalog_Пользователи

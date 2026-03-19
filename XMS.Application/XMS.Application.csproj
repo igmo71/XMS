@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\XMS.Domain\XMS.Domain.csproj" />
+    <ProjectReference Include="..\XMS.Integration\XMS.Integration.csproj" />
   </ItemGroup>
 
 </Project>

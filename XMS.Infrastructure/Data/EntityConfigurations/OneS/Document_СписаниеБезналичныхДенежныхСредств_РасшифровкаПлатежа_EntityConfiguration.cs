@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using XMS.Integration.OneC.Ut.Models;
 using XMS.Modules.CostModule.Domain.OneS;
 
 namespace XMS.Infrastructure.Data.EntityConfigurations.OneS

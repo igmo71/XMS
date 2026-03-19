@@ -1,4 +1,4 @@
-﻿namespace XMS.Infrastructure.Integration.OneS.Ut.Models
+﻿namespace XMS.Integration.OneC.Ut.Models
 {
     internal class AccumulationRegister_ТоварыНаСкладах_Balance
     {

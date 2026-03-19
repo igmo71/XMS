@@ -7,10 +7,10 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
 
-namespace XMS.Application.Common.Integration
+namespace XMS.Integration.OneC
 {
-    public abstract class OneSClient<TConfig>(HttpClient httpClient, IOptions<TConfig> options, ILogger<OneSClient<TConfig>> logger)
-        where TConfig : OneSClientConfig
+    public abstract class OneCClient<TConfig>(HttpClient httpClient, IOptions<TConfig> options, ILogger<OneCClient<TConfig>> logger)
+        where TConfig : OneCClientConfig
     {
         protected readonly TConfig _clientConfig = options.Value;
         protected readonly HttpClient _httpClient = httpClient;
@@ -51,7 +51,7 @@ namespace XMS.Application.Common.Integration
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = JsonSerializer.Deserialize<OneSError>(content);
+                var error = JsonSerializer.Deserialize<OneCError>(content);
                 logger.LogError("{Source} {Uri} {JsonString} {@Value} {@Error}", nameof(PostValueAsync), uri, jsonString, value, error);
                 return default;
             }
@@ -75,7 +75,7 @@ namespace XMS.Application.Common.Integration
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = JsonSerializer.Deserialize<OneSError>(content);
+                var error = JsonSerializer.Deserialize<OneCError>(content);
                 logger.LogError("{Source} {Uri} {JsonString} {@Value} {@Error}", nameof(PatchValueAsync), uri, jsonString, value, error);
                 return default;
             }

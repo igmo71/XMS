@@ -1,4 +1,4 @@
-﻿namespace XMS.Application.Common
+﻿namespace XMS.Integration.OneC
 {
     public enum EventOperation
     {

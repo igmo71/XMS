@@ -1,5 +1,6 @@
 ﻿using MassTransit;
 using XMS.Application.Common;
+using XMS.Integration.OneC;
 using XMS.Modules.CostModule.Abstractions;
 
 namespace XMS.Modules.CostModule.EventBus

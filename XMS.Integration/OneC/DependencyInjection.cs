@@ -3,14 +3,27 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
+using XMS.Integration.OneC.Abstractions;
+using XMS.Integration.OneC.Ut;
 
-namespace XMS.Application.Common.Integration
+namespace XMS.Integration.OneC
 {
-    public static class OneSDependencyInjection
+    public static class DependencyInjection
     {
-        public static IServiceCollection AddOneSClient<TClient, TConfig>(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddOneCServices(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddOneCClient<UtClient, UtClientConfig>(configuration);
+            services.AddOneCClient<BuhClient, BuhClientConfig>(configuration);
+            services.AddOneCClient<ZupClient, ZupClientConfig>(configuration);
+
+            services.AddScoped<IOneCUtService, UtService>();
+            services.AddScoped<IOneCBuhService, BuhService>();
+            services.AddScoped<IOneCZupService, ZupService>();
+        }
+
+        public static IServiceCollection AddOneCClient<TClient, TConfig>(this IServiceCollection services, IConfiguration configuration)
             where TClient : class
-            where TConfig : OneSClientConfig
+            where TConfig : OneCClientConfig
         {
             var sectionName = typeof(TConfig).Name;
             var configSection = configuration.GetSection(sectionName);

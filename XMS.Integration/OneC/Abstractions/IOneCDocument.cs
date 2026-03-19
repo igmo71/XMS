@@ -1,13 +1,13 @@
-﻿namespace XMS.Application.Abstractions.Integration
+﻿namespace XMS.Integration.OneC.Abstractions
 {
-    public interface IOneSDocument
+    public interface IOneCDocument
     {
         string Ref_Key { get; set; }
         string? Number { get; set; }
         DateTime Date { get; set; }
     }
 
-    public interface IOneSDocumentItem
+    public interface IOneCDocumentItem
     {
         string Ref_Key { get; set; }
         int LineNumber { get; set; }

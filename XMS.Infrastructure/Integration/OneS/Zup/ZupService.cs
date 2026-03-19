@@ -2,6 +2,8 @@
 using XMS.Application.Common.Integration;
 using XMS.Domain.Models;
 using XMS.Infrastructure.Integration.OneS.Zup.Models;
+using XMS.Integration.OneC;
+using XMS.Integration.OneC.Abstractions;
 
 namespace XMS.Infrastructure.Integration.OneS.Zup
 {

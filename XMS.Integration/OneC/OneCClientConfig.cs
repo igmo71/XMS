@@ -1,6 +1,6 @@
-﻿namespace XMS.Application.Common.Integration
+﻿namespace XMS.Integration.OneC
 {
-    public abstract class OneSClientConfig
+    public abstract class OneCClientConfig
     {
         public required string BaseAddress { get; set; }
         public required string ServiceUri { get; set; }

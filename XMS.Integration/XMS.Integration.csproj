@@ -11,11 +11,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\XMS.Application\XMS.Application.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="CostModule\Domain\OneS\" />
+		<Folder Include="AD\" />
+		<Folder Include="Bitrix\" />
+		<Folder Include="OneC\Buh\Models\" />
+		<Folder Include="OneC\Zup\Models\" />
 	</ItemGroup>
 
 </Project>

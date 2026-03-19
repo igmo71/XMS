@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace XMS.Application.Common.Integration
+namespace XMS.Integration.OneC
 {
-    internal class OneSError
+    internal class OneCError
     {
         [JsonPropertyName("odata.error")]
         public OdataError? OdataError { get; set; }

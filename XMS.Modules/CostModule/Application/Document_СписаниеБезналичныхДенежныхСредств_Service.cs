@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using XMS.Application.Abstractions;
 using XMS.Application.Common;
 using XMS.Application.Common.Integration;
+using XMS.Integration.OneC;
 using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Domain.OneS;
 

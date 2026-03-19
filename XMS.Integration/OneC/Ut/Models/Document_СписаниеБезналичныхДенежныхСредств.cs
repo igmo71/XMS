@@ -1,10 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using XMS.Application;
-using XMS.Application.Abstractions.Integration;
+using XMS.Integration.OneC.Abstractions;
 
-namespace XMS.Modules.CostModule.Domain.OneS
+namespace XMS.Integration.OneC.Ut.Models
 {
-    public class Document_СписаниеБезналичныхДенежныхСредств : IOneSDocument
+    public class Document_СписаниеБезналичныхДенежныхСредств : IOneCDocument
     {
         [MaxLength(AppSettings.OneS.GUID)] public required string Ref_Key { get; set; }
         [MaxLength(AppSettings.OneS.VALUE)] public string? Number { get; set; }
@@ -164,7 +163,7 @@ namespace XMS.Modules.CostModule.Domain.OneS
         //public string? ТипНалогаnavigationLinkUrl { get; set; }
     }
 
-    public class Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа : IOneSDocumentItem
+    public class Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа : IOneCDocumentItem
     {
         [MaxLength(AppSettings.OneS.GUID)] public required string Ref_Key { get; set; }
         public int LineNumber { get; set; }

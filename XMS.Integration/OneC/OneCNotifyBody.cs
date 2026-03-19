@@ -1,6 +1,6 @@
-﻿namespace XMS.Application.Common.Integration
+﻿namespace XMS.Integration.OneC
 {
-    public class OneSNotifyBody
+    public class OneCNotifyBody
     {
         public string? Ref_Key { get; set; }
         public EventOperation? EventOperation { get; set; }

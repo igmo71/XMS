@@ -1,8 +1,6 @@
-﻿using XMS.Domain.Models;
-
-namespace XMS.Application.Abstractions.Integration
+﻿namespace XMS.Integration.OneC.Abstractions
 {
-    public interface IOneSUtService
+    public interface IOneCUtService
     {
         /// <summary>
         /// Get Catalog_Пользователи

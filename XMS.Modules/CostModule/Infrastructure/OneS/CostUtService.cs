@@ -1,4 +1,5 @@
 ﻿using XMS.Application.Common.Integration;
+using XMS.Integration.OneC;
 using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Domain;
 using XMS.Modules.CostModule.Domain.OneS;
