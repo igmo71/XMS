@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using XMS.Application.Abstractions;
 using XMS.Application.Common;
 using XMS.Infrastructure.Data;
+using XMS.Infrastructure.EventBus;
 using XMS.Infrastructure.Integration;
 
 namespace XMS.Infrastructure
@@ -45,10 +45,11 @@ namespace XMS.Infrastructure
 
                 options.UseSqlServer(connectionString);
                 options.EnableSensitiveDataLogging();
-                options.LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name });
+                options.LogTo(Console.WriteLine, [DbLoggerCategory.Database.Command.Name]);
             });
-
             services.AddDatabaseDeveloperPageExceptionFilter();
+
+            services.AddEventBus(configuration);
 
             services.AddScoped<IDbContextFactoryProxy, DbContextFactoryProxy>();
 

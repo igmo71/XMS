@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using XMS.Application.Abstractions;
 using XMS.Application.Common;
 using XMS.Application.Common.Integration;
@@ -7,9 +8,26 @@ using XMS.Modules.CostModule.Domain.OneS;
 
 namespace XMS.Modules.CostModule.Application
 {
-    internal class Document_СписаниеБезналичныхДенежныхСредств_Service(ICostUtService utService, IDbContextFactoryProxy dbFactory)
+    internal class Document_СписаниеБезналичныхДенежныхСредств_Service(
+        ICostUtService utService,
+        IDbContextFactoryProxy dbFactory,
+        ILogger<Document_СписаниеБезналичныхДенежныхСредств_Service> logger)
         : BaseService, IDocument_СписаниеБезналичныхДенежныхСредств_Service
     {
+        public Task<ServiceResult> CreateOrUpdateAsync(string ref_Key)
+        {
+            logger.LogDebug("{Source}", nameof(CreateOrUpdateAsync));
+
+            return Task.FromResult(ServiceResult.Success());
+        }
+
+        public Task<ServiceResult> DeleteAsync(string ref_Key)
+        {
+            logger.LogDebug("{Source}", nameof(DeleteAsync));
+
+            return Task.FromResult(ServiceResult.Success());
+        }
+
         public async Task<Document_СписаниеБезналичныхДенежныхСредств?> GetAsync(string refKey, CancellationToken ct)
         {
             using var dbContext = dbFactory.CreateDbContext();
@@ -38,10 +56,6 @@ namespace XMS.Modules.CostModule.Application
             return documents ?? [];
         }
 
-        public Task<ServiceResult> NotifyAsync(OneSNotifyBody notifyBody)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<int> ReloadListAsync(DateTime from, DateTime to, CancellationToken ct = default)
         {

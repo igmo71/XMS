@@ -1,11 +1,13 @@
-﻿using XMS.Application.Abstractions;
-using XMS.Application.Common;
+﻿using XMS.Application.Common;
 using XMS.Modules.CostModule.Domain.OneS;
 
 namespace XMS.Modules.CostModule.Abstractions
 {
-    internal interface IDocument_СписаниеБезналичныхДенежныхСредств_Service : IOneSNotifyService
+    public interface IDocument_СписаниеБезналичныхДенежныхСредств_Service
     {
+        Task<ServiceResult> CreateOrUpdateAsync(string ref_Key);
+        Task<ServiceResult> DeleteAsync(string ref_Key);
+
         Task<Document_СписаниеБезналичныхДенежныхСредств?> GetAsync(string refKey, CancellationToken ct);
 
         /// <summary>
@@ -33,6 +35,6 @@ namespace XMS.Modules.CostModule.Abstractions
         /// <param name="to"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<int> ReloadListAsync(DateTime from, DateTime to, CancellationToken ct = default);        
+        Task<int> ReloadListAsync(DateTime from, DateTime to, CancellationToken ct = default);
     }
 }

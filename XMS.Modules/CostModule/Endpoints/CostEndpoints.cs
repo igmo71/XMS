@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using MassTransit;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -6,8 +7,10 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using XMS.Application;
 using XMS.Application.Common;
+using XMS.Application.Common.Integration;
 using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Domain.OneS;
+using XMS.Modules.CostModule.EventBus;
 
 namespace XMS.Modules.CostModule.Endpoints
 {
@@ -45,10 +48,10 @@ namespace XMS.Modules.CostModule.Endpoints
                 .WithSummary(nameof(ReLoadWriteOffNonCashByDate))
                 .WithDescription("Download Document_СписаниеБезналичныхДенежныхСредств from OneS Ut for a cpecific date period and save them to the DB");
 
-            costGroup.MapPost("/notify/write-off-non-cash", NotifyWriteOffNonCash)
-                .WithName(nameof(NotifyWriteOffNonCashAsync))
-                .WithSummary(nameof(NotifyWriteOffNonCashAsync))
-                .WithDescription("Notify Document_СписаниеБезналичныхДенежныхСредств");
+            costGroup.MapPost("/notify/write-off-non-cash", NotifyWriteOffNonCashChangedAsync)
+                .WithName(nameof(NotifyWriteOffNonCashChangedAsync))
+                .WithSummary(nameof(NotifyWriteOffNonCashChangedAsync))
+                .WithDescription("Notify Document_СписаниеБезналичныхДенежныхСредств Changed");
 
             return builder;
         }
@@ -90,7 +93,7 @@ namespace XMS.Modules.CostModule.Endpoints
         /// <returns></returns>
         private static async Task<Results<Ok<Document_СписаниеБезналичныхДенежныхСредств>, NotFound<string>>> GetWriteOffNonCashByRefKey(
             [FromServices] IDocument_СписаниеБезналичныхДенежныхСредств_Service documentService,
-            [FromServices] ILoggerFactory loggerFactory,            
+            [FromServices] ILoggerFactory loggerFactory,
             [FromRoute] string refKey,
             CancellationToken ct = default)
         {
@@ -143,22 +146,13 @@ namespace XMS.Modules.CostModule.Endpoints
         /// <param name="loggerFactory"></param>
         /// <param name="notifyBody"></param>
         /// <returns></returns>
-        private static async Task<Results<Ok, BadRequest<string>>> NotifyWriteOffNonCashAsync(
-            [FromServices] IDocument_СписаниеБезналичныхДенежныхСредств_Service documentService,
+        private static async Task<IResult> NotifyWriteOffNonCashChangedAsync(
+            [FromServices] IPublishEndpoint publishEndpoint,
             [FromServices] ILoggerFactory loggerFactory,
-            [FromBody] OneSNotifyBody notifyBody)
+            [FromBody] Document_СписаниеБезналичныхДенежныхСредств_Changed notifyBody)
         {
-            var logger = loggerFactory.CreateLogger(nameof(CostEndpoints));
-
-            if (!Guid.TryParse(notifyBody.Ref_Key, out Guid refKey))
-            {
-                logger.LogError("{Source} Unable to parse Ref_Key {NotifyBody}", nameof(NotifyWriteOffNonCashAsync), notifyBody);
-                return TypedResults.BadRequest($"Unable to parse Ref_Key {notifyBody.Ref_Key}");
-            }
-
-            ServiceResult result = await documentService.NotifyAsync(notifyBody);
-
-            logger.LogDebug("{Source} {notifyBody}", nameof(NotifyWriteOffNonCashAsync), notifyBody);
+            notifyBody.EventOperation = EventOperation.CreateOrUpdate;
+            await publishEndpoint.Publish(notifyBody);
 
             return TypedResults.Ok();
         }
