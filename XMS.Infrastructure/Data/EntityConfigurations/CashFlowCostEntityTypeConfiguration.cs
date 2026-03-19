@@ -4,9 +4,9 @@ using XMS.Modules.CostModule.Domain;
 
 namespace XMS.Infrastructure.Data.EntityConfigurations
 {
-    public class CashFlowCostEntityTypeConfiguration : BaseEntityTypeConfiguration<CashFlowCost>
+    public class CashFlowCostEntityTypeConfiguration : BaseEntityTypeConfiguration<CostCatalog_СтатьиДвиженияДенежныхСредств>
     {
-        public override void Configure(EntityTypeBuilder<CashFlowCost> builder)
+        public override void Configure(EntityTypeBuilder<CostCatalog_СтатьиДвиженияДенежныхСредств> builder)
         {
             base.Configure(builder);
 

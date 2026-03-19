@@ -1,4 +1,5 @@
-﻿@using XMS.Modules.CostModule.Domain
+﻿@using XMS.Integration.OneC.Ut.Models
+@using XMS.Modules.CostModule.Domain
 
 @if (CashFlowCostLookup != null)
 {
@@ -54,7 +55,7 @@
 
 									<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">
 
-										<MudText Typo="Typo.body2">@selectedCashFlowCost.CashFlowItem?.Name</MudText>
+										<MudText Typo="Typo.body2">@selectedCashFlowCost.CashFlowItem?.Id</MudText>
 
 										@if (selectedCashFlowCostId == _deletingCashFlowCostId)
 										{
@@ -69,7 +70,7 @@
 								}
 								<TreeViewDrawer CostCategoryItemId="@costCategoryItemId"
 												CashFlowItemsTree="CashFlowItemsTree"
-												SelectedCashFlowItemIds="CashFlowCostLookup[costCategoryItemId].Select(e => e.CashFlowItemId).ToHashSet()"
+												SelectedCashFlowItemIds="CashFlowCostLookup[costCategoryItemId].Select(e => e.CatalogRefKey).ToHashSet()"
 												OnUpdateCashFlowCosts="OnUpdateCashFlowCosts" />
 							</div>
 						</MudStack>
@@ -83,20 +84,15 @@
 
 @code {
 	[Parameter] public ILookup<Guid?, CostCategory> CostCategoriesLookup { get; set; } = default!;
-	[Parameter] public ILookup<Guid, CashFlowCost> CashFlowCostLookup { get; set; } = default!;
+	[Parameter] public ILookup<Guid, CostCatalog_СтатьиДвиженияДенежныхСредств> CashFlowCostLookup { get; set; } = default!;
 	[Parameter] public Dictionary<(Guid CostCategoryId, Guid CostItemId), Guid> CostCategoryItemMap { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }
 	[Parameter] public int Level { get; set; } = 0;
-	[Parameter] public IReadOnlyList<TreeItemData<CashFlowItem>> CashFlowItemsTree { get; set; } = default!;
-	[Parameter] public EventCallback<List<CashFlowCost>> OnUpdateCashFlowCosts { get; set; }
+	[Parameter] public IReadOnlyList<TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>> CashFlowItemsTree { get; set; } = default!;
+	[Parameter] public EventCallback<List<CostCatalog_СтатьиДвиженияДенежныхСредств>> OnUpdateCashFlowCosts { get; set; }
 	[Parameter] public EventCallback<Guid> OnDeleteCashFlowCost { get; set; }
 
 	private Guid? _deletingCashFlowCostId;
-
-	// protected override void OnInitialized()
-	// {
-	// 	base.OnInitialized();
-	// }
 
 	private Guid GetCostCategoryItemId(Guid costCategoryId, Guid costItemId)
 	{

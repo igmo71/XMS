@@ -1,4 +1,5 @@
-﻿@using XMS.Modules.CostModule.Abstractions
+﻿@using XMS.Integration.OneC.Ut.Models
+@using XMS.Modules.CostModule.Abstractions
 @using XMS.Modules.CostModule.Domain
 @inject ICashFlowCostService CashFlowCostService
 
@@ -22,7 +23,7 @@
 			<MudText Typo="Typo.h6">Статьи ДДС (1С Бух)</MudText>
 		</MudDrawerHeader>
 		<MudPaper Style="max-height: calc(100vh - 200px); overflow-y: auto;">
-			<MudTreeView Items="@(CashFlowItemsTree)" T="CashFlowItem" Dense="true">
+			<MudTreeView Items="@(CashFlowItemsTree)" T="Catalog_СтатьиДвиженияДенежныхСредств" Dense="true">
 				<ItemTemplate Context="item">
 					<MudTreeViewItem Expanded="@item.Expanded"
 									 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
@@ -32,20 +33,20 @@
 							<MudTreeViewItemToggleButton Expanded="@item.Expanded"
 														 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
 														 Visible="@item.HasChildren" />
-							<MudIcon Icon="@GetIcon(item)" Class="@(item.Value?.IsDeleted == true ? "mr-2 text-secondary" : "mr-2")" />
+							<MudIcon Icon="@GetIcon(item)" Class="@(item.Value?.DeletionMark == true ? "mr-2 text-secondary" : "mr-2")" />
 
 							<MudStack Row="true" Class="d-flex justify-space-between flex-grow-1 gap-4">
 								@if (item.Value?.IsFolder == false)
 								{
 									<MudCheckBox T="bool"
-												 Value="@(SelectedCashFlowItemIds.Contains(item.Value.Id))"
-												 ValueChanged="@((bool isChecked) => CheckBoxChanged(isChecked, item.Value.Id))">
-										<MudText Typo="Typo.body1">@item.Value?.Name</MudText>
+												 Value="@(SelectedCashFlowItemIds.Contains(item.Value.Ref_Key))"
+												 ValueChanged="@((bool isChecked) => CheckBoxChanged(isChecked, item.Value.Ref_Key))">
+										<MudText Typo="Typo.body1">@item.Value?.Description</MudText>
 									</MudCheckBox>
 								}
 								else
 								{
-									<MudText Typo="Typo.body1">@item.Value?.Name</MudText>
+									<MudText Typo="Typo.body1">@item.Value?.Description</MudText>
 								}
 								<MudText>@item.Value?.Code</MudText>
 							</MudStack>
@@ -67,9 +68,9 @@
 
 @code {
 	[Parameter] public Guid CostCategoryItemId { get; set; } = default!;
-	[Parameter] public IReadOnlyList<TreeItemData<CashFlowItem>> CashFlowItemsTree { get; set; } = default!;
+	[Parameter] public IReadOnlyList<TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>> CashFlowItemsTree { get; set; } = default!;
 	[Parameter] public HashSet<Guid> SelectedCashFlowItemIds { get; set; } = default!;
-	[Parameter] public EventCallback<List<CashFlowCost>> OnUpdateCashFlowCosts { get; set; }
+	[Parameter] public EventCallback<List<CostCatalog_СтатьиДвиженияДенежныхСредств>> OnUpdateCashFlowCosts { get; set; }
 
 	private HashSet<Guid> _expandedCashFlowItemIds = [];
 
@@ -78,21 +79,21 @@
 
 	private void ToggleOpen() => _open = !_open;
 
-	private async Task ExpandedChanged(ITreeItemData<CashFlowItem?> node, bool expanded)
+	private async Task ExpandedChanged(ITreeItemData<Catalog_СтатьиДвиженияДенежныхСредств?> node, bool expanded)
 	{
 		node.Expanded = expanded;
 
-		if (node.Value is CashFlowItem cashFlowItem)
+		if (node.Value is Catalog_СтатьиДвиженияДенежныхСредств cashFlowItem)
 
 		{
 			if (expanded)
-				_expandedCashFlowItemIds.Add(cashFlowItem.Id);
+				_expandedCashFlowItemIds.Add(cashFlowItem.Ref_Key);
 			else
-				_expandedCashFlowItemIds.Remove(cashFlowItem.Id);
+				_expandedCashFlowItemIds.Remove(cashFlowItem.Ref_Key);
 		}
 	}
 
-	private static string GetIcon(ITreeItemData<CashFlowItem> item)
+	private static string GetIcon(ITreeItemData<Catalog_СтатьиДвиженияДенежныхСредств> item)
 	{
 		if (item.HasChildren)
 			return item.Expanded ? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder;
@@ -116,7 +117,7 @@
 	{
 		_isProcessing = true;
 		var newCashFlowCostList = SelectedCashFlowItemIds
-			.Select(e => new CashFlowCost { CashFlowItemId = e, CostCategoryItemId = CostCategoryItemId })
+			.Select(e => new CostCatalog_СтатьиДвиженияДенежныхСредств { CatalogRefKey = e, CostCategoryItemId = CostCategoryItemId })
 			.ToList();
 
 		await OnUpdateCashFlowCosts.InvokeAsync(newCashFlowCostList);

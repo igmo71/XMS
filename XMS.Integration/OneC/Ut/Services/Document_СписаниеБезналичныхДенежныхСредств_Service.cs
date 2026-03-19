@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Common;
+using XMS.Integration.OneC.Repository;
 using XMS.Integration.OneC.Ut.Abstractions;
 using XMS.Integration.OneC.Ut.Models;
 
@@ -17,19 +18,16 @@ namespace XMS.Integration.OneC.Ut.Services
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var newDocument = await FetchByRefKeyAsync(refKey, ct);
+            var newItem = await FetchByRefKeyAsync(refKey, ct);
 
-            if (newDocument is null)
-                return ServiceError.InvalidOperation.WithDescription($"Failed to feath Document_СписаниеБезналичныхДенежныхСредств by {refKey}");
+            if (newItem is null)
+                return ServiceError.InvalidOperation.WithDescription($"Failed to feath {nameof(Document_СписаниеБезналичныхДенежныхСредств)} by {refKey}");
 
-            await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
-                .Where(e => e.Ref_Key == refKey)
-                .ExecuteDeleteAsync();
+            await DocumentRepository.DeleteByRefKeyAsync<Document_СписаниеБезналичныхДенежныхСредств>(dbContext, refKey, ct);
 
-            await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
-                .AddAsync(newDocument);
+            await DocumentRepository.Add(dbContext, newItem, ct);
 
-            await dbContext.SaveChangesAsync(ct);
+            logger.LogDebug("{Source} {refKey} {newItem}", nameof(CreateOrUpdateAsync), refKey, newItem);
 
             return ServiceResult.Success();
         }
@@ -38,9 +36,7 @@ namespace XMS.Integration.OneC.Ut.Services
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
-                .Where(e => e.Ref_Key == refKey)
-                .ExecuteDeleteAsync();
+            await DocumentRepository.DeleteByRefKeyAsync<Document_СписаниеБезналичныхДенежныхСредств>(dbContext, refKey, ct);
 
             logger.LogDebug("{Source} {refKey}", nameof(DeleteAsync), refKey);
 
@@ -51,7 +47,7 @@ namespace XMS.Integration.OneC.Ut.Services
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var result = await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>().FindAsync(new object?[] { refKey }, cancellationToken: ct);
+            var result = await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>().FindAsync([refKey], cancellationToken: ct);
 
             return result;
         }
@@ -68,31 +64,7 @@ namespace XMS.Integration.OneC.Ut.Services
             return result;
         }
 
-        private async Task<Document_СписаниеБезналичныхДенежныхСредств?> FetchByRefKeyAsync(Guid refKey, CancellationToken ct = default)
-        {
-            var uri = Document_СписаниеБезналичныхДенежныхСредств.GetUriByRefKey(refKey);
-
-            var rootObject = await utClient.GetValueAsync<RootObject<Document_СписаниеБезналичныхДенежныхСредств>>(uri, ct);
-
-            var result = rootObject?.Value?[0];
-
-            return result;
-        }
-
-
-        private async Task<IReadOnlyList<Document_СписаниеБезналичныхДенежныхСредств>> FetchListAsyncByDate(DateTime date, CancellationToken ct = default)
-        {
-            var uri = Document_СписаниеБезналичныхДенежныхСредств.GetUriByDate(date, date.AddDays(1));
-
-            var rootObject = await utClient.GetValueAsync<RootObject<Document_СписаниеБезналичныхДенежныхСредств>>(uri, ct);
-
-            var result = rootObject?.Value?.ToList();
-
-            return result ?? [];
-        }
-
-
-        public async Task<int> ResyncByDateRangeAsync(DateTime from, DateTime to, CancellationToken ct = default)
+        public async Task<ServiceResult> ResyncByDateRangeAsync(DateTime from, DateTime to, CancellationToken ct = default)
         {
             StartActivity();
 
@@ -106,14 +78,36 @@ namespace XMS.Integration.OneC.Ut.Services
 
             while (currentDay < to)
             {
-                var documents = await FetchListAsyncByDate(currentDay, ct);
+                var items = await FetchListAsyncByDate(currentDay, ct);
 
-                insertedRows += await DocumentRepository.InsertRangeAsync(dbContext, documents, ct);
+                insertedRows += await DocumentRepository.InsertRangeAsync(dbContext, items, ct);
 
                 currentDay = currentDay.AddDays(1);
             }
 
-            return insertedRows;
+            return ServiceResult.Success();
+        }
+
+        private async Task<Document_СписаниеБезналичныхДенежныхСредств?> FetchByRefKeyAsync(Guid refKey, CancellationToken ct = default)
+        {
+            var uri = Document_СписаниеБезналичныхДенежныхСредств.GetUriByRefKey(refKey);
+
+            var rootObject = await utClient.GetValueAsync<RootObject<Document_СписаниеБезналичныхДенежныхСредств>>(uri, ct);
+
+            var result = rootObject?.Value?[0];
+
+            return result;
+        }
+
+        private async Task<IReadOnlyList<Document_СписаниеБезналичныхДенежныхСредств>> FetchListAsyncByDate(DateTime date, CancellationToken ct = default)
+        {
+            var uri = Document_СписаниеБезналичныхДенежныхСредств.GetUriByDate(date, date.AddDays(1));
+
+            var rootObject = await utClient.GetValueAsync<RootObject<Document_СписаниеБезналичныхДенежныхСредств>>(uri, ct);
+
+            var result = rootObject?.Value?.ToList();
+
+            return result ?? [];
         }
     }
 }

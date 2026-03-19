@@ -2,7 +2,7 @@
 {
     public class OneCNotifyBody
     {
-        public string? Ref_Key { get; set; }
+        public Guid Ref_Key { get; set; }
         public EventOperation? EventOperation { get; set; }
     }
 }

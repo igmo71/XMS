@@ -4,10 +4,10 @@ namespace XMS.Modules.CostModule.Abstractions
 {
     public interface ICashFlowCostService
     {
-        Task AddRangeCashFlowCostAsync(List<CashFlowCost> items, CancellationToken token);
-        Task UpdateRangeCashFlowCostAsync(List<CashFlowCost> selectedItems, CancellationToken token);
+        Task AddRangeCashFlowCostAsync(List<CostCatalog_СтатьиДвиженияДенежныхСредств> items, CancellationToken token);
+        Task UpdateRangeCashFlowCostAsync(List<CostCatalog_СтатьиДвиженияДенежныхСредств> selectedItems, CancellationToken token);
         Task DeleteCashFlowCostAsync(Guid itemId, CancellationToken token);
-        Task<IReadOnlyList<CashFlowCost>> GetListAsync(CancellationToken token);
+        Task<IReadOnlyList<CostCatalog_СтатьиДвиженияДенежныхСредств>> GetListAsync(CancellationToken token);
         Task<HashSet<Guid>> GetSelectedCashFlowItemIds(Guid costCategoryItemId);
     }
 }

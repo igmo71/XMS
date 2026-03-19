@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XMS.Application.Abstractions;
 using XMS.Core.Abstractions.Data;
 using XMS.Modules.CostModule.Abstractions;
-using XMS.Modules.CostModule.Domain;
 
 namespace XMS.Modules.CostModule.Application
 {

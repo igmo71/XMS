@@ -13,6 +13,13 @@ namespace XMS.Integration.OneC.Ut.Models
 
         public static string Uri => "Catalog_СтатьиДвиженияДенежныхСредств?$format=json&$select=Ref_Key,Description,DeletionMark,Code,Parent_Key,IsFolder&$inlinecount=allpages";
 
+        public static string GetUriByRefKey(Guid refKey)
+        {
+            string uri = $"{Uri}&$filter=Ref_Key eq guid'{refKey}'";
+
+            return uri;
+        }
+
         //public string DataVersion { get; set; }
         //public string КорреспондирующийСчет { get; set; }
         //public string Описание { get; set; }

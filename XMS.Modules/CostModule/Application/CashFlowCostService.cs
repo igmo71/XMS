@@ -8,20 +8,20 @@ namespace XMS.Modules.CostModule.Application
 {
     internal class CashFlowCostService(IDbContextFactoryProxy dbFactory) : ICashFlowCostService
     {
-        public async Task AddRangeCashFlowCostAsync(List<CashFlowCost> items, CancellationToken ct)
+        public async Task AddRangeCashFlowCostAsync(List<CostCatalog_СтатьиДвиженияДенежныхСредств> items, CancellationToken ct)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            await dbContext.Set<CashFlowCost>().AddRangeAsync(items, ct);
+            await dbContext.Set<CostCatalog_СтатьиДвиженияДенежныхСредств>().AddRangeAsync(items, ct);
 
             await dbContext.SaveChangesAsync(ct);
         }
 
-        public async Task UpdateRangeCashFlowCostAsync(List<CashFlowCost> selectedItems, CancellationToken ct)
+        public async Task UpdateRangeCashFlowCostAsync(List<CostCatalog_СтатьиДвиженияДенежныхСредств> selectedItems, CancellationToken ct)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var existingItems = await dbContext.Set<CashFlowCost>()
+            var existingItems = await dbContext.Set<CostCatalog_СтатьиДвиженияДенежныхСредств>()
                 .Where(e => e.CostCategoryItemId == selectedItems[0].CostCategoryItemId)
                 .ToListAsync(ct);
 
@@ -30,11 +30,11 @@ namespace XMS.Modules.CostModule.Application
 
             var toRemove = existingItems.Where(e => !selectedItemIds.Contains(e.Id)).ToList();
             if (toRemove?.Count > 0)
-                dbContext.Set<CashFlowCost>().RemoveRange(toRemove);
+                dbContext.Set<CostCatalog_СтатьиДвиженияДенежныхСредств>().RemoveRange(toRemove);
 
             var toAdd = selectedItems.Where(e => !existingItemIds.Contains(e.Id)).ToList();
             if (toAdd?.Count > 0)
-                await dbContext.Set<CashFlowCost>().AddRangeAsync(toAdd, ct);
+                await dbContext.Set<CostCatalog_СтатьиДвиженияДенежныхСредств>().AddRangeAsync(toAdd, ct);
 
 
             await dbContext.SaveChangesAsync(ct);
@@ -44,16 +44,16 @@ namespace XMS.Modules.CostModule.Application
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            await dbContext.Set<CashFlowCost>()
+            await dbContext.Set<CostCatalog_СтатьиДвиженияДенежныхСредств>()
                 .Where(x => x.Id == itemId)
                 .ExecuteDeleteAsync(ct);
         }
 
-        public async Task<IReadOnlyList<CashFlowCost>> GetListAsync(CancellationToken ct)
+        public async Task<IReadOnlyList<CostCatalog_СтатьиДвиженияДенежныхСредств>> GetListAsync(CancellationToken ct)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var result = await dbContext.Set<CashFlowCost>()
+            var result = await dbContext.Set<CostCatalog_СтатьиДвиженияДенежныхСредств>()
                 .AsNoTracking()
                 .Include(e => e.CashFlowItem)
                 .ToListAsync(cancellationToken: ct);
@@ -65,10 +65,10 @@ namespace XMS.Modules.CostModule.Application
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var result = await dbContext.Set<CashFlowCost>()
+            var result = await dbContext.Set<CostCatalog_СтатьиДвиженияДенежныхСредств>()
                 .AsNoTracking()
                 .Where(e => e.CostCategoryItemId == costCategoryItemId)
-                .Select(e => e.CashFlowItemId)
+                .Select(e => e.CatalogRefKey)
                 .ToHashSetAsync();
 
             return result;

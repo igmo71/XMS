@@ -14,8 +14,8 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
         [Inject] public ISnackbar Snackbar { get; set; } = default!;
 
         private readonly CancellationTokenSource _cts = new();
-        private IReadOnlyList<CashFlowItem> _cashFlowItems = [];
-        private IReadOnlyList<TreeItemData<CashFlowItem>> _treeItems = [];
+        private IReadOnlyList<CostCatalog_СтатьиДвиженияДенежныхСредств> _cashFlowItems = [];
+        private IReadOnlyList<TreeItemData<CostCatalog_СтатьиДвиженияДенежныхСредств>> _treeItems = [];
         private HashSet<Guid> _expandedCashFlowItemIds = [];
         private bool _expandedAll;
         private bool _isLoading;
