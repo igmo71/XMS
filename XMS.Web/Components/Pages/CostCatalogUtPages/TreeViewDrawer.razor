@@ -1,7 +1,6 @@
 ﻿@using XMS.Integration.OneC.Ut.Models
 @using XMS.Modules.CostModule.Abstractions
 @using XMS.Modules.CostModule.Domain
-@inject ICashFlowCostService CashFlowCostService
 
 <MudToggleIconButton @bind-Toggled="@_open"
 					 Icon="@Icons.Material.Filled.Add"
@@ -23,7 +22,7 @@
 			<MudText Typo="Typo.h6">Статьи ДДС (1С Бух)</MudText>
 		</MudDrawerHeader>
 		<MudPaper Style="max-height: calc(100vh - 200px); overflow-y: auto;">
-			<MudTreeView Items="@(CashFlowItemsTree)" T="Catalog_СтатьиДвиженияДенежныхСредств" Dense="true">
+			<MudTreeView Items="@(CatalogUtItemsTree)" T="Catalog_СтатьиДвиженияДенежныхСредств" Dense="true">
 				<ItemTemplate Context="item">
 					<MudTreeViewItem Expanded="@item.Expanded"
 									 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
@@ -39,7 +38,7 @@
 								@if (item.Value?.IsFolder == false)
 								{
 									<MudCheckBox T="bool"
-												 Value="@(SelectedCashFlowItemIds.Contains(item.Value.Ref_Key))"
+												 Value="@(SelectedCatalogUtItemIds.Contains(item.Value.Ref_Key))"
 												 ValueChanged="@((bool isChecked) => CheckBoxChanged(isChecked, item.Value.Ref_Key))">
 										<MudText Typo="Typo.body1">@item.Value?.Description</MudText>
 									</MudCheckBox>
@@ -60,7 +59,7 @@
 			<MudProgressLinear Color="Color.Primary" Indeterminate="true" />
 		}
 		<MudStack Row="true" Class="mt-2" Justify="Justify.SpaceAround">
-			<MudButton OnClick="@UpdateCashFlowСosts" Color="Color.Primary" Variant="Variant.Filled">Сохранить</MudButton>
+			<MudButton OnClick="@UpdateCostCatalog" Color="Color.Primary" Variant="Variant.Filled">Сохранить</MudButton>
 			<MudButton OnClick="@ToggleOpen" Color="Color.Secondary" Variant="Variant.Filled">Закрыть</MudButton>
 		</MudStack>
 	</MudDrawer>
@@ -68,11 +67,11 @@
 
 @code {
 	[Parameter] public Guid CostCategoryItemId { get; set; } = default!;
-	[Parameter] public IReadOnlyList<TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>> CashFlowItemsTree { get; set; } = default!;
-	[Parameter] public HashSet<Guid> SelectedCashFlowItemIds { get; set; } = default!;
-	[Parameter] public EventCallback<List<CostCatalog_СтатьиДвиженияДенежныхСредств>> OnUpdateCashFlowCosts { get; set; }
+	[Parameter] public IReadOnlyList<TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>> CatalogUtItemsTree { get; set; } = default!;
+	[Parameter] public HashSet<Guid> SelectedCatalogUtItemIds { get; set; } = default!;
+	[Parameter] public EventCallback<List<CostCatalogUt>> OnUpdateCostCatalog { get; set; }
 
-	private HashSet<Guid> _expandedCashFlowItemIds = [];
+	private HashSet<Guid> _expandedCatalogUtItemIds = [];
 
 	private bool _open;
 	private bool _isProcessing;
@@ -83,13 +82,13 @@
 	{
 		node.Expanded = expanded;
 
-		if (node.Value is Catalog_СтатьиДвиженияДенежныхСредств cashFlowItem)
+		if (node.Value is Catalog_СтатьиДвиженияДенежныхСредств catalogUtItem)
 
 		{
 			if (expanded)
-				_expandedCashFlowItemIds.Add(cashFlowItem.Ref_Key);
+				_expandedCatalogUtItemIds.Add(catalogUtItem.Ref_Key);
 			else
-				_expandedCashFlowItemIds.Remove(cashFlowItem.Ref_Key);
+				_expandedCatalogUtItemIds.Remove(catalogUtItem.Ref_Key);
 		}
 	}
 
@@ -105,22 +104,22 @@
 	{
 		if (isChecked)
 		{
-			SelectedCashFlowItemIds.Add(itemId);
+			SelectedCatalogUtItemIds.Add(itemId);
 		}
 		else
 		{
-			SelectedCashFlowItemIds.Remove(itemId);
+			SelectedCatalogUtItemIds.Remove(itemId);
 		}
 	}
 
-	private async Task UpdateCashFlowСosts()
+	private async Task UpdateCostCatalog()
 	{
 		_isProcessing = true;
-		var newCashFlowCostList = SelectedCashFlowItemIds
-			.Select(e => new CostCatalog_СтатьиДвиженияДенежныхСредств { CatalogRefKey = e, CostCategoryItemId = CostCategoryItemId })
+		var newCostCatalogUtList = SelectedCatalogUtItemIds
+			.Select(refKey => new CostCatalogUt { CatalogUtRefKey = refKey, CostCategoryItemId = CostCategoryItemId })
 			.ToList();
 
-		await OnUpdateCashFlowCosts.InvokeAsync(newCashFlowCostList);
+		await OnUpdateCostCatalog.InvokeAsync(newCostCatalogUtList);
 		
 		_isProcessing = false;
 		ToggleOpen();

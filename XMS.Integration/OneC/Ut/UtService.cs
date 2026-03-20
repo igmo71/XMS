@@ -1,4 +1,5 @@
-﻿using XMS.Domain.Models;
+﻿using XMS.Core.Common;
+using XMS.Domain.Models;
 using XMS.Integration.OneC.Abstractions;
 using XMS.Integration.OneC.Ut.Abstractions;
 using XMS.Integration.OneC.Ut.Models;
@@ -37,6 +38,11 @@ namespace XMS.Integration.OneC.Ut
         public async Task<Catalog_СтатьиДвиженияДенежныхСредств?> GetCatalog_СтатьиДвиженияДенежныхСредств_Async(Guid refKey, CancellationToken ct = default)
         {
             return await catalog_СтатьиДвиженияДенежныхСредств_Service.GetAsync(refKey, ct);
+        }
+
+        public async Task<ServiceResult> ResyncAsync(CancellationToken ct = default)
+        {
+            return await catalog_СтатьиДвиженияДенежныхСредств_Service.ResyncAsync(ct);
         }
 
         public async Task<IReadOnlyList<Document_СписаниеБезналичныхДенежныхСредств>> GetDocument_СписаниеБезналичныхДенежныхСредств_Async(DocumentQueryParameters parameters, CancellationToken ct = default)

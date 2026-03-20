@@ -1,7 +1,7 @@
 ﻿@using XMS.Integration.OneC.Ut.Models
 @using XMS.Modules.CostModule.Domain
 
-@if (CashFlowCostLookup != null)
+@if (CostCatalogUtLookup != null)
 {
 	@foreach (var costCategory in CostCategoriesLookup[ParentId].OrderBy(e => e.Name))
 	{
@@ -20,13 +20,13 @@
 
 		<RecursiveRow @key="costCategory.Id"
 					  CostCategoriesLookup="CostCategoriesLookup"
-					  CashFlowCostLookup="CashFlowCostLookup"
+					  CostCatalogUtLookup="CostCatalogUtLookup"
 					  CostCategoryItemMap="CostCategoryItemMap"
 					  ParentId="costCategory.Id"
 					  Level="@(Level + 1)"
-					  CashFlowItemsTree="CashFlowItemsTree"
-					  OnUpdateCashFlowCosts="OnUpdateCashFlowCosts"
-					  OnDeleteCashFlowCost="OnDeleteCashFlowCost">
+					  CatalogUtItemsTree="CatalogUtItemsTree"
+					  OnUpdateCostCatalogUt="OnUpdateCostCatalogUt"
+					  OnDeleteCostCatalogUt="OnDeleteCostCatalogUt">
 		</RecursiveRow>
 
 		@if (costCategory.Items?.Count > 0)
@@ -49,29 +49,29 @@
 								</MudText>
 							</MudStack>
 							<div>
-								@foreach (var selectedCashFlowCost in CashFlowCostLookup[costCategoryItemId])
+								@foreach (var selectedCostCatalogUt in CostCatalogUtLookup[costCategoryItemId])
 								{
-									var selectedCashFlowCostId = selectedCashFlowCost.Id;
+									var selectedCostCatalogUtId = selectedCostCatalogUt.Id;
 
 									<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">
 
-										<MudText Typo="Typo.body2">@selectedCashFlowCost.CashFlowItem?.Id</MudText>
+										<MudText Typo="Typo.body2">@selectedCostCatalogUt.CatalogUtItem?.Ref_Key</MudText>
 
-										@if (selectedCashFlowCostId == _deletingCashFlowCostId)
+										@if (selectedCostCatalogUtId == _deletingCostCatalogUtId)
 										{
 											<MudProgressCircular Color="Color.Warning" Size="Size.Small" Indeterminate="true" />
 										}
 										else
 										{
 											<MudIconButton Icon="@Icons.Material.Filled.Clear" Color="Color.Warning" Size="Size.Small"
-														   OnClick="() => DeleteCashFlowCost(selectedCashFlowCostId)" />
+														   OnClick="() => DeleteCostCatalogUt(selectedCostCatalogUtId)" />
 										}
 									</MudChip>
 								}
 								<TreeViewDrawer CostCategoryItemId="@costCategoryItemId"
-												CashFlowItemsTree="CashFlowItemsTree"
-												SelectedCashFlowItemIds="CashFlowCostLookup[costCategoryItemId].Select(e => e.CatalogRefKey).ToHashSet()"
-												OnUpdateCashFlowCosts="OnUpdateCashFlowCosts" />
+												CatalogUtItemsTree="CatalogUtItemsTree"
+												SelectedCatalogItemIds="CostCatalogUtLookup[costCategoryItemId].Select(e => e.CatalogUtRefKey).ToHashSet()"
+												OnUpdateCostCatalog="OnUpdateCostCatalogUt" />
 							</div>
 						</MudStack>
 					</MudTd>
@@ -84,15 +84,15 @@
 
 @code {
 	[Parameter] public ILookup<Guid?, CostCategory> CostCategoriesLookup { get; set; } = default!;
-	[Parameter] public ILookup<Guid, CostCatalog_СтатьиДвиженияДенежныхСредств> CashFlowCostLookup { get; set; } = default!;
+	[Parameter] public ILookup<Guid, CostCatalogUt> CostCatalogUtLookup { get; set; } = default!;
 	[Parameter] public Dictionary<(Guid CostCategoryId, Guid CostItemId), Guid> CostCategoryItemMap { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }
 	[Parameter] public int Level { get; set; } = 0;
-	[Parameter] public IReadOnlyList<TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>> CashFlowItemsTree { get; set; } = default!;
-	[Parameter] public EventCallback<List<CostCatalog_СтатьиДвиженияДенежныхСредств>> OnUpdateCashFlowCosts { get; set; }
-	[Parameter] public EventCallback<Guid> OnDeleteCashFlowCost { get; set; }
+	[Parameter] public IReadOnlyList<TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>> CatalogUtItemsTree { get; set; } = default!;
+	[Parameter] public EventCallback<List<CostCatalogUt>> OnUpdateCostCatalogUt { get; set; }
+	[Parameter] public EventCallback<Guid> OnDeleteCostCatalogUt { get; set; }
 
-	private Guid? _deletingCashFlowCostId;
+	private Guid? _deletingCostCatalogUtId;
 
 	private Guid GetCostCategoryItemId(Guid costCategoryId, Guid costItemId)
 	{
@@ -104,11 +104,12 @@
 		}
 	}
 
-	private async Task DeleteCashFlowCost(Guid cashFlowCostId)
+	private async Task DeleteCostCatalogUt
+	(Guid cashFlowCostId)
 	{
-		_deletingCashFlowCostId = cashFlowCostId;
-		await OnDeleteCashFlowCost.InvokeAsync(cashFlowCostId);
-		_deletingCashFlowCostId = null;
+		_deletingCostCatalogUtId = cashFlowCostId;
+		await OnDeleteCostCatalogUt.InvokeAsync(cashFlowCostId);
+		_deletingCostCatalogUtId = null;
 	}
 }
 

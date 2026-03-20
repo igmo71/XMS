@@ -9,7 +9,7 @@ namespace XMS.Infrastructure.Data.EntityConfigurations.OneC
     {
         public void Configure(EntityTypeBuilder<Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа> builder)
         {
-            builder.ToTable(nameof(Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа));
+            builder.ToTable("1c_ut_Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа");
 
             builder.HasKey(e => new { e.Ref_Key, e.LineNumber });
         }

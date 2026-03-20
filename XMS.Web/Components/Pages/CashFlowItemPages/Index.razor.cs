@@ -1,26 +1,27 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using MudBlazor;
-using XMS.Modules.CostModule.Abstractions;
-using XMS.Modules.CostModule.Domain;
+using XMS.Integration.OneC;
+using XMS.Integration.OneC.Abstractions;
+using XMS.Integration.OneC.Ut.Models;
 using XMS.Web.Components.Common;
 
 namespace XMS.Web.Components.Pages.CashFlowItemPages
 {
     public partial class Index
     {
-        [Inject] public ICashFlowItemService Service { get; set; } = default!;
+        [Inject] public IOneCUtService UtService { get; set; } = default!;
         [Inject] public ProtectedSessionStorage SessionStorage { get; set; } = default!;
         [Inject] public ISnackbar Snackbar { get; set; } = default!;
 
         private readonly CancellationTokenSource _cts = new();
-        private IReadOnlyList<CostCatalog_СтатьиДвиженияДенежныхСредств> _cashFlowItems = [];
-        private IReadOnlyList<TreeItemData<CostCatalog_СтатьиДвиженияДенежныхСредств>> _treeItems = [];
-        private HashSet<Guid> _expandedCashFlowItemIds = [];
+        private IReadOnlyList<Catalog_СтатьиДвиженияДенежныхСредств> _catalogUtItems = [];
+        private IReadOnlyList<TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>> _treeItems = [];
+        private HashSet<Guid> _expandedCatalogUtIds = [];
         private bool _expandedAll;
         private bool _isLoading;
         private bool _isReloading;
-        private bool _includeDeleted = false;
+        private CatalogQueryParameters _catalogQueryParameters = new();
 
         protected override async Task OnInitializedAsync()
         {
@@ -31,9 +32,9 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
         {
             if (firstRender)
             {
-                var result = await SessionStorage.GetAsync<HashSet<Guid>>(nameof(_expandedCashFlowItemIds));
-                _expandedCashFlowItemIds = result.Success ? (result.Value ?? []) : [];
-                _expandedAll = _expandedCashFlowItemIds.Count > 0 && _expandedCashFlowItemIds.Count == _cashFlowItems.Count;
+                var result = await SessionStorage.GetAsync<HashSet<Guid>>(nameof(_expandedCatalogUtIds));
+                _expandedCatalogUtIds = result.Success ? (result.Value ?? []) : [];
+                _expandedAll = _expandedCatalogUtIds.Count > 0 && _expandedCatalogUtIds.Count == _catalogUtItems.Count;
                 BuildTree();
                 StateHasChanged();
             }
@@ -53,7 +54,7 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
             _isLoading = true;
             try
             {
-                _cashFlowItems = await Service.GetListAsync(_includeDeleted, _cts.Token);
+                _catalogUtItems = await UtService.GetCatalog_СтатьиДвиженияДенежныхСредств_Async(_catalogQueryParameters, _cts.Token);
             }
             finally
             {
@@ -65,22 +66,22 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
 
         private void BuildTree()
         {
-            _treeItems = ExecuteBuildTree(_cashFlowItems, Guid.Parse("00000000-0000-0000-0000-000000000000"), _expandedCashFlowItemIds);
+            _treeItems = ExecuteBuildTree(_catalogUtItems, Guid.Empty, _expandedCatalogUtIds);
 
             StateHasChanged();
         }
 
-        private static List<TreeItemData<CashFlowItem>> ExecuteBuildTree(IEnumerable<CashFlowItem> allItems, Guid? parentId, HashSet<Guid>? _expandedIds = null)
+        private static List<TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>> ExecuteBuildTree(IEnumerable<Catalog_СтатьиДвиженияДенежныхСредств> allItems, Guid? parentKey, HashSet<Guid>? _expandedIds = null)
         {
             var list = allItems
-                .Where(e => e.ParentId == parentId).ToList();
+                .Where(e => e.Parent_Key == parentKey).ToList();
             var result = list
-            .Select(e => new TreeItemData<CashFlowItem>
+            .Select(e => new TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>
             {
                 Value = e,
-                Text = e.Name,
-                Expanded = _expandedIds is not null && _expandedIds.Contains(e.Id),
-                Children = ExecuteBuildTree(allItems, e.Id, _expandedIds)
+                Text = e.Description,
+                Expanded = _expandedIds is not null && _expandedIds.Contains(e.Ref_Key),
+                Children = ExecuteBuildTree(allItems, e.Ref_Key, _expandedIds)
             })
             .ToList();
 
@@ -91,42 +92,42 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
         {
             _treeItems.SetExpansion(true);
             _expandedAll = true;
-            _expandedCashFlowItemIds = _cashFlowItems.Select(e => e.Id).ToHashSet();
-            await SessionStorage.SetAsync(nameof(_expandedCashFlowItemIds), _expandedCashFlowItemIds);
+            _expandedCatalogUtIds = _catalogUtItems.Select(e => e.Ref_Key).ToHashSet();
+            await SessionStorage.SetAsync(nameof(_expandedCatalogUtIds), _expandedCatalogUtIds);
         }
 
         private async Task CollapseAll()
         {
             _treeItems.SetExpansion(false);
             _expandedAll = false;
-            _expandedCashFlowItemIds = [];
-            await SessionStorage.SetAsync(nameof(_expandedCashFlowItemIds), _expandedCashFlowItemIds);
+            _expandedCatalogUtIds = [];
+            await SessionStorage.SetAsync(nameof(_expandedCatalogUtIds), _expandedCatalogUtIds);
         }
 
         private async Task ToggleIncludeDeleted(bool args)
         {
-            _includeDeleted = args;
+            _catalogQueryParameters.IncludeDeleted = args;
 
             await LoadDataAndBuildTreeAsync();
         }
 
-        private async Task ExpandedChanged(ITreeItemData<CashFlowItem?> node, bool expanded)
+        private async Task ExpandedChanged(ITreeItemData<Catalog_СтатьиДвиженияДенежныхСредств?> node, bool expanded)
         {
             node.Expanded = expanded;
 
-            if (node.Value is CashFlowItem cashFlowItem)
+            if (node.Value is Catalog_СтатьиДвиженияДенежныхСредств cashFlowItem)
 
             {
                 if (expanded)
-                    _expandedCashFlowItemIds.Add(cashFlowItem.Id);
+                    _expandedCatalogUtIds.Add(cashFlowItem.Ref_Key);
                 else
-                    _expandedCashFlowItemIds.Remove(cashFlowItem.Id);
+                    _expandedCatalogUtIds.Remove(cashFlowItem.Ref_Key);
 
-                await SessionStorage.SetAsync(nameof(_expandedCashFlowItemIds), _expandedCashFlowItemIds);
+                await SessionStorage.SetAsync(nameof(_expandedCatalogUtIds), _expandedCatalogUtIds);
             }
         }
 
-        private static string GetIcon(ITreeItemData<CashFlowItem> item)
+        private static string GetIcon(ITreeItemData<Catalog_СтатьиДвиженияДенежныхСредств> item)
         {
             if (item.HasChildren)
                 return item.Expanded ? Icons.Material.Filled.FolderOpen : Icons.Material.Filled.Folder;
@@ -141,7 +142,7 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
             {
                 Snackbar.Add("Синхронизация с 1С...", Severity.Info);
 
-                await Service.ReloadListAsync(_cts.Token);
+                await UtService.ResyncAsync(_cts.Token);
 
                 Snackbar.Add("Данные успешно синхронизированы с 1С", Severity.Success);
 

@@ -1,5 +1,6 @@
-﻿@page "/cashflowitems"
+﻿@page "/catalog-статьи-движения-денежных-средств"
 @using Microsoft.AspNetCore.Authorization
+@using XMS.Integration.OneC.Ut.Models
 @using XMS.Modules.CostModule.Domain
 @attribute [Authorize]
 
@@ -28,7 +29,7 @@
 				</MudButton>
 			</MudStack>
 		</MudToolBar>
-		<MudTreeView Items="@(_treeItems)" T="CashFlowItem" Dense="true">
+		<MudTreeView Items="@(_treeItems)" T="Catalog_СтатьиДвиженияДенежныхСредств" Dense="true">
 			<ItemTemplate Context="item">
 				<MudTreeViewItem Expanded="@item.Expanded"
 								 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
@@ -39,11 +40,11 @@
 													 ExpandedChanged="@((expanded) => ExpandedChanged(item, expanded))"
 													 Visible="@item.HasChildren" />
 						<MudIcon Icon="@GetIcon(item)"
-								 Class="@(item.Value?.IsDeleted == true ? "mr-2 text-secondary" : "mr-2")" />
+								 Class="@(item.Value?.DeletionMark == true ? "mr-2 text-secondary" : "mr-2")" />
 						<MudStack Row="true" Class="d-flex justify-space-between flex-grow-1 gap-4">
 							<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)"
-									 Class="@(item.Value?.IsDeleted == true ? "text-secondary text-decoration-line-through" : "")">
-								@item.Value?.Name
+									 Class="@(item.Value?.DeletionMark == true ? "text-secondary text-decoration-line-through" : "")">
+								@item.Value?.Description
 							</MudText>
 							<MudText>@item.Value?.Code</MudText>
 						</MudStack>

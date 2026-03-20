@@ -1,4 +1,5 @@
-﻿@using XMS.Modules.CostModule.Domain
+﻿@using XMS.Integration.OneC.Ut.Models
+@using XMS.Modules.CostModule.Domain
 
 <MudTable @ref="_mudTable" Items="@([string.Empty])" CustomHeader="true" Hover="true" Dense="true" Elevation="0" Bordered="true">
 	<HeaderContent>
@@ -15,12 +16,12 @@
 		
 		<RecursiveRow CostCategoriesLookup="CostCategoriesLookup"
 					  CostCategoryItemMap="CostCategoryItemMap"
-					  CashFlowCostLookup="CashFlowCostLookup"
+					  CostCatalogUtLookup="CostCatalogUtLookup"
 					  ParentId="null"
 					  Level="1"
-					  CashFlowItemsTree="CashFlowItemsTree"
-					  OnUpdateCashFlowCosts="OnUpdateCashFlowCosts"
-					  OnDeleteCashFlowCost="OnDeleteCashFlowCost">
+					  CatalogUtItemsTree="CatalogUtItemsTree"
+					  OnUpdateCostCatalogUt="OnUpdateCostCatalog"
+					  OnDeleteCostCatalogUt="OnDeleteCostCatalogUt">
 		</RecursiveRow>
 		
 	</ChildRowContent>
@@ -34,11 +35,11 @@
 @code {
 	[Parameter] public ILookup<Guid?, CostCategory> CostCategoriesLookup { get; set; } = default!;
 	[Parameter] public Dictionary<(Guid CostCategoryId, Guid CostItemId), Guid> CostCategoryItemMap { get; set; } = default!;
-	[Parameter] public ILookup<Guid, CostCatalog_СтатьиДвиженияДенежныхСредств> CashFlowCostLookup { get; set; } = default!;
-	[Parameter] public IReadOnlyList<TreeItemData<CashFlowItem>> CashFlowItemsTree { get; set; } = default!;
+	[Parameter] public ILookup<Guid, CostCatalogUt> CostCatalogUtLookup { get; set; } = default!;
+	[Parameter] public IReadOnlyList<TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>> CatalogUtItemsTree { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }
-	[Parameter] public EventCallback<List<CostCatalog_СтатьиДвиженияДенежныхСредств>> OnUpdateCashFlowCosts { get; set; }
-	[Parameter] public EventCallback<Guid> OnDeleteCashFlowCost { get; set; }
+	[Parameter] public EventCallback<List<CostCatalogUt>> OnUpdateCostCatalog { get; set; }
+	[Parameter] public EventCallback<Guid> OnDeleteCostCatalogUt { get; set; }
 
 	private MudTable<string>? _mudTable;
 }

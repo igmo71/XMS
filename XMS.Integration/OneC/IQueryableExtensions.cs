@@ -11,21 +11,19 @@ namespace XMS.Integration.OneC
             query = query.OrderBy(e => e.Number);
 
             if (!string.IsNullOrWhiteSpace(parameters.NumberTerm))
-            {
                 query = query.Where(d => !string.IsNullOrEmpty(d.Number) && EF.Functions.Like(d.Number, parameters.NumberTerm));
-            }
 
             if (parameters.From.HasValue)
-            {
                 query = query.Where(d => d.Date >= parameters.From.Value);
-            }
 
             if (parameters.To.HasValue)
-            {
                 query = query.Where(d => d.Date < parameters.To.Value);
-            }
 
-            query.HandlePagination(parameters);
+            if (parameters.Skip.HasValue)
+                query = query.Skip(parameters.Skip.Value);
+
+            if (parameters.Take.HasValue)
+                query = query.Skip(parameters.Take.Value);
 
             return query;
         }
@@ -36,17 +34,11 @@ namespace XMS.Integration.OneC
             query = query.OrderBy(e => e.Description);
 
             if (!string.IsNullOrWhiteSpace(parameters.DescriptionTerm))
-            {
                 query = query.Where(d => !string.IsNullOrEmpty(d.Description) && EF.Functions.Like(d.Description, parameters.DescriptionTerm));
-            }
 
-            query.HandlePagination(parameters);
+            if (parameters.IncludeDeleted == false)
+                query = query.Where(e => e.DeletionMark == false);
 
-            return query;
-        }
-
-        public static IQueryable<TEntity> HandlePagination<TEntity>(this IQueryable<TEntity> query, PaginationParameters parameters)
-        {
             if (parameters.Skip.HasValue)
                 query = query.Skip(parameters.Skip.Value);
 

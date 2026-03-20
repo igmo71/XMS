@@ -1,35 +1,39 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Diagnostics;
+using XMS.Integration.OneC;
+using XMS.Integration.OneC.Abstractions;
+using XMS.Integration.OneC.Ut.Models;
 using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Domain;
 
-namespace XMS.Web.Components.Pages.CashFlowCostPages
+namespace XMS.Web.Components.Pages.CostCatalogUtPages
 {
     public partial class Index
     {
         [Inject] public ICostCategoryService CategoryService { get; set; } = default!;
         [Inject] public ICostCategoryItemService CategodyItemService { get; set; } = default!;
-        [Inject] public ICashFlowItemService CashFlowItemService { get; set; } = default!;
-        [Inject] public ICashFlowCostService CashFlowCostService { get; set; } = default!;
+        [Inject] public IOneCUtService UtService { get; set; } = default!;
+        [Inject] public ICostCatalogUtService CostCatalogUtService { get; set; } = default!;
         [Inject] public ILogger<Index> Logger { get; set; } = default!;
 
         private readonly CancellationTokenSource _cts = new();
         private ILookup<Guid?, CostCategory> _costCategoriesLookup = default!;
-        private ILookup<Guid, CostCatalog_СтатьиДвиженияДенежныхСредств> _cashFlowCostLookup = default!;
+        private ILookup<Guid, CostCatalogUt> _costCatalogUtLookup = default!;
         private Dictionary<(Guid CostCategoryId, Guid CostItemId), Guid> _costCategoryItemMap = [];
-        private IReadOnlyList<CashFlowItem> _cashFlowItems = [];
-        private IReadOnlyList<TreeItemData<CashFlowItem>> _cashFlowItemsTree = [];
+        private IReadOnlyList<Catalog_СтатьиДвиженияДенежныхСредств> _catalogUtItems = [];
+        private IReadOnlyList<TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>> _catalogUtItemsTree = [];
 
         private bool _isLoading;
         private bool _includeDeleted = false;
+        private CatalogQueryParameters _catalogQueryParameters = new();
 
         protected override async Task OnInitializedAsync()
         {
             var startingTimestamp = Stopwatch.GetTimestamp();
 
             await LoadDataAsync();
-            BuildCashFlowItemsTree();
+            BuildCostCatalogUtItemsTree();
 
             Logger.LogDebug("{Source} {Elapsed}", nameof(OnInitializedAsync), Stopwatch.GetElapsedTime(startingTimestamp));
         }
@@ -46,8 +50,8 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
                 await Task.WhenAll(
                     LoadCostCategories(),
                     LoadCostCategoryItems(),
-                    LoadCashFlowItems(),
-                    LoadCashFlowCosts());
+                    LoadCatalogUtItems(),
+                    LoadCostCatalogUt());
             }
             finally
             {
@@ -66,7 +70,7 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
             _costCategoriesLookup = costCategories.ToLookup(e => e.ParentId);
         }
 
-        private async Task LoadCashFlowItems() => _cashFlowItems = await CashFlowItemService.GetListAsync(includeDeleted: false, _cts.Token);
+        private async Task LoadCatalogUtItems() => _catalogUtItems = await UtService.GetCatalog_СтатьиДвиженияДенежныхСредств_Async(_catalogQueryParameters, _cts.Token);
 
         private async Task LoadCostCategoryItems()
         {
@@ -76,13 +80,13 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
                 .ToDictionary(g => g.Key, g => g.First().Id);
         }
 
-        private async Task LoadCashFlowCosts()
+        private async Task LoadCostCatalogUt()
         {
-            var cashFlowCostList = await CashFlowCostService.GetListAsync(_cts.Token);
-            _cashFlowCostLookup = cashFlowCostList.ToLookup(e => e.CostCategoryItemId);
+            var costCatalogUtItems = await CostCatalogUtService.GetListAsync(_cts.Token);
+            _costCatalogUtLookup = costCatalogUtItems.ToLookup(e => e.CostCategoryItemId);
         }
 
-        private void BuildCashFlowItemsTree()
+        private void BuildCostCatalogUtItemsTree()
         {
             var startingTimestamp = Stopwatch.GetTimestamp();
 
@@ -90,40 +94,40 @@ namespace XMS.Web.Components.Pages.CashFlowCostPages
 
             _isLoading = true;
 
-            ILookup<Guid?, CashFlowItem> cashFlowItemLookup = _cashFlowItems.ToLookup(e => e.ParentId);
+            ILookup<Guid?, Catalog_СтатьиДвиженияДенежныхСредств> catalogItemsLookup = _catalogUtItems.ToLookup(e => e.Parent_Key);
 
-            _cashFlowItemsTree = ExecuteBuildTree(cashFlowItemLookup, Guid.Parse("00000000-0000-0000-0000-000000000000"));
+            _catalogUtItemsTree = ExecuteBuildTree(catalogItemsLookup, Guid.Empty);
 
             //StateHasChanged();
 
             _isLoading = false;
 
-            Logger.LogDebug("{Source} {Elapsed}", nameof(BuildCashFlowItemsTree), Stopwatch.GetElapsedTime(startingTimestamp));
+            Logger.LogDebug("{Source} {Elapsed}", nameof(BuildCostCatalogUtItemsTree), Stopwatch.GetElapsedTime(startingTimestamp));
         }
 
-        private static List<TreeItemData<CashFlowItem>> ExecuteBuildTree(ILookup<Guid?, CashFlowItem> cashFlowItemLookup, Guid? parentId)
+        private static List<TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>> ExecuteBuildTree(ILookup<Guid?, Catalog_СтатьиДвиженияДенежныхСредств> catalogItemsLookup, Guid? parentId)
         {
-            var result = cashFlowItemLookup[parentId].Select(e => new TreeItemData<CashFlowItem>
+            var result = catalogItemsLookup[parentId].Select(e => new TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>
             {
                 Value = e,
-                Text = e.Name,
+                Text = e.Description,
                 Expanded = false,
-                Children = ExecuteBuildTree(cashFlowItemLookup, e.Id)
+                Children = ExecuteBuildTree(catalogItemsLookup, e.Ref_Key)
             }).ToList();
 
             return result;
         }
 
-        private async Task DeleteCashFlowCost(Guid itemId)
+        private async Task DeleteCostCatalogUt(Guid itemId)
         {
-            await CashFlowCostService.DeleteCashFlowCostAsync(itemId, _cts.Token);
+            await CostCatalogUtService.DeleteAsync(itemId, _cts.Token);
             await LoadDataAsync();
             StateHasChanged();
         }
 
-        private async Task UpdateCashFlowCosts(List<CostCatalog_СтатьиДвиженияДенежныхСредств> items)
+        private async Task UpdateCostCatalogUt(List<CostCatalogUt> items)
         {
-            await CashFlowCostService.UpdateRangeCashFlowCostAsync(items, _cts.Token);
+            await CostCatalogUtService.UpdateRangeAsync(items, _cts.Token);
             await LoadDataAsync();
             StateHasChanged();
         }

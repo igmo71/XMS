@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using XMS.Domain.Models;
-using XMS.Infrastructure.Integration.Bitrix;
-using XMS.Infrastructure.Integration.Bitrix.Models;
 using XMS.Integration.Bitrix;
 using XMS.Integration.Bitrix.Models;
 
@@ -27,18 +25,15 @@ namespace XMS.Web.Components.Account
         }
 
         public async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure = false)
-        {           
+        {
             var bitrixUser = await bitrixService.GetUserAsync(userName, password);
 
             if (bitrixUser?.LOGIN is null)
-                return SignInResult.Failed;  
+                return SignInResult.Failed;
 
             var appUser = await userManager.FindByNameAsync(bitrixUser.LOGIN);
 
-            if (appUser is null)
-            {
-                appUser = await RegisterBitrixUserAsync(bitrixUser, password);
-            }
+            appUser ??= await RegisterBitrixUserAsync(bitrixUser, password);
 
             if (appUser?.UserName is null)
                 return SignInResult.Failed;
