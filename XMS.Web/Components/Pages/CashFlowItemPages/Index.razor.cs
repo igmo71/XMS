@@ -146,7 +146,7 @@ namespace XMS.Web.Components.Pages.CashFlowItemPages
 
                 Snackbar.Add("Данные успешно синхронизированы с 1С", Severity.Success);
 
-                await LoadDataAsync();
+                await LoadDataAndBuildTreeAsync();
             }
             catch (Exception ex)
             {
