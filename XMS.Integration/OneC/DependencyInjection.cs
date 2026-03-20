@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using System.Net.Mime;
@@ -7,6 +8,7 @@ using XMS.Integration.OneC.Abstractions;
 using XMS.Integration.OneC.Buh;
 using XMS.Integration.OneC.Ut;
 using XMS.Integration.OneC.Ut.Abstractions;
+using XMS.Integration.OneC.Ut.Endpoints;
 using XMS.Integration.OneC.Ut.Services;
 using XMS.Integration.OneC.Zup;
 
@@ -30,7 +32,14 @@ namespace XMS.Integration.OneC
             return services;
         }
 
-        public static IServiceCollection AddOneCClient<TClient, TConfig>(this IServiceCollection services, IConfiguration configuration)
+        public static IEndpointRouteBuilder MapOneCEndpoints(this IEndpointRouteBuilder builder)
+        {
+            builder.MapDocument_СписаниеБезналичныхДенежныхСредств_Endpoints();
+
+            return builder;
+        }
+
+        private static IServiceCollection AddOneCClient<TClient, TConfig>(this IServiceCollection services, IConfiguration configuration)
             where TClient : class
             where TConfig : OneCClientConfig
         {

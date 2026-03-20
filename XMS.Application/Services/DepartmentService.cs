@@ -108,7 +108,7 @@ namespace XMS.Application.Services
 
             var result = await dbContext.Set<Department>()
                 .AsNoTracking()
-                .HandleQueryParameters(queryParameters)
+                .HandleQuery(queryParameters)
                 .ToListAsync(ct);
 
             return result;

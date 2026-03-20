@@ -18,8 +18,10 @@ namespace XMS.Integration
             return services;
         }
 
-        public static IEndpointRouteBuilder MapOneCEndpoints(this IEndpointRouteBuilder builder)
+        public static IEndpointRouteBuilder MapIntegrationEndpoints(this IEndpointRouteBuilder builder)
         {
+            builder.MapOneCEndpoints();
+
             return builder;
         }
     }

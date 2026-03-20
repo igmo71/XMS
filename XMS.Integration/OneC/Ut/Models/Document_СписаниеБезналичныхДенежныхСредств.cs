@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using XMS.Core.Common;
 using XMS.Integration.OneC.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Models
@@ -6,7 +8,7 @@ namespace XMS.Integration.OneC.Ut.Models
     public class Document_СписаниеБезналичныхДенежныхСредств : IOneCDocument
     {
         public Guid Ref_Key { get; set; }
-        [MaxLength(OneCSettings.VALUE)] public string? Number { get; set; }
+        [MaxLength(OneCSettings.CODE)] public string? Number { get; set; }
         public DateTime Date { get; set; }
         [MaxLength(OneCSettings.VALUE)] public string? ХозяйственнаяОперация { get; set; }
         public Guid Партнер_Key { get; set; }
@@ -14,9 +16,13 @@ namespace XMS.Integration.OneC.Ut.Models
         public Guid Автор_Key { get; set; }
         public Guid Организация_Key { get; set; }
         public Guid Подразделение_Key { get; set; }
-        public Guid ДокументОснование { get; set; }
+
+        [JsonConverter(typeof(EmptyStringToGuidConverter))]
+        public Guid? ДокументОснование { get; set; }
         [MaxLength(OneCSettings.VALUE)] public string? ДокументОснование_Type { get; set; }
-        public Guid Договор { get; set; }
+
+        [JsonConverter(typeof(EmptyStringToGuidConverter))]
+        public Guid? Договор { get; set; }
         [MaxLength(OneCSettings.VALUE)] public string? Договор_Type { get; set; }
         [MaxLength(OneCSettings.VALUE)] public string? НалогообложениеНДС { get; set; }
         public Guid СтатьяДвиженияДенежныхСредств_Key { get; set; }
@@ -70,7 +76,7 @@ namespace XMS.Integration.OneC.Ut.Models
         //public string? ПоказательПериода { get; set; }
         //public string? ПоказательНомера { get; set; }
         //public string? ПоказательДаты { get; set; }
-        
+
         //public bool НеКонтролироватьЗаполнениеЗаявки { get; set; }
         //public string? ВидПлатежа { get; set; }
         //public string? ТипПлатежногоДокумента { get; set; }
@@ -166,9 +172,13 @@ namespace XMS.Integration.OneC.Ut.Models
     public class Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа : IOneCDocumentItem
     {
         public Guid Ref_Key { get; set; }
+
+        [JsonConverter(typeof(StringToIntConverter))]
         public int LineNumber { get; set; }
         public Guid Партнер_Key { get; set; }
-        public Guid СтатьяРасходов { get; set; }
+
+        [JsonConverter(typeof(EmptyStringToGuidConverter))]
+        public Guid? СтатьяРасходов { get; set; }
         [MaxLength(OneCSettings.VALUE)] public string? СтатьяРасходов_Type { get; set; }
         public Guid СтатьяДвиженияДенежныхСредств_Key { get; set; }
         [MaxLength(OneCSettings.COMMENT)] public string? Комментарий { get; set; }

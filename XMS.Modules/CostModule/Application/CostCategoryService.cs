@@ -118,7 +118,7 @@ namespace XMS.Modules.CostModule.Application
 
             var result = await dbContext.Set<CostCategory>()
                 .AsNoTracking()
-                .HandleQueryParameters(queryParameters)
+                .HandleQuery(queryParameters)
                 .Include(e => e.Items)
                 .Include(e => e.Department)
                 .Include(e => e.Employee)

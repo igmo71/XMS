@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using XMS.Core.Common;
 
 namespace XMS.Modules.GodooModule.Domain
 {

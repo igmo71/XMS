@@ -114,7 +114,7 @@ namespace XMS.Integration.OneC.Ut.Services
         {
             var uri = Document_СписаниеБезналичныхДенежныхСредств.GetUriByDate(date, date.AddDays(1));
 
-            var rootObject = await utClient.GetValueAsync<RootObject<Document_СписаниеБезналичныхДенежныхСредств>>(uri, ct);
+            var rootObject = await utClient.GetValueAsyncStd<RootObject<Document_СписаниеБезналичныхДенежныхСредств>>(uri, ct);
 
             var result = rootObject?.Value?.ToList();
 

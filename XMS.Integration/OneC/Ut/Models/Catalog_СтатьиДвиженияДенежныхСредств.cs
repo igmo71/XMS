@@ -1,13 +1,14 @@
-﻿using XMS.Integration.OneC.Abstractions;
+﻿using System.ComponentModel.DataAnnotations;
+using XMS.Integration.OneC.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Models
 {
     public class Catalog_СтатьиДвиженияДенежныхСредств: IOneCCatalog
     {
         public Guid Ref_Key { get; set; }
-        public string? Description { get; set; }
+        [MaxLength(OneCSettings.DESCRIPTION)] public string? Description { get; set; }
         public bool DeletionMark { get; set; }
-        public string? Code { get; set; }
+        [MaxLength(OneCSettings.CODE)] public string? Code { get; set; }
         public Guid? Parent_Key { get; set; }
         public bool IsFolder { get; set; }
 

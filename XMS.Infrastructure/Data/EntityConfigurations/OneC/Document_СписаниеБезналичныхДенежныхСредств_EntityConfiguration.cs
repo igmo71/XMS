@@ -13,6 +13,8 @@ namespace XMS.Infrastructure.Data.EntityConfigurations.OneC
 
             builder.HasKey(e => e.Ref_Key);
 
+            builder.Property(e => e.СуммаДокумента).HasPrecision(18, 2);
+
             builder.HasMany(e => e.РасшифровкаПлатежа).WithOne()
                 .HasForeignKey(e => e.Ref_Key).HasPrincipalKey(e => e.Ref_Key)
                 .OnDelete(DeleteBehavior.Cascade);

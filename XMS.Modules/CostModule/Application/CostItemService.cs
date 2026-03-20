@@ -87,7 +87,7 @@ namespace XMS.Modules.CostModule.Application
 
             var result = await dbContext.Set<CostItem>()
                 .AsNoTracking()
-                .HandleQueryParameters(queryParameters)
+                .HandleQuery(queryParameters)
                 .ToListAsync(ct);
 
             return result;

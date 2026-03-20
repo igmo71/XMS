@@ -99,7 +99,7 @@ namespace XMS.Application.Services
 
             var result = await dbContext.Set<Employee>()
                 .AsNoTracking()
-                .HandleQueryParameters(queryParameters)
+                .HandleQuery(queryParameters)
                 .Include(e => e.City)
                 .Include(e => e.Department)
                 .Include(e => e.EmployeeBuh)

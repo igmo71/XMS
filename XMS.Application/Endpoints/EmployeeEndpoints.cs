@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Logging;
-using System.Text.Json;
 using XMS.Application.Abstractions.Services;
 using XMS.Application.Common;
 using XMS.Application.Endpoints.Dto;

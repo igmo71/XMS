@@ -5,20 +5,20 @@ namespace XMS.Application.Common
 {
     public static class IQueryableExtensions
     {
-        public static IQueryable<TEntity> HandleQueryParameters<TEntity>(this IQueryable<TEntity> query, QueryParameters searchParameters)
+        public static IQueryable<TEntity> HandleQuery<TEntity>(this IQueryable<TEntity> query, QueryParameters queryParameters)
             where TEntity : ISoftDeletable, IHasName
         {
             query = query.OrderBy(e => e.Name);
 
-            if (searchParameters.Skip > 0)
-                query = query.Skip((int)searchParameters.Skip);
+            if (queryParameters.Skip > 0)
+                query = query.Skip((int)queryParameters.Skip);
 
-            if (searchParameters.Take > 0)
-                query = query.Take((int)searchParameters.Take > AppSettings.Default.MaxTake
+            if (queryParameters.Take > 0)
+                query = query.Take((int)queryParameters.Take > AppSettings.Default.MaxTake
                     ? AppSettings.Default.MaxTake
-                    : (int)searchParameters.Take);
+                    : (int)queryParameters.Take);
 
-            if (searchParameters.IncludeDeleted == true)
+            if (queryParameters.IncludeDeleted == true)
                 query = query.Where(x => !x.IsDeleted);
             return query;
         }
