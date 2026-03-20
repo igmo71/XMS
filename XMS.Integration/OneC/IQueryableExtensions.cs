@@ -5,7 +5,7 @@ namespace XMS.Integration.OneC
 {
     public static class IQueryableExtensions
     {
-        public static IQueryable<TEntity> HandleDocumentQueryParameters<TEntity>(this IQueryable<TEntity> query, DocumentQueryParameters parameters)
+        public static IQueryable<TEntity> HandleDocumentQuery<TEntity>(this IQueryable<TEntity> query, DocumentQueryParameters parameters)
             where TEntity : IOneCDocument
         {
             query = query.OrderBy(e => e.Number);
@@ -24,6 +24,34 @@ namespace XMS.Integration.OneC
             {
                 query = query.Where(d => d.Date < parameters.To.Value);
             }
+
+            query.HandlePagination(parameters);
+
+            return query;
+        }
+
+        public static IQueryable<TEntity> HandleCatalogQuery<TEntity>(this IQueryable<TEntity> query, CatalogQueryParameters parameters)
+           where TEntity : IOneCCatalog
+        {
+            query = query.OrderBy(e => e.Description);
+
+            if (!string.IsNullOrWhiteSpace(parameters.DescriptionTerm))
+            {
+                query = query.Where(d => !string.IsNullOrEmpty(d.Description) && EF.Functions.Like(d.Description, parameters.DescriptionTerm));
+            }
+
+            query.HandlePagination(parameters);
+
+            return query;
+        }
+
+        public static IQueryable<TEntity> HandlePagination<TEntity>(this IQueryable<TEntity> query, PaginationParameters parameters)
+        {
+            if (parameters.Skip.HasValue)
+                query = query.Skip(parameters.Skip.Value);
+
+            if (parameters.Take.HasValue)
+                query = query.Skip(parameters.Take.Value);
 
             return query;
         }

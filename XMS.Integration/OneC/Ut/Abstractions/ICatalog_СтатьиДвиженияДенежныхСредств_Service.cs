@@ -5,13 +5,13 @@ namespace XMS.Integration.OneC.Ut.Abstractions
 {
     internal interface ICatalog_СтатьиДвиженияДенежныхСредств_Service
     {
-        Task<ServiceResult> CreateOrUpdateAsync(Guid refKey, CancellationToken ct);
+        Task<ServiceResult> CreateOrUpdateAsync(Guid refKey, CancellationToken ct = default);
 
-        Task<ServiceResult> DeleteAsync(Guid refKey, CancellationToken ct);
+        Task<ServiceResult> DeleteAsync(Guid refKey, CancellationToken ct = default);
 
-        Task<Document_СписаниеБезналичныхДенежныхСредств?> GetAsync(Guid refKey, CancellationToken ct);
-
-        Task<IReadOnlyList<Catalog_СтатьиДвиженияДенежныхСредств>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default);
+        Task<Catalog_СтатьиДвиженияДенежныхСредств?> GetAsync(Guid refKey, CancellationToken ct = default);
+            
+        Task<IReadOnlyList<Catalog_СтатьиДвиженияДенежныхСредств>> GetListAsync(CatalogQueryParameters parameters, CancellationToken ct = default);
         
         Task<ServiceResult> ResyncAsync(CancellationToken ct = default);
     }

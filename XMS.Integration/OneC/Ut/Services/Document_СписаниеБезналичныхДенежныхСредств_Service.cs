@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Common;
-using XMS.Integration.OneC.Repository;
 using XMS.Integration.OneC.Ut.Abstractions;
 using XMS.Integration.OneC.Ut.Models;
 
@@ -21,11 +20,17 @@ namespace XMS.Integration.OneC.Ut.Services
             var newItem = await FetchByRefKeyAsync(refKey, ct);
 
             if (newItem is null)
-                return ServiceError.InvalidOperation.WithDescription($"Failed to feath {nameof(Document_СписаниеБезналичныхДенежныхСредств)} by {refKey}");
+                return ServiceError.InvalidOperation.WithDescription(
+                    $"Failed to feath {nameof(Document_СписаниеБезналичныхДенежныхСредств)} by {refKey}");
 
-            await DocumentRepository.DeleteByRefKeyAsync<Document_СписаниеБезналичныхДенежныхСредств>(dbContext, refKey, ct);
+            await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
+                .Where(e => e.Ref_Key == refKey)
+                .ExecuteDeleteAsync(ct);
 
-            await DocumentRepository.Add(dbContext, newItem, ct);
+            await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
+                .AddAsync(newItem, ct);
+
+            await dbContext.SaveChangesAsync(ct);
 
             logger.LogDebug("{Source} {refKey} {newItem}", nameof(CreateOrUpdateAsync), refKey, newItem);
 
@@ -36,7 +41,9 @@ namespace XMS.Integration.OneC.Ut.Services
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            await DocumentRepository.DeleteByRefKeyAsync<Document_СписаниеБезналичныхДенежныхСредств>(dbContext, refKey, ct);
+            await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
+                .Where(e => e.Ref_Key == refKey)
+                .ExecuteDeleteAsync(ct);
 
             logger.LogDebug("{Source} {refKey}", nameof(DeleteAsync), refKey);
 
@@ -47,7 +54,8 @@ namespace XMS.Integration.OneC.Ut.Services
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var result = await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>().FindAsync([refKey], cancellationToken: ct);
+            var result = await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
+                .FindAsync([refKey], cancellationToken: ct);
 
             return result;
         }
@@ -58,10 +66,10 @@ namespace XMS.Integration.OneC.Ut.Services
 
             var result = await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
                 .AsNoTracking()
-                .HandleDocumentQueryParameters(parameters)
+                .HandleDocumentQuery(parameters)
                 .ToListAsync(ct);
 
-            return result;
+            return result ?? [];
         }
 
         public async Task<ServiceResult> ResyncByDateRangeAsync(DateTime from, DateTime to, CancellationToken ct = default)
@@ -70,17 +78,20 @@ namespace XMS.Integration.OneC.Ut.Services
 
             using var dbContext = dbFactory.CreateDbContext();
 
-            await DocumentRepository.DeleteRangeByDateAsync<Document_СписаниеБезналичныхДенежныхСредств>(dbContext, from, to, ct);
+            await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
+                .Where(e => e.Date >= from && e.Date < to)
+                .ExecuteDeleteAsync(ct);
 
             var currentDay = from;
-
-            int insertedRows = 0;
 
             while (currentDay < to)
             {
                 var items = await FetchListAsyncByDate(currentDay, ct);
 
-                insertedRows += await DocumentRepository.InsertRangeAsync(dbContext, items, ct);
+                await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
+                    .AddRangeAsync(items, ct);
+
+                await dbContext.SaveChangesAsync(ct);
 
                 currentDay = currentDay.AddDays(1);
             }

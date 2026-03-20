@@ -2,16 +2,15 @@
 using Microsoft.Extensions.Logging;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Common;
-using XMS.Integration.OneC.Repository;
 using XMS.Integration.OneC.Ut.Abstractions;
 using XMS.Integration.OneC.Ut.Models;
 
 namespace XMS.Integration.OneC.Ut.Services
 {
     internal class Catalog_СтатьиДвиженияДенежныхСредств_Service(
-        UtClient utClient, 
+        UtClient utClient,
         IDbContextFactoryProxy dbFactory,
-        ILogger<Catalog_СтатьиДвиженияДенежныхСредств_Service> logger) 
+        ILogger<Catalog_СтатьиДвиженияДенежныхСредств_Service> logger)
         : BaseService, ICatalog_СтатьиДвиженияДенежныхСредств_Service
     {
         public async Task<ServiceResult> CreateOrUpdateAsync(Guid refKey, CancellationToken ct)
@@ -21,7 +20,8 @@ namespace XMS.Integration.OneC.Ut.Services
             var newItem = await FetchByRefKeyAsync(refKey, ct);
 
             if (newItem is null)
-                return ServiceError.InvalidOperation.WithDescription($"Failed to feath {nameof(Catalog_СтатьиДвиженияДенежныхСредств)} by {refKey}");
+                return ServiceError.InvalidOperation.WithDescription(
+                    $"Failed to feath {nameof(Catalog_СтатьиДвиженияДенежныхСредств)} by {refKey}");
 
             await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
                 .Where(e => e.Ref_Key == refKey)
@@ -54,21 +54,22 @@ namespace XMS.Integration.OneC.Ut.Services
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var result = await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>().FindAsync([refKey], cancellationToken: ct);
+            var result = await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
+                .FindAsync([refKey], cancellationToken: ct);
 
             return result;
         }
 
-        public async Task<IReadOnlyList<Catalog_СтатьиДвиженияДенежныхСредств>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
+        public async Task<IReadOnlyList<Catalog_СтатьиДвиженияДенежныхСредств>> GetListAsync(CatalogQueryParameters parameters, CancellationToken ct = default)
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var query = dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>().AsNoTracking();
+            var result = await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
+                .AsNoTracking()
+                .HandleCatalogQuery(parameters)
+                .ToListAsync(ct);
 
-            if (!includeDeleted)
-                query = query.Where(e => !e.DeletionMark);
-
-            return await query.OrderBy(x => x.Description).ToListAsync(ct);
+            return result ?? [];
         }
 
         public async Task<ServiceResult> ResyncAsync(CancellationToken ct)
@@ -77,20 +78,15 @@ namespace XMS.Integration.OneC.Ut.Services
 
             using var dbContext = dbFactory.CreateDbContext();
 
-            await CatalogRepository.DeleteAllAsync<Catalog_СтатьиДвиженияДенежныхСредств>(ct);
+            await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
+                .ExecuteDeleteAsync(ct);
 
-            var currentDay = from;
+            var items = await FetchListAsync(ct);
 
-            int insertedRows = 0;
+            await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
+                .AddRangeAsync(items, ct);
 
-            while (currentDay < to)
-            {
-                var items = await FetchListAsyncByDate(currentDay, ct);
-
-                insertedRows += await CatalogRepository.InsertRangeAsync(dbContext, items, ct);
-
-                currentDay = currentDay.AddDays(1);
-            }
+            await dbContext.SaveChangesAsync(ct);
 
             return ServiceResult.Success();
         }
@@ -106,13 +102,13 @@ namespace XMS.Integration.OneC.Ut.Services
             return result;
         }
 
-        public async Task<IReadOnlyList<Catalog_СтатьиДвиженияДенежныхСредств>> FetchListAsync(CancellationToken ct = default)
+        private async Task<IReadOnlyList<Catalog_СтатьиДвиженияДенежныхСредств>> FetchListAsync(CancellationToken ct = default)
         {
             var uri = Catalog_СтатьиДвиженияДенежныхСредств.Uri;
 
             var rootObject = await utClient.GetValueAsync<RootObject<Catalog_СтатьиДвиженияДенежныхСредств>>(uri, ct);
 
-            var result = rootObject?.Value;
+            var result = rootObject?.Value?.ToList();
 
             return result ?? [];
         }

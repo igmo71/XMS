@@ -7,5 +7,6 @@ namespace XMS.Integration.OneC
         DateTime? From = null,
         DateTime? To = null,
         int? Skip = AppSettings.Default.Skip,
-        int? Take = AppSettings.Default.Take);
+        int? Take = AppSettings.Default.Take) 
+        : PaginationParameters(Skip, Take);
 }

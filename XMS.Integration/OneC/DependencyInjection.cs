@@ -6,6 +6,8 @@ using System.Text;
 using XMS.Integration.OneC.Abstractions;
 using XMS.Integration.OneC.Buh;
 using XMS.Integration.OneC.Ut;
+using XMS.Integration.OneC.Ut.Abstractions;
+using XMS.Integration.OneC.Ut.Services;
 using XMS.Integration.OneC.Zup;
 
 namespace XMS.Integration.OneC
@@ -21,6 +23,9 @@ namespace XMS.Integration.OneC
             services.AddScoped<IOneCUtService, UtService>();
             services.AddScoped<IOneCBuhService, BuhService>();
             services.AddScoped<IOneCZupService, ZupService>();
+
+            services.AddScoped<ICatalog_СтатьиДвиженияДенежныхСредств_Service, Catalog_СтатьиДвиженияДенежныхСредств_Service>();
+            services.AddScoped<IDocument_СписаниеБезналичныхДенежныхСредств_Service, Document_СписаниеБезналичныхДенежныхСредств_Service>();
 
             return services;
         }

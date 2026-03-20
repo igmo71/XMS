@@ -29,13 +29,7 @@ namespace XMS.Integration.OneC.Ut.Endpoints
                 GetDocument_СписаниеБезналичныхДенежныхСредств_ByRefKey)
                     .WithName(nameof(GetDocument_СписаниеБезналичныхДенежныхСредств_ByRefKey))
                     .WithSummary(nameof(GetDocument_СписаниеБезналичныхДенежныхСредств_ByRefKey))
-                    .WithDescription("Get Document_СписаниеБезналичныхДенежныхСредств by Ref_Key");
-
-            utGroup.MapGet("/document-списание-безналичных-денежных-средств/fetch",
-                FetchDocument_СписаниеБезналичныхДенежныхСредств_ByDate)
-                    .WithName(nameof(FetchDocument_СписаниеБезналичныхДенежныхСредств_ByDate))
-                    .WithSummary(nameof(FetchDocument_СписаниеБезналичныхДенежныхСредств_ByDate))
-                    .WithDescription("Fetch Document_СписаниеБезналичныхДенежныхСредств by Date from OneC Ut");
+                    .WithDescription("Get Document_СписаниеБезналичныхДенежныхСредств by Ref_Key");            
 
             utGroup.MapPut("/document-списание-безналичных-денежных-средств/resync",
                 ResyncDocument_СписаниеБезналичныхДенежныхСредств_ByDate)
@@ -85,7 +79,7 @@ namespace XMS.Integration.OneC.Ut.Endpoints
             GetDocument_СписаниеБезналичныхДенежныхСредств_ByRefKey(
                 [FromServices] IDocument_СписаниеБезналичныхДенежныхСредств_Service documentService,
                 [FromServices] ILoggerFactory loggerFactory,
-                [FromRoute] string refKey,
+                [FromRoute] Guid refKey,
                 CancellationToken ct = default)
         {
             var logger = loggerFactory.CreateLogger(nameof(Document_СписаниеБезналичныхДенежныхСредств_Endpoints));
@@ -96,27 +90,17 @@ namespace XMS.Integration.OneC.Ut.Endpoints
                 nameof(GetDocument_СписаниеБезналичныхДенежныхСредств_ByRefKey), refKey, result);
 
             return result is null ? TypedResults.NotFound($"Document Not Found by Ref_Key {refKey}") : TypedResults.Ok(result);
-        }
+        }        
 
-        private static async Task<Results<Ok<IReadOnlyList<Document_СписаниеБезналичныхДенежныхСредств>>, BadRequest<string>>>
-            FetchDocument_СписаниеБезналичныхДенежныхСредств_ByDate(
-                [FromServices] IDocument_СписаниеБезналичныхДенежныхСредств_Service documentService,
-                [FromQuery] DateTime date)
-        {
-            var result = await documentService.FetchListAsyncByDate(date);
-
-            return TypedResults.Ok(result);
-        }
-
-        private static async Task<Results<Ok<int>, BadRequest<string>>>
+        private static async Task<Results<Ok, BadRequest<string>>>
             ResyncDocument_СписаниеБезналичныхДенежныхСредств_ByDate(
                 [FromServices] IDocument_СписаниеБезналичныхДенежныхСредств_Service documentService,
                 [FromQuery] DateTime from,
                 [FromQuery] DateTime to)
         {
-            var result = await documentService.ResyncByDateRangeAsync(from, to);
+            await documentService.ResyncByDateRangeAsync(from, to);
 
-            return TypedResults.Ok(result);
+            return TypedResults.Ok();
         }
 
         private static async Task<IResult> NotifyDocument_СписаниеБезналичныхДенежныхСредств_Changed(
