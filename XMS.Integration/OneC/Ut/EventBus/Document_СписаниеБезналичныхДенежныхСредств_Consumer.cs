@@ -12,7 +12,7 @@ namespace XMS.Integration.OneC.Ut.EventBus
             _ = context.Message.EventOperation switch
             {
                 EventOperation.Changed => await documentService.CreateOrUpdateAsync(context.Message.Ref_Key),
-                EventOperation.Delete => await documentService.DeleteAsync(context.Message.Ref_Key),
+                EventOperation.Deleted => await documentService.DeleteAsync(context.Message.Ref_Key),
                 _ => throw new InvalidOperationException($"Unknown operation: {context.Message.EventOperation}")
             };
         }

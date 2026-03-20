@@ -17,22 +17,23 @@ namespace XMS.Integration.OneC.Ut.Services
         {
             using var dbContext = dbFactory.CreateDbContext();
 
-            var newItem = await FetchByRefKeyAsync(refKey, ct);
+            var fetchedItem = await FetchByRefKeyAsync(refKey, ct);
 
-            if (newItem is null)
-                return ServiceError.InvalidOperation.WithDescription(
-                    $"Failed to feath {nameof(Document_СписаниеБезналичныхДенежныхСредств)} by {refKey}");
+            if (fetchedItem is null){
+                logger.LogError("{Source} Failed to feath {refKey}", nameof(CreateOrUpdateAsync), refKey);
+                return ServiceError.InvalidOperation.WithDescription($"Failed to feath {nameof(Document_СписаниеБезналичныхДенежныхСредств)} by {refKey}");
+            }
 
             await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
                 .Where(e => e.Ref_Key == refKey)
                 .ExecuteDeleteAsync(ct);
 
             await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
-                .AddAsync(newItem, ct);
+                .AddAsync(fetchedItem, ct);
 
             await dbContext.SaveChangesAsync(ct);
 
-            logger.LogDebug("{Source} {refKey} {newItem}", nameof(CreateOrUpdateAsync), refKey, newItem);
+            logger.LogDebug("{Source} {refKey} {@fetchedItem}", nameof(CreateOrUpdateAsync), refKey, fetchedItem);
 
             return ServiceResult.Success();
         }
@@ -105,7 +106,7 @@ namespace XMS.Integration.OneC.Ut.Services
 
             var rootObject = await utClient.GetValueAsync<RootObject<Document_СписаниеБезналичныхДенежныхСредств>>(uri, ct);
 
-            var result = rootObject?.Value?[0];
+            var result = rootObject?.Value?.FirstOrDefault();
 
             return result;
         }

@@ -118,7 +118,7 @@ namespace XMS.Integration.OneC.Ut.Endpoints
             [FromServices] IPublishEndpoint publishEndpoint,
             [FromBody] Document_СписаниеБезналичныхДенежныхСредств_Changed notifyBody)
         {
-            notifyBody.EventOperation = EventOperation.Delete;
+            notifyBody.EventOperation = EventOperation.Deleted;
 
             await publishEndpoint.Publish(notifyBody);
 
