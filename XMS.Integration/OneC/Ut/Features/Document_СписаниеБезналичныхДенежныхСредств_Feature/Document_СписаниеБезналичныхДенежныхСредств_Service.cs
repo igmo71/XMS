@@ -12,22 +12,22 @@ namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезнал
         ILogger<Document_СписаниеБезналичныхДенежныхСредств_Service> logger)
         : BaseService, IDocument_СписаниеБезналичныхДенежныхСредств_Service
     {
-        public async Task<ServiceResult> HandleEventOneC(Document_СписаниеБезналичныхДенежныхСредств_Changed message, CancellationToken ct = default)
+        public async Task<ServiceResult> HandleEventOneC(Document_СписаниеБезналичныхДенежныхСредств_Changed oneCNotifyMessage, CancellationToken ct = default)
         {
-            logger.LogDebug("{Source} - Start {@message}", nameof(HandleEventOneC), message);
+            logger.LogDebug("{Source} - Start {@message}", nameof(HandleEventOneC), oneCNotifyMessage);
 
-            var fetchedItem = await FetchByRefKeyAsync(message.Ref_Key, ct);
+            var fetchedItem = await FetchByRefKeyAsync(oneCNotifyMessage.Ref_Key, ct);
 
             if (fetchedItem is null)
             {
-                logger.LogWarning("{Source} - Failed to feath {@message}", nameof(HandleEventOneC), message);
+                logger.LogError("{Source} - Failed to feath {@message}", nameof(HandleEventOneC), oneCNotifyMessage);
                 return ServiceError.NotFound;
             }
 
             using var dbContext = dbFactory.CreateDbContext();
 
             await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
-                .Where(e => e.Ref_Key == message.Ref_Key)
+                .Where(e => e.Ref_Key == oneCNotifyMessage.Ref_Key)
                 .ExecuteDeleteAsync(ct);
 
             if (!fetchedItem.DeletionMark && fetchedItem.Posted)
@@ -38,7 +38,7 @@ namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезнал
                 await dbContext.SaveChangesAsync(ct);
             }
 
-            logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleEventOneC), message, fetchedItem);
+            logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleEventOneC), oneCNotifyMessage, fetchedItem);
 
             return ServiceResult.Success();
         }
