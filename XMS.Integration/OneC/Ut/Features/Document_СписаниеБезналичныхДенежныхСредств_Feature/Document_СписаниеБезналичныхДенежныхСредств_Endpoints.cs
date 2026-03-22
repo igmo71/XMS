@@ -4,12 +4,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
 using XMS.Core;
 using XMS.Integration.OneC.Ut.Abstractions;
-using XMS.Integration.OneC.Ut.Models;
-using XMS.Modules.CostModule.EventBus;
 
-namespace XMS.Integration.OneC.Ut.Endpoints
+namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature
 {
     public static class Document_СписаниеБезналичныхДенежныхСредств_Endpoints
     {
@@ -35,18 +34,12 @@ namespace XMS.Integration.OneC.Ut.Endpoints
                     .WithName(nameof(ResyncDocument_СписаниеБезналичныхДенежныхСредств_ByDate))
                     .WithSummary(nameof(ResyncDocument_СписаниеБезналичныхДенежныхСредств_ByDate))
                     .WithDescription("Resync Document_СписаниеБезналичныхДенежныхСредств from OneS Ut for a cpecific date period and save them to the DB");
-
-            utGroup.MapPost("/notify/document-списание-безналичных-денежных-средств",
-                NotifyDocument_СписаниеБезналичныхДенежныхСредств_Changed)
-                    .WithName(nameof(NotifyDocument_СписаниеБезналичныхДенежныхСредств_Changed))
-                    .WithSummary(nameof(NotifyDocument_СписаниеБезналичныхДенежныхСредств_Changed))
-                    .WithDescription("Notify Document_СписаниеБезналичныхДенежныхСредств Changed");
-
-            utGroup.MapDelete("/notify/document-списание-безналичных-денежных-средств",
-                NotifyDocument_СписаниеБезналичныхДенежныхСредств_Deleted)
-                    .WithName(nameof(NotifyDocument_СписаниеБезналичныхДенежныхСредств_Deleted))
-                    .WithSummary(nameof(NotifyDocument_СписаниеБезналичныхДенежныхСредств_Deleted))
-                    .WithDescription("Notify Document_СписаниеБезналичныхДенежныхСредств Changed");
+            
+            utGroup.MapPatch("/notify/document-списание-безналичных-денежных-средств",
+                PublishDocument_СписаниеБезналичныхДенежныхСредств)
+                    .WithName(nameof(PublishDocument_СписаниеБезналичныхДенежныхСредств))
+                    .WithSummary(nameof(PublishDocument_СписаниеБезналичныхДенежныхСредств))
+                    .WithDescription("Notify Document_СписаниеБезналичныхДенежныхСредств");
 
             return builder;
         }
@@ -88,26 +81,17 @@ namespace XMS.Integration.OneC.Ut.Endpoints
             await documentService.ResyncByDateRangeAsync(from, to);
 
             return TypedResults.Ok();
-        }
+        } 
 
-        private static async Task<IResult> NotifyDocument_СписаниеБезналичныхДенежныхСредств_Changed(
+        private static async Task<IResult> PublishDocument_СписаниеБезналичныхДенежныхСредств(HttpContext httpContext,
             [FromServices] IPublishEndpoint publishEndpoint,
-            [FromBody] Document_СписаниеБезналичныхДенежныхСредств_Changed notifyBody)
+            [FromServices] ILogger<Document_СписаниеБезналичныхДенежныхСредств_Changed> logger,
+            [FromBody] Document_СписаниеБезналичныхДенежныхСредств_Changed oneCNotifyMessage)
         {
-            notifyBody.EventOperation = EventOperation.Changed;
+            logger.LogDebug("{Request.Method} {Request.Path} {@OneCNotifyMessage}",
+                httpContext.Request.Method, httpContext.Request.Path, oneCNotifyMessage);
 
-            await publishEndpoint.Publish(notifyBody);
-
-            return TypedResults.Ok();
-        }
-
-        private static async Task<IResult> NotifyDocument_СписаниеБезналичныхДенежныхСредств_Deleted(
-            [FromServices] IPublishEndpoint publishEndpoint,
-            [FromBody] Document_СписаниеБезналичныхДенежныхСредств_Changed notifyBody)
-        {
-            notifyBody.EventOperation = EventOperation.Deleted;
-
-            await publishEndpoint.Publish(notifyBody);
+            await publishEndpoint.Publish(oneCNotifyMessage);
 
             return TypedResults.Ok();
         }

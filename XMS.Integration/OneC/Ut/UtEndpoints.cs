@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Routing;
+using XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 
-namespace XMS.Integration.OneC.Ut.Endpoints
+namespace XMS.Integration.OneC.Ut
 {
     public static class UtEndpoints
     {

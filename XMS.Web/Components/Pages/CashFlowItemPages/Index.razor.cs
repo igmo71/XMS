@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using MudBlazor;
 using XMS.Integration.OneC;
 using XMS.Integration.OneC.Abstractions;
-using XMS.Integration.OneC.Ut.Models;
+using XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
 using XMS.Web.Components.Common;
 
 namespace XMS.Web.Components.Pages.CashFlowItemPages

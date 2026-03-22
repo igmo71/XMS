@@ -3,9 +3,8 @@ using Microsoft.Extensions.Logging;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Common;
 using XMS.Integration.OneC.Ut.Abstractions;
-using XMS.Integration.OneC.Ut.Models;
 
-namespace XMS.Integration.OneC.Ut.Services
+namespace XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature
 {
     internal class Catalog_СтатьиДвиженияДенежныхСредств_Service(
         UtClient utClient,

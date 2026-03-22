@@ -12,8 +12,8 @@ namespace XMS.Infrastructure.EventBus
         {
             services.AddMassTransit(config =>
             {
-                var nameFormatter = new KebabCaseEndpointNameFormatter("xms", false);
-                config.SetEndpointNameFormatter(nameFormatter);
+                //var nameFormatter = new KebabCaseEndpointNameFormatter("xms", false);
+                //config.SetEndpointNameFormatter(nameFormatter);
                 config.AddConsumers(Assembly.GetExecutingAssembly());
                 config.AddConsumers(typeof(IOneCConsumer<>).Assembly);
 

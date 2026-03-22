@@ -3,13 +3,15 @@ using System.Text.Json.Serialization;
 using XMS.Core.Common;
 using XMS.Integration.OneC.Abstractions;
 
-namespace XMS.Integration.OneC.Ut.Models
+namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature
 {
     public class Document_СписаниеБезналичныхДенежныхСредств : IOneCDocument
     {
         public Guid Ref_Key { get; set; }
+        public bool DeletionMark { get; set; }
         [MaxLength(OneCSettings.CODE)] public string? Number { get; set; }
         public DateTime Date { get; set; }
+        public bool Posted { get; set; }
         [MaxLength(OneCSettings.VALUE)] public string? ХозяйственнаяОперация { get; set; }
         public Guid Партнер_Key { get; set; }
         [MaxLength(OneCSettings.COMMENT)] public string? НазначениеПлатежа { get; set; }
@@ -33,13 +35,14 @@ namespace XMS.Integration.OneC.Ut.Models
         public List<Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа>? РасшифровкаПлатежа { get; set; }
 
         public static string Uri => "Document_СписаниеБезналичныхДенежныхСредств?$format=json" +
-           "&$select=Ref_Key,DeletionMark,Number,Date,Posted,ХозяйственнаяОперация,Партнер_Key,НазначениеПлатежа,Автор_Key,Организация_Key,Подразделение_Key," +
+           "&$select=Ref_Key,DeletionMark,Posted,DeletionMark,Number,Date,Posted,ХозяйственнаяОперация,Партнер_Key,НазначениеПлатежа,Автор_Key,Организация_Key,Подразделение_Key," +
             "ДокументОснование,ДокументОснование_Type,Договор,Договор_Type,НалогообложениеНДС,СтатьяДвиженияДенежныхСредств_Key,СуммаДокумента,Контрагент_Key," +
             "Валюта_Key,РасшифровкаПлатежа";
 
         public static string GetUriByRefKey(Guid refKey)
         {
-            string uri = $"{Uri}&$filter=DeletionMark eq false and Posted eq true and Ref_Key eq guid'{refKey}'";
+            //string uri = $"{Uri}&$filter=DeletionMark eq false and Posted eq true and Ref_Key eq guid'{refKey}'";
+            string uri = $"{Uri}&$filter=Ref_Key eq guid'{refKey}'";
 
             return uri;
         }

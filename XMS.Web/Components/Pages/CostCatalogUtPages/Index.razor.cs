@@ -3,7 +3,7 @@ using MudBlazor;
 using System.Diagnostics;
 using XMS.Integration.OneC;
 using XMS.Integration.OneC.Abstractions;
-using XMS.Integration.OneC.Ut.Models;
+using XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
 using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Domain;
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using XMS.Integration.OneC.Ut.Models;
+using XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
 
 namespace XMS.Infrastructure.Data.EntityConfigurations.OneC
 {

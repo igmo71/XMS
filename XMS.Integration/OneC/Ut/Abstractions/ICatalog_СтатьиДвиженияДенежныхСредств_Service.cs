@@ -1,5 +1,5 @@
 ﻿using XMS.Core.Common;
-using XMS.Integration.OneC.Ut.Models;
+using XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
 
 namespace XMS.Integration.OneC.Ut.Abstractions
 {

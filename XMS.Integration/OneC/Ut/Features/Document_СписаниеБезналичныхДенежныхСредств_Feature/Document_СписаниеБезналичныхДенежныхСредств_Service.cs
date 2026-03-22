@@ -3,9 +3,8 @@ using Microsoft.Extensions.Logging;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Common;
 using XMS.Integration.OneC.Ut.Abstractions;
-using XMS.Integration.OneC.Ut.Models;
 
-namespace XMS.Integration.OneC.Ut.Services
+namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature
 {
     internal class Document_СписаниеБезналичныхДенежныхСредств_Service(
         UtClient utClient,
@@ -13,40 +12,33 @@ namespace XMS.Integration.OneC.Ut.Services
         ILogger<Document_СписаниеБезналичныхДенежныхСредств_Service> logger)
         : BaseService, IDocument_СписаниеБезналичныхДенежныхСредств_Service
     {
-        public async Task<ServiceResult> CreateOrUpdateAsync(Guid refKey, CancellationToken ct = default)
+        public async Task<ServiceResult> HandleEventOneC(Document_СписаниеБезналичныхДенежныхСредств_Changed message, CancellationToken ct = default)
         {
-            using var dbContext = dbFactory.CreateDbContext();
+            logger.LogDebug("{Source} - Start {@message}", nameof(HandleEventOneC), message);
 
-            var fetchedItem = await FetchByRefKeyAsync(refKey, ct);
+            var fetchedItem = await FetchByRefKeyAsync(message.Ref_Key, ct);
 
-            if (fetchedItem is null){
-                logger.LogError("{Source} Failed to feath {refKey}", nameof(CreateOrUpdateAsync), refKey);
-                return ServiceError.InvalidOperation.WithDescription($"Failed to feath {nameof(Document_СписаниеБезналичныхДенежныхСредств)} by {refKey}");
+            if (fetchedItem is null)
+            {
+                logger.LogWarning("{Source} - Failed to feath {@message}", nameof(HandleEventOneC), message);
+                return ServiceError.NotFound;
             }
 
-            await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
-                .Where(e => e.Ref_Key == refKey)
-                .ExecuteDeleteAsync(ct);
-
-            await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
-                .AddAsync(fetchedItem, ct);
-
-            await dbContext.SaveChangesAsync(ct);
-
-            logger.LogDebug("{Source} {refKey} {@fetchedItem}", nameof(CreateOrUpdateAsync), refKey, fetchedItem);
-
-            return ServiceResult.Success();
-        }
-
-        public async Task<ServiceResult> DeleteAsync(Guid refKey, CancellationToken ct = default)
-        {
             using var dbContext = dbFactory.CreateDbContext();
 
             await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
-                .Where(e => e.Ref_Key == refKey)
+                .Where(e => e.Ref_Key == message.Ref_Key)
                 .ExecuteDeleteAsync(ct);
 
-            logger.LogDebug("{Source} {refKey}", nameof(DeleteAsync), refKey);
+            if (!fetchedItem.DeletionMark && fetchedItem.Posted)
+            {
+                await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
+                .AddAsync(fetchedItem, ct);
+
+                await dbContext.SaveChangesAsync(ct);
+            }
+
+            logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleEventOneC), message, fetchedItem);
 
             return ServiceResult.Success();
         }

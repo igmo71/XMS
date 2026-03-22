@@ -2,7 +2,10 @@
 using XMS.Domain.Models;
 using XMS.Integration.OneC.Abstractions;
 using XMS.Integration.OneC.Ut.Abstractions;
-using XMS.Integration.OneC.Ut.Models;
+using XMS.Integration.OneC.Ut.Features.AccumulationRegister_ТоварыНаСкладах_Balance_Feature;
+using XMS.Integration.OneC.Ut.Features.Catalog_Пользователи_Feature;
+using XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
+using XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 
 namespace XMS.Integration.OneC.Ut
 {

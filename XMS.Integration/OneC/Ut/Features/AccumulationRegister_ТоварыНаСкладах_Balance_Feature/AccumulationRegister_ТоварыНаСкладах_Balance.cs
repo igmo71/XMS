@@ -1,4 +1,4 @@
-﻿namespace XMS.Integration.OneC.Ut.Models
+﻿namespace XMS.Integration.OneC.Ut.Features.AccumulationRegister_ТоварыНаСкладах_Balance_Feature
 {
     public class AccumulationRegister_ТоварыНаСкладах_Balance
     {

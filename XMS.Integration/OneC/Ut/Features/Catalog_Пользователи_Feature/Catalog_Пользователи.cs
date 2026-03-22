@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using XMS.Integration.OneC.Abstractions;
 
-namespace XMS.Integration.OneC.Ut.Models
+namespace XMS.Integration.OneC.Ut.Features.Catalog_Пользователи_Feature
 {
     internal class Catalog_Пользователи : IOneCCatalog
     {
