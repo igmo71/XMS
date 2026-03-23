@@ -3,7 +3,7 @@ using XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature;
 
 namespace XMS.Integration.OneC.Ut.Abstractions
 {
-    internal interface ICatalog_Партнеры_Service
+    public interface ICatalog_Партнеры_Service
     {
         Task<ServiceResult> HandleEventOneC(Catalog_Партнеры_Changed oneCNotifyMessage, CancellationToken ct = default);
 

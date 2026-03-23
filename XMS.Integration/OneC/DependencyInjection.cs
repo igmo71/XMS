@@ -8,6 +8,7 @@ using XMS.Integration.OneC.Abstractions;
 using XMS.Integration.OneC.Buh;
 using XMS.Integration.OneC.Ut;
 using XMS.Integration.OneC.Ut.Abstractions;
+using XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature;
 using XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
 using XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 using XMS.Integration.OneC.Zup;
@@ -35,7 +36,7 @@ namespace XMS.Integration.OneC
 
         public static IEndpointRouteBuilder MapOneCEndpoints(this IEndpointRouteBuilder builder)
         {
-            builder.MapDocument_СписаниеБезналичныхДенежныхСредств_Endpoints();
+            builder.MapUtEndpoints();
 
             return builder;
         }

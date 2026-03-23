@@ -8,6 +8,7 @@ namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезнал
     public class Document_СписаниеБезналичныхДенежныхСредств : IOneCDocument
     {
         public Guid Ref_Key { get; set; }
+        [MaxLength(OneCSettings.CODE)] public string? DataVersion { get; set; }
         public bool DeletionMark { get; set; }
         [MaxLength(OneCSettings.CODE)] public string? Number { get; set; }
         public DateTime Date { get; set; }

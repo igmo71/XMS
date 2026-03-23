@@ -16,6 +16,6 @@
 
     public class CatalogNotifyMessage : OneCNotifyMessage
     {
-        public Guid Description { get; set; }
+        public string? Description { get; set; }
     }
 }

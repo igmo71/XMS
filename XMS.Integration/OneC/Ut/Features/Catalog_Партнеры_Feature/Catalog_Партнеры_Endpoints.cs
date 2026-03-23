@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using System.Text.RegularExpressions;
 using XMS.Integration.OneC.Ut.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature
@@ -15,7 +14,8 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature
         public static IEndpointRouteBuilder MapDocument_Catalog_Партнеры_Endpoints(this IEndpointRouteBuilder builder)
         {
             var catalogGroup = builder.MapGroup("/integration/1c/ut")
-                .WithTags("Integration 1C UT");
+                .WithTags("Integration 1C UT")
+                .WithTags("1C UT Catalogs");
 
             catalogGroup.MapPatch("/notify/catalog-партнеры",
                 PublishDocument_Catalog_Партнеры)
@@ -24,9 +24,9 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature
                     .WithDescription("Notify Document_СписаниеБезналичныхДенежныхСредств");
 
             catalogGroup.MapPut("/resync/catalog-партнеры",
-               ResyncDocument_Catalog_Партнеры)
-                   .WithName(nameof(ResyncDocument_Catalog_Партнеры))
-                   .WithSummary(nameof(ResyncDocument_Catalog_Партнеры))
+               ResyncCatalog_Партнеры)
+                   .WithName(nameof(ResyncCatalog_Партнеры))
+                   .WithSummary(nameof(ResyncCatalog_Партнеры))
                    .WithDescription("Resync Document_СписаниеБезналичныхДенежныхСредств from OneS Ut for a cpecific date period and save them to the DB");
 
             return builder;
@@ -46,7 +46,7 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature
         }
 
         private static async Task<Results<Ok, BadRequest<string>>>
-            ResyncDocument_Catalog_Партнеры(
+            ResyncCatalog_Партнеры(
                 [FromServices] ICatalog_Партнеры_Service catalogService)
         {
             await catalogService.ResyncByDateRangeAsync();

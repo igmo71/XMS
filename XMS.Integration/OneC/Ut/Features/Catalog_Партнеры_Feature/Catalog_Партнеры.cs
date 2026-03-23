@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using XMS.Integration.OneC.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature
 {
-    public class Catalog_Партнеры
+    public class Catalog_Партнеры : IOneCCatalog
     {
         public Guid Ref_Key { get; set; }
         [MaxLength(OneCSettings.CODE)] public string? DataVersion { get; set; }
@@ -12,10 +13,10 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature
         public Guid? ОсновнойМенеджер_Key { get; set; }
         public Guid? БизнесРегион_Key { get; set; }
         public DateTime ДатаРегистрации { get; set; }
-        public string? ЮрФизЛицо { get; set; }
+        [MaxLength(OneCSettings.CODE)] public string? ЮрФизЛицо { get; set; }
         [MaxLength(OneCSettings.COMMENT)] public string? Комментарий { get; set; }
-        [MaxLength(OneCSettings.DESCRIPTION)] public string? НаименованиеПолное { get; set; }
-        [MaxLength(OneCSettings.DESCRIPTION)] public string? ДополнительнаяИнформация { get; set; }
+        //[MaxLength(OneCSettings.DESCRIPTION)] public string? НаименованиеПолное { get; set; }
+        //[MaxLength(OneCSettings.DESCRIPTION)] public string? ДополнительнаяИнформация { get; set; }
         public bool Клиент { get; set; }
         public bool Поставщик { get; set; }
         public bool Конкурент { get; set; }

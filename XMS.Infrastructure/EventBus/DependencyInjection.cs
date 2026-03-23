@@ -2,7 +2,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using XMS.Integration.OneC;
+using XMS.Integration.OneC.Abstractions;
+using XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature;
+using XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 
 namespace XMS.Infrastructure.EventBus
 {
@@ -14,8 +16,10 @@ namespace XMS.Infrastructure.EventBus
             {
                 //var nameFormatter = new KebabCaseEndpointNameFormatter("xms", false);
                 //config.SetEndpointNameFormatter(nameFormatter);
-                config.AddConsumers(Assembly.GetExecutingAssembly());
+                //config.AddConsumers(Assembly.GetExecutingAssembly());
                 config.AddConsumers(typeof(IOneCConsumer<>).Assembly);
+                //config.AddConsumer<Catalog_Партнеры_Consumer>();
+                //config.AddConsumer<Document_СписаниеБезналичныхДенежныхСредств_Consumer>();
 
                 config.UsingRabbitMq((context, cfg) =>
                 {

@@ -1,8 +1,11 @@
-﻿namespace XMS.Integration.OneC.Abstractions
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace XMS.Integration.OneC.Abstractions
 {
     public interface IOneCDocument
     {
         Guid Ref_Key { get; set; }
+        public string? DataVersion { get; set; }
         string? Number { get; set; }
         DateTime Date { get; set; }
     }

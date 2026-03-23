@@ -3,7 +3,7 @@ using XMS.Integration.OneC.Abstractions;
 
 namespace XMS.Integration.OneC
 {
-    public static class IQueryableExtensions
+    public static class QueryableExtensions
     {
         public static IQueryable<TEntity> HandleDocumentQuery<TEntity>(this IQueryable<TEntity> query, DocumentQueryParameters parameters)
             where TEntity : IOneCDocument
