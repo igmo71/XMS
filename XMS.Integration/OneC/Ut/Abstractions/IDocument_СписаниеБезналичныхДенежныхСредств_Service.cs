@@ -5,7 +5,7 @@ namespace XMS.Integration.OneC.Ut.Abstractions
 {
     public interface IDocument_СписаниеБезналичныхДенежныхСредств_Service
     {
-        Task<ServiceResult> HandleEventOneC(Document_СписаниеБезналичныхДенежныхСредств_Changed message, CancellationToken ct = default);
+        Task<ServiceResult> HandleEventOneC(Document_СписаниеБезналичныхДенежныхСредств_Changed oneCNotifyMessage, CancellationToken ct = default);
 
         Task<Document_СписаниеБезналичныхДенежныхСредств?> GetAsync(Guid refKey, CancellationToken ct = default);
 

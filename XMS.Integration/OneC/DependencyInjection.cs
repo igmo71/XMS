@@ -26,6 +26,7 @@ namespace XMS.Integration.OneC
             services.AddScoped<IOneCBuhService, BuhService>();
             services.AddScoped<IOneCZupService, ZupService>();
 
+            services.AddScoped<ICatalog_Партнеры_Service, Catalog_Партнеры_Service>();
             services.AddScoped<ICatalog_СтатьиДвиженияДенежныхСредств_Service, Catalog_СтатьиДвиженияДенежныхСредств_Service>();
             services.AddScoped<IDocument_СписаниеБезналичныхДенежныхСредств_Service, Document_СписаниеБезналичныхДенежныхСредств_Service>();
 

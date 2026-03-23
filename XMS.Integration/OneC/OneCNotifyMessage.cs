@@ -3,6 +3,7 @@
     public class OneCNotifyMessage
     {
         public Guid Ref_Key { get; set; }
+        public string? DataVersion { get; set; }
         public bool DeletionMark { get; set; }
     }
 

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Common;
 using XMS.Integration.OneC.Ut.Abstractions;
+using XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature
 {
@@ -69,6 +70,37 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвижения�
                 .ToListAsync(ct);
 
             return result ?? [];
+        }
+
+        public async Task<ServiceResult> HandleEventOneC(Catalog_СтатьиДвиженияДенежныхСредств_Changed oneCNotifyMessage, CancellationToken ct = default)
+        {
+            logger.LogDebug("{Source} - Start {@message}", nameof(HandleEventOneC), oneCNotifyMessage);
+
+            var fetchedItem = await FetchByRefKeyAsync(oneCNotifyMessage.Ref_Key, ct);
+
+            if (fetchedItem is null)
+            {
+                logger.LogError("{Source} - Failed to feath {@message}", nameof(HandleEventOneC), oneCNotifyMessage);
+                return ServiceError.NotFound;
+            }
+
+            using var dbContext = dbFactory.CreateDbContext();
+
+            await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
+                .Where(e => e.Ref_Key == oneCNotifyMessage.Ref_Key)
+                .ExecuteDeleteAsync(ct);
+
+            if (!fetchedItem.DeletionMark)
+            {
+                await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
+                .AddAsync(fetchedItem, ct);
+
+                await dbContext.SaveChangesAsync(ct);
+            }
+
+            logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleEventOneC), oneCNotifyMessage, fetchedItem);
+
+            return ServiceResult.Success();
         }
 
         public async Task<ServiceResult> ResyncAsync(CancellationToken ct)
