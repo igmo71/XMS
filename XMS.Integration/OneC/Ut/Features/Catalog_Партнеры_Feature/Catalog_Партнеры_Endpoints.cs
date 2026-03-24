@@ -1,10 +1,10 @@
-﻿using MassTransit;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using XMS.Core.Abstractions.EventBus;
 using XMS.Integration.OneC.Ut.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature
@@ -33,14 +33,14 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature
         }
 
         private static async Task<IResult> PublishDocument_Catalog_Партнеры(HttpContext httpContext,
-            [FromServices] IPublishEndpoint publishEndpoint,
+            [FromServices] IRabbitPublisher publisher,
             [FromServices] ILogger<Catalog_Партнеры_Changed> logger,
             [FromBody] Catalog_Партнеры_Changed oneCNotifyMessage)
         {
             logger.LogDebug("{Request.Method} {Request.Path} {@OneCNotifyMessage}",
                 httpContext.Request.Method, httpContext.Request.Path, oneCNotifyMessage);
 
-            await publishEndpoint.Publish(oneCNotifyMessage);
+            await publisher.PublishAsync(nameof(Catalog_Партнеры), oneCNotifyMessage);
 
             return TypedResults.Ok();
         }

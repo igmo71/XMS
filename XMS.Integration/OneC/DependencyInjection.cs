@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
+using XMS.Core.Abstractions.EventBus;
 using XMS.Integration.OneC.Abstractions;
 using XMS.Integration.OneC.Buh;
 using XMS.Integration.OneC.Ut;
@@ -28,8 +29,12 @@ namespace XMS.Integration.OneC
             services.AddScoped<IOneCZupService, ZupService>();
 
             services.AddScoped<ICatalog_Партнеры_Service, Catalog_Партнеры_Service>();
+            services.AddHostedService<Catalog_Партнеры_Worker>();
+
             services.AddScoped<ICatalog_СтатьиДвиженияДенежныхСредств_Service, Catalog_СтатьиДвиженияДенежныхСредств_Service>();
             services.AddScoped<IDocument_СписаниеБезналичныхДенежныхСредств_Service, Document_СписаниеБезналичныхДенежныхСредств_Service>();
+
+
 
             return services;
         }

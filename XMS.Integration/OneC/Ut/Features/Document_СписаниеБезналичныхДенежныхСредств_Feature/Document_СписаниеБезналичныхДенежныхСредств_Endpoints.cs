@@ -1,11 +1,11 @@
-﻿using MassTransit;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using XMS.Core;
+using XMS.Core.Abstractions.EventBus;
 using XMS.Integration.OneC.Ut.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature
@@ -34,7 +34,7 @@ namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезнал
                     .WithName(nameof(ResyncDocument_СписаниеБезналичныхДенежныхСредств_ByDate))
                     .WithSummary(nameof(ResyncDocument_СписаниеБезналичныхДенежныхСредств_ByDate))
                     .WithDescription("Resync Document_СписаниеБезналичныхДенежныхСредств from OneS Ut for a cpecific date period and save them to the DB");
-            
+
             utGroup.MapPatch("/notify/document-списание-безналичных-денежных-средств",
                 PublishDocument_СписаниеБезналичныхДенежныхСредств)
                     .WithName(nameof(PublishDocument_СписаниеБезналичныхДенежныхСредств))
@@ -81,17 +81,17 @@ namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезнал
             await documentService.ResyncByDateRangeAsync(from, to);
 
             return TypedResults.Ok();
-        } 
+        }
 
         private static async Task<IResult> PublishDocument_СписаниеБезналичныхДенежныхСредств(HttpContext httpContext,
-            [FromServices] IPublishEndpoint publishEndpoint,
+            [FromServices] IRabbitPublisher publisher,
             [FromServices] ILogger<Document_СписаниеБезналичныхДенежныхСредств_Changed> logger,
             [FromBody] Document_СписаниеБезналичныхДенежныхСредств_Changed oneCNotifyMessage)
         {
             logger.LogDebug("{Request.Method} {Request.Path} {@OneCNotifyMessage}",
                 httpContext.Request.Method, httpContext.Request.Path, oneCNotifyMessage);
 
-            await publishEndpoint.Publish(oneCNotifyMessage);
+            await publisher.PublishAsync(nameof(Document_СписаниеБезналичныхДенежныхСредств), oneCNotifyMessage);
 
             return TypedResults.Ok();
         }
