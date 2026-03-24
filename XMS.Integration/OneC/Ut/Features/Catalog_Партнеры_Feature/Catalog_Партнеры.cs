@@ -15,6 +15,7 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature
         public DateTime ДатаРегистрации { get; set; }
         [MaxLength(OneCSettings.CODE)] public string? ЮрФизЛицо { get; set; }
         [MaxLength(OneCSettings.COMMENT)] public string? Комментарий { get; set; }
+
         //[MaxLength(OneCSettings.DESCRIPTION)] public string? НаименованиеПолное { get; set; }
         //[MaxLength(OneCSettings.DESCRIPTION)] public string? ДополнительнаяИнформация { get; set; }
         public bool Клиент { get; set; }
@@ -22,6 +23,7 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature
         public bool Конкурент { get; set; }
         public bool Перевозчик { get; set; }
         public bool ПрочиеОтношения { get; set; }
+
         //public bool ОбслуживаетсяТорговымиПредставителями { get; set; }
 
         public static string Uri => "Catalog_Партнеры?$format=json" +
@@ -37,7 +39,7 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature
 
         public static string QueueName => nameof(Catalog_Партнеры);
 
-        //[MaxLength(OneCSettings.CODE)] public string? Code { get; set; }
+        //public string? Code { get; set; }
         //public string ГруппаДоступа_Key { get; set; }
         //public string ШаблонЭтикетки_Key { get; set; }
         //public string Пол { get; set; }

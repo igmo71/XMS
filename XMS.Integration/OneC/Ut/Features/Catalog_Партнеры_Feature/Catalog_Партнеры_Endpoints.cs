@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Logging;
+using XMS.Core;
 using XMS.Core.Abstractions.EventBus;
 using XMS.Integration.OneC.Ut.Abstractions;
 
@@ -13,41 +13,72 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature
     {
         public static IEndpointRouteBuilder MapDocument_Catalog_Партнеры_Endpoints(this IEndpointRouteBuilder builder)
         {
-            var catalogGroup = builder.MapGroup("/integration/1c/ut")
-                .WithTags("Integration 1C UT")
-                .WithTags("1C UT Catalogs");
+            var apiGroup = builder.MapGroup("/api/1c/ut/catalog-партнеры")
+                .WithTags("1C UT Catalog_Партнеры");
 
-            catalogGroup.MapPatch("/notify/catalog-партнеры",
-                PublishDocument_Catalog_Партнеры)
-                    .WithName(nameof(PublishDocument_Catalog_Партнеры))
-                    .WithSummary(nameof(PublishDocument_Catalog_Партнеры))
-                    .WithDescription("Notify Document_СписаниеБезналичныхДенежныхСредств");
+            apiGroup.MapGet("/{refKey}", GetCatalog_Партнеры_ByRefKey)
+                .WithName(nameof(GetCatalog_Партнеры_ByRefKey))
+                .WithSummary(nameof(GetCatalog_Партнеры_ByRefKey))
+                .WithDescription("Get Catalog_Партнеры from DB By Ref_Key");
 
-            catalogGroup.MapPut("/resync/catalog-партнеры",
-               ResyncCatalog_Партнеры)
-                   .WithName(nameof(ResyncCatalog_Партнеры))
-                   .WithSummary(nameof(ResyncCatalog_Партнеры))
-                   .WithDescription("Resync Document_СписаниеБезналичныхДенежныхСредств from OneS Ut for a cpecific date period and save them to the DB");
+            apiGroup.MapGet("/", GetCatalog_Партнеры_List)
+                .WithName(nameof(GetCatalog_Партнеры_List))
+                .WithSummary(nameof(GetCatalog_Партнеры_List))
+                .WithDescription("Get Catalog_Партнеры list from DB");
+
+
+            var extGroup = builder.MapGroup("/ext/1c/ut/catalog-партнеры")
+                .WithTags("1C UT Catalog_Партнеры");
+
+            extGroup.MapPatch("/notify", NotifyCatalog_Партнеры)
+                .WithName(nameof(NotifyCatalog_Партнеры))
+                .WithSummary(nameof(NotifyCatalog_Партнеры))
+                .WithDescription("Notify Catalog_Партнеры");
+
+            extGroup.MapPut("/resync", ResyncCatalog_Партнеры)
+                .WithName(nameof(ResyncCatalog_Партнеры))
+                .WithSummary(nameof(ResyncCatalog_Партнеры))
+                .WithDescription("Resync Catalog_Партнеры from OneS Ut and save them to the DB");
 
             return builder;
         }
 
-        private static async Task<IResult> PublishDocument_Catalog_Партнеры(HttpContext httpContext,
+        private static async Task<Results<Ok<Catalog_Партнеры>, NotFound>> GetCatalog_Партнеры_ByRefKey(HttpContext context,
+            [FromServices] ICatalog_Партнеры_Service catalogService,
+            [FromRoute] Guid refKey,
+            CancellationToken ct = default)
+        {
+            var result = await catalogService.GetAsync(refKey, ct);
+
+            return result is null ? TypedResults.NotFound() : TypedResults.Ok(result);
+        }
+
+        private static async Task<Results<Ok<IReadOnlyList<Catalog_Партнеры>>, BadRequest>> GetCatalog_Партнеры_List(HttpContext context,
+            [FromServices] ICatalog_Партнеры_Service catalogService,
+            [FromQuery] string? descriptionTerm = null,
+            [FromQuery] bool includeDeleted = false,
+            [FromQuery] int? skip = AppSettings.Default.Skip,
+            [FromQuery] int? take = AppSettings.Default.Take,
+            CancellationToken ct = default)
+        {
+            var parameters = new CatalogQueryParameters(descriptionTerm, includeDeleted, skip, take);
+
+            var result = await catalogService.GetListAsync(parameters, ct);
+
+            return TypedResults.Ok(result);
+        }
+
+        private static async Task<IResult> NotifyCatalog_Партнеры(HttpContext httpContext,
             [FromServices] IRabbitPublisher publisher,
-            [FromServices] ILogger<Catalog_Партнеры_Changed> logger,
             [FromBody] Catalog_Партнеры_Changed oneCNotifyMessage)
         {
-            logger.LogDebug("{Request.Method} {Request.Path} {@OneCNotifyMessage}",
-                httpContext.Request.Method, httpContext.Request.Path, oneCNotifyMessage);
-
             await publisher.PublishAsync(Catalog_Партнеры.QueueName, oneCNotifyMessage);
 
             return TypedResults.Ok();
         }
 
-        private static async Task<Results<Ok, BadRequest<string>>>
-            ResyncCatalog_Партнеры(
-                [FromServices] ICatalog_Партнеры_Service catalogService)
+        private static async Task<Results<Ok, BadRequest<string>>> ResyncCatalog_Партнеры(HttpContext httpContext,
+            [FromServices] ICatalog_Партнеры_Service catalogService)
         {
             await catalogService.ResyncAsync();
 
