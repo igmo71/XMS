@@ -96,7 +96,7 @@ namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезнал
         {
             var uri = Document_СписаниеБезналичныхДенежныхСредств.GetUriByRefKey(refKey);
 
-            var rootObject = await utClient.GetValueAsync<RootObject<Document_СписаниеБезналичныхДенежныхСредств>>(uri, ct);
+            var rootObject = await utClient.GetValueFromJsonAsync<RootObject<Document_СписаниеБезналичныхДенежныхСредств>>(uri, ct);
 
             var result = rootObject?.Value?.FirstOrDefault();
 
@@ -107,7 +107,7 @@ namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезнал
         {
             var uri = Document_СписаниеБезналичныхДенежныхСредств.GetUriByDate(date, date.AddDays(1));
 
-            var rootObject = await utClient.GetValueAsyncStd<RootObject<Document_СписаниеБезналичныхДенежныхСредств>>(uri, ct);
+            var rootObject = await utClient.GetValueAsync<RootObject<Document_СписаниеБезналичныхДенежныхСредств>>(uri, ct);
 
             var result = rootObject?.Value?.ToList();
 

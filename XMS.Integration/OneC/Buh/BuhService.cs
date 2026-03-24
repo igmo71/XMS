@@ -8,7 +8,7 @@ namespace XMS.Integration.OneC.Buh
     {
         public async Task<IReadOnlyList<EmployeeBuh>> GetEmployeeBuhListAsync(CancellationToken ct = default)
         {
-            var rootObject = await client.GetValueAsync<RootObject<Catalog_Сотрудники>>(Catalog_Сотрудники.Uri, ct);
+            var rootObject = await client.GetValueFromJsonAsync<RootObject<Catalog_Сотрудники>>(Catalog_Сотрудники.Uri, ct);
 
             var result = rootObject?.Value?.Select(x => new EmployeeBuh
             {

@@ -16,7 +16,7 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh
         {
             string uri = InformationRegister_НоменклатураМаркетплейсов.GetUri(godooMarketplaceRelation);
 
-            var rootObject = await buhClient.GetValueAsync<RootObject<InformationRegister_НоменклатураМаркетплейсов>>(uri, ct);
+            var rootObject = await buhClient.GetValueFromJsonAsync<RootObject<InformationRegister_НоменклатураМаркетплейсов>>(uri, ct);
 
             if (rootObject?.Value?.Length == 0)
                 logger.LogDebug("{Source} - Not Found by {uri}", nameof(GetMarketplaceRelationListAsync), uri);
@@ -50,7 +50,7 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh
         {
             string uri = Catalog_Номенклатура.GetUri(yunuProductId);
 
-            var rootObject = await buhClient.GetValueAsync<RootObject<Catalog_Номенклатура>>(uri, ct);
+            var rootObject = await buhClient.GetValueFromJsonAsync<RootObject<Catalog_Номенклатура>>(uri, ct);
 
             if (rootObject?.Value?.Length == 0)
                 logger.LogDebug("{Source} - Not Found by {uri}", nameof(GetProductListAsync), uri);
@@ -81,7 +81,7 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh
 
         public async Task<IReadOnlyList<Catalog_Организации>> GetCompanyListAsync(CancellationToken ct = default)
         {
-            var rootObject = await buhClient.GetValueAsync<RootObject<Catalog_Организации>>(Catalog_Организации.Uri, ct);
+            var rootObject = await buhClient.GetValueFromJsonAsync<RootObject<Catalog_Организации>>(Catalog_Организации.Uri, ct);
 
             return rootObject?.Value ?? [];
         }

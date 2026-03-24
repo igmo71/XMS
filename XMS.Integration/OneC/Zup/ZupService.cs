@@ -8,7 +8,7 @@ namespace XMS.Integration.OneC.Zup
     {
         public async Task<IReadOnlyList<EmployeeZup>> GetEmployeeListAsync(CancellationToken ct = default)
         {
-            var rootObject = await client.GetValueAsync<RootObject<Catalog_Сотрудники>>(Catalog_Сотрудники.Uri, ct);
+            var rootObject = await client.GetValueFromJsonAsync<RootObject<Catalog_Сотрудники>>(Catalog_Сотрудники.Uri, ct);
 
             var result = rootObject?.Value?.Select(x => new EmployeeZup
             {

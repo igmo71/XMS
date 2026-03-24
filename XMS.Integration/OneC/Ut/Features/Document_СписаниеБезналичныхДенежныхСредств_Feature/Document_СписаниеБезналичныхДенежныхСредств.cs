@@ -40,20 +40,12 @@ namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезнал
             "ДокументОснование,ДокументОснование_Type,Договор,Договор_Type,НалогообложениеНДС,СтатьяДвиженияДенежныхСредств_Key,СуммаДокумента,Контрагент_Key," +
             "Валюта_Key,РасшифровкаПлатежа";
 
-        public static string GetUriByRefKey(Guid refKey)
-        {
-            //string uri = $"{Uri}&$filter=DeletionMark eq false and Posted eq true and Ref_Key eq guid'{refKey}'";
-            string uri = $"{Uri}&$filter=Ref_Key eq guid'{refKey}'";
+        public static string GetUriByRefKey(Guid refKey) => $"{Uri}&$filter=Ref_Key eq guid'{refKey}'";
 
-            return uri;
-        }
+        public static string GetUriByDate(DateTime? from = null, DateTime? to = null) => 
+            $"{Uri}&$filter=DeletionMark eq false and Posted eq true and Date ge datetime'{from:s}' and Date lt datetime'{to:s}'";
 
-        public static string GetUriByDate(DateTime? from = null, DateTime? to = null)
-        {
-            string uri = $"{Uri}&$filter=DeletionMark eq false and Posted eq true and Date ge datetime'{from:s}' and Date lt datetime'{to:s}'";
-
-            return uri;
-        }
+        public static string QueueName => nameof(Document_СписаниеБезналичныхДенежныхСредств);
 
         //public bool DeletionMark { get; set; }
         //public bool Posted { get; set; }

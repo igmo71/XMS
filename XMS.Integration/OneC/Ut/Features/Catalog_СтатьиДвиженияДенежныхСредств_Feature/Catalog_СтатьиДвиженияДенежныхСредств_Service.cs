@@ -126,7 +126,7 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвижения�
         {
             var uri = Catalog_СтатьиДвиженияДенежныхСредств.GetUriByRefKey(refKey);
 
-            var rootObject = await utClient.GetValueAsync<RootObject<Catalog_СтатьиДвиженияДенежныхСредств>>(uri, ct);
+            var rootObject = await utClient.GetValueFromJsonAsync<RootObject<Catalog_СтатьиДвиженияДенежныхСредств>>(uri, ct);
 
             var result = rootObject?.Value?[0];
 
@@ -137,7 +137,7 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвижения�
         {
             var uri = Catalog_СтатьиДвиженияДенежныхСредств.Uri;
 
-            var rootObject = await utClient.GetValueAsync<RootObject<Catalog_СтатьиДвиженияДенежныхСредств>>(uri, ct);
+            var rootObject = await utClient.GetValueFromJsonAsync<RootObject<Catalog_СтатьиДвиженияДенежныхСредств>>(uri, ct);
 
             var result = rootObject?.Value?.ToList();
 

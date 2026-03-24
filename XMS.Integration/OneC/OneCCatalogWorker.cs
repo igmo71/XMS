@@ -52,7 +52,7 @@ namespace XMS.Integration.OneC
                 {
                     logger.LogError(ex, "{jsonMessage}", jsonMessage);
                     await channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: true, cancellationToken: stoppingToken);
-                    await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
+                    await Task.Delay(TimeSpan.FromSeconds(60), stoppingToken);
                 }
             };
 

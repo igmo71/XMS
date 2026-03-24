@@ -2,13 +2,14 @@
 {
     public interface IOneCCatalog
     {
-        public Guid Ref_Key { get; set; }
-        public string? DataVersion { get; set; }
-        public string? Description { get; set; }
-        public bool DeletionMark { get; set; }
+        Guid Ref_Key { get; set; }
+        string? DataVersion { get; set; }
+        bool DeletionMark { get; set; }
+        string? Description { get; set; }
 
         static abstract string Uri { get; }
         static abstract string GetUriByRefKey(Guid refKey);
+        static abstract string GetUriByDate(DateTime? from = null, DateTime? to = null);
         static abstract string QueueName { get; }
     }
 }

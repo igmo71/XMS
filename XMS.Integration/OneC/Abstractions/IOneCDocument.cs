@@ -1,13 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace XMS.Integration.OneC.Abstractions
+﻿namespace XMS.Integration.OneC.Abstractions
 {
     public interface IOneCDocument
     {
         Guid Ref_Key { get; set; }
-        public string? DataVersion { get; set; }
+        string? DataVersion { get; set; }
+        bool DeletionMark { get; set; }
+        bool Posted { get; set; }
         string? Number { get; set; }
         DateTime Date { get; set; }
+
+        static abstract string Uri { get; }
+        static abstract string GetUriByRefKey(Guid refKey);
+        static abstract string GetUriByDate(DateTime? from = null, DateTime? to = null);
+        static abstract string QueueName { get; }
     }
 
     public interface IOneCDocumentItem

@@ -9,9 +9,9 @@
 
     public class DocumentNotifyMessage : OneCNotifyMessage
     {
+        public bool Posted { get; set; }
         public string? Number { get; set; }
         public DateTime Date { get; set; }
-        public bool Posted { get; set; }
     }
 
     public class CatalogNotifyMessage : OneCNotifyMessage

@@ -16,7 +16,7 @@ namespace XMS.Integration.OneC.Ut
     {
         public async Task<IReadOnlyList<UserUt>> FetchUserUtListAsync(CancellationToken ct = default)
         {
-            var rootObject = await utClient.GetValueAsync<RootObject<Catalog_Пользователи>>(Catalog_Пользователи.Uri, ct);
+            var rootObject = await utClient.GetValueFromJsonAsync<RootObject<Catalog_Пользователи>>(Catalog_Пользователи.Uri, ct);
 
             var result = rootObject?.Value?.Select(x => new UserUt
             {

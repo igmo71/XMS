@@ -20,19 +20,23 @@ namespace XMS.Integration.OneC
             //Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         };
 
-        public Task<TValue?> GetValueAsync<TValue>(string? uri, CancellationToken ct = default)
+        public Task<TValue?> GetValueFromJsonAsync<TValue>(string? uri, CancellationToken ct = default)
         {
             return _httpClient.GetFromJsonAsync<TValue>($"{_clientConfig.ServiceUri}/{uri}", ct);
         }
 
-        public async Task<TValue?> GetValueAsyncStd<TValue>(string? uri, CancellationToken ct = default)
+        public async Task<TValue?> GetValueAsync<TValue>(string? uri, CancellationToken ct = default)
         {
             var response = await _httpClient.GetAsync($"{_clientConfig.ServiceUri}/{uri}", ct);
 
             var content = await response.Content.ReadAsStringAsync(ct);
 
-            if (string.IsNullOrEmpty(content))
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = JsonSerializer.Deserialize<OneCError>(content);
+                logger.LogError("{Source} {Uri} {@Error}", nameof(PostValueAsync), uri, error);
                 return default;
+            }
 
             var result = JsonSerializer.Deserialize<TValue>(content);
 
