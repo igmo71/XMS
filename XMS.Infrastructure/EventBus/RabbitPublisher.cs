@@ -11,7 +11,7 @@ namespace XMS.Infrastructure.EventBus
         private static readonly JsonSerializerOptions _jsonOptions = new()
         {
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            //WriteIndented = false // Можно поставить true, если хочешь красивый JSON с отступами
+            //WriteIndented = false // JSON с отступами
         };
 
         public async Task PublishAsync<T>(string exchange, T message)
@@ -24,7 +24,6 @@ namespace XMS.Infrastructure.EventBus
             var json = JsonSerializer.Serialize(message, _jsonOptions);
             var body = Encoding.UTF8.GetBytes(json);
 
-            // В 7.x BasicPublishAsync принимает ReadOnlyMemory<byte>
             await channel.BasicPublishAsync(
                 exchange: exchange,
                 routingKey: string.Empty,

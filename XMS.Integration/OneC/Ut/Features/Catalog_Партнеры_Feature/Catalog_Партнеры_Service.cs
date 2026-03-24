@@ -1,97 +1,85 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using XMS.Core.Abstractions.Data;
-using XMS.Core.Common;
 using XMS.Integration.OneC.Ut.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature
 {
-    internal class Catalog_Партнеры_Service(
-        UtClient utClient,
-        IDbContextFactoryProxy dbFactory,
-        ILogger<Catalog_Партнеры_Service> logger)
-        : BaseService, ICatalog_Партнеры_Service
+    internal class Catalog_Партнеры_Service(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger<Catalog_Партнеры_Service> logger) 
+        : OneCCatalogService<Catalog_Партнеры, Catalog_Партнеры_Changed>(utClient, dbFactory, logger), ICatalog_Партнеры_Service
     {
-        public Task<Catalog_Партнеры?> GetAsync(Guid refKey, CancellationToken ct = default)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<IReadOnlyList<Catalog_Партнеры>> GetListAsync(CatalogQueryParameters parameters, CancellationToken ct = default)
-        {
-            throw new NotImplementedException();
-        }
 
-        public async Task<ServiceResult> HandleEventOneC(Catalog_Партнеры_Changed oneCNotifyMessage, CancellationToken ct = default)
-        {
-            logger.LogDebug("{Source} - Start {@message}", nameof(HandleEventOneC), oneCNotifyMessage);
 
-            var fetchedItem = await FetchByRefKeyAsync(oneCNotifyMessage.Ref_Key, ct);
+        //public async Task<ServiceResult> HandleEventOneC(Catalog_Партнеры_Changed oneCNotifyMessage, CancellationToken ct = default)
+        //{
+        //    logger.LogDebug("{Source} - Start {@message}", nameof(HandleEventOneC), oneCNotifyMessage);
 
-            if (fetchedItem is null)
-            {
-                logger.LogError("{Source} - Failed to feath {@message}", nameof(HandleEventOneC), oneCNotifyMessage);
-                return ServiceError.NotFound;
-            }
+        //    var fetchedItem = await FetchByRefKeyAsync(oneCNotifyMessage.Ref_Key, ct);
 
-            using var dbContext = dbFactory.CreateDbContext();
+        //    if (fetchedItem is null)
+        //    {
+        //        logger.LogError("{Source} - Failed to feath {@message}", nameof(HandleEventOneC), oneCNotifyMessage);
+        //        return ServiceError.NotFound;
+        //    }
 
-            await dbContext.Set<Catalog_Партнеры>()
-                .Where(e => e.Ref_Key == oneCNotifyMessage.Ref_Key)
-                .ExecuteDeleteAsync(ct);
+        //    using var dbContext = dbFactory.CreateDbContext();
 
-            if (!fetchedItem.DeletionMark)
-            {
-                await dbContext.Set<Catalog_Партнеры>()
-                .AddAsync(fetchedItem, ct);
+        //    await dbContext.Set<Catalog_Партнеры>()
+        //        .Where(e => e.Ref_Key == oneCNotifyMessage.Ref_Key)
+        //        .ExecuteDeleteAsync(ct);
 
-                await dbContext.SaveChangesAsync(ct);
-            }
+        //    if (!fetchedItem.DeletionMark)
+        //    {
+        //        await dbContext.Set<Catalog_Партнеры>()
+        //        .AddAsync(fetchedItem, ct);
 
-            logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleEventOneC), oneCNotifyMessage, fetchedItem);
+        //        await dbContext.SaveChangesAsync(ct);
+        //    }
 
-            return ServiceResult.Success();
-        }
+        //    logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleEventOneC), oneCNotifyMessage, fetchedItem);
 
-        private async Task<Catalog_Партнеры?> FetchByRefKeyAsync(Guid refKey, CancellationToken ct)
-        {
-            var uri = Catalog_Партнеры.GetUriByRefKey(refKey);
+        //    return ServiceResult.Success();
+        //}
 
-            var rootObject = await utClient.GetValueAsync<RootObject<Catalog_Партнеры>>(uri, ct);
+        //private async Task<Catalog_Партнеры?> FetchByRefKeyAsync(Guid refKey, CancellationToken ct)
+        //{
+        //    var uri = Catalog_Партнеры.GetUriByRefKey(refKey);
 
-            var result = rootObject?.Value?.FirstOrDefault();
+        //    var rootObject = await utClient.GetValueAsync<RootObject<Catalog_Партнеры>>(uri, ct);
 
-            return result;
-        }
+        //    var result = rootObject?.Value?.FirstOrDefault();
 
-        public async Task<ServiceResult> ResyncByDateRangeAsync(CancellationToken ct = default)
-        {
-            StartActivity();
+        //    return result;
+        //}
 
-            using var dbContext = dbFactory.CreateDbContext();
+        //public async Task<ServiceResult> ResyncAsync(CancellationToken ct = default)
+        //{
+        //    StartActivity();
 
-            await dbContext.Set<Catalog_Партнеры>()
-                .ExecuteDeleteAsync(ct);
+        //    using var dbContext = dbFactory.CreateDbContext();
 
-            var items = await FetchListAsync(ct);
+        //    await dbContext.Set<Catalog_Партнеры>()
+        //        .ExecuteDeleteAsync(ct);
 
-            await dbContext.Set<Catalog_Партнеры>()
-                .AddRangeAsync(items, ct);
+        //    var items = await FetchListAsync(ct);
 
-            await dbContext.SaveChangesAsync(ct);
+        //    await dbContext.Set<Catalog_Партнеры>()
+        //        .AddRangeAsync(items, ct);
 
-            return ServiceResult.Success();
-        }
+        //    await dbContext.SaveChangesAsync(ct);
 
-        private async Task<IReadOnlyList<Catalog_Партнеры>> FetchListAsync(CancellationToken ct)
-        {
-            var uri = Catalog_Партнеры.Uri;
+        //    return ServiceResult.Success();
+        //}
 
-            var rootObject = await utClient.GetValueAsync<RootObject<Catalog_Партнеры>>(uri, ct);
+        //private async Task<IReadOnlyList<Catalog_Партнеры>> FetchListAsync(CancellationToken ct)
+        //{
+        //    var uri = Catalog_Партнеры.Uri;
 
-            var result = rootObject?.Value?.ToList();
+        //    var rootObject = await utClient.GetValueAsync<RootObject<Catalog_Партнеры>>(uri, ct);
 
-            return result ?? [];
-        }
+        //    var result = rootObject?.Value?.ToList();
+
+        //    return result ?? [];
+        //}
     }
 }

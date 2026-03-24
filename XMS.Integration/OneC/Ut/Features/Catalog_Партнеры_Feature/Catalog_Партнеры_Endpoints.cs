@@ -40,7 +40,7 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature
             logger.LogDebug("{Request.Method} {Request.Path} {@OneCNotifyMessage}",
                 httpContext.Request.Method, httpContext.Request.Path, oneCNotifyMessage);
 
-            await publisher.PublishAsync(nameof(Catalog_Партнеры), oneCNotifyMessage);
+            await publisher.PublishAsync(Catalog_Партнеры.QueueName, oneCNotifyMessage);
 
             return TypedResults.Ok();
         }
@@ -49,7 +49,7 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature
             ResyncCatalog_Партнеры(
                 [FromServices] ICatalog_Партнеры_Service catalogService)
         {
-            await catalogService.ResyncByDateRangeAsync();
+            await catalogService.ResyncAsync();
 
             return TypedResults.Ok();
         }

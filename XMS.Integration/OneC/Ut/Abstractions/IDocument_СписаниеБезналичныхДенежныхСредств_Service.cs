@@ -11,6 +11,6 @@ namespace XMS.Integration.OneC.Ut.Abstractions
 
         Task<IReadOnlyList<Document_СписаниеБезналичныхДенежныхСредств>> GetListAsync(DocumentQueryParameters parameters, CancellationToken ct = default);
 
-        Task<ServiceResult> ResyncByDateRangeAsync(DateTime from, DateTime to, CancellationToken ct = default);
+        Task<ServiceResult> ResyncAsync(DateTime from, DateTime to, CancellationToken ct = default);
     }
 }

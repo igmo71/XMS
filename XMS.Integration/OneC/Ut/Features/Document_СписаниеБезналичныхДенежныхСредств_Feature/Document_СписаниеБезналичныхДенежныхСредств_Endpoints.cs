@@ -78,7 +78,7 @@ namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезнал
                 [FromQuery] DateTime from,
                 [FromQuery] DateTime to)
         {
-            await documentService.ResyncByDateRangeAsync(from, to);
+            await documentService.ResyncAsync(from, to);
 
             return TypedResults.Ok();
         }

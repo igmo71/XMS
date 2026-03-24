@@ -35,6 +35,8 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature
             return uri;
         }
 
+        public static string QueueName => nameof(Catalog_Партнеры);
+
         //[MaxLength(OneCSettings.CODE)] public string? Code { get; set; }
         //public string ГруппаДоступа_Key { get; set; }
         //public string ШаблонЭтикетки_Key { get; set; }

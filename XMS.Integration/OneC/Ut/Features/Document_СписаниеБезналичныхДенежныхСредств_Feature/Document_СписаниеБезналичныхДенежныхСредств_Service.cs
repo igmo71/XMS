@@ -65,7 +65,7 @@ namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезнал
             return result ?? [];
         }
 
-        public async Task<ServiceResult> ResyncByDateRangeAsync(DateTime from, DateTime to, CancellationToken ct = default)
+        public async Task<ServiceResult> ResyncAsync(DateTime from, DateTime to, CancellationToken ct = default)
         {
             StartActivity();
 
