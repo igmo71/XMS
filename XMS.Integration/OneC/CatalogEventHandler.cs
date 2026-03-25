@@ -12,17 +12,17 @@ internal abstract class CatalogEventHandler<TEntity, TEvent>(UtClient utClient, 
     where TEntity : class, ICatalog
     where TEvent : class, IOneCEvent
 {
-    public async Task<ServiceResult> HandleEventOneC(TEvent oneCNotifyMessage, CancellationToken ct = default)
+    public async Task<ServiceResult> HandleEvent(TEvent oneCNotifyMessage, CancellationToken ct = default)
     {
         StartActivity();
 
-        logger.LogDebug("{Source} - Start {@message}", nameof(HandleEventOneC), oneCNotifyMessage);
+        logger.LogDebug("{Source} - Start {@message}", nameof(HandleEvent), oneCNotifyMessage);
 
         var fetchedItem = await FetchByRefKeyAsync(oneCNotifyMessage.Ref_Key, ct);
 
         if (fetchedItem is null)
         {
-            logger.LogError("{Source} - Failed to feath {@message}", nameof(HandleEventOneC), oneCNotifyMessage);
+            logger.LogError("{Source} - Failed to feath {@message}", nameof(HandleEvent), oneCNotifyMessage);
             return ServiceError.NotFound;
         }
 
@@ -40,7 +40,7 @@ internal abstract class CatalogEventHandler<TEntity, TEvent>(UtClient utClient, 
             await dbContext.SaveChangesAsync(ct);
         }
 
-        logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleEventOneC), oneCNotifyMessage, fetchedItem);
+        logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleEvent), oneCNotifyMessage, fetchedItem);
 
         return ServiceResult.Success();
     }

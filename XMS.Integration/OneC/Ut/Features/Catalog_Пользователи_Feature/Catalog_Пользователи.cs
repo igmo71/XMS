@@ -15,7 +15,8 @@ internal class Catalog_Пользователи : ICatalog
 
     public static string GetUriByRefKey(Guid refKey) => $"{Uri}&$filter=Ref_Key eq guid'{refKey}'";
 
-    public static string GetExchangeName() => nameof(Catalog_Пользователи);
+    public static string GetExchangeName(IHostEnvironment hostEnvironment) =>
+        hostEnvironment.IsDevelopment() ? $"dev_{nameof(Catalog_Пользователи)}" : $"{nameof(Catalog_Пользователи)}";
 
     public static string GetQueueName(IHostEnvironment hostEnvironment) =>
         hostEnvironment.IsDevelopment() ? $"dev_{nameof(Catalog_Пользователи)}" : $"xms_{nameof(Catalog_Пользователи)}";

@@ -11,6 +11,6 @@ public interface ICatalog
 
     static abstract string Uri { get; }
     static abstract string GetUriByRefKey(Guid refKey);
-    static abstract string GetExchangeName();
+    static abstract string GetExchangeName(IHostEnvironment hostEnvironment);
     static abstract string GetQueueName(IHostEnvironment hostEnvironment);
 }

@@ -21,14 +21,14 @@ public class Catalog_Партнеры : ICatalog
     public bool Перевозчик { get; set; }
     public bool ПрочиеОтношения { get; set; }
 
-    public static string Uri => "Catalog_Партнеры?$format=json" +
+    public static string Uri => "Catalog_Партнеры?$format=json&$inlinecount=allpages" +
         "&$select=Ref_Key,DataVersion,DeletionMark,Parent_Key,Description,ОсновнойМенеджер_Key,БизнесРегион_Key,ДатаРегистрации,ЮрФизЛицо," +
-            "Комментарий,НаименованиеПолное,ДополнительнаяИнформация,Клиент,Поставщик,Конкурент,Перевозчик,ПрочиеОтношения" +
-        "&$inlinecount=allpages";
+            "Комментарий,НаименованиеПолное,ДополнительнаяИнформация,Клиент,Поставщик,Конкурент,Перевозчик,ПрочиеОтношения";
 
     public static string GetUriByRefKey(Guid refKey) => $"{Uri}&$filter=Ref_Key eq guid'{refKey}'";
 
-    public static string GetExchangeName() => nameof(Catalog_Партнеры);
+    public static string GetExchangeName(IHostEnvironment hostEnvironment) =>
+        hostEnvironment.IsDevelopment() ? $"dev_{nameof(Catalog_Партнеры)}" : $"{nameof(Catalog_Партнеры)}";
 
     public static string GetQueueName(IHostEnvironment hostEnvironment) =>
         hostEnvironment.IsDevelopment() ? $"dev_{nameof(Catalog_Партнеры)}" : $"xms_{nameof(Catalog_Партнеры)}";

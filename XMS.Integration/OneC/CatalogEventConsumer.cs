@@ -24,7 +24,7 @@ public abstract class CatalogEventConsumer<TEntity, TEvent, THandler>(
         using var channel = await connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
         string queueName = TEntity.GetQueueName(hostEnvironment);
-        string exchangeName = TEntity.GetExchangeName();
+        string exchangeName = TEntity.GetExchangeName(hostEnvironment);
 
         await channel.ExchangeDeclareAsync(exchangeName, ExchangeType.Fanout, durable: true, cancellationToken: stoppingToken);
         await channel.QueueDeclareAsync(queueName, durable: true, exclusive: false, autoDelete: false, cancellationToken: stoppingToken);
@@ -45,7 +45,7 @@ public abstract class CatalogEventConsumer<TEntity, TEvent, THandler>(
                 var message = JsonSerializer.Deserialize<TEvent>(jsonMessage);
                 if (message != null)
                 {
-                    await handler.HandleEventOneC(message);
+                    await handler.HandleEvent(message);
                 }
                 await channel.BasicAckAsync(ea.DeliveryTag, multiple: false, cancellationToken: stoppingToken);
             }

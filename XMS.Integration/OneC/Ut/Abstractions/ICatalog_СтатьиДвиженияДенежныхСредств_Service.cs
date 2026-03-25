@@ -11,7 +11,7 @@ internal interface ICatalog_СтатьиДвиженияДенежныхСред
 
 
 
-    Task<ServiceResult> HandleEventOneC(Catalog_СтатьиДвиженияДенежныхСредств_Changed message, CancellationToken ct = default);
+    Task<ServiceResult> HandleEventOneC(CatalogEvent catalogEvent, CancellationToken ct = default);
 
     Task<Catalog_СтатьиДвиженияДенежныхСредств?> GetAsync(Guid refKey, CancellationToken ct = default);
 

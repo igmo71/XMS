@@ -14,7 +14,7 @@ public interface IDocument
     static abstract string Uri { get; }
     static abstract string GetUriByRefKey(Guid refKey);
     static abstract string GetUriByDate(DateTime? from = null, DateTime? to = null);
-    static abstract string GetExchangeName();
+    static abstract string GetExchangeName(IHostEnvironment hostEnvironment);
     static abstract string GetQueueName(IHostEnvironment hostEnvironment);
 }
 

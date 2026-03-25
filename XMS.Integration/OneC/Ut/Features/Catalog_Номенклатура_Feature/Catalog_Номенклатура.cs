@@ -13,13 +13,13 @@ public class Catalog_Номенклатура : ICatalog
     public string? Code { get; set; }
     public string? Description { get; set; }
 
-    public static string Uri => "Catalog_Номенклатура?$format=json" +
-        "&$select=Ref_Key,DataVersion,DeletionMark,Parent_Key,IsFolder,Code,Description" +
-        "&$inlinecount=allpages";
+    public static string Uri => "Catalog_Номенклатура?$format=json&$inlinecount=allpages" +
+        "&$select=Ref_Key,DataVersion,DeletionMark,Parent_Key,IsFolder,Code,Description";
 
     public static string GetUriByRefKey(Guid refKey) => $"{Uri}&$filter=Ref_Key eq guid'{refKey}'";
 
-    public static string GetExchangeName() => nameof(Catalog_Номенклатура);
+    public static string GetExchangeName(IHostEnvironment hostEnvironment) =>
+        hostEnvironment.IsDevelopment() ? $"dev_{nameof(Catalog_Номенклатура)}" : $"{nameof(Catalog_Номенклатура)}";
 
     public static string GetQueueName(IHostEnvironment hostEnvironment) =>
         hostEnvironment.IsDevelopment() ? $"dev_{nameof(Catalog_Номенклатура)}" : $"xms_{nameof(Catalog_Номенклатура)}";

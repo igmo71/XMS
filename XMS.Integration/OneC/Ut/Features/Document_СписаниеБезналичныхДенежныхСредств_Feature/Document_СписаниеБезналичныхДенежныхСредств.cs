@@ -30,23 +30,24 @@ public class Document_СписаниеБезналичныхДенежныхСр
     [MaxLength(OneCSettings.VALUE)] public string? Договор_Type { get; set; }
     [MaxLength(OneCSettings.VALUE)] public string? НалогообложениеНДС { get; set; }
     public Guid СтатьяДвиженияДенежныхСредств_Key { get; set; }
+    public decimal СуммаДокумента { get; set; }
     public Guid Контрагент_Key { get; set; }
     public Guid Валюта_Key { get; set; }
-    public decimal СуммаДокумента { get; set; }
     [MaxLength(OneCSettings.COMMENT)] public string? Комментарий { get; set; }
     public List<Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа>? РасшифровкаПлатежа { get; set; }
 
-    public static string Uri => "Document_СписаниеБезналичныхДенежныхСредств?$format=json" +
-       "&$select=Ref_Key,DeletionMark,Posted,DeletionMark,Number,Date,Posted,ХозяйственнаяОперация,Партнер_Key,НазначениеПлатежа,Автор_Key,Организация_Key,Подразделение_Key," +
+    public static string Uri => "Document_СписаниеБезналичныхДенежныхСредств?$format=json&$inlinecount=allpages" +
+       "&$select=Ref_Key,DataVersion,DeletionMark,Number,Date,Posted,ХозяйственнаяОперация,Партнер_Key,НазначениеПлатежа,Автор_Key,Организация_Key,Подразделение_Key," +
             "ДокументОснование,ДокументОснование_Type,Договор,Договор_Type,НалогообложениеНДС,СтатьяДвиженияДенежныхСредств_Key,СуммаДокумента,Контрагент_Key," +
-        "Валюта_Key,РасшифровкаПлатежа";
+            "Валюта_Key,Комментарий,РасшифровкаПлатежа";
 
     public static string GetUriByRefKey(Guid refKey) => $"{Uri}&$filter=Ref_Key eq guid'{refKey}'";
 
     public static string GetUriByDate(DateTime? from = null, DateTime? to = null) =>
         $"{Uri}&$filter=DeletionMark eq false and Posted eq true and Date ge datetime'{from:s}' and Date lt datetime'{to:s}'";
 
-    public static string GetExchangeName() => nameof(Document_СписаниеБезналичныхДенежныхСредств);
+    public static string GetExchangeName(IHostEnvironment hostEnvironment) =>
+        hostEnvironment.IsDevelopment() ? $"dev_{nameof(Document_СписаниеБезналичныхДенежныхСредств)}" : $"{nameof(Document_СписаниеБезналичныхДенежныхСредств)}";
 
     public static string GetQueueName(IHostEnvironment hostEnvironment) =>
         hostEnvironment.IsDevelopment() ? $"dev_{nameof(Document_СписаниеБезналичныхДенежныхСредств)}" : $"xms_{nameof(Document_СписаниеБезналичныхДенежныхСредств)}";

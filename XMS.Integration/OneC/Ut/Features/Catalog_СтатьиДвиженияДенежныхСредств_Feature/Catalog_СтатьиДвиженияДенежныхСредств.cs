@@ -23,7 +23,8 @@ public class Catalog_СтатьиДвиженияДенежныхСредств 
         return uri;
     }
 
-    public static string GetExchangeName() => nameof(Catalog_СтатьиДвиженияДенежныхСредств);
+    public static string GetExchangeName(IHostEnvironment hostEnvironment) =>
+        hostEnvironment.IsDevelopment() ? $"dev_{nameof(Catalog_СтатьиДвиженияДенежныхСредств)}" : $"{nameof(Catalog_СтатьиДвиженияДенежныхСредств)}";
 
     public static string GetQueueName(IHostEnvironment hostEnvironment) =>
         hostEnvironment.IsDevelopment() ? $"dev_{nameof(Catalog_СтатьиДвиженияДенежныхСредств)}" : $"xms_{nameof(Catalog_СтатьиДвиженияДенежныхСредств)}";

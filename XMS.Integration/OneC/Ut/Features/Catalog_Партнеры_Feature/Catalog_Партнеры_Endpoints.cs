@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Hosting;
 using XMS.Core;
 using XMS.Core.Abstractions.EventBus;
 using XMS.Integration.OneC.Ut.Abstractions;
@@ -78,9 +79,10 @@ public static class Catalog_Партнеры_Endpoints
 
     private static async Task<IResult> NotifyCatalog_Партнеры(HttpContext httpContext,
         [FromServices] IRabbitPublisher publisher,
-        [FromBody] Catalog_Партнеры_Changed oneCNotifyMessage)
+        [FromServices] IHostEnvironment hostEnvironment,
+        [FromBody] CatalogEvent catalogEvent)
     {
-        await publisher.PublishAsync(Catalog_Партнеры.GetExchangeName(), oneCNotifyMessage);
+        await publisher.PublishAsync(Catalog_Партнеры.GetExchangeName(hostEnvironment), catalogEvent);
 
         return TypedResults.Ok();
     }

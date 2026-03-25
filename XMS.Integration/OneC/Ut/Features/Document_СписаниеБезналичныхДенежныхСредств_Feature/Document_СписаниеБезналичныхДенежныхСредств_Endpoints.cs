@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Hosting;
 using XMS.Core;
 using XMS.Core.Abstractions.EventBus;
 using XMS.Integration.OneC.Ut.Abstractions;
@@ -71,9 +72,10 @@ public static class Document_СписаниеБезналичныхДенежн�
 
     private static async Task<IResult> NotifyDocument_СписаниеБезналичныхДенежныхСредств(HttpContext httpContext,
         [FromServices] IRabbitPublisher publisher,
-        [FromBody] Document_СписаниеБезналичныхДенежныхСредств_Changed oneCNotifyMessage)
+        [FromServices] IHostEnvironment hostEnvironment,
+        [FromBody] DocumentEvent documentEvent)
     {
-        await publisher.PublishAsync(Document_СписаниеБезналичныхДенежныхСредств.GetExchangeName(), oneCNotifyMessage);
+        await publisher.PublishAsync(Document_СписаниеБезналичныхДенежныхСредств.GetExchangeName(hostEnvironment), documentEvent);
 
         return TypedResults.Ok();
     }
