@@ -3,6 +3,5 @@ using XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналич
 
 namespace XMS.Integration.OneC.Ut.Abstractions;
 
-public interface IDocument_СписаниеБезналичныхДенежныхСредств_Service
-    : IDocumentService<Document_СписаниеБезналичныхДенежныхСредств>
+public interface IDocument_СписаниеБезналичныхДенежныхСредств_Service : IDocumentService<Document_СписаниеБезналичныхДенежныхСредств>
 { }

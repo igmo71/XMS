@@ -31,15 +31,15 @@ public static class Catalog_Партнеры_Endpoints
         var extGroup = builder.MapGroup("/ext/1c/ut/catalog-партнеры")
             .WithTags("1C UT Catalog_Партнеры");
 
-        extGroup.MapPut("/resync", ResyncCatalog_Партнеры)
-            .WithName(nameof(ResyncCatalog_Партнеры))
-            .WithSummary(nameof(ResyncCatalog_Партнеры))
-            .WithDescription("Resync Catalog_Партнеры from OneS Ut and save to DB");
-
         extGroup.MapPatch("/notify", NotifyCatalog_Партнеры)
             .WithName(nameof(NotifyCatalog_Партнеры))
             .WithSummary(nameof(NotifyCatalog_Партнеры))
             .WithDescription("Notify Catalog_Партнеры");
+
+        extGroup.MapPut("/resync", ResyncCatalog_Партнеры)
+            .WithName(nameof(ResyncCatalog_Партнеры))
+            .WithSummary(nameof(ResyncCatalog_Партнеры))
+            .WithDescription("Resync Catalog_Партнеры from OneS Ut and save to DB");
 
         return builder;
     }

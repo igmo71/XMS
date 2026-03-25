@@ -49,7 +49,7 @@ internal class DocumentEventHandler<TEntity, TEvent>(UtClient utClient, IDbConte
     {
         var uri = TEntity.GetUriByRefKey(refKey);
 
-        var rootObject = await utClient.GetValueFromJsonAsync<RootObject<TEntity>>(uri, ct);
+        var rootObject = await utClient.GetValueAsync<RootObject<TEntity>>(uri, ct);
 
         var result = rootObject?.Value?.FirstOrDefault();
 

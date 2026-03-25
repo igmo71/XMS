@@ -2,6 +2,5 @@
 
 namespace XMS.Integration.OneC.Ut.Abstractions;
 
-public interface IDocument_СписаниеБезналичныхДенежныхСредств_EventHandler
-    : IOneCEventHandler<DocumentEvent>
+public interface IDocument_СписаниеБезналичныхДенежныхСредств_EventHandler : IOneCEventHandler<DocumentEvent>
 { }

@@ -3,6 +3,5 @@ using XMS.Integration.OneC.Ut.Features.Document_РеализацияТоваро
 
 namespace XMS.Integration.OneC.Ut.Abstractions;
 
-public interface IDocument_РеализацияТоваровУслуг_Service
-    : IDocumentService<Document_РеализацияТоваровУслуг>
+public interface IDocument_РеализацияТоваровУслуг_Service : IDocumentService<Document_РеализацияТоваровУслуг>
 { }

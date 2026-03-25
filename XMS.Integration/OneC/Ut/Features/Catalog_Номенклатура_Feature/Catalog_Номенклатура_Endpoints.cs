@@ -31,15 +31,15 @@ public static class Catalog_Номенклатура_Endpoints
         var extGroup = builder.MapGroup("/ext/1c/ut/catalog-номенклатура")
             .WithTags("1C UT Catalog_Номенклатура");
 
-        extGroup.MapPut("/resync", ResyncCatalog_Номенклатура)
-            .WithName(nameof(ResyncCatalog_Номенклатура))
-            .WithSummary(nameof(ResyncCatalog_Номенклатура))
-            .WithDescription("Resync Catalog_Номенклатура from OneS Ut and save to DB");
-
         extGroup.MapPatch("/notify", NotifyCatalog_Номенклатура)
             .WithName(nameof(NotifyCatalog_Номенклатура))
             .WithSummary(nameof(NotifyCatalog_Номенклатура))
             .WithDescription("Notify Catalog_Номенклатура");
+
+        extGroup.MapPut("/resync", ResyncCatalog_Номенклатура)
+            .WithName(nameof(ResyncCatalog_Номенклатура))
+            .WithSummary(nameof(ResyncCatalog_Номенклатура))
+            .WithDescription("Resync Catalog_Номенклатура from OneS Ut and save to DB");
 
         return builder;
     }

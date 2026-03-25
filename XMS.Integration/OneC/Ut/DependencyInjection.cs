@@ -4,6 +4,7 @@ using XMS.Integration.OneC.Ut.Abstractions;
 using XMS.Integration.OneC.Ut.Features.Catalog_Номенклатура_Feature;
 using XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature;
 using XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
+using XMS.Integration.OneC.Ut.Features.Document_ЗаказКлиента_Feature;
 using XMS.Integration.OneC.Ut.Features.Document_РеализацияТоваровУслуг_Feature;
 using XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 
@@ -23,6 +24,10 @@ public static class DependencyInjection
 
         services.AddScoped<ICatalog_СтатьиДвиженияДенежныхСредств_Service, Catalog_СтатьиДвиженияДенежныхСредств_Service>();
 
+        services.AddHostedService<Document_ЗаказКлиента_EventConsumer>();
+        services.AddScoped<IDocument_ЗаказКлиента_EventHandler, Document_ЗаказКлиента_EventHandler>();
+        services.AddScoped<IDocument_ЗаказКлиента_Service, Document_ЗаказКлиента_Service>();
+
         services.AddHostedService<Document_РеализацияТоваровУслуг_EventConsumer>();
         services.AddScoped<IDocument_РеализацияТоваровУслуг_EventHandler, Document_РеализацияТоваровУслуг_EventHandler>();
         services.AddScoped<IDocument_РеализацияТоваровУслуг_Service, Document_РеализацияТоваровУслуг_Service>();
@@ -38,6 +43,7 @@ public static class DependencyInjection
     {
         builder.Map_Catalog_Номенклатура_Endpoints();
         builder.MapDocument_Catalog_Партнеры_Endpoints();
+        builder.MapDocument_ЗаказКлиента_Endpoints();
         builder.MapDocument_РеализацияТоваровУслуг_Endpoints();
         builder.MapDocument_СписаниеБезналичныхДенежныхСредств_Endpoints();
 

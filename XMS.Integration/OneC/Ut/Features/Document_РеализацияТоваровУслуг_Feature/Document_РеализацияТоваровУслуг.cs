@@ -54,7 +54,7 @@ public class Document_РеализацияТоваровУслуг : IDocument
     //public bool СкидкиРассчитаны { get; set; }
     //public bool Согласован { get; set; }
     //public string Соглашение_Key { get; set; }
-    //public int СуммаВзаиморасчетов { get; set; }
+    //public float СуммаВзаиморасчетов { get; set; }
     //public string Комментарий { get; set; }
     //public string ФормаОплаты { get; set; }
     //public bool ЦенаВключаетНДС { get; set; }
@@ -126,18 +126,140 @@ public class Document_РеализацияТоваровУслуг : IDocument
     //public DateTime ИШ_НачалоОбеда { get; set; }
     //public DateTime ИШ_КонецОбеда { get; set; }
     //public bool САР_Корректировка { get; set; }
-    //public object[] Товары { get; set; }
+    //public Товары[] Товары { get; set; }
     //public object[] СкидкиНаценки { get; set; }
-    //public object[] ВидыЗапасов { get; set; }
+    //public Видызапасов[] ВидыЗапасов { get; set; }
     //public object[] ДополнительныеРеквизиты { get; set; }
-    //public object[] РасшифровкаПлатежа { get; set; }
+    //public Расшифровкаплатежа[] РасшифровкаПлатежа { get; set; }
     //public object[] Серии { get; set; }
-    //public object[] ЭтапыГрафикаОплаты { get; set; }
+    //public Этапыграфикаоплаты[] ЭтапыГрафикаОплаты { get; set; }
     //public object[] ШтрихкодыУпаковок { get; set; }
     //public object[] НачислениеБонусныхБаллов { get; set; }
+    //public string БанковскийСчетОрганизацииnavigationLinkUrl { get; set; }
+    //public string ВалютаnavigationLinkUrl { get; set; }
+    //public string ВалютаВзаиморасчетовnavigationLinkUrl { get; set; }
     //public string ОрганизацияnavigationLinkUrl { get; set; }
+    //public string КонтрагентnavigationLinkUrl { get; set; }
+    //public string МенеджерnavigationLinkUrl { get; set; }
     //public string ПартнерnavigationLinkUrl { get; set; }
     //public string ПодразделениеnavigationLinkUrl { get; set; }
+    //public string СкладnavigationLinkUrl { get; set; }
     //public string СоглашениеnavigationLinkUrl { get; set; }
+    //public string ДоговорnavigationLinkUrl { get; set; }
+    //public string АвторnavigationLinkUrl { get; set; }
+    //public string РуководительnavigationLinkUrl { get; set; }
+    //public string ГлавныйБухгалтерnavigationLinkUrl { get; set; }
+    //public string КассаnavigationLinkUrl { get; set; }
+    //public string ГрафикОплатыnavigationLinkUrl { get; set; }
+    //public string БанковскийСчетКонтрагентаnavigationLinkUrl { get; set; }
+    //public string БанковскийСчетГрузополучателяnavigationLinkUrl { get; set; }
+    //public string ГрузополучательnavigationLinkUrl { get; set; }
+    //public string КонтактноеЛицоnavigationLinkUrl { get; set; }
 }
+
+//public class Document_РеализацияТоваровУслуг_Товары
+//{
+//    public string Ref_Key { get; set; }
+//    public string LineNumber { get; set; }
+//    public string Номенклатура_Key { get; set; }
+//    public string Характеристика_Key { get; set; }
+//    public string Назначение_Key { get; set; }
+//    public string Упаковка_Key { get; set; }
+//    public float КоличествоУпаковок { get; set; }
+//    public float Количество { get; set; }
+//    public string ВидЦены_Key { get; set; }
+//    public float Цена { get; set; }
+//    public float Сумма { get; set; }
+//    public string СтавкаНДС_Key { get; set; }
+//    public float СуммаНДС { get; set; }
+//    public float СуммаСНДС { get; set; }
+//    public string КодСтроки { get; set; }
+//    public float СуммаРучнойСкидки { get; set; }
+//    public int СуммаАвтоматическойСкидки { get; set; }
+//    public float ПроцентРучнойСкидки { get; set; }
+//    public int ПроцентАвтоматическойСкидки { get; set; }
+//    public string КлючСвязи { get; set; }
+//    public string Склад_Key { get; set; }
+//    public int СтатусУказанияСерий { get; set; }
+//    public float СуммаВзаиморасчетов { get; set; }
+//    public string ЗаказКлиента { get; set; }
+//    public string ЗаказКлиента_Type { get; set; }
+//    public string СрокПоставки { get; set; }
+//    public string ИдентификаторСтроки { get; set; }
+//    public string Серия_Key { get; set; }
+//    public string АналитикаУчетаНоменклатуры_Key { get; set; }
+//    public string НоменклатураНабора_Key { get; set; }
+//    public string ХарактеристикаНабора_Key { get; set; }
+//    public string АналитикаУчетаНаборов_Key { get; set; }
+//    public string КодТНВЭД_Key { get; set; }
+//    public string ОбъектРасчетов_Key { get; set; }
+//    public string Подразделение_Key { get; set; }
+//    public string НоменклатураПартнера_Key { get; set; }
+//    public int СуммаБонусныхБалловКСписанию { get; set; }
+//    public int СуммаБонусныхБалловКСписаниюВВалюте { get; set; }
+//    public int СуммаНачисленныхБонусныхБалловВВалюте { get; set; }
+//    public int СуммаНДСРегл { get; set; }
+//    public int СуммаНДСУпр { get; set; }
+//}
+
+//public class Видызапасов
+//{
+//    public string Ref_Key { get; set; }
+//    public string LineNumber { get; set; }
+//    public string АналитикаУчетаНоменклатуры_Key { get; set; }
+//    public string ВидЗапасов_Key { get; set; }
+//    public string НомерГТД_Key { get; set; }
+//    public string Упаковка_Key { get; set; }
+//    public float КоличествоУпаковок { get; set; }
+//    public float Количество { get; set; }
+//    public int КоличествоПоРНПТ { get; set; }
+//    public float СуммаСНДС { get; set; }
+//    public string СтавкаНДС_Key { get; set; }
+//    public float СуммаНДС { get; set; }
+//    public string ИдентификаторСтроки { get; set; }
+//    public float СуммаВзаиморасчетов { get; set; }
+//    public string ЗаказКлиента { get; set; }
+//    public string ЗаказКлиента_Type { get; set; }
+//    public float СуммаРучнойСкидки { get; set; }
+//    public int СуммаАвтоматическойСкидки { get; set; }
+//    public string АналитикаУчетаНаборов_Key { get; set; }
+//    public float Цена { get; set; }
+//    public string ВидЗапасовПолучателя_Key { get; set; }
+//    public string ОбъектРасчетов_Key { get; set; }
+//    public string КодТНВЭД_Key { get; set; }
+//    public int СуммаАкциза { get; set; }
+//    public int СуммаНДСРегл { get; set; }
+//    public int СуммаНДСУпр { get; set; }
+//}
+
+//public class Расшифровкаплатежа
+//{
+//    public string Ref_Key { get; set; }
+//    public string LineNumber { get; set; }
+//    public float Сумма { get; set; }
+//    public string ВалютаВзаиморасчетов_Key { get; set; }
+//    public float СуммаВзаиморасчетов { get; set; }
+//    public string ОбъектРасчетов_Key { get; set; }
+//}
+
+//public class Этапыграфикаоплаты
+//{
+//    public string Ref_Key { get; set; }
+//    public string LineNumber { get; set; }
+//    public string Заказ { get; set; }
+//    public string Заказ_Type { get; set; }
+//    public bool СверхЗаказа { get; set; }
+//    public string ВариантОплаты { get; set; }
+//    public DateTime ДатаПлатежа { get; set; }
+//    public string Сдвиг { get; set; }
+//    public float СуммаПлатежа { get; set; }
+//    public int ПроцентПлатежа { get; set; }
+//    public int СуммаЗалогаЗаТару { get; set; }
+//    public int ПроцентЗалогаЗаТару { get; set; }
+//    public float СуммаВзаиморасчетов { get; set; }
+//    public int СуммаВзаиморасчетовПоТаре { get; set; }
+//    public string ОбъектРасчетов_Key { get; set; }
+//    public string ВариантОтсчета { get; set; }
+//}
+
 

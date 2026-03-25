@@ -2,6 +2,5 @@
 
 namespace XMS.Integration.OneC.Ut.Abstractions;
 
-internal interface IDocument_РеализацияТоваровУслуг_EventHandler
-    : IOneCEventHandler<DocumentEvent>
+public interface IDocument_РеализацияТоваровУслуг_EventHandler : IOneCEventHandler<DocumentEvent>
 { }
