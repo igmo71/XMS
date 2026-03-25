@@ -2,7 +2,7 @@
 
 namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh
 {
-    internal class GodooBuhClientConfig : OneCClientConfig
+    internal class GodooBuhClientConfig : ODataClientConfig
     {
     }
 }

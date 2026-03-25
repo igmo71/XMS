@@ -5,7 +5,7 @@ using XMS.Integration.OneC;
 namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh
 {
     internal class GodooBuhClient(HttpClient httpClient, IOptions<GodooBuhClientConfig> options, ILogger<GodooBuhClient> logger)
-        : OneCClient<GodooBuhClientConfig>(httpClient, options, logger)
+        : ODataClient<GodooBuhClientConfig>(httpClient, options, logger)
     {
     }
 }

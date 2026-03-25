@@ -1,34 +1,33 @@
 ﻿using Microsoft.Extensions.Configuration;
 using XMS.Integration.Bitrix.Models;
 
-namespace XMS.Integration.Bitrix
+namespace XMS.Integration.Bitrix;
+
+public interface IBitrixService
 {
-    public interface IBitrixService
-    {
-        Task<BitrixUser?> GetUserAsync(string userName, string password);
-    }
+    Task<BitrixUser?> GetUserAsync(string userName, string password);
+}
 
-    internal class BitrixService(BitrixClient bitrixClient, IConfiguration configuration) : IBitrixService
+internal class BitrixService(BitrixClient bitrixClient, IConfiguration configuration) : IBitrixService
+{
+    public async Task<BitrixUser?> GetUserAsync(string userName, string password)
     {
-        public async Task<BitrixUser?> GetUserAsync(string userName, string password)
+        var bitrixAuthParams = new Dictionary<string, string>
         {
-            var bitrixAuthParams = new Dictionary<string, string>
-            {
-                ["USER_LOGIN"] = userName,
-                ["USER_PASSWORD"] = password,
-                ["AUTH_FORM"] = "Y",
-                ["TYPE"] = "AUTH"
-            };
+            ["USER_LOGIN"] = userName,
+            ["USER_PASSWORD"] = password,
+            ["AUTH_FORM"] = "Y",
+            ["TYPE"] = "AUTH"
+        };
 
-            var httpContent = new FormUrlEncodedContent(bitrixAuthParams);
+        var httpContent = new FormUrlEncodedContent(bitrixAuthParams);
 
-            var authUri = configuration["BitrixClientConfig:AuthUri"];
+        var authUri = configuration["BitrixClientConfig:AuthUri"];
 
-            var authResponse = await bitrixClient.PostDataAsync<BitrixAuthResponse>(authUri, httpContent);
+        var authResponse = await bitrixClient.PostDataAsync<BitrixAuthResponse>(authUri, httpContent);
 
-            var bitrixUser = authResponse?.User;
+        var bitrixUser = authResponse?.User;
 
-            return bitrixUser;
-        }
+        return bitrixUser;
     }
 }

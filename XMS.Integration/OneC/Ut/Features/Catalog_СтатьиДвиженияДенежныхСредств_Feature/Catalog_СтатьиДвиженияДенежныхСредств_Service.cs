@@ -3,145 +3,144 @@ using Microsoft.Extensions.Logging;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Common;
 using XMS.Integration.OneC.Ut.Abstractions;
-using XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
+using XMS.Integration.OneC.Ut.ODataClient;
 
-namespace XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature
+namespace XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
+
+internal class Catalog_СтатьиДвиженияДенежныхСредств_Service(
+    UtClient utClient,
+    IDbContextFactoryProxy dbFactory,
+    ILogger<Catalog_СтатьиДвиженияДенежныхСредств_Service> logger)
+    : BaseService, ICatalog_СтатьиДвиженияДенежныхСредств_Service
 {
-    internal class Catalog_СтатьиДвиженияДенежныхСредств_Service(
-        UtClient utClient,
-        IDbContextFactoryProxy dbFactory,
-        ILogger<Catalog_СтатьиДвиженияДенежныхСредств_Service> logger)
-        : BaseService, ICatalog_СтатьиДвиженияДенежныхСредств_Service
+    public async Task<ServiceResult> CreateOrUpdateAsync(Guid refKey, CancellationToken ct)
     {
-        public async Task<ServiceResult> CreateOrUpdateAsync(Guid refKey, CancellationToken ct)
+        using var dbContext = dbFactory.CreateDbContext();
+
+        var newItem = await FetchByRefKeyAsync(refKey, ct);
+
+        if (newItem is null)
+            return ServiceError.InvalidOperation.WithDescription(
+                $"Failed to feath {nameof(Catalog_СтатьиДвиженияДенежныхСредств)} by {refKey}");
+
+        await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
+            .Where(e => e.Ref_Key == refKey)
+            .ExecuteDeleteAsync(cancellationToken: ct);
+
+        await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
+            .AddAsync(newItem, ct);
+
+        await dbContext.SaveChangesAsync(ct);
+
+        logger.LogDebug("{Source} {refKey} {newItem}", nameof(CreateOrUpdateAsync), refKey, newItem);
+
+        return ServiceResult.Success();
+    }
+
+    public async Task<ServiceResult> DeleteAsync(Guid refKey, CancellationToken ct)
+    {
+        using var dbContext = dbFactory.CreateDbContext();
+
+        await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
+            .Where(e => e.Ref_Key == refKey)
+            .ExecuteDeleteAsync(cancellationToken: ct);
+
+        logger.LogDebug("{Source} {refKey}", nameof(DeleteAsync), refKey);
+
+        return ServiceResult.Success();
+    }
+
+    public async Task<Catalog_СтатьиДвиженияДенежныхСредств?> GetAsync(Guid refKey, CancellationToken ct)
+    {
+        using var dbContext = dbFactory.CreateDbContext();
+
+        var result = await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
+            .FindAsync([refKey], cancellationToken: ct);
+
+        return result;
+    }
+
+    public async Task<IReadOnlyList<Catalog_СтатьиДвиженияДенежныхСредств>> GetListAsync(CatalogQueryParameters parameters, CancellationToken ct = default)
+    {
+        using var dbContext = dbFactory.CreateDbContext();
+
+        var result = await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
+            .AsNoTracking()
+            .HandleCatalogQuery(parameters)
+            .ToListAsync(ct);
+
+        return result ?? [];
+    }
+
+    public async Task<ServiceResult> HandleEventOneC(Catalog_СтатьиДвиженияДенежныхСредств_Changed oneCNotifyMessage, CancellationToken ct = default)
+    {
+        logger.LogDebug("{Source} - Start {@message}", nameof(HandleEventOneC), oneCNotifyMessage);
+
+        var fetchedItem = await FetchByRefKeyAsync(oneCNotifyMessage.Ref_Key, ct);
+
+        if (fetchedItem is null)
         {
-            using var dbContext = dbFactory.CreateDbContext();
+            logger.LogError("{Source} - Failed to feath {@message}", nameof(HandleEventOneC), oneCNotifyMessage);
+            return ServiceError.NotFound;
+        }
 
-            var newItem = await FetchByRefKeyAsync(refKey, ct);
+        using var dbContext = dbFactory.CreateDbContext();
 
-            if (newItem is null)
-                return ServiceError.InvalidOperation.WithDescription(
-                    $"Failed to feath {nameof(Catalog_СтатьиДвиженияДенежныхСредств)} by {refKey}");
+        await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
+            .Where(e => e.Ref_Key == oneCNotifyMessage.Ref_Key)
+            .ExecuteDeleteAsync(ct);
 
+        if (!fetchedItem.DeletionMark)
+        {
             await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
-                .Where(e => e.Ref_Key == refKey)
-                .ExecuteDeleteAsync(cancellationToken: ct);
-
-            await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
-                .AddAsync(newItem, ct);
+            .AddAsync(fetchedItem, ct);
 
             await dbContext.SaveChangesAsync(ct);
-
-            logger.LogDebug("{Source} {refKey} {newItem}", nameof(CreateOrUpdateAsync), refKey, newItem);
-
-            return ServiceResult.Success();
         }
 
-        public async Task<ServiceResult> DeleteAsync(Guid refKey, CancellationToken ct)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
+        logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleEventOneC), oneCNotifyMessage, fetchedItem);
 
-            await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
-                .Where(e => e.Ref_Key == refKey)
-                .ExecuteDeleteAsync(cancellationToken: ct);
+        return ServiceResult.Success();
+    }
 
-            logger.LogDebug("{Source} {refKey}", nameof(DeleteAsync), refKey);
+    public async Task<ServiceResult> ResyncAsync(CancellationToken ct)
+    {
+        StartActivity();
 
-            return ServiceResult.Success();
-        }
+        using var dbContext = dbFactory.CreateDbContext();
 
-        public async Task<Catalog_СтатьиДвиженияДенежныхСредств?> GetAsync(Guid refKey, CancellationToken ct)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
+        await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
+            .ExecuteDeleteAsync(ct);
 
-            var result = await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
-                .FindAsync([refKey], cancellationToken: ct);
+        var items = await FetchListAsync(ct);
 
-            return result;
-        }
+        await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
+            .AddRangeAsync(items, ct);
 
-        public async Task<IReadOnlyList<Catalog_СтатьиДвиженияДенежныхСредств>> GetListAsync(CatalogQueryParameters parameters, CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
+        await dbContext.SaveChangesAsync(ct);
 
-            var result = await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
-                .AsNoTracking()
-                .HandleCatalogQuery(parameters)
-                .ToListAsync(ct);
+        return ServiceResult.Success();
+    }
 
-            return result ?? [];
-        }
+    private async Task<Catalog_СтатьиДвиженияДенежныхСредств?> FetchByRefKeyAsync(Guid refKey, CancellationToken ct = default)
+    {
+        var uri = Catalog_СтатьиДвиженияДенежныхСредств.GetUriByRefKey(refKey);
 
-        public async Task<ServiceResult> HandleEventOneC(Catalog_СтатьиДвиженияДенежныхСредств_Changed oneCNotifyMessage, CancellationToken ct = default)
-        {
-            logger.LogDebug("{Source} - Start {@message}", nameof(HandleEventOneC), oneCNotifyMessage);
+        var rootObject = await utClient.GetValueFromJsonAsync<RootObject<Catalog_СтатьиДвиженияДенежныхСредств>>(uri, ct);
 
-            var fetchedItem = await FetchByRefKeyAsync(oneCNotifyMessage.Ref_Key, ct);
+        var result = rootObject?.Value?[0];
 
-            if (fetchedItem is null)
-            {
-                logger.LogError("{Source} - Failed to feath {@message}", nameof(HandleEventOneC), oneCNotifyMessage);
-                return ServiceError.NotFound;
-            }
+        return result;
+    }
 
-            using var dbContext = dbFactory.CreateDbContext();
+    private async Task<IReadOnlyList<Catalog_СтатьиДвиженияДенежныхСредств>> FetchListAsync(CancellationToken ct = default)
+    {
+        var uri = Catalog_СтатьиДвиженияДенежныхСредств.Uri;
 
-            await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
-                .Where(e => e.Ref_Key == oneCNotifyMessage.Ref_Key)
-                .ExecuteDeleteAsync(ct);
+        var rootObject = await utClient.GetValueFromJsonAsync<RootObject<Catalog_СтатьиДвиженияДенежныхСредств>>(uri, ct);
 
-            if (!fetchedItem.DeletionMark)
-            {
-                await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
-                .AddAsync(fetchedItem, ct);
+        var result = rootObject?.Value?.ToList();
 
-                await dbContext.SaveChangesAsync(ct);
-            }
-
-            logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleEventOneC), oneCNotifyMessage, fetchedItem);
-
-            return ServiceResult.Success();
-        }
-
-        public async Task<ServiceResult> ResyncAsync(CancellationToken ct)
-        {
-            StartActivity();
-
-            using var dbContext = dbFactory.CreateDbContext();
-
-            await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
-                .ExecuteDeleteAsync(ct);
-
-            var items = await FetchListAsync(ct);
-
-            await dbContext.Set<Catalog_СтатьиДвиженияДенежныхСредств>()
-                .AddRangeAsync(items, ct);
-
-            await dbContext.SaveChangesAsync(ct);
-
-            return ServiceResult.Success();
-        }
-
-        private async Task<Catalog_СтатьиДвиженияДенежныхСредств?> FetchByRefKeyAsync(Guid refKey, CancellationToken ct = default)
-        {
-            var uri = Catalog_СтатьиДвиженияДенежныхСредств.GetUriByRefKey(refKey);
-
-            var rootObject = await utClient.GetValueFromJsonAsync<RootObject<Catalog_СтатьиДвиженияДенежныхСредств>>(uri, ct);
-
-            var result = rootObject?.Value?[0];
-
-            return result;
-        }
-
-        private async Task<IReadOnlyList<Catalog_СтатьиДвиженияДенежныхСредств>> FetchListAsync(CancellationToken ct = default)
-        {
-            var uri = Catalog_СтатьиДвиженияДенежныхСредств.Uri;
-
-            var rootObject = await utClient.GetValueFromJsonAsync<RootObject<Catalog_СтатьиДвиженияДенежныхСредств>>(uri, ct);
-
-            var result = rootObject?.Value?.ToList();
-
-            return result ?? [];
-        }
+        return result ?? [];
     }
 }

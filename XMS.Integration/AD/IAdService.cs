@@ -1,9 +1,8 @@
 ﻿using XMS.Domain.Models;
 
-namespace XMS.Integration.AD
+namespace XMS.Integration.AD;
+
+public interface IAdService
 {
-    public interface IAdService
-    {
-        Task<IReadOnlyList<UserAd>> GetUsersAsync(CancellationToken ct = default);
-    }
+    Task<IReadOnlyList<UserAd>> GetUsersAsync(CancellationToken ct = default);
 }

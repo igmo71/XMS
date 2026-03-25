@@ -1,27 +1,25 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace XMS.Integration.OneC
+namespace XMS.Integration.OneC;
+
+internal class OneCError
 {
-    internal class OneCError
-    {
-        [JsonPropertyName("odata.error")]
-        public OdataError? OdataError { get; set; }
-    }
+    [JsonPropertyName("odata.error")]
+    public OdataError? OdataError { get; set; }
+}
 
-    public class OdataError
-    {
-        [JsonPropertyName("code")]
-        public string? Code { get; set; }
-        [JsonPropertyName("message")]
-        public Message? Message { get; set; }
-    }
+public class OdataError
+{
+    [JsonPropertyName("code")]
+    public string? Code { get; set; }
+    [JsonPropertyName("message")]
+    public Message? Message { get; set; }
+}
 
-    public class Message
-    {
-        [JsonPropertyName("lang")]
-        public string? Lang { get; set; }
-        [JsonPropertyName("value")]
-        public string? Value { get; set; }
-    }
-
+public class Message
+{
+    [JsonPropertyName("lang")]
+    public string? Lang { get; set; }
+    [JsonPropertyName("value")]
+    public string? Value { get; set; }
 }

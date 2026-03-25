@@ -1,8 +1,7 @@
-﻿namespace XMS.Integration.AD
+﻿namespace XMS.Integration.AD;
+
+internal class AdClientConfig
 {
-    internal class AdClientConfig
-    {
-        public required string BaseAddress { get; set; }
-        public required string AdUsers { get; set; }
-    }
+    public required string BaseAddress { get; set; }
+    public required string AdUsers { get; set; }
 }

@@ -1,21 +1,20 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
-namespace XMS.Integration.Bitrix
+namespace XMS.Integration.Bitrix;
+
+internal class BitrixClient(HttpClient httpClient, ILogger<BitrixClient> logger)
 {
-    internal class BitrixClient(HttpClient httpClient, ILogger<BitrixClient> logger)
+    public async Task<TResponse?> PostDataAsync<TResponse>(string? uri, HttpContent httpContent)
     {
-        public async Task<TResponse?> PostDataAsync<TResponse>(string? uri, HttpContent httpContent)
-        {
-            var response = await httpClient.PostAsync(uri, httpContent);
+        var response = await httpClient.PostAsync(uri, httpContent);
 
-            var content = await response.Content.ReadAsStringAsync();
+        var content = await response.Content.ReadAsStringAsync();
 
-            var result = JsonSerializer.Deserialize<TResponse>(content);
+        var result = JsonSerializer.Deserialize<TResponse>(content);
 
-            logger.LogDebug("{Source} {Uri} {@Result}", nameof(PostDataAsync), uri, result);
+        logger.LogDebug("{Source} {Uri} {@Result}", nameof(PostDataAsync), uri, result);
 
-            return result;
-        }
+        return result;
     }
 }

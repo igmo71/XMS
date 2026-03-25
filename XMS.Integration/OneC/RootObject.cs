@@ -1,11 +1,10 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace XMS.Integration.OneC
+namespace XMS.Integration.OneC;
+
+public class RootObject<TValue>
 {
-    public class RootObject<TValue>
-    {
-        [JsonPropertyName("odata.metadata")] public string? ODataMetadata { get; set; }
-        [JsonPropertyName("odata.count")] public string? ODataCount { get; set; }
-        [JsonPropertyName("value")] public TValue[]? Value { get; set; }
-    }
+    [JsonPropertyName("odata.metadata")] public string? ODataMetadata { get; set; }
+    [JsonPropertyName("odata.count")] public string? ODataCount { get; set; }
+    [JsonPropertyName("value")] public TValue[]? Value { get; set; }
 }

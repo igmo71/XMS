@@ -22,7 +22,7 @@ namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh
 
         private static IServiceCollection AddOneSClient<TClient, TConfig>(this IServiceCollection services, IConfiguration configuration)
             where TClient : class
-            where TConfig : OneCClientConfig
+            where TConfig : ODataClientConfig
         {
             var sectionName = typeof(TConfig).Name;
             var configSection = configuration.GetSection(sectionName);

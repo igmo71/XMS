@@ -5,24 +5,23 @@ using XMS.Integration.AD;
 using XMS.Integration.Bitrix;
 using XMS.Integration.OneC;
 
-namespace XMS.Integration
+namespace XMS.Integration;
+
+public static class DependencyInjection
 {
-    public static class DependencyInjection
+    public static IServiceCollection AddIntegration(this IServiceCollection services, IConfiguration configuration)
     {
-        public static IServiceCollection AddIntegration(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddOneCServices(configuration);
-            services.AddAdServices(configuration);
-            services.AddBitrixServices(configuration);
+        services.AddOneCServices(configuration);
+        services.AddAdServices(configuration);
+        services.AddBitrixServices(configuration);
 
-            return services;
-        }
+        return services;
+    }
 
-        public static IEndpointRouteBuilder MapIntegrationEndpoints(this IEndpointRouteBuilder builder)
-        {
-            builder.MapOneCEndpoints();
+    public static IEndpointRouteBuilder MapIntegrationEndpoints(this IEndpointRouteBuilder builder)
+    {
+        builder.MapOneCEndpoints();
 
-            return builder;
-        }
+        return builder;
     }
 }
