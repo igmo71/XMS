@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Hosting;
-using System.ComponentModel.DataAnnotations;
 using XMS.Integration.OneC.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature;
@@ -7,25 +6,20 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature;
 public class Catalog_Партнеры : ICatalog
 {
     public Guid Ref_Key { get; set; }
-    [MaxLength(OneCSettings.CODE)] public string? DataVersion { get; set; }
+    public string? DataVersion { get; set; }
     public bool DeletionMark { get; set; }
     public Guid? Parent_Key { get; set; }
-    [MaxLength(OneCSettings.DESCRIPTION)] public string? Description { get; set; }
+    public string? Description { get; set; }
     public Guid? ОсновнойМенеджер_Key { get; set; }
     public Guid? БизнесРегион_Key { get; set; }
     public DateTime ДатаРегистрации { get; set; }
-    [MaxLength(OneCSettings.CODE)] public string? ЮрФизЛицо { get; set; }
-    [MaxLength(OneCSettings.COMMENT)] public string? Комментарий { get; set; }
-
-    //[MaxLength(OneCSettings.DESCRIPTION)] public string? НаименованиеПолное { get; set; }
-    //[MaxLength(OneCSettings.DESCRIPTION)] public string? ДополнительнаяИнформация { get; set; }
+    public string? ЮрФизЛицо { get; set; }
+    public string? Комментарий { get; set; }
     public bool Клиент { get; set; }
     public bool Поставщик { get; set; }
     public bool Конкурент { get; set; }
     public bool Перевозчик { get; set; }
     public bool ПрочиеОтношения { get; set; }
-
-    //public bool ОбслуживаетсяТорговымиПредставителями { get; set; }
 
     public static string Uri => "Catalog_Партнеры?$format=json" +
         "&$select=Ref_Key,DataVersion,DeletionMark,Parent_Key,Description,ОсновнойМенеджер_Key,БизнесРегион_Key,ДатаРегистрации,ЮрФизЛицо," +
@@ -39,6 +33,11 @@ public class Catalog_Партнеры : ICatalog
     public static string GetQueueName(IHostEnvironment hostEnvironment) =>
         hostEnvironment.IsDevelopment() ? $"dev_{nameof(Catalog_Партнеры)}" : $"xms_{nameof(Catalog_Партнеры)}";
 
+
+
+    //public bool ОбслуживаетсяТорговымиПредставителями { get; set; }
+    //public string? НаименованиеПолное { get; set; }
+    //public string? ДополнительнаяИнформация { get; set; }
     //public string? Code { get; set; }
     //public string ГруппаДоступа_Key { get; set; }
     //public string ШаблонЭтикетки_Key { get; set; }
