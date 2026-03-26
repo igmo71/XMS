@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using XMS.Integration.OneC.Ut.Abstractions;
 using XMS.Integration.OneC.Ut.Features.Catalog_КонтактныеЛицаПартнеров_Feature;
+using XMS.Integration.OneC.Ut.Features.Catalog_Контрагенты_Feature;
 using XMS.Integration.OneC.Ut.Features.Catalog_Номенклатура_Feature;
 using XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature;
 using XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
@@ -18,6 +19,10 @@ public static class DependencyInjection
         services.AddHostedService<Catalog_КонтактныеЛицаПартнеров_EventConsumer>();
         services.AddScoped<ICatalog_КонтактныеЛицаПартнеров_EventHandler, Catalog_КонтактныеЛицаПартнеров_EventHandler>();
         services.AddScoped<ICatalog_КонтактныеЛицаПартнеров_Service, Catalog_КонтактныеЛицаПартнеров_Service>();
+
+        services.AddHostedService<Catalog_Контрагенты_EventConsumer>();
+        services.AddScoped<ICatalog_Контрагенты_EventHandler, Catalog_Контрагенты_EventHandler>();
+        services.AddScoped<ICatalog_Контрагенты_Service, Catalog_Контрагенты_Service>();
 
         services.AddHostedService<Catalog_Номенклатура_EventConsumer>();
         services.AddScoped<ICatalog_Номенклатура_EventHandler, Catalog_Номенклатура_EventHandler>();
