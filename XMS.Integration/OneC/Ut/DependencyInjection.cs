@@ -51,6 +51,8 @@ public static class DependencyInjection
 
     public static IEndpointRouteBuilder MapUtEndpoints(this IEndpointRouteBuilder builder)
     {
+        builder.Map_Catalog_КонтактныеЛицаПартнеров_Endpoints();
+        builder.Map_Catalog_Контрагенты_Endpoints();
         builder.Map_Catalog_Номенклатура_Endpoints();
         builder.MapDocument_Catalog_Партнеры_Endpoints();
         builder.MapDocument_ЗаказКлиента_Endpoints();
