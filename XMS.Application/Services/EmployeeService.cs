@@ -245,58 +245,57 @@ internal class EmployeeService(IDbContextFactoryProxy dbFactory) : IEmployeeServ
 
         return result;
     }
-    // //
 
-    // Gemini //
-    public static List<Employee> GetAllSubordinates(Guid managerId, List<Employee> employees)
-    {
-        // Создаем быстрый индекс: ManagerId -> Список его людей
-        var lookup = employees.ToLookup(e => e.OperationalManagerId);
-        var result = new List<Employee>();
+    //// Gemini //
+    //public static List<Employee> GetAllSubordinates(Guid managerId, List<Employee> employees)
+    //{
+    //    // Создаем быстрый индекс: ManagerId -> Список его людей
+    //    var lookup = employees.ToLookup(e => e.OperationalManagerId);
+    //    var result = new List<Employee>();
 
-        void Traverse(Guid id)
-        {
-            foreach (var sub in lookup[id])
-            {
-                result.Add(sub);
-                Traverse(sub.Id);
-            }
-        }
+    //    void Traverse(Guid id)
+    //    {
+    //        foreach (var sub in lookup[id])
+    //        {
+    //            result.Add(sub);
+    //            Traverse(sub.Id);
+    //        }
+    //    }
 
-        Traverse(managerId);
-        return result;
-    }
+    //    Traverse(managerId);
+    //    return result;
+    //}
 
-    public static IEnumerable<Employee> GetAllSubordinatesOptimized(Guid managerId, IEnumerable<Employee> allEmployees)
-    {
-        // Группируем сотрудников по ManagerId один раз (O(n))
-        var lookup = allEmployees.ToLookup(e => e.OperationalManagerId);
+    //public static IEnumerable<Employee> GetAllSubordinatesOptimized(Guid managerId, IEnumerable<Employee> allEmployees)
+    //{
+    //    // Группируем сотрудников по ManagerId один раз (O(n))
+    //    var lookup = allEmployees.ToLookup(e => e.OperationalManagerId);
 
-        // Локальная функция для рекурсивного обхода
-        IEnumerable<Employee> Traverse(Guid id)
-        {
-            foreach (var sub in lookup[id])
-            {
-                yield return sub; // Возвращаем прямого подчиненного
-                foreach (var descendant in Traverse(sub.Id))
-                {
-                    yield return descendant; // Возвращаем его подчиненных
-                }
-            }
-        }
+    //    // Локальная функция для рекурсивного обхода
+    //    IEnumerable<Employee> Traverse(Guid id)
+    //    {
+    //        foreach (var sub in lookup[id])
+    //        {
+    //            yield return sub; // Возвращаем прямого подчиненного
+    //            foreach (var descendant in Traverse(sub.Id))
+    //            {
+    //                yield return descendant; // Возвращаем его подчиненных
+    //            }
+    //        }
+    //    }
 
-        return Traverse(managerId);
-    }
+    //    return Traverse(managerId);
+    //}
 
-    public static IEnumerable<Employee> GetAllSubordinatesLinq(Guid managerId, IEnumerable<Employee> allEmployees)
-    {
-        // 1. Находим прямых подчиненных для текущего managerId
-        var directSubordinates = allEmployees.Where(e => e.OperationalManagerId == managerId).ToList();
+    //public static IEnumerable<Employee> GetAllSubordinatesLinq(Guid managerId, IEnumerable<Employee> allEmployees)
+    //{
+    //    // 1. Находим прямых подчиненных для текущего managerId
+    //    var directSubordinates = allEmployees.Where(e => e.OperationalManagerId == managerId).ToList();
 
-        // 2. Для каждого подчиненного рекурсивно ищем его собственных подчиненных
-        return directSubordinates.Concat(
-            directSubordinates.SelectMany(s => GetAllSubordinatesLinq(s.Id, allEmployees))
-        );
-    }
-    // //
+    //    // 2. Для каждого подчиненного рекурсивно ищем его собственных подчиненных
+    //    return directSubordinates.Concat(
+    //        directSubordinates.SelectMany(s => GetAllSubordinatesLinq(s.Id, allEmployees))
+    //    );
+    //}
+    //// //
 }
