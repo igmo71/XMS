@@ -5,113 +5,112 @@ using XMS.Core.Abstractions.Data;
 using XMS.Core.Common;
 using XMS.Domain.Models;
 
-namespace XMS.Application.Services
+namespace XMS.Application.Services;
+
+internal class DepartmentService(IDbContextFactoryProxy dbFactory) : IDepartmentService
 {
-    internal class DepartmentService(IDbContextFactoryProxy dbFactory) : IDepartmentService
+    public async Task CreateAsync(Department item, CancellationToken ct = default)
     {
-        public async Task CreateAsync(Department item, CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
+        using var dbContext = dbFactory.CreateDbContext();
 
-            dbContext.Set<Department>().Add(item);
+        dbContext.Set<Department>().Add(item);
 
-            await dbContext.SaveChangesAsync(ct);
-        }
+        await dbContext.SaveChangesAsync(ct);
+    }
 
-        public async Task UpdateAsync(Department item, CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
+    public async Task UpdateAsync(Department item, CancellationToken ct = default)
+    {
+        using var dbContext = dbFactory.CreateDbContext();
 
-            var existing = await dbContext.Set<Department>().FindAsync([item.Id], ct)
-                ?? throw new KeyNotFoundException($"Department with ID {item.Id} not found");
+        var existing = await dbContext.Set<Department>().FindAsync([item.Id], ct)
+            ?? throw new KeyNotFoundException($"Department with ID {item.Id} not found");
 
-            dbContext.UpdateValues(existing, item);
+        dbContext.UpdateValues(existing, item);
 
-            await dbContext.SaveChangesAsync(ct);
-        }
+        await dbContext.SaveChangesAsync(ct);
+    }
 
-        public async Task<ServiceResult> DeleteAsync(Guid id, CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
+    public async Task<ServiceResult> DeleteAsync(Guid id, CancellationToken ct = default)
+    {
+        using var dbContext = dbFactory.CreateDbContext();
 
-            var existing = await dbContext.Set<Department>()
-                .Include(e => e.Children)
-                .FirstOrDefaultAsync(e => e.Id == id, ct);
+        var existing = await dbContext.Set<Department>()
+            .Include(e => e.Children)
+            .FirstOrDefaultAsync(e => e.Id == id, ct);
 
-            if (existing is null)
-                return ServiceError.NotFound.WithDescription($"Подразделение не найдено ({id})");
+        if (existing is null)
+            return ServiceError.NotFound.WithDescription($"Подразделение не найдено ({id})");
 
-            if (existing.Children.Any(e => !e.IsDeleted))
-                return ServiceError.InvalidOperation.WithDescription("Подразделение содержит вложенные Подразделения");
+        if (existing.Children.Any(e => !e.IsDeleted))
+            return ServiceError.InvalidOperation.WithDescription("Подразделение содержит вложенные Подразделения");
 
-            existing.IsDeleted = true;
-            existing.DeletedAt = DateTime.UtcNow;
+        existing.IsDeleted = true;
+        existing.DeletedAt = DateTime.UtcNow;
 
-            await dbContext.SaveChangesAsync(ct);
+        await dbContext.SaveChangesAsync(ct);
 
-            return ServiceResult.Success();
-        }
+        return ServiceResult.Success();
+    }
 
-        public async Task<ServiceResult> RestoreAsync(Guid id, CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
+    public async Task<ServiceResult> RestoreAsync(Guid id, CancellationToken ct = default)
+    {
+        using var dbContext = dbFactory.CreateDbContext();
 
-            var existing = await dbContext.Set<Department>()
-                .Include(e => e.Parent)
-                .FirstOrDefaultAsync(e => e.Id == id, ct);
+        var existing = await dbContext.Set<Department>()
+            .Include(e => e.Parent)
+            .FirstOrDefaultAsync(e => e.Id == id, ct);
 
-            if (existing is null)
-                return ServiceError.NotFound.WithDescription($"Подразделение не найдено ({id})");
+        if (existing is null)
+            return ServiceError.NotFound.WithDescription($"Подразделение не найдено ({id})");
 
-            if (existing.Parent?.IsDeleted == true)
-                return ServiceError.InvalidOperation.WithDescription("Подразделение вложено в удаленное Подразделения");
+        if (existing.Parent?.IsDeleted == true)
+            return ServiceError.InvalidOperation.WithDescription("Подразделение вложено в удаленное Подразделения");
 
-            existing.IsDeleted = false;
+        existing.IsDeleted = false;
 
-            await dbContext.SaveChangesAsync(ct);
+        await dbContext.SaveChangesAsync(ct);
 
-            return ServiceResult.Success();
-        }
+        return ServiceResult.Success();
+    }
 
-        public async Task<Department?> GetByIdAsync(Guid id, CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
+    public async Task<Department?> GetByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        using var dbContext = dbFactory.CreateDbContext();
 
-            return await dbContext.Set<Department>().FindAsync([id], ct);
-        }
+        return await dbContext.Set<Department>().FindAsync([id], ct);
+    }
 
-        public async Task<IReadOnlyList<Department>> GetListAsync(CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
+    public async Task<IReadOnlyList<Department>> GetListAsync(CancellationToken ct = default)
+    {
+        using var dbContext = dbFactory.CreateDbContext();
 
-            return await dbContext.Set<Department>()
-                .AsNoTracking()
-                .OrderBy(x => x.Name)
-                .ToListAsync(ct);
-        }
+        return await dbContext.Set<Department>()
+            .AsNoTracking()
+            .OrderBy(x => x.Name)
+            .ToListAsync(ct);
+    }
 
-        public async Task<IReadOnlyList<Department>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
+    public async Task<IReadOnlyList<Department>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
+    {
+        using var dbContext = dbFactory.CreateDbContext();
 
-            var query = dbContext.Set<Department>().AsNoTracking();
+        var query = dbContext.Set<Department>().AsNoTracking();
 
-            if (!includeDeleted)
-                query = query.Where(e => !e.IsDeleted);
+        if (!includeDeleted)
+            query = query.Where(e => !e.IsDeleted);
 
-            return await query.Include(e => e.Manager).OrderBy(x => x.Name).ToListAsync(ct);
-        }
+        return await query.Include(e => e.Manager).OrderBy(x => x.Name).ToListAsync(ct);
+    }
 
-        public async Task<IReadOnlyList<Department>> GetListAsync(QueryParameters queryParameters, CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
+    public async Task<IReadOnlyList<Department>> GetListAsync(QueryParameters queryParameters, CancellationToken ct = default)
+    {
+        using var dbContext = dbFactory.CreateDbContext();
 
-            var result = await dbContext.Set<Department>()
-                .AsNoTracking()
-                .HandleQuery(queryParameters)
-                .ToListAsync(ct);
+        var result = await dbContext.Set<Department>()
+            .AsNoTracking()
+            .HandleQuery(queryParameters)
+            .ToListAsync(ct);
 
-            return result;
-        }
+        return result;
     }
 }

@@ -2,27 +2,26 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Modules.CostModule.Domain;
 
-namespace XMS.Infrastructure.Data.EntityConfigurations
+namespace XMS.Infrastructure.Data.EntityConfigurations;
+
+public class CostCategoryEntityTypeConfiguration : BaseEntityTypeConfiguration<CostCategory>
 {
-    public class CostCategoryEntityTypeConfiguration : BaseEntityTypeConfiguration<CostCategory>
+    public override void Configure(EntityTypeBuilder<CostCategory> builder)
     {
-        public override void Configure(EntityTypeBuilder<CostCategory> builder)
-        {
-            base.Configure(builder);
+        base.Configure(builder);
 
-            builder.ToTable("CostCategories");
+        builder.ToTable("CostCategories");
 
-            builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
+        builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
 
-            builder
-                .HasMany(e => e.Items)
-                .WithMany(e => e.Categories)
-                .UsingEntity<CostCategoryItem>(
-                    r => r.HasOne<CostItem>().WithMany(e => e.CategoryItems).HasForeignKey(e => e.ItemId),
-                    l => l.HasOne<CostCategory>().WithMany(e => e.CategoryItems).HasForeignKey(e => e.CategoryId));
+        builder
+            .HasMany(e => e.Items)
+            .WithMany(e => e.Categories)
+            .UsingEntity<CostCategoryItem>(
+                r => r.HasOne<CostItem>().WithMany(e => e.CategoryItems).HasForeignKey(e => e.ItemId),
+                l => l.HasOne<CostCategory>().WithMany(e => e.CategoryItems).HasForeignKey(e => e.CategoryId));
 
-            builder.HasOne(e => e.Employee).WithMany().HasForeignKey(e => e.EmployeeId).OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(e => e.Department).WithMany().HasForeignKey(e => e.DepartmentId).OnDelete(DeleteBehavior.Restrict);
-        }
+        builder.HasOne(e => e.Employee).WithMany().HasForeignKey(e => e.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(e => e.Department).WithMany().HasForeignKey(e => e.DepartmentId).OnDelete(DeleteBehavior.Restrict);
     }
 }

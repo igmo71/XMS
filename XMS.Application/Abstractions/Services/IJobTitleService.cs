@@ -1,8 +1,7 @@
 ﻿using XMS.Domain.Models;
 
-namespace XMS.Application.Abstractions.Services
+namespace XMS.Application.Abstractions.Services;
+
+public interface IJobTitleService : ICrudService<JobTitle>
 {
-    public interface IJobTitleService : ICrudService<JobTitle>
-    {
-    }
 }

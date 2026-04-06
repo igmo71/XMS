@@ -1,8 +1,7 @@
-﻿namespace XMS.Domain.Abstractions
+﻿namespace XMS.Domain.Abstractions;
+
+public interface ISoftDeletable
 {
-    public interface ISoftDeletable
-    {
-        bool IsDeleted { get; set; }
-        DateTimeOffset? DeletedAt { get; set; }
-    }
+    bool IsDeleted { get; set; }
+    DateTimeOffset? DeletedAt { get; set; }
 }

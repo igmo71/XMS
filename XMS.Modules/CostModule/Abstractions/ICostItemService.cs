@@ -1,10 +1,8 @@
 ﻿using XMS.Application.Abstractions;
-using XMS.Core.Abstractions;
 using XMS.Modules.CostModule.Domain;
 
-namespace XMS.Modules.CostModule.Abstractions
+namespace XMS.Modules.CostModule.Abstractions;
+
+public interface ICostItemService : ICrudService<CostItem>
 {
-    public interface ICostItemService : ICrudService<CostItem>
-    {
-    }
 }

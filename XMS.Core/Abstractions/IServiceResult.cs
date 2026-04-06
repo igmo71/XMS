@@ -1,10 +1,9 @@
-﻿namespace XMS.Core.Abstractions
-{
-    public interface IServiceResult
-    { }
+﻿namespace XMS.Core.Abstractions;
 
-    public interface IServiceResult<TValue> : IServiceResult
-    {
-        TValue? Value { get; }
-    }
+public interface IServiceResult
+{ }
+
+public interface IServiceResult<TValue> : IServiceResult
+{
+    TValue? Value { get; }
 }

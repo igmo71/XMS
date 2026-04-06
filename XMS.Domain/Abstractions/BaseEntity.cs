@@ -1,7 +1,6 @@
-﻿namespace XMS.Domain.Abstractions
+﻿namespace XMS.Domain.Abstractions;
+
+public abstract class BaseEntity : IHasId<Guid>
 {
-    public abstract class BaseEntity : IHasId<Guid>
-    {
-        public Guid Id { get; set; } = Guid.CreateVersion7();
-    }
+    public Guid Id { get; set; } = Guid.CreateVersion7();
 }

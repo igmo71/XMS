@@ -2,30 +2,29 @@
 using System.Linq.Expressions;
 using XMS.Domain.Abstractions;
 
-namespace XMS.Infrastructure.Data
+namespace XMS.Infrastructure.Data;
+
+internal class DbContextQueryFilter
 {
-    internal class DbContextQueryFilter
+    public static void ApplyQueryFilter(ModelBuilder modelBuilder)
     {
-        public static void ApplyQueryFilter(ModelBuilder modelBuilder)
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            if (typeof(ISoftDeletable).IsAssignableFrom(entityType.ClrType))
             {
-                if (typeof(ISoftDeletable).IsAssignableFrom(entityType.ClrType))
-                {
-                    modelBuilder.Entity(entityType.ClrType).HasQueryFilter(ConvertFilterExpression(entityType.ClrType));
-                }
+                modelBuilder.Entity(entityType.ClrType).HasQueryFilter(ConvertFilterExpression(entityType.ClrType));
             }
         }
+    }
 
-        private static LambdaExpression? ConvertFilterExpression(Type type)
-        {
-            var parameter = Expression.Parameter(type, "e");
-            var property = Expression.Property(parameter, nameof(ISoftDeletable.IsDeleted));
-            var falseConstant = Expression.Constant(false);
-            var comparison = Expression.Equal(property, falseConstant);
+    private static LambdaExpression? ConvertFilterExpression(Type type)
+    {
+        var parameter = Expression.Parameter(type, "e");
+        var property = Expression.Property(parameter, nameof(ISoftDeletable.IsDeleted));
+        var falseConstant = Expression.Constant(false);
+        var comparison = Expression.Equal(property, falseConstant);
 
-            var result = Expression.Lambda(comparison, parameter);
-            return result;
-        }
+        var result = Expression.Lambda(comparison, parameter);
+        return result;
     }
 }

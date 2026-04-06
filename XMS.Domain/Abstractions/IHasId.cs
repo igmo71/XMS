@@ -1,7 +1,6 @@
-﻿namespace XMS.Domain.Abstractions
+﻿namespace XMS.Domain.Abstractions;
+
+public interface IHasId<out TId>
 {
-    public interface IHasId<out TId>
-    {
-        TId Id { get; }
-    }      
+    TId Id { get; }
 }

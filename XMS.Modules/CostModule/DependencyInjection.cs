@@ -3,18 +3,17 @@ using Microsoft.Extensions.DependencyInjection;
 using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Application;
 
-namespace XMS.Modules.CostModule
-{
-    public static class DependencyInjection
-    {
-        public static IServiceCollection AddCostModule(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddScoped<ICostCatalogUtService, CostCatalogUtService>();
-            services.AddScoped<ICostCategoryItemService, CostCategoryItemService>();
-            services.AddScoped<ICostCategoryService, CostCategoryService>();
-            services.AddScoped<ICostItemService, CostItemService>();
+namespace XMS.Modules.CostModule;
 
-            return services;
-        }
+public static class DependencyInjection
+{
+    public static IServiceCollection AddCostModule(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddScoped<ICostCatalogUtService, CostCatalogUtService>();
+        services.AddScoped<ICostCategoryItemService, CostCategoryItemService>();
+        services.AddScoped<ICostCategoryService, CostCategoryService>();
+        services.AddScoped<ICostItemService, CostItemService>();
+
+        return services;
     }
 }

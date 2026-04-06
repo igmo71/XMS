@@ -1,7 +1,6 @@
-﻿namespace XMS.Modules.GodooModule.Abstractions
+﻿namespace XMS.Modules.GodooModule.Abstractions;
+
+public interface IGodooService
 {
-    public interface IGodooService
-    {
-        Task Reload(string apiKeyName, CancellationToken ct);
-    }
+    Task Reload(string apiKeyName, CancellationToken ct);
 }

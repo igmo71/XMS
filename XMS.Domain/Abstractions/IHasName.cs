@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace XMS.Domain.Abstractions;
 
-namespace XMS.Domain.Abstractions
+public interface IHasName
 {
-    public interface IHasName
-    {
-        string Name { get; set; }
-    }
+    string Name { get; set; }
 }

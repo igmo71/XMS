@@ -2,17 +2,16 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Domain.Models;
 
-namespace XMS.Infrastructure.Data.EntityConfigurations
+namespace XMS.Infrastructure.Data.EntityConfigurations;
+
+public class CityEntityTypeConfiguration : BaseEntityTypeConfiguration<City>
 {
-    public class CityEntityTypeConfiguration : BaseEntityTypeConfiguration<City>
+    public override void Configure(EntityTypeBuilder<City> builder)
     {
-        public override void Configure(EntityTypeBuilder<City> builder)
-        {
-            base.Configure(builder);
+        base.Configure(builder);
 
-            builder.ToTable("Cities");
+        builder.ToTable("Cities");
 
-            builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
-        }
+        builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
     }
 }

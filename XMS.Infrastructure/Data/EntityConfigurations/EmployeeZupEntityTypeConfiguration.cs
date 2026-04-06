@@ -2,18 +2,17 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Domain.Models;
 
-namespace XMS.Infrastructure.Data.EntityConfigurations
+namespace XMS.Infrastructure.Data.EntityConfigurations;
+
+public class EmployeeZupEntityTypeConfiguration : BaseEntityTypeConfiguration<EmployeeZup>
 {
-    public class EmployeeZupEntityTypeConfiguration : BaseEntityTypeConfiguration<EmployeeZup>
+    public override void Configure(EntityTypeBuilder<EmployeeZup> builder)
     {
-        public override void Configure(EntityTypeBuilder<EmployeeZup> builder)
-        {
-            base.Configure(builder);
+        base.Configure(builder);
 
-            builder.ToTable("EmployeesZup");
+        builder.ToTable("EmployeesZup");
 
-            builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
-            builder.Property(x => x.Code).HasMaxLength(AppSettings.MaxLength.GUID);
-        }
+        builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
+        builder.Property(x => x.Code).HasMaxLength(AppSettings.MaxLength.GUID);
     }
 }

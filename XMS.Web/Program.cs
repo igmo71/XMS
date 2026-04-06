@@ -4,13 +4,9 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using MudBlazor.Services;
 using MudBlazor.Translations;
-using OpenTelemetry.Exporter;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 using Serilog;
 using System.Globalization;
 using XMS.Application;
-using XMS.Application.Common;
 using XMS.Domain.Models;
 using XMS.Infrastructure;
 using XMS.Infrastructure.Data;
@@ -20,121 +16,120 @@ using XMS.Web.Components;
 using XMS.Web.Components.Account;
 using XMS.Web.Components.Layout.Sections;
 
-namespace XMS.Web
+namespace XMS.Web;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        var culture = new CultureInfo("ru-RU");
+        CultureInfo.DefaultThreadCurrentCulture = culture;
+        CultureInfo.DefaultThreadCurrentUICulture = culture;
+
+        var builder = WebApplication.CreateBuilder(args);
+
+        builder.Host.UseSerilog((context, services, configuration) =>
         {
-            var culture = new CultureInfo("ru-RU");
-            CultureInfo.DefaultThreadCurrentCulture = culture;
-            CultureInfo.DefaultThreadCurrentUICulture = culture;
+            configuration
+                .ReadFrom.Configuration(context.Configuration)
+                .ReadFrom.Services(services);
+        });
 
-            var builder = WebApplication.CreateBuilder(args);
+        // Add services to the container.
 
-            builder.Host.UseSerilog((context, services, configuration) =>
+        builder.Services.AddRazorComponents()
+            .AddInteractiveServerComponents();
+
+        builder.Services.AddBlazoredLocalStorage();
+
+        builder.Services.AddMudServices();
+        builder.Services.AddMudTranslations();
+
+        builder.Services.AddCascadingAuthenticationState();
+        builder.Services.AddScoped<IdentityRedirectManager>();
+        builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+        builder.Services.AddAuthentication(options =>
             {
-                configuration
-                    .ReadFrom.Configuration(context.Configuration)
-                    .ReadFrom.Services(services);
-            });
-
-            // Add services to the container.
-
-            builder.Services.AddRazorComponents()
-                .AddInteractiveServerComponents();
-
-            builder.Services.AddBlazoredLocalStorage();
-
-            builder.Services.AddMudServices();
-            builder.Services.AddMudTranslations();
-
-            builder.Services.AddCascadingAuthenticationState();
-            builder.Services.AddScoped<IdentityRedirectManager>();
-            builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
-
-            builder.Services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = IdentityConstants.ApplicationScheme;
-                    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-                })
-                .AddIdentityCookies();
+                options.DefaultScheme = IdentityConstants.ApplicationScheme;
+                options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+            })
+            .AddIdentityCookies();
 
 
-            builder.Services.AddHttpContextAccessor();
-            
+        builder.Services.AddHttpContextAccessor();
 
-            builder.Services.AddIdentityCore<ApplicationUser>(options =>
-                {
-                    options.SignIn.RequireConfirmedAccount = true;
-                    options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
-                })
-                .AddRoles<IdentityRole>()
-                .AddRoleManager<RoleManager<IdentityRole>>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddSignInManager()
-                .AddDefaultTokenProviders();
 
-            builder.Services.Configure<IdentityOptions>(options =>
+        builder.Services.AddIdentityCore<ApplicationUser>(options =>
             {
-                // Default Password settings.
-                options.Password.RequireDigit = true;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireUppercase = true;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequiredLength = 6;
-                options.Password.RequiredUniqueChars = 1;
-                options.SignIn.RequireConfirmedAccount = false;
-                options.SignIn.RequireConfirmedEmail = false;
-                options.SignIn.RequireConfirmedPhoneNumber = false;
-                options.User.RequireUniqueEmail = true;
-                //options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-            });
+                options.SignIn.RequireConfirmedAccount = true;
+                options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
+            })
+            .AddRoles<IdentityRole>()
+            .AddRoleManager<RoleManager<IdentityRole>>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddSignInManager()
+            .AddDefaultTokenProviders();
 
-            builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+        builder.Services.Configure<IdentityOptions>(options =>
+        {
+            // Default Password settings.
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequiredLength = 6;
+            options.Password.RequiredUniqueChars = 1;
+            options.SignIn.RequireConfirmedAccount = false;
+            options.SignIn.RequireConfirmedEmail = false;
+            options.SignIn.RequireConfirmedPhoneNumber = false;
+            options.User.RequireUniqueEmail = true;
+            //options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+        });
 
-            builder.Services.AddInfrastructure(builder.Configuration);
-            builder.Services.AddIntegration(builder.Configuration);
-            builder.Services.AddApplicationServices();
-            builder.Services.AddApplicationModules(builder.Configuration);
+        builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
-            builder.Services.AddScoped<AuthService>();
+        builder.Services.AddInfrastructure(builder.Configuration);
+        builder.Services.AddIntegration(builder.Configuration);
+        builder.Services.AddApplicationServices();
+        builder.Services.AddApplicationModules(builder.Configuration);
 
-            builder.Services.AddAppSections();
+        builder.Services.AddScoped<AuthService>();
 
-            var app = builder.Build();
+        builder.Services.AddAppSections();
 
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
+        var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseMigrationsEndPoint();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+        });
 
-            app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
-            app.UseHttpsRedirection();
-
-            app.UseAntiforgery();
-
-            app.MapStaticAssets();
-            app.UseSerilogRequestLogging();
-            app.MapRazorComponents<App>()
-                .AddInteractiveServerRenderMode();
-
-            // Add additional endpoints required by the Identity /Account Razor components.
-            app.MapAdditionalIdentityEndpoints();
-
-            app.Run();
+        // Configure the HTTP request pipeline.
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseMigrationsEndPoint();
         }
+        else
+        {
+            app.UseExceptionHandler("/Error");
+            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            app.UseHsts();
+        }
+
+        app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+        app.UseHttpsRedirection();
+
+        app.UseAntiforgery();
+
+        app.MapStaticAssets();
+        app.UseSerilogRequestLogging();
+        app.MapRazorComponents<App>()
+            .AddInteractiveServerRenderMode();
+
+        // Add additional endpoints required by the Identity /Account Razor components.
+        app.MapAdditionalIdentityEndpoints();
+
+        app.Run();
     }
 }

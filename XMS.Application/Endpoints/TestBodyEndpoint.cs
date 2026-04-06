@@ -6,23 +6,22 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using XMS.Core.Common;
 
-namespace XMS.Application.Endpoints
+namespace XMS.Application.Endpoints;
+
+public static class TestBodyEndpoint
 {
-    public static class TestBodyEndpoint
+    public static IEndpointRouteBuilder MapTestBodyEndpint(this IEndpointRouteBuilder routeBuilder)
     {
-        public static IEndpointRouteBuilder MapTestBodyEndpint(this IEndpointRouteBuilder routeBuilder)
+        routeBuilder.MapPost("/api/test-body", (HttpContext httpContext, ILogger<ServiceResult> logger, [FromBody] JsonElement testBody) =>
         {
-            routeBuilder.MapPost("/api/test-body", (HttpContext httpContext, ILogger<ServiceResult> logger, [FromBody] JsonElement testBody) =>
-            {
-                logger.LogDebug("TestBody {TestBody}", testBody);
+            logger.LogDebug("TestBody {TestBody}", testBody);
 
-                return TypedResults.Ok(testBody);
-            })
-                .WithTags("XMS TestBody")
-                .WithSummary("XMS TestBody")
-                .WithDescription("Логирует и возвращвает тело запроса");
+            return TypedResults.Ok(testBody);
+        })
+            .WithTags("XMS TestBody")
+            .WithSummary("XMS TestBody")
+            .WithDescription("Логирует и возвращвает тело запроса");
 
-            return routeBuilder;
-        }
+        return routeBuilder;
     }
 }

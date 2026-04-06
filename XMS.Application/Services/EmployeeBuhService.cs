@@ -4,57 +4,56 @@ using XMS.Core.Abstractions.Data;
 using XMS.Domain.Models;
 using XMS.Integration.OneC.Api;
 
-namespace XMS.Application.Services
+namespace XMS.Application.Services;
+
+internal class EmployeeBuhService(IOneCBuhService oneSBuhService, IDbContextFactoryProxy dbFactory) : IEmployeeBuhService
 {
-    internal class EmployeeBuhService(IOneCBuhService oneSBuhService, IDbContextFactoryProxy dbFactory) : IEmployeeBuhService
+    public async Task<IReadOnlyList<EmployeeBuh>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
     {
-        public async Task<IReadOnlyList<EmployeeBuh>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
+        using var dbContext = dbFactory.CreateDbContext();
+
+        var query = dbContext.Set<EmployeeBuh>().AsNoTracking();
+
+        if (!includeDeleted)
+            query = query.Where(e => !e.IsDeleted);
+
+        return await query.OrderBy(x => x.Name).ToListAsync(ct);
+    }
+
+    public async Task<IReadOnlyList<EmployeeBuh>> LoadListAsync(CancellationToken ct = default)
+    {
+        return await oneSBuhService.GetEmployeeBuhListAsync(ct);
+    }
+
+    public async Task ReloadListAsync(CancellationToken ct = default)
+    {
+        var list = await LoadListAsync(ct);
+
+        await SaveListAsync(list, ct);
+    }
+
+    private async Task SaveListAsync(IReadOnlyList<EmployeeBuh> list, CancellationToken ct = default)
+    {
+        using var dbContext = dbFactory.CreateDbContext();
+
+        var incomingIds = list.Select(x => x.Id).ToList();
+
+        var existingList = await dbContext.Set<EmployeeBuh>().Where(x => incomingIds.Contains(x.Id)).ToListAsync(ct);
+
+        var existingEntities = existingList.ToDictionary(x => x.Id);
+
+        foreach (var incoming in list)
         {
-            using var dbContext = dbFactory.CreateDbContext();
-
-            var query = dbContext.Set<EmployeeBuh>().AsNoTracking();
-
-            if (!includeDeleted)
-                query = query.Where(e => !e.IsDeleted);
-
-            return await query.OrderBy(x => x.Name).ToListAsync(ct);
-        }
-
-        public async Task<IReadOnlyList<EmployeeBuh>> LoadListAsync(CancellationToken ct = default)
-        {
-            return await oneSBuhService.GetEmployeeBuhListAsync(ct);
-        }
-
-        public async Task ReloadListAsync(CancellationToken ct = default)
-        {
-            var list = await LoadListAsync(ct);
-
-            await SaveListAsync(list, ct);
-        }
-
-        private async Task SaveListAsync(IReadOnlyList<EmployeeBuh> list, CancellationToken ct = default)
-        {
-            using var dbContext = dbFactory.CreateDbContext();
-
-            var incomingIds = list.Select(x => x.Id).ToList();
-
-            var existingList = await dbContext.Set<EmployeeBuh>().Where(x => incomingIds.Contains(x.Id)).ToListAsync(ct);
-
-            var existingEntities = existingList.ToDictionary(x => x.Id);
-
-            foreach (var incoming in list)
+            if (existingEntities.TryGetValue(incoming.Id, out var existing))
             {
-                if (existingEntities.TryGetValue(incoming.Id, out var existing))
-                {
-                    dbContext.UpdateValues(existing, incoming);
-                }
-                else
-                {
-                    dbContext.Set<EmployeeBuh>().Add(incoming);
-                }
+                dbContext.UpdateValues(existing, incoming);
             }
-
-            await dbContext.SaveChangesAsync(ct);
+            else
+            {
+                dbContext.Set<EmployeeBuh>().Add(incoming);
+            }
         }
+
+        await dbContext.SaveChangesAsync(ct);
     }
 }

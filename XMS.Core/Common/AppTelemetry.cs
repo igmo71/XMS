@@ -1,13 +1,12 @@
 ﻿using System.Diagnostics;
 
-namespace XMS.Core.Common
+namespace XMS.Core.Common;
+
+public class AppTelemetry
 {
-    public class AppTelemetry
-    {
-        public const string ServiceName = "XMS.Service";
+    public const string ServiceName = "XMS.Service";
 
-        public const string SourceName = "XMS.Source";
+    public const string SourceName = "XMS.Source";
 
-        public static readonly ActivitySource ActivitySource = new(SourceName);
-    }
+    public static readonly ActivitySource ActivitySource = new(SourceName);
 }

@@ -1,7 +1,6 @@
-﻿namespace XMS.Core.Abstractions.EventBus
+﻿namespace XMS.Core.Abstractions.EventBus;
+
+public interface IRabbitPublisher
 {
-    public interface IRabbitPublisher
-    {
-        Task PublishAsync<T>(string exchange, T message);
-    }
+    Task PublishAsync<T>(string exchange, T message);
 }

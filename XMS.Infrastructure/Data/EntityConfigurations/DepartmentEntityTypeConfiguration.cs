@@ -2,22 +2,21 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Domain.Models;
 
-namespace XMS.Infrastructure.Data.EntityConfigurations
+namespace XMS.Infrastructure.Data.EntityConfigurations;
+
+public class DepartmentEntityTypeConfiguration : BaseEntityTypeConfiguration<Department>
 {
-    public class DepartmentEntityTypeConfiguration : BaseEntityTypeConfiguration<Department>
+    public override void Configure(EntityTypeBuilder<Department> builder)
     {
-        public override void Configure(EntityTypeBuilder<Department> builder)
-        {
-            base.Configure(builder);
+        base.Configure(builder);
 
-            builder.ToTable("Departments");
+        builder.ToTable("Departments");
 
-            builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
-            builder.HasOne(x => x.Parent).WithMany(x => x.Children).HasForeignKey(x => x.ParentId).OnDelete(DeleteBehavior.Restrict);
+        builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
+        builder.HasOne(x => x.Parent).WithMany(x => x.Children).HasForeignKey(x => x.ParentId).OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(e => e.Manager).WithMany()
-                .HasForeignKey(e => e.ManagerId).HasPrincipalKey(e => e.Id)
-                .OnDelete(DeleteBehavior.SetNull);
-        }
+        builder.HasOne(e => e.Manager).WithMany()
+            .HasForeignKey(e => e.ManagerId).HasPrincipalKey(e => e.Id)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace XMS.Core.Abstractions.Data
+﻿namespace XMS.Core.Abstractions.Data;
+
+public interface IDbContextFactoryProxy
 {
-    public interface IDbContextFactoryProxy
-    {
-        IApplicationDbContext CreateDbContext();
-    }
+    IApplicationDbContext CreateDbContext();
 }

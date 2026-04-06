@@ -9,359 +9,261 @@ using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Domain;
 using XMS.Web.Components.Common;
 
-namespace XMS.Web.Components.Pages.CostPages
+namespace XMS.Web.Components.Pages.CostPages;
+
+public partial class Index : IDisposable
 {
-    public partial class Index : IDisposable
+    [Inject] public ICostCategoryService CategoryService { get; set; } = default!;
+    [Inject] public ICostItemService ItemService { get; set; } = default!;
+    [Inject] public IDepartmentService DepartmentService { get; set; } = default!;
+    [Inject] public IEmployeeService EmployeeService { get; set; } = default!;
+    [Inject] public IDialogService DialogService { get; set; } = default!;
+    [Inject] public ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private ProtectedSessionStorage SessionStorage { get; set; } = default!;
+
+    private readonly CancellationTokenSource _cts = new();
+    private MudDataGrid<CostItem> _costItemGrid = default!;
+    private IEnumerable<CostItem> _costItems = [];
+    private IReadOnlyList<CostCategory> _costCategories = [];
+    private IReadOnlyList<TreeItemData<object?>> _costTree = [];
+    private IEnumerable<Department> _departments = [];
+    private IEnumerable<Employee> _employees = [];
+    private HashSet<Guid> _expandedCategoryIds = [];
+    private HashSet<Guid> _showDetailsCategoryIds = [];
+    private bool _expandedAll;
+    private bool _isLoading;
+    private bool _isProcessing;
+    private bool _includeDeleted = false;
+    private bool _isShowDetails = false;
+
+    protected override async Task OnInitializedAsync()
     {
-        [Inject] public ICostCategoryService CategoryService { get; set; } = default!;
-        [Inject] public ICostItemService ItemService { get; set; } = default!;
-        [Inject] public IDepartmentService DepartmentService { get; set; } = default!;
-        [Inject] public IEmployeeService EmployeeService { get; set; } = default!;
-        [Inject] public IDialogService DialogService { get; set; } = default!;
-        [Inject] public ISnackbar Snackbar { get; set; } = default!;
-        [Inject] private ProtectedSessionStorage SessionStorage { get; set; } = default!;
+        await LoadDataAndBuildTreeAsync();
+    }
 
-        private readonly CancellationTokenSource _cts = new();
-        private MudDataGrid<CostItem> _costItemGrid = default!;
-        private IEnumerable<CostItem> _costItems = [];
-        private IReadOnlyList<CostCategory> _costCategories = [];
-        private IReadOnlyList<TreeItemData<object?>> _costTree = [];
-        private IEnumerable<Department> _departments = [];
-        private IEnumerable<Employee> _employees = [];
-        private HashSet<Guid> _expandedCategoryIds = [];
-        private HashSet<Guid> _showDetailsCategoryIds = [];
-        private bool _expandedAll;
-        private bool _isLoading;
-        private bool _isProcessing;
-        private bool _includeDeleted = false;
-        private bool _isShowDetails = false;
-
-        protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
         {
-            await LoadDataAndBuildTreeAsync();
-        }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (firstRender)
-            {
-                var result = await SessionStorage.GetAsync<HashSet<Guid>>(nameof(_expandedCategoryIds));
-                _expandedCategoryIds = result.Success ? (result.Value ?? []) : [];
-                _expandedAll = _expandedCategoryIds.Count > 0 && _expandedCategoryIds.Count == _costCategories.Count;
-                BuildTree();
-                StateHasChanged();
-            }
-        }
-
-        private async Task LoadDataAndBuildTreeAsync()
-        {
-            await LoadDataAsync();
+            var result = await SessionStorage.GetAsync<HashSet<Guid>>(nameof(_expandedCategoryIds));
+            _expandedCategoryIds = result.Success ? (result.Value ?? []) : [];
+            _expandedAll = _expandedCategoryIds.Count > 0 && _expandedCategoryIds.Count == _costCategories.Count;
             BuildTree();
+            StateHasChanged();
         }
+    }
 
-        private async Task LoadDataAsync()
+    private async Task LoadDataAndBuildTreeAsync()
+    {
+        await LoadDataAsync();
+        BuildTree();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        if (_isLoading) return;
+
+        _isLoading = true;
+        try
         {
-            if (_isLoading) return;
+            await Task.WhenAll(
+                LoadCostCategories(),
+                LoadCostItems(),
+                LoadDepartments(),
+                LoadEmployees());
+        }
+        finally
+        {
+            _isLoading = false;
 
-            _isLoading = true;
-            try
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadCostCategories() => _costCategories = await CategoryService.GetListAsync(_includeDeleted, _cts.Token);
+    private async Task LoadCostItems() => _costItems = await ItemService.GetListAsync(true, _cts.Token);
+    private async Task LoadDepartments() => _departments = await DepartmentService.GetListAsync(false, _cts.Token);
+    private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync(false, _cts.Token);
+
+    private void BuildTree()
+    {
+        var lookup = _costCategories.OrderBy(e => e.Name).ToLookup(e => e.ParentId);
+        _costTree = BuildTreeRecursive(lookup, null);
+    }
+
+    private List<TreeItemData<object?>> BuildTreeRecursive(ILookup<Guid?, CostCategory> lookup, Guid? parentId)
+    {
+        var nodes = new List<TreeItemData<object?>>();
+
+        foreach (var category in lookup[parentId])
+        {
+            var childrenList = BuildTreeRecursive(lookup, category.Id);
+
+            if (category.Items?.Count > 0)
             {
-                await Task.WhenAll(
-                    LoadCostCategories(),
-                    LoadCostItems(),
-                    LoadDepartments(),
-                    LoadEmployees());
+                childrenList.AddRange(category.Items.OrderBy(e => e.Name).Select(e => new TreeItemData<object?> { Value = e }));
             }
-            finally
+
+            nodes.Add(new TreeItemData<object?>
             {
-                _isLoading = false;
-
-                StateHasChanged();
-            }
+                Value = category,
+                Children = childrenList,
+                Expanded = _expandedCategoryIds.Contains(category.Id)
+            });
         }
+        return nodes;
+    }
 
-        private async Task LoadCostCategories() => _costCategories = await CategoryService.GetListAsync(_includeDeleted, _cts.Token);
-        private async Task LoadCostItems() => _costItems = await ItemService.GetListAsync(true, _cts.Token);        
-        private async Task LoadDepartments() => _departments = await DepartmentService.GetListAsync(false, _cts.Token);
-        private async Task LoadEmployees() => _employees = await EmployeeService.GetListAsync(false, _cts.Token);
+    private async Task ExpandedChanged(ITreeItemData<object?> node, bool expanded)
+    {
+        node.Expanded = expanded;
 
-        private void BuildTree()
+        if (node.Value is CostCategory category)
         {
-            var lookup = _costCategories.OrderBy(e => e.Name).ToLookup(e => e.ParentId);
-            _costTree = BuildTreeRecursive(lookup, null);
-        }
-
-        private List<TreeItemData<object?>> BuildTreeRecursive(ILookup<Guid?, CostCategory> lookup, Guid? parentId)
-        {
-            var nodes = new List<TreeItemData<object?>>();
-
-            foreach (var category in lookup[parentId])
-            {
-                var childrenList = BuildTreeRecursive(lookup, category.Id);
-
-                if (category.Items?.Count > 0)
-                {
-                    childrenList.AddRange(category.Items.OrderBy(e => e.Name).Select(e => new TreeItemData<object?> { Value = e }));
-                }
-
-                nodes.Add(new TreeItemData<object?>
-                {
-                    Value = category,
-                    Children = childrenList,
-                    Expanded = _expandedCategoryIds.Contains(category.Id)
-                });
-            }
-            return nodes;
-        }
-
-        private async Task ExpandedChanged(ITreeItemData<object?> node, bool expanded)
-        {
-            node.Expanded = expanded;
-
-            if (node.Value is CostCategory category)
-            {
-                if (expanded)
-                    _expandedCategoryIds.Add(category.Id);
-                else
-                    _expandedCategoryIds.Remove(category.Id);
-
-                await SessionStorage.SetAsync(nameof(_expandedCategoryIds), _expandedCategoryIds);
-            }
-        }
-
-        private async Task ExpandAll()
-        {
-            _expandedAll = true;
-            _costTree.SetExpansion(true);
-            _expandedCategoryIds = _costCategories.Select(e => e.Id).ToHashSet();
-            await SessionStorage.SetAsync(nameof(_expandedCategoryIds), _expandedCategoryIds);
-        }
-
-        private async Task CollapseAll()
-        {
-            _expandedAll = false;
-            _costTree.SetExpansion(false);
-            _expandedCategoryIds = [];
-            await SessionStorage.SetAsync(nameof(_expandedCategoryIds), _expandedCategoryIds);
-        }
-
-        private async Task ToggleIncludeDelete(bool args)
-        {
-            _includeDeleted = args;
-
-            await LoadDataAndBuildTreeAsync();
-        }
-
-        private async Task ToggleShowDetails(ITreeItemData<object> node)
-        {
-            if (node.Value is CostCategory category)
-            {
-                if (_showDetailsCategoryIds.Contains(category.Id))
-                    _showDetailsCategoryIds.Remove(category.Id);
-                else
-                    _showDetailsCategoryIds.Add(category.Id);
-
-                await SessionStorage.SetAsync(nameof(_showDetailsCategoryIds), _showDetailsCategoryIds);
-            }
-        }
-
-        private async Task ToggleShowDetails(bool args)
-        {
-            _isShowDetails = args;
-            if (_isShowDetails)
-                _showDetailsCategoryIds = _costCategories.Select(e => e.Id).ToHashSet();
+            if (expanded)
+                _expandedCategoryIds.Add(category.Id);
             else
-                _showDetailsCategoryIds.Clear();
+                _expandedCategoryIds.Remove(category.Id);
+
+            await SessionStorage.SetAsync(nameof(_expandedCategoryIds), _expandedCategoryIds);
+        }
+    }
+
+    private async Task ExpandAll()
+    {
+        _expandedAll = true;
+        _costTree.SetExpansion(true);
+        _expandedCategoryIds = _costCategories.Select(e => e.Id).ToHashSet();
+        await SessionStorage.SetAsync(nameof(_expandedCategoryIds), _expandedCategoryIds);
+    }
+
+    private async Task CollapseAll()
+    {
+        _expandedAll = false;
+        _costTree.SetExpansion(false);
+        _expandedCategoryIds = [];
+        await SessionStorage.SetAsync(nameof(_expandedCategoryIds), _expandedCategoryIds);
+    }
+
+    private async Task ToggleIncludeDelete(bool args)
+    {
+        _includeDeleted = args;
+
+        await LoadDataAndBuildTreeAsync();
+    }
+
+    private async Task ToggleShowDetails(ITreeItemData<object> node)
+    {
+        if (node.Value is CostCategory category)
+        {
+            if (_showDetailsCategoryIds.Contains(category.Id))
+                _showDetailsCategoryIds.Remove(category.Id);
+            else
+                _showDetailsCategoryIds.Add(category.Id);
 
             await SessionStorage.SetAsync(nameof(_showDetailsCategoryIds), _showDetailsCategoryIds);
         }
+    }
 
-        // CostCategory Operations //
+    private async Task ToggleShowDetails(bool args)
+    {
+        _isShowDetails = args;
+        if (_isShowDetails)
+            _showDetailsCategoryIds = _costCategories.Select(e => e.Id).ToHashSet();
+        else
+            _showDetailsCategoryIds.Clear();
 
-        private async Task NewCategoryAsync(object? value)
-        {
-            if (value is CostCategory parent)
-                await CreateOrUpdateCategory(new CostCategory
-                {
-                    ParentId = parent.Id
-                });
-        }
+        await SessionStorage.SetAsync(nameof(_showDetailsCategoryIds), _showDetailsCategoryIds);
+    }
 
-        private async Task EditCategoryAsync(object? value)
-        {
-            if (value is CostCategory category)
-                await CreateOrUpdateCategory(category);
-        }
+    // CostCategory Operations //
 
-        private async Task CreateOrUpdateCategory(CostCategory category)
-        {
-            var result = await ProcessCategoryDialog(category);
-
-            if (result is { Canceled: false, Data: CostCategory costCategory })
+    private async Task NewCategoryAsync(object? value)
+    {
+        if (value is CostCategory parent)
+            await CreateOrUpdateCategory(new CostCategory
             {
-                try
-                {
-                    if (_costCategories?.Any(e => e.Id == costCategory.Id) == false)
-                        await CategoryService.CreateAsync(costCategory, _cts.Token);
-                    else
-                        await CategoryService.UpdateAsync(costCategory, _cts.Token);
+                ParentId = parent.Id
+            });
+    }
 
-                    Snackbar.Add($"Успешно сохранено: {costCategory.Name}", Severity.Success);
-                }
-                catch (Exception ex)
-                {
-                    Snackbar.Add($"Ошибка при сохранении {costCategory.Name}: {ex.Message}", Severity.Error);
-                }
-                finally
-                {
-                    await LoadDataAndBuildTreeAsync();
-                }
-            }
-        }
+    private async Task EditCategoryAsync(object? value)
+    {
+        if (value is CostCategory category)
+            await CreateOrUpdateCategory(category);
+    }
 
-        private async Task<DialogResult?> ProcessCategoryDialog(CostCategory costCategory)
-        {
-            bool isNew = _costCategories?.Any(e => e.Id == costCategory.Id) == false;
+    private async Task CreateOrUpdateCategory(CostCategory category)
+    {
+        var result = await ProcessCategoryDialog(category);
 
-            var title = isNew ? "Создать Категорию" : "Изменить Категорию";
-
-            var parameters = new DialogParameters<CategoryDialog>
-            {
-                { x => x.TitleIcon, isNew ? Icons.Material.Filled.AddCircleOutline : Icons.Material.Filled.Edit },
-                { x => x.CostCategory, costCategory },
-                { x => x.CostItems, _costItems.Where(e => !e.IsDeleted) },
-                { x => x.CostCategories, _costCategories },
-                { x => x.Departments, _departments },
-                { x => x.Employees, _employees }
-            };
-
-            var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-
-            var dialog = await DialogService.ShowAsync<CategoryDialog>(title, parameters, options);
-
-            return await dialog.Result;
-        }
-
-        private async Task DeleteCategoryAsync(object? value)
-        {
-            if (_isProcessing) return;
-
-            if (value is CostCategory category)
-            {
-                if (await ConfirmDeleteItemAsync(category))
-                {
-                    try
-                    {
-                        _isProcessing = true;
-
-                        var result = await CategoryService.DeleteAsync(category.Id);
-
-                        if (result.IsSuccess)
-                            Snackbar.Add($"Успешно удалено: {category.Name}", Severity.Success);
-                        else
-                            Snackbar.Add($"Ошибка при удалении {category.Name}: {result.Error.Description}", Severity.Error);
-                    }
-                    catch (Exception ex)
-                    {
-                        Snackbar.Add($"Ошибка при удалении {category.Name}: {ex.Message}", Severity.Error);
-                    }
-                    finally
-                    {
-                        _isProcessing = false;
-
-                        await LoadDataAndBuildTreeAsync();
-                    }
-                }
-            }
-        }
-
-        private async Task RestoreCategoryAsync(object? value)
-        {
-            if (_isProcessing) return;
-
-            if (value is CostCategory category)
-            {
-                if (await ConfirmRestoreItemAsync(category))
-                {
-                    try
-                    {
-                        _isProcessing = true;
-
-                        var result = await CategoryService.RestoreAsync(category.Id);
-
-                        if (result.IsSuccess)
-                            Snackbar.Add($"Успешно восстановлено: {category.Name}", Severity.Success);
-                        else
-                            Snackbar.Add($"Ошибка при восстановлении {category.Name}: {result.Error.Description}", Severity.Error);
-                    }
-                    catch (Exception ex)
-                    {
-                        Snackbar.Add($"Ошибка при восстановлении {category.Name}: {ex.Message}", Severity.Error);
-                    }
-                    finally
-                    {
-                        _isProcessing = false;
-
-                        await LoadDataAndBuildTreeAsync();
-                    }
-                }
-            }
-        }
-
-        // CostItem Operations //
-
-        private async Task NewItemAsync(MouseEventArgs args)
-        {
-            var item = new CostItem();
-
-            await _costItemGrid.SetEditingItemAsync(item);
-        }
-
-        private async Task<DataGridEditFormAction> CommittedItemChanges(CostItem item)
+        if (result is { Canceled: false, Data: CostCategory costCategory })
         {
             try
             {
-                if (!_costItems.Any(x => x.Id == item.Id))
-                    await ItemService.CreateAsync(item);
+                if (_costCategories?.Any(e => e.Id == costCategory.Id) == false)
+                    await CategoryService.CreateAsync(costCategory, _cts.Token);
                 else
-                    await ItemService.UpdateAsync(item);
+                    await CategoryService.UpdateAsync(costCategory, _cts.Token);
 
-                Snackbar.Add($"Успешно сохранено: {item.Name}", Severity.Success);
-
-                return DataGridEditFormAction.Close;
+                Snackbar.Add($"Успешно сохранено: {costCategory.Name}", Severity.Success);
             }
             catch (Exception ex)
             {
-                Snackbar.Add($"Ошибка при сохранении {item.Name}: {ex.Message}", Severity.Error);
-
-                return DataGridEditFormAction.KeepOpen;
+                Snackbar.Add($"Ошибка при сохранении {costCategory.Name}: {ex.Message}", Severity.Error);
             }
             finally
             {
                 await LoadDataAndBuildTreeAsync();
             }
         }
+    }
 
-        private async Task DeleteItemAsync(CostItem item)
+    private async Task<DialogResult?> ProcessCategoryDialog(CostCategory costCategory)
+    {
+        bool isNew = _costCategories?.Any(e => e.Id == costCategory.Id) == false;
+
+        var title = isNew ? "Создать Категорию" : "Изменить Категорию";
+
+        var parameters = new DialogParameters<CategoryDialog>
         {
-            if (_isProcessing) return;
+            { x => x.TitleIcon, isNew ? Icons.Material.Filled.AddCircleOutline : Icons.Material.Filled.Edit },
+            { x => x.CostCategory, costCategory },
+            { x => x.CostItems, _costItems.Where(e => !e.IsDeleted) },
+            { x => x.CostCategories, _costCategories },
+            { x => x.Departments, _departments },
+            { x => x.Employees, _employees }
+        };
 
-            if (await ConfirmDeleteItemAsync(item))
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+        var dialog = await DialogService.ShowAsync<CategoryDialog>(title, parameters, options);
+
+        return await dialog.Result;
+    }
+
+    private async Task DeleteCategoryAsync(object? value)
+    {
+        if (_isProcessing) return;
+
+        if (value is CostCategory category)
+        {
+            if (await ConfirmDeleteItemAsync(category))
             {
                 try
                 {
                     _isProcessing = true;
 
-                    var result = await ItemService.DeleteAsync(item.Id);
+                    var result = await CategoryService.DeleteAsync(category.Id);
 
                     if (result.IsSuccess)
-                        Snackbar.Add($"Успешно удалено: {item.Name}", Severity.Success);
+                        Snackbar.Add($"Успешно удалено: {category.Name}", Severity.Success);
                     else
-                        Snackbar.Add($"Ошибка при удалении {item.Name}: {result.Error.Description}", Severity.Error);
+                        Snackbar.Add($"Ошибка при удалении {category.Name}: {result.Error.Description}", Severity.Error);
                 }
                 catch (Exception ex)
                 {
-                    Snackbar.Add($"Ошибка при удалении {item.Name}: {ex.Message}", Severity.Error);
+                    Snackbar.Add($"Ошибка при удалении {category.Name}: {ex.Message}", Severity.Error);
                 }
                 finally
                 {
@@ -371,27 +273,30 @@ namespace XMS.Web.Components.Pages.CostPages
                 }
             }
         }
+    }
 
-        private async Task RestoreItemAsync(CostItem item)
+    private async Task RestoreCategoryAsync(object? value)
+    {
+        if (_isProcessing) return;
+
+        if (value is CostCategory category)
         {
-            if (_isProcessing) return;
-
-            if (await ConfirmRestoreItemAsync(item))
+            if (await ConfirmRestoreItemAsync(category))
             {
                 try
                 {
                     _isProcessing = true;
 
-                    var result = await ItemService.RestoreAsync(item.Id);
+                    var result = await CategoryService.RestoreAsync(category.Id);
 
                     if (result.IsSuccess)
-                        Snackbar.Add($"Успешно восстановлено: {item.Name}", Severity.Success);
+                        Snackbar.Add($"Успешно восстановлено: {category.Name}", Severity.Success);
                     else
-                        Snackbar.Add($"Ошибка при восстановлении {item.Name}: {result.Error.Description}", Severity.Error);
+                        Snackbar.Add($"Ошибка при восстановлении {category.Name}: {result.Error.Description}", Severity.Error);
                 }
                 catch (Exception ex)
                 {
-                    Snackbar.Add($"Ошибка при восстановлении {item.Name}: {ex.Message}", Severity.Error);
+                    Snackbar.Add($"Ошибка при восстановлении {category.Name}: {ex.Message}", Severity.Error);
                 }
                 finally
                 {
@@ -401,56 +306,150 @@ namespace XMS.Web.Components.Pages.CostPages
                 }
             }
         }
+    }
 
-        // Confirm Dialog
+    // CostItem Operations //
 
-        private async Task<bool> ConfirmDeleteItemAsync<T>(T item) where T : IHasName
+    private async Task NewItemAsync(MouseEventArgs args)
+    {
+        var item = new CostItem();
+
+        await _costItemGrid.SetEditingItemAsync(item);
+    }
+
+    private async Task<DataGridEditFormAction> CommittedItemChanges(CostItem item)
+    {
+        try
         {
-            var title = "Удалить";
+            if (!_costItems.Any(x => x.Id == item.Id))
+                await ItemService.CreateAsync(item);
+            else
+                await ItemService.UpdateAsync(item);
 
-            var parameters = new DialogParameters<ConfirmDialog>
+            Snackbar.Add($"Успешно сохранено: {item.Name}", Severity.Success);
+
+            return DataGridEditFormAction.Close;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Ошибка при сохранении {item.Name}: {ex.Message}", Severity.Error);
+
+            return DataGridEditFormAction.KeepOpen;
+        }
+        finally
+        {
+            await LoadDataAndBuildTreeAsync();
+        }
+    }
+
+    private async Task DeleteItemAsync(CostItem item)
+    {
+        if (_isProcessing) return;
+
+        if (await ConfirmDeleteItemAsync(item))
+        {
+            try
             {
-                { x => x.TitleIcon, Icons.Material.Filled.Delete },
-                { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}'?" },
-                { x => x.ButtonText, "Да, удалить" },
-                { x => x.ConfirmColor, Color.Warning }
-            };
+                _isProcessing = true;
 
-            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+                var result = await ItemService.DeleteAsync(item.Id);
 
-            var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
-
-            var result = await dialog.Result;
-
-            return result is { Canceled: false };
-        }
-
-        private async Task<bool> ConfirmRestoreItemAsync<T>(T item) where T : IHasName
-        {
-            var title = "Восстановить";
-
-            var parameters = new DialogParameters<ConfirmDialog>
+                if (result.IsSuccess)
+                    Snackbar.Add($"Успешно удалено: {item.Name}", Severity.Success);
+                else
+                    Snackbar.Add($"Ошибка при удалении {item.Name}: {result.Error.Description}", Severity.Error);
+            }
+            catch (Exception ex)
             {
-                { x => x.TitleIcon, Icons.Material.Filled.RestoreFromTrash },
-                { x => x.ContentText, $"Вы уверены, что хотите восстановить '{item.Name}'?" },
-                { x => x.ButtonText, "Да, восстановить" },
-                { x => x.ConfirmColor, Color.Info }
-            };
+                Snackbar.Add($"Ошибка при удалении {item.Name}: {ex.Message}", Severity.Error);
+            }
+            finally
+            {
+                _isProcessing = false;
 
-            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
-
-            var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
-
-            var result = await dialog.Result;
-
-            return result is { Canceled: false };
+                await LoadDataAndBuildTreeAsync();
+            }
         }
+    }
 
-        public void Dispose()
+    private async Task RestoreItemAsync(CostItem item)
+    {
+        if (_isProcessing) return;
+
+        if (await ConfirmRestoreItemAsync(item))
         {
-            _cts.Cancel();
-            _cts.Dispose();
-            GC.SuppressFinalize(this);
+            try
+            {
+                _isProcessing = true;
+
+                var result = await ItemService.RestoreAsync(item.Id);
+
+                if (result.IsSuccess)
+                    Snackbar.Add($"Успешно восстановлено: {item.Name}", Severity.Success);
+                else
+                    Snackbar.Add($"Ошибка при восстановлении {item.Name}: {result.Error.Description}", Severity.Error);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Ошибка при восстановлении {item.Name}: {ex.Message}", Severity.Error);
+            }
+            finally
+            {
+                _isProcessing = false;
+
+                await LoadDataAndBuildTreeAsync();
+            }
         }
+    }
+
+    // Confirm Dialog
+
+    private async Task<bool> ConfirmDeleteItemAsync<T>(T item) where T : IHasName
+    {
+        var title = "Удалить";
+
+        var parameters = new DialogParameters<ConfirmDialog>
+        {
+            { x => x.TitleIcon, Icons.Material.Filled.Delete },
+            { x => x.ContentText, $"Вы уверены, что хотите удалить '{item.Name}'?" },
+            { x => x.ButtonText, "Да, удалить" },
+            { x => x.ConfirmColor, Color.Warning }
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium };
+
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
+
+        var result = await dialog.Result;
+
+        return result is { Canceled: false };
+    }
+
+    private async Task<bool> ConfirmRestoreItemAsync<T>(T item) where T : IHasName
+    {
+        var title = "Восстановить";
+
+        var parameters = new DialogParameters<ConfirmDialog>
+        {
+            { x => x.TitleIcon, Icons.Material.Filled.RestoreFromTrash },
+            { x => x.ContentText, $"Вы уверены, что хотите восстановить '{item.Name}'?" },
+            { x => x.ButtonText, "Да, восстановить" },
+            { x => x.ConfirmColor, Color.Info }
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>(title, parameters, options);
+
+        var result = await dialog.Result;
+
+        return result is { Canceled: false };
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

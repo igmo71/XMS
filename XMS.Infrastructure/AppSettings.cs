@@ -1,12 +1,11 @@
-﻿namespace XMS.Infrastructure
+﻿namespace XMS.Infrastructure;
+
+public static class AppSettings
 {
-    public static class AppSettings
+    public static class MaxLength
     {
-        public static class MaxLength
-        {
-            public const int GUID = 36;
-            public const int NAME = 150;
-            public const int SID = 45;
-        }
+        public const int GUID = 36;
+        public const int NAME = 150;
+        public const int SID = 45;
     }
 }

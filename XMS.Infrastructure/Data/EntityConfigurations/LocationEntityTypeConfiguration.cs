@@ -2,21 +2,20 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Domain.Models;
 
-namespace XMS.Infrastructure.Data.EntityConfigurations
+namespace XMS.Infrastructure.Data.EntityConfigurations;
+
+public class LocationEntityTypeConfiguration : BaseEntityTypeConfiguration<Location>
 {
-    public class LocationEntityTypeConfiguration : BaseEntityTypeConfiguration<Location>
+    public override void Configure(EntityTypeBuilder<Location> builder)
     {
-        public override void Configure(EntityTypeBuilder<Location> builder)
-        {
-            base.Configure(builder);
+        base.Configure(builder);
 
-            builder.ToTable("Locations");
+        builder.ToTable("Locations");
 
-            builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
+        builder.Property(x => x.Name).HasMaxLength(AppSettings.MaxLength.NAME);
 
-            builder.HasOne(e => e.Manager).WithMany()
-                .HasForeignKey(e => e.ManagerId).HasPrincipalKey(e => e.Id)
-                .OnDelete(DeleteBehavior.SetNull);
-        }
+        builder.HasOne(e => e.Manager).WithMany()
+            .HasForeignKey(e => e.ManagerId).HasPrincipalKey(e => e.Id)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

@@ -1,20 +1,19 @@
 ﻿using OpenTelemetry.Trace;
 
-namespace XMS.Infrastructure
+namespace XMS.Infrastructure;
+
+public class AppTraceSampler : Sampler
 {
-    public class AppTraceSampler : Sampler
+    public override SamplingResult ShouldSample(in SamplingParameters samplingParameters)
     {
-        public override SamplingResult ShouldSample(in SamplingParameters samplingParameters)
+        var name = samplingParameters.Name;
+
+        if (name.Contains("SignalR") ||
+            name.Contains("Components.HandleEvent"))
         {
-            var name = samplingParameters.Name;
-
-            if (name.Contains("SignalR") ||
-                name.Contains("Components.HandleEvent"))
-            {
-                return new SamplingResult(SamplingDecision.Drop);
-            }
-
-            return new SamplingResult(SamplingDecision.RecordAndSample);
+            return new SamplingResult(SamplingDecision.Drop);
         }
+
+        return new SamplingResult(SamplingDecision.RecordAndSample);
     }
 }

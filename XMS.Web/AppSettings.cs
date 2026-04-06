@@ -1,11 +1,10 @@
-﻿namespace XMS.Web
+﻿namespace XMS.Web;
+
+public static class AppSettings
 {
-    public static class AppSettings
+    public static class AuthSchemes
     {
-        public static class AuthSchemes
-        {
-            public const string Basic = "Basic";
-            public const string Bearer = "Bearer";
-        }
+        public const string Basic = "Basic";
+        public const string Bearer = "Bearer";
     }
 }

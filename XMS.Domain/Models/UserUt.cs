@@ -1,11 +1,10 @@
 ﻿using XMS.Domain.Abstractions;
 
-namespace XMS.Domain.Models
+namespace XMS.Domain.Models;
+
+public class UserUt : BaseEntity, IHasName, ISoftDeletable
 {
-    public class UserUt : BaseEntity, IHasName, ISoftDeletable
-    {
-        public string Name { get; set; } = string.Empty;
-        public bool IsDeleted { get; set; }
-        public DateTimeOffset? DeletedAt { get; set; }
-    }
+    public string Name { get; set; } = string.Empty;
+    public bool IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 }

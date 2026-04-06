@@ -4,30 +4,29 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using XMS.Core.Abstractions.EventBus;
 
-namespace XMS.Infrastructure.EventBus
+namespace XMS.Infrastructure.EventBus;
+
+internal class RabbitPublisher(IConnectionFactory factory) : IRabbitPublisher
 {
-    internal class RabbitPublisher(IConnectionFactory factory) : IRabbitPublisher
+    private static readonly JsonSerializerOptions _jsonOptions = new()
     {
-        private static readonly JsonSerializerOptions _jsonOptions = new()
-        {
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            //WriteIndented = false // JSON с отступами
-        };
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        //WriteIndented = false // JSON с отступами
+    };
 
-        public async Task PublishAsync<T>(string exchange, T message)
-        {
-            using var connection = await factory.CreateConnectionAsync();
-            using var channel = await connection.CreateChannelAsync();
+    public async Task PublishAsync<T>(string exchange, T message)
+    {
+        using var connection = await factory.CreateConnectionAsync();
+        using var channel = await connection.CreateChannelAsync();
 
-            await channel.ExchangeDeclareAsync(exchange, ExchangeType.Fanout, durable: true);
+        await channel.ExchangeDeclareAsync(exchange, ExchangeType.Fanout, durable: true);
 
-            var json = JsonSerializer.Serialize(message, _jsonOptions);
-            var body = Encoding.UTF8.GetBytes(json);
+        var json = JsonSerializer.Serialize(message, _jsonOptions);
+        var body = Encoding.UTF8.GetBytes(json);
 
-            await channel.BasicPublishAsync(
-                exchange: exchange,
-                routingKey: string.Empty,
-                body: body);
-        }
+        await channel.BasicPublishAsync(
+            exchange: exchange,
+            routingKey: string.Empty,
+            body: body);
     }
 }
