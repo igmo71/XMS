@@ -45,7 +45,7 @@ internal abstract class CatalogEventHandler<TEntity, TEvent>(UtClient utClient, 
     {
         var uri = TEntity.GetUriByRefKey(refKey);
 
-        var rootObject = await utClient.GetValueFromJsonAsync<RootObject<TEntity>>(uri, ct);
+        var rootObject = await utClient.GetValueAsync<RootObject<TEntity>>(uri, ct);
 
         var result = rootObject?.Value?.FirstOrDefault();
 

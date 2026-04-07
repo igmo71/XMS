@@ -14,6 +14,11 @@ public abstract class BaseService
 
     protected Activity? StartActivity([CallerMemberName] string methodName = "")
     {
-        return AppTelemetry.ActivitySource.StartActivity($"{_className}.{methodName}");
+        var operationName = $"{_className}.{methodName}";
+
+        var activity = AppTelemetry.ActivitySource.StartActivity(operationName, ActivityKind.Consumer)
+            ?? new Activity(operationName).Start();
+
+        return activity;
     }
 }

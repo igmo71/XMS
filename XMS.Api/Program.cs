@@ -1,5 +1,6 @@
 ﻿using Scalar.AspNetCore;
 using Serilog;
+using System.Reflection;
 using XMS.Application;
 using XMS.Infrastructure;
 using XMS.Integration;
@@ -25,7 +26,7 @@ public class Program
 
         builder.Services.AddProblemDetails();
 
-        builder.Services.AddInfrastructure(builder.Configuration);
+        builder.Services.AddInfrastructure(builder.Configuration, Assembly.GetExecutingAssembly().GetName().Name ?? "XMS.Api");
         builder.Services.AddIntegration(builder.Configuration);
         builder.Services.AddApplicationServices();
         builder.Services.AddApplicationModules(builder.Configuration);

@@ -8,7 +8,7 @@ public record struct CatalogQueryParameters(
     int? Skip = AppSettings.Default.Skip,
     int? Take = AppSettings.Default.Take);
 
-public record DocumentQueryParameters(
+public record struct DocumentQueryParameters(
     string? NumberTerm = null,
     DateTime? From = null,
     DateTime? To = null,

@@ -34,8 +34,7 @@ internal class DocumentEventHandler<TEntity, TEvent>(UtClient utClient, IDbConte
 
         if (!fetchedItem.DeletionMark && fetchedItem.Posted)
         {
-            await dbContext.Set<TEntity>()
-            .AddAsync(fetchedItem, ct);
+            await dbContext.Set<TEntity>().AddAsync(fetchedItem, ct);
 
             await dbContext.SaveChangesAsync(ct);
         }

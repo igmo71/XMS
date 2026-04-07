@@ -13,26 +13,29 @@ namespace XMS.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, string serviceName)
     {
         services.AddOpenTelemetry()
             .ConfigureResource(resource =>
             {
-                resource.AddService(AppTelemetry.ServiceName);
+                resource.AddService(serviceName);
                 resource.AddAttributes(new Dictionary<string, object> { ["Application"] = "XMS" });
             })
             .WithTracing(tracing => tracing
-                .SetSampler(new AppTraceSampler())
                 .AddSource(AppTelemetry.SourceName)
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
                 .AddSqlClientInstrumentation()
                 //.AddEntityFrameworkCoreInstrumentation()
+                //.SetSampler(new AppTraceSampler())
+                //.SetSampler(new AlwaysOnSampler())
+                .AddConsoleExporter()
                 .AddOtlpExporter(options =>
                 {
-                    //options.Endpoint = new Uri("http://vm-igmo-dev:5341/ingest/otlp/v1/traces");
-                    var endpoint = new Uri($"{configuration["Serilog:WriteTo:1:Args:serverUrl"]}/ingest/otlp/v1/traces");
-                    options.Endpoint = (endpoint);
+                    // http://vm-xms-dev:5341/ingest/otlp/v1/traces
+                    var seqServerUri = ResolveSeqServerUri(configuration);
+                    options.Endpoint = new Uri(seqServerUri, "/ingest/otlp/v1/traces");
+
                     options.Protocol = OtlpExportProtocol.HttpProtobuf;
                 }));
 
@@ -53,5 +56,20 @@ public static class DependencyInjection
         services.AddScoped<IDbContextFactoryProxy, DbContextFactoryProxy>();
 
         return services;
+    }
+
+    private static Uri ResolveSeqServerUri(IConfiguration configuration)
+    {
+        var writeToSections = configuration.GetSection("Serilog:WriteTo").GetChildren();
+
+        var seqSink = writeToSections.FirstOrDefault(e => e["Name"] == "Seq")
+            ?? throw new InvalidOperationException("Seq Sink is not configured or invalid");
+
+        var serverUrl = seqSink["Args:serverUrl"];
+
+        if (!string.IsNullOrWhiteSpace(serverUrl) && Uri.TryCreate(serverUrl, UriKind.Absolute, out var serverUri))
+            return serverUri;
+
+        throw new InvalidOperationException("Seq ServerUri is not configured or invalid");
     }
 }
