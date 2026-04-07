@@ -35,7 +35,7 @@ internal abstract class CatalogService<TEntity>(UtClient utClient, IDbContextFac
 
     public async Task<ServiceResult> ResyncAsync(CancellationToken ct = default)
     {
-        StartActivity();
+        using var activity = StartActivity();
 
         using var dbContext = dbFactory.CreateDbContext();
 

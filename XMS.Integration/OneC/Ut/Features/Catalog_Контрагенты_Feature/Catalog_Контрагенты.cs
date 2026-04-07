@@ -12,7 +12,7 @@ public class Catalog_Контрагенты : ICatalog
     public Guid? Партнер_Key { get; set; }
 
     public static string Uri => "Catalog_Контрагенты?$format=json&$inlinecount=allpages" +
-        "&$select=Ref_Key,DataVersion,DeletionMark,Parent_Key,IsFolder,Code,Description";
+        "&$select=Ref_Key,DataVersion,DeletionMark,Description,Партнер_Key";
 
     public static string GetUriByRefKey(Guid refKey) => $"{Uri}&$filter=Ref_Key eq guid'{refKey}'";
 

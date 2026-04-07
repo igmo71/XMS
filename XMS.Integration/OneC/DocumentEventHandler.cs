@@ -14,7 +14,7 @@ internal class DocumentEventHandler<TEntity, TEvent>(UtClient utClient, IDbConte
 {
     public async Task<ServiceResult> HandleEvent(TEvent oneCNotifyMessage, CancellationToken ct = default)
     {
-        StartActivity();
+        using var activity = StartActivity();
 
         logger.LogDebug("{Source} - Start {@message}", nameof(HandleEvent), oneCNotifyMessage);
 

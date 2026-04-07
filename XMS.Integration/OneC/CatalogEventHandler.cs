@@ -14,7 +14,7 @@ internal abstract class CatalogEventHandler<TEntity, TEvent>(UtClient utClient, 
 {
     public async Task<ServiceResult> HandleEvent(TEvent oneCNotifyMessage, CancellationToken ct = default)
     {
-        StartActivity();
+        using var activity = StartActivity();
 
         logger.LogDebug("{Source} - Start {@message}", nameof(HandleEvent), oneCNotifyMessage);
 
@@ -32,13 +32,9 @@ internal abstract class CatalogEventHandler<TEntity, TEvent>(UtClient utClient, 
             .Where(e => e.Ref_Key == oneCNotifyMessage.Ref_Key)
             .ExecuteDeleteAsync(ct);
 
-        if (!fetchedItem.DeletionMark)
-        {
-            await dbContext.Set<TEntity>()
-            .AddAsync(fetchedItem, ct);
+        await dbContext.Set<TEntity>().AddAsync(fetchedItem, ct);
 
-            await dbContext.SaveChangesAsync(ct);
-        }
+        await dbContext.SaveChangesAsync(ct);
 
         logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleEvent), oneCNotifyMessage, fetchedItem);
 

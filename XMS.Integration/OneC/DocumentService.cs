@@ -35,7 +35,7 @@ internal abstract class DocumentService<TEntity>(UtClient utClient, IDbContextFa
 
     public async Task<ServiceResult> ResyncAsync(DateTime from, DateTime to, CancellationToken ct = default)
     {
-        StartActivity();
+        using var activity = StartActivity();
 
         using var dbContext = dbFactory.CreateDbContext();
 

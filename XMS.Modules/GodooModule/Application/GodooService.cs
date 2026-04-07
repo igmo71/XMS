@@ -13,7 +13,7 @@ internal class GodooService(
 {
     public async Task Reload(string apiKeyName, CancellationToken ct)
     {
-        StartActivity();
+        using var activity = StartActivity();
 
         var yunuApiKey = yunuService.GetApiKey(apiKeyName);
 
