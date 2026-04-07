@@ -7,7 +7,7 @@ using XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДе�
 using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Domain;
 
-namespace XMS.Web.Components.Pages.CostCatalogUtPages;
+namespace XMS.Web.Components.Pages.CostSection.CostCatalog_ДДС_Pages;
 
 public partial class Index
 {

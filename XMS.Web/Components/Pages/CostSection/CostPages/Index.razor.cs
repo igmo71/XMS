@@ -9,7 +9,7 @@ using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Domain;
 using XMS.Web.Components.Common;
 
-namespace XMS.Web.Components.Pages.CostPages;
+namespace XMS.Web.Components.Pages.CostSection.CostPages;
 
 public partial class Index : IDisposable
 {

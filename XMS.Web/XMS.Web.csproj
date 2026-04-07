@@ -27,4 +27,8 @@
 		<ProjectReference Include="..\XMS.Modules\XMS.Modules.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Components\Pages\WarehouseSection\" />
+	</ItemGroup>
+
 </Project>

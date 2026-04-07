@@ -6,7 +6,7 @@ using XMS.Integration.OneC.Api;
 using XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
 using XMS.Web.Components.Common;
 
-namespace XMS.Web.Components.Pages.CashFlowItemPages;
+namespace XMS.Web.Components.Pages.CostSection.Catalog_СтатьиДвиженияДенежныхСредств_Pages;
 
 public partial class Index
 {

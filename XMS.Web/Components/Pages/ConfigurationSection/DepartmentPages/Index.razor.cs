@@ -6,7 +6,7 @@ using XMS.Domain.Abstractions;
 using XMS.Domain.Models;
 using XMS.Web.Components.Common;
 
-namespace XMS.Web.Components.Pages.DepartmentPages;
+namespace XMS.Web.Components.Pages.ConfigurationSection.DepartmentPages;
 
 public partial class Index : IDisposable
 {
