@@ -39,7 +39,10 @@ public class Document_СписаниеБезналичныхДенежныхСр
     public string? ХозяйственнаяОперация { get; set; }
     public string? НазначениеПлатежа { get; set; }
     public string? НалогообложениеНДС { get; set; }
+
+    [JsonConverter(typeof(StringTrimConverter))]
     public string? Комментарий { get; set; }
+
     public List<Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа>? РасшифровкаПлатежа { get; set; }
 
     public static string Uri => "Document_СписаниеБезналичныхДенежныхСредств?$format=json&$inlinecount=allpages" +
@@ -182,6 +185,7 @@ public class Document_СписаниеБезналичныхДенежныхСр
     public Guid? СтатьяРасходов { get; set; }
     public string? СтатьяРасходов_Type { get; set; }
 
+    [JsonConverter(typeof(StringTrimConverter))]
     public string? Комментарий { get; set; }
 
     //public string? АналитикаРасходов { get; set; }

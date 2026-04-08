@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
+using System.Text.Json.Serialization;
+using XMS.Core.Common;
 using XMS.Integration.OneC.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature;
@@ -14,12 +16,14 @@ public class Catalog_Партнеры : ICatalog
     public Guid? БизнесРегион_Key { get; set; }
     public DateTime ДатаРегистрации { get; set; }
     public string? ЮрФизЛицо { get; set; }
-    public string? Комментарий { get; set; }
     public bool Клиент { get; set; }
     public bool Поставщик { get; set; }
     public bool Конкурент { get; set; }
     public bool Перевозчик { get; set; }
     public bool ПрочиеОтношения { get; set; }
+
+    [JsonConverter(typeof(StringTrimConverter))]
+    public string? Комментарий { get; set; }
 
     public static string Uri => "Catalog_Партнеры?$format=json&$inlinecount=allpages" +
         "&$select=Ref_Key,DataVersion,DeletionMark,Parent_Key,Description,ОсновнойМенеджер_Key,БизнесРегион_Key,ДатаРегистрации,ЮрФизЛицо," +
