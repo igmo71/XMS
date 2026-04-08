@@ -142,7 +142,7 @@ public partial class Index
         {
             Snackbar.Add("Синхронизация с 1С...", Severity.Info);
 
-            await UtService.ResyncAsync(_cts.Token);
+            await UtService.ResyncCatalog_СтатьиДвиженияДенежныхСредств_Async(_cts.Token);
 
             Snackbar.Add("Данные успешно синхронизированы с 1С", Severity.Success);
 

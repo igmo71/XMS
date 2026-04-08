@@ -12,7 +12,7 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature;
 
 public static class Catalog_Партнеры_Endpoints
 {
-    public static IEndpointRouteBuilder MapDocument_Catalog_Партнеры_Endpoints(this IEndpointRouteBuilder builder)
+    public static IEndpointRouteBuilder MapCatalog_Партнеры_Endpoints(this IEndpointRouteBuilder builder)
     {
         var apiGroup = builder.MapGroup("/api/1c/ut/catalog-партнеры")
             .WithTags("1C UT Catalog_Партнеры");

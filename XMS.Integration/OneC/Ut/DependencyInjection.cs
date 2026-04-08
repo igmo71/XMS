@@ -32,6 +32,8 @@ public static class DependencyInjection
         services.AddScoped<ICatalog_Партнеры_EventHandler, Catalog_Партнеры_EventHandler>();
         services.AddScoped<ICatalog_Партнеры_Service, Catalog_Партнеры_Service>();
 
+        services.AddHostedService<Catalog_СтатьиДвиженияДенежныхСредств_EventConsumer>();
+        services.AddScoped<ICatalog_СтатьиДвиженияДенежныхСредств_EventHandler, Catalog_СтатьиДвиженияДенежныхСредств_EventHandler>();
         services.AddScoped<ICatalog_СтатьиДвиженияДенежныхСредств_Service, Catalog_СтатьиДвиженияДенежныхСредств_Service>();
 
         services.AddHostedService<Document_ЗаказКлиента_EventConsumer>();
@@ -54,7 +56,8 @@ public static class DependencyInjection
         builder.Map_Catalog_КонтактныеЛицаПартнеров_Endpoints();
         builder.Map_Catalog_Контрагенты_Endpoints();
         builder.Map_Catalog_Номенклатура_Endpoints();
-        builder.MapDocument_Catalog_Партнеры_Endpoints();
+        builder.MapCatalog_Партнеры_Endpoints();
+        builder.MapCatalog_СтатьиДвиженияДенежныхСредств_Endpoints();
         builder.MapDocument_ЗаказКлиента_Endpoints();
         builder.MapDocument_РеализацияТоваровУслуг_Endpoints();
         builder.MapDocument_СписаниеБезналичныхДенежныхСредств_Endpoints();

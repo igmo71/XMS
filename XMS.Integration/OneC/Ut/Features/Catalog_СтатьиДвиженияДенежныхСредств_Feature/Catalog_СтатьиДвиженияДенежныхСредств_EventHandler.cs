@@ -6,9 +6,9 @@ using Entity = XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвижен
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
 
-internal class Catalog_СтатьиДвиженияДенежныхСредств_Service(
+internal class Catalog_СтатьиДвиженияДенежныхСредств_EventHandler(
     UtClient utClient,
     IDbContextFactoryProxy dbFactory,
-    ILogger<Catalog_СтатьиДвиженияДенежныхСредств_Service> logger)
-    : CatalogService<Entity>(utClient, dbFactory, logger), ICatalog_СтатьиДвиженияДенежныхСредств_Service
+    ILogger<Catalog_СтатьиДвиженияДенежныхСредств_EventHandler> logger)
+    : CatalogEventHandler<Entity, CatalogEvent>(utClient, dbFactory, logger), ICatalog_СтатьиДвиженияДенежныхСредств_EventHandler
 { }

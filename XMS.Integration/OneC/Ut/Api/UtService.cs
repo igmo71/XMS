@@ -44,7 +44,7 @@ internal class UtService(
         return await catalog_СтатьиДвиженияДенежныхСредств_Service.GetAsync(refKey, ct);
     }
 
-    public async Task<ServiceResult> ResyncAsync(CancellationToken ct = default)
+    public async Task<ServiceResult> ResyncCatalog_СтатьиДвиженияДенежныхСредств_Async(CancellationToken ct = default)
     {
         return await catalog_СтатьиДвиженияДенежныхСредств_Service.ResyncAsync(ct);
     }
