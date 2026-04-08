@@ -115,13 +115,17 @@
 	private async Task UpdateCostCatalog()
 	{
 		_isProcessing = true;
-		var newCostCatalogUtList = SelectedCatalogUtItemIds
+
+		var newCostCatalogUtList = SelectedCatalogUtItemIds.Count == 0
+		? [new CostCatalog_ДДС { Catalog_СтатьиДвиженияДенежныхСредств_RefKey = Guid.Empty, CostCategoryItemId = CostCategoryItemId }]
+		: SelectedCatalogUtItemIds
 			.Select(refKey => new CostCatalog_ДДС { Catalog_СтатьиДвиженияДенежныхСредств_RefKey = refKey, CostCategoryItemId = CostCategoryItemId })
 			.ToList();
 
 		await OnUpdateCostCatalog.InvokeAsync(newCostCatalogUtList);
 		
 		_isProcessing = false;
+
 		ToggleOpen();
 	}
 }

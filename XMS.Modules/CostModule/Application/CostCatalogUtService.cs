@@ -31,11 +31,15 @@ internal class CostCatalogUtService(
         var existingItemIds = existingItems.Select(e => e.Id);
         var selectedItemIds = selectedItems.Select(e => e.Id);
 
-        var toRemove = existingItems.Where(e => !selectedItemIds.Contains(e.Id)).ToList();
+        var toRemove = existingItems
+            .Where(e => !selectedItemIds.Contains(e.Id))
+            .ToList();
         if (toRemove?.Count > 0)
             dbContext.Set<CostCatalog_ДДС>().RemoveRange(toRemove);
 
-        var toAdd = selectedItems.Where(e => !existingItemIds.Contains(e.Id)).ToList();
+        var toAdd = selectedItems
+            .Where(e => !existingItemIds.Contains(e.Id) && e.Catalog_СтатьиДвиженияДенежныхСредств_RefKey != Guid.Empty)
+            .ToList();
         if (toAdd?.Count > 0)
             await dbContext.Set<CostCatalog_ДДС>().AddRangeAsync(toAdd, ct);
 
