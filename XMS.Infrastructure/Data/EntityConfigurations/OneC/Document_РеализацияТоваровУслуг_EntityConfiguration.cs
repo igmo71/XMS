@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Integration.OneC;
 using XMS.Integration.OneC.Ut.Features.Document_РеализацияТоваровУслуг_Feature;
 
@@ -6,7 +7,7 @@ namespace XMS.Infrastructure.Data.EntityConfigurations.OneC;
 
 internal class Document_РеализацияТоваровУслуг_EntityConfiguration : IEntityTypeConfiguration<Document_РеализацияТоваровУслуг>
 {
-    public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Document_РеализацияТоваровУслуг> builder)
+    public void Configure(EntityTypeBuilder<Document_РеализацияТоваровУслуг> builder)
     {
         builder.ToTable("1c_ut_Document_РеализацияТоваровУслуг");
 

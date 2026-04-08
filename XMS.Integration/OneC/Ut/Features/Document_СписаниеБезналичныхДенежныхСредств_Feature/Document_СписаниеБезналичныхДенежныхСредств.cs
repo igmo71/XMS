@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Hosting;
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using XMS.Core.Common;
 using XMS.Integration.OneC.Abstractions;
@@ -9,37 +8,44 @@ namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезнал
 public class Document_СписаниеБезналичныхДенежныхСредств : IDocument
 {
     public Guid Ref_Key { get; set; }
-    [MaxLength(OneCSettings.CODE)] public string? DataVersion { get; set; }
+    public string? DataVersion { get; set; }
     public bool DeletionMark { get; set; }
-    [MaxLength(OneCSettings.CODE)] public string? Number { get; set; }
-    public DateTime Date { get; set; }
     public bool Posted { get; set; }
-    [MaxLength(OneCSettings.VALUE)] public string? ХозяйственнаяОперация { get; set; }
-    public Guid Партнер_Key { get; set; }
-    [MaxLength(OneCSettings.COMMENT)] public string? НазначениеПлатежа { get; set; }
-    public Guid Автор_Key { get; set; }
-    public Guid Организация_Key { get; set; }
-    public Guid Подразделение_Key { get; set; }
+    public string? Number { get; set; }
+    public DateTime Date { get; set; }
+    public decimal СуммаДокумента { get; set; }
+    public Guid? СтатьяДвиженияДенежныхСредств_Key { get; set; }
+    public Guid? Организация_Key { get; set; }
+    public Guid? Подразделение_Key { get; set; }
+    public Guid? Автор_Key { get; set; }
+    public Guid? Партнер_Key { get; set; }
+    public Guid? Контрагент_Key { get; set; }
+    public Guid? НаправлениеДеятельности_Key { get; set; }
+    public Guid? ОбъектРасчетов_Key { get; set; }
+    public Guid? Валюта_Key { get; set; }
+
+    [JsonConverter(typeof(EmptyStringToGuidConverter))]
+    public Guid? ЗаявкаНаРасходованиеДенежныхСредств { get; set; }
+    public string? ЗаявкаНаРасходованиеДенежныхСредств_Type { get; set; }
 
     [JsonConverter(typeof(EmptyStringToGuidConverter))]
     public Guid? ДокументОснование { get; set; }
-    [MaxLength(OneCSettings.VALUE)] public string? ДокументОснование_Type { get; set; }
+    public string? ДокументОснование_Type { get; set; }
 
     [JsonConverter(typeof(EmptyStringToGuidConverter))]
     public Guid? Договор { get; set; }
-    [MaxLength(OneCSettings.VALUE)] public string? Договор_Type { get; set; }
-    [MaxLength(OneCSettings.VALUE)] public string? НалогообложениеНДС { get; set; }
-    public Guid СтатьяДвиженияДенежныхСредств_Key { get; set; }
-    public decimal СуммаДокумента { get; set; }
-    public Guid Контрагент_Key { get; set; }
-    public Guid Валюта_Key { get; set; }
-    [MaxLength(OneCSettings.COMMENT)] public string? Комментарий { get; set; }
+    public string? Договор_Type { get; set; }
+
+    public string? ХозяйственнаяОперация { get; set; }
+    public string? НазначениеПлатежа { get; set; }
+    public string? НалогообложениеНДС { get; set; }
+    public string? Комментарий { get; set; }
     public List<Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа>? РасшифровкаПлатежа { get; set; }
 
     public static string Uri => "Document_СписаниеБезналичныхДенежныхСредств?$format=json&$inlinecount=allpages" +
-       "&$select=Ref_Key,DataVersion,DeletionMark,Number,Date,Posted,ХозяйственнаяОперация,Партнер_Key,НазначениеПлатежа,Автор_Key,Организация_Key,Подразделение_Key," +
-            "ДокументОснование,ДокументОснование_Type,Договор,Договор_Type,НалогообложениеНДС,СтатьяДвиженияДенежныхСредств_Key,СуммаДокумента,Контрагент_Key," +
-            "Валюта_Key,Комментарий,РасшифровкаПлатежа";
+       "&$select=Ref_Key,DataVersion,DeletionMark,Posted,Number,Date,СуммаДокумента,СтатьяДвиженияДенежныхСредств_Key,Организация_Key,Подразделение_Key,Автор_Key," +
+        "Партнер_Key,Контрагент_Key,НаправлениеДеятельности_Key,ОбъектРасчетов_Key,Валюта_Key,ЗаявкаНаРасходованиеДенежныхСредств,ЗаявкаНаРасходованиеДенежныхСредств_Type," +
+        "ДокументОснование,ДокументОснование_Type,Договор,Договор_Type,ХозяйственнаяОперация,НазначениеПлатежа,НалогообложениеНДС,Комментарий,РасшифровкаПлатежа";
 
     public static string GetUriByRefKey(Guid refKey) => $"{Uri}&$filter=Ref_Key eq guid'{refKey}'";
 
@@ -57,9 +63,7 @@ public class Document_СписаниеБезналичныхДенежныхСр
     //public int ОчередностьПлатежа { get; set; }
     //public string? БанковскийСчетПолучатель_Key { get; set; }
     //public string? КассаПолучатель_Key { get; set; }
-    //public string? ПодотчетноеЛицо_Key { get; set; }
-    //public string? ЗаявкаНаРасходованиеДенежныхСредств { get; set; }
-    //public string? ЗаявкаНаРасходованиеДенежныхСредств_Type { get; set; }
+    //public string? ПодотчетноеЛицо_Key { get; set; }    
     //public string? РаспоряжениеНаПеремещениеДенежныхСредств_Key { get; set; }
     //public string? БанковскийСчетКонтрагента_Key { get; set; }
     //public string? БанковскийСчет_Key { get; set; }
@@ -104,7 +108,6 @@ public class Document_СписаниеБезналичныхДенежныхСр
     //public string? УдалитьТипНалога { get; set; }
     //public bool НДФЛПоВедомостям { get; set; }
     //public string? ГруппаФинансовогоУчета_Key { get; set; }
-    //public string? НаправлениеДеятельности_Key { get; set; }
     //public string? ИННПлательщика { get; set; }
     //public string? КПППлательщика { get; set; }
     //public string? ТекстПлательщика { get; set; }
@@ -117,8 +120,7 @@ public class Document_СписаниеБезналичныхДенежныхСр
     //public string? УсловиеСделкиКонвертации { get; set; }
     //public string? БанковскийСчетСписанияКомиссии_Key { get; set; }
     //public string? УведомлениеОЗачисленииВалюты_Key { get; set; }
-    //public int КратностьКурсаКонвертации { get; set; }
-    //public string? ОбъектРасчетов_Key { get; set; }
+    //public int КратностьКурсаКонвертации { get; set; }    
     //public string? ИдентификаторДокумента { get; set; }
     //public string? КодВидаДохода { get; set; }
     //public string? ДоговорЭквайринга_Key { get; set; }
@@ -152,18 +154,6 @@ public class Document_СписаниеБезналичныхДенежныхСр
     //public object[] ИнструкцииБанку { get; set; }
     //public object[] ДополнительныеРеквизиты { get; set; }
     //public object[] БанковскиеСчетаСпискаКонтрагентов { get; set; }
-    //public string? КонтрагентnavigationLinkUrl { get; set; }
-    //public string? ОрганизацияnavigationLinkUrl { get; set; }
-    //public string? ВалютаnavigationLinkUrl { get; set; }
-    //public string? БанковскийСчетКонтрагентаnavigationLinkUrl { get; set; }
-    //public string? БанковскийСчетnavigationLinkUrl { get; set; }
-    //public string? ОтветственныйnavigationLinkUrl { get; set; }
-    //public string? ПартнерnavigationLinkUrl { get; set; }
-    //public string? АвторnavigationLinkUrl { get; set; }
-    //public string? СтатьяДвиженияДенежныхСредствnavigationLinkUrl { get; set; }
-    //public string? БанковскийСчетПолучательnavigationLinkUrl { get; set; }
-    //public string? ОбъектРасчетовnavigationLinkUrl { get; set; }
-    //public string? ТипНалогаnavigationLinkUrl { get; set; }
 }
 
 public class Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа : IOneCDocumentItem
@@ -172,26 +162,30 @@ public class Document_СписаниеБезналичныхДенежныхСр
 
     [JsonConverter(typeof(StringToIntConverter))]
     public int LineNumber { get; set; }
-    public Guid Партнер_Key { get; set; }
+    public decimal Сумма { get; set; }
+    public Guid? СтатьяДвиженияДенежныхСредств_Key { get; set; }
+    public Guid? Подразделение_Key { get; set; }
+    public Guid? Партнер_Key { get; set; }
+    public Guid? Контрагент_Key { get; set; }
+    public Guid? НаправлениеДеятельности_Key { get; set; }
+    public Guid? ОбъектРасчетов_Key { get; set; }
+    public Guid? СтавкаНДС_Key { get; set; }
+    public decimal СуммаВзаиморасчетов { get; set; }
+    public Guid? ВалютаВзаиморасчетов_Key { get; set; }
+
+    [JsonConverter(typeof(EmptyStringToGuidConverter))]
+    public Guid? ЗаявкаНаРасходованиеДенежныхСредств { get; set; }
+    public string? ЗаявкаНаРасходованиеДенежныхСредств_Type { get; set; }
 
     [JsonConverter(typeof(EmptyStringToGuidConverter))]
     public Guid? СтатьяРасходов { get; set; }
-    [MaxLength(OneCSettings.VALUE)] public string? СтатьяРасходов_Type { get; set; }
-    public Guid СтатьяДвиженияДенежныхСредств_Key { get; set; }
-    [MaxLength(OneCSettings.COMMENT)] public string? Комментарий { get; set; }
-    public Guid Подразделение_Key { get; set; }
-    public Guid НаправлениеДеятельности_Key { get; set; }
-    public Guid СтавкаНДС_Key { get; set; }
-    public Guid ОбъектРасчетов_Key { get; set; }
-    public decimal Сумма { get; set; }
-    public Guid ВалютаВзаиморасчетов_Key { get; set; }
-    public decimal СуммаВзаиморасчетов { get; set; }
+    public string? СтатьяРасходов_Type { get; set; }
+
+    public string? Комментарий { get; set; }
 
     //public string? АналитикаРасходов { get; set; }
     //public string? АналитикаРасходов_Type { get; set; }
     //public string? ДоговорКредитаДепозита_Key { get; set; }
-    //public string? ЗаявкаНаРасходованиеДенежныхСредств { get; set; }
-    //public string? ЗаявкаНаРасходованиеДенежныхСредств_Type { get; set; }
     //public string? ДоговорАренды { get; set; }
     //public string? ТипПлатежаПоАренде { get; set; }
     //public string? ИдентификаторСтроки { get; set; }
@@ -208,7 +202,6 @@ public class Document_СписаниеБезналичныхДенежныхСр
     //public int КурсЗнаменательВзаиморасчетов { get; set; }
     //public string? СтатьяЦелевыхСредств { get; set; }
     //public DateTime ДатаПогашения { get; set; }
-    //public string? Контрагент_Key { get; set; }
     //public int СуммаВВалютеОтправителя { get; set; }
     //public int СуммаНДСВВалютеОтправителя { get; set; }
 }

@@ -7,9 +7,9 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_Пользователи_Feat
 internal class Catalog_Пользователи : ICatalog
 {
     public Guid Ref_Key { get; set; }
-    [MaxLength(OneCSettings.CODE)] public string? DataVersion { get; set; }
-    [MaxLength(OneCSettings.DESCRIPTION)] public string? Description { get; set; }
+    [MaxLength(OneCSettings.CODE)] public string? DataVersion { get; set; } // TODO: Move MaxLength to Entity Type Configuration
     public bool DeletionMark { get; set; }
+    [MaxLength(OneCSettings.DESCRIPTION)] public string? Description { get; set; } // TODO: Move MaxLength to Entity Type Configuration
 
     public static string Uri => "Catalog_Пользователи?$format=json&$select=Ref_Key,Description,DeletionMark&$inlinecount=allpages";
 
