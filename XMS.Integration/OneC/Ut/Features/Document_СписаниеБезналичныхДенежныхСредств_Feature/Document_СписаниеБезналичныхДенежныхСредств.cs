@@ -52,10 +52,6 @@ public class Document_СписаниеБезналичныхДенежныхСр
     public static string GetQueueName(IHostEnvironment hostEnvironment) =>
         hostEnvironment.IsDevelopment() ? $"dev_{nameof(Document_СписаниеБезналичныхДенежныхСредств)}" : $"xms_{nameof(Document_СписаниеБезналичныхДенежныхСредств)}";
 
-    //public bool DeletionMark { get; set; }
-    //public bool Posted { get; set; }
-
-    //public string? DataVersion { get; set; }
     //public DateTime ДатаВходящегоДокумента { get; set; }
     //public string? НомерВходящегоДокумента { get; set; }
     //public int ОчередностьПлатежа { get; set; }
