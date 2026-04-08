@@ -69,7 +69,7 @@
 	[Parameter] public Guid CostCategoryItemId { get; set; } = default!;
 	[Parameter] public IReadOnlyList<TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>> CatalogUtItemsTree { get; set; } = default!;
 	[Parameter] public HashSet<Guid> SelectedCatalogUtItemIds { get; set; } = default!;
-	[Parameter] public EventCallback<List<CostCatalogUt>> OnUpdateCostCatalog { get; set; }
+	[Parameter] public EventCallback<List<CostCatalog_ДДС>> OnUpdateCostCatalog { get; set; }
 
 	private HashSet<Guid> _expandedCatalogUtItemIds = [];
 
@@ -116,7 +116,7 @@
 	{
 		_isProcessing = true;
 		var newCostCatalogUtList = SelectedCatalogUtItemIds
-			.Select(refKey => new CostCatalogUt { CatalogUtRefKey = refKey, CostCategoryItemId = CostCategoryItemId })
+			.Select(refKey => new CostCatalog_ДДС { Catalog_СтатьиДвиженияДенежныхСредств_RefKey = refKey, CostCategoryItemId = CostCategoryItemId })
 			.ToList();
 
 		await OnUpdateCostCatalog.InvokeAsync(newCostCatalogUtList);

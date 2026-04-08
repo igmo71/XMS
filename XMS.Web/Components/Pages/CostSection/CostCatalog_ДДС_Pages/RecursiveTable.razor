@@ -35,10 +35,10 @@
 @code {
 	[Parameter] public ILookup<Guid?, CostCategory> CostCategoriesLookup { get; set; } = default!;
 	[Parameter] public Dictionary<(Guid CostCategoryId, Guid CostItemId), Guid> CostCategoryItemMap { get; set; } = default!;
-	[Parameter] public ILookup<Guid, CostCatalogUt> CostCatalogUtLookup { get; set; } = default!;
+	[Parameter] public ILookup<Guid, CostCatalog_ДДС> CostCatalogUtLookup { get; set; } = default!;
 	[Parameter] public IReadOnlyList<TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>> CatalogUtItemsTree { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }
-	[Parameter] public EventCallback<List<CostCatalogUt>> OnUpdateCostCatalog { get; set; }
+	[Parameter] public EventCallback<List<CostCatalog_ДДС>> OnUpdateCostCatalog { get; set; }
 	[Parameter] public EventCallback<Guid> OnDeleteCostCatalogUt { get; set; }
 
 	private MudTable<string>? _mudTable;

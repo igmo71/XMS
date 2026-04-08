@@ -55,7 +55,7 @@
 
 									<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">
 
-										<MudText Typo="Typo.body2">@selectedCostCatalogUt.CatalogUtItem?.Description</MudText>
+										<MudText Typo="Typo.body2">@selectedCostCatalogUt.Catalog_СтатьиДвиженияДенежныхСредств?.Description</MudText>
 
 										@if (selectedCostCatalogUtId == _deletingCostCatalogUtId)
 										{
@@ -70,7 +70,7 @@
 								}
 								<TreeViewDrawer CostCategoryItemId="@costCategoryItemId"
 												CatalogUtItemsTree="CatalogUtItemsTree"
-												SelectedCatalogUtItemIds="CostCatalogUtLookup[costCategoryItemId].Select(e => e.CatalogUtRefKey).ToHashSet()"
+												SelectedCatalogUtItemIds="CostCatalogUtLookup[costCategoryItemId].Select(e => e.Catalog_СтатьиДвиженияДенежныхСредств_RefKey).ToHashSet()"
 												OnUpdateCostCatalog="OnUpdateCostCatalogUt" />
 							</div>
 						</MudStack>
@@ -84,12 +84,12 @@
 
 @code {
 	[Parameter] public ILookup<Guid?, CostCategory> CostCategoriesLookup { get; set; } = default!;
-	[Parameter] public ILookup<Guid, CostCatalogUt> CostCatalogUtLookup { get; set; } = default!;
+	[Parameter] public ILookup<Guid, CostCatalog_ДДС> CostCatalogUtLookup { get; set; } = default!;
 	[Parameter] public Dictionary<(Guid CostCategoryId, Guid CostItemId), Guid> CostCategoryItemMap { get; set; } = default!;
 	[Parameter] public Guid? ParentId { get; set; }
 	[Parameter] public int Level { get; set; } = 0;
 	[Parameter] public IReadOnlyList<TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>> CatalogUtItemsTree { get; set; } = default!;
-	[Parameter] public EventCallback<List<CostCatalogUt>> OnUpdateCostCatalogUt { get; set; }
+	[Parameter] public EventCallback<List<CostCatalog_ДДС>> OnUpdateCostCatalogUt { get; set; }
 	[Parameter] public EventCallback<Guid> OnDeleteCostCatalogUt { get; set; }
 
 	private Guid? _deletingCostCatalogUtId;

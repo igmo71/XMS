@@ -19,7 +19,7 @@ public partial class Index
 
     private readonly CancellationTokenSource _cts = new();
     private ILookup<Guid?, CostCategory> _costCategoriesLookup = default!;
-    private ILookup<Guid, CostCatalogUt> _costCatalogUtLookup = default!;
+    private ILookup<Guid, CostCatalog_ДДС> _costCatalogUtLookup = default!;
     private Dictionary<(Guid CostCategoryId, Guid CostItemId), Guid> _costCategoryItemMap = [];
     private IReadOnlyList<Catalog_СтатьиДвиженияДенежныхСредств> _catalogUtItems = [];
     private IReadOnlyList<TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>> _catalogUtItemsTree = [];
@@ -125,7 +125,7 @@ public partial class Index
         StateHasChanged();
     }
 
-    private async Task UpdateCostCatalogUt(List<CostCatalogUt> items)
+    private async Task UpdateCostCatalogUt(List<CostCatalog_ДДС> items)
     {
         await CostCatalogUtService.UpdateRangeAsync(items, _cts.Token);
         await LoadDataAsync();

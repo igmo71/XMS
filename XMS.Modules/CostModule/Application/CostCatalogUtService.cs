@@ -11,20 +11,20 @@ internal class CostCatalogUtService(
     IDbContextFactoryProxy dbFactory,
     IOneCUtService utService) : ICostCatalogUtService
 {
-    public async Task AddRangeAsync(List<CostCatalogUt> items, CancellationToken ct)
+    public async Task AddRangeAsync(List<CostCatalog_ДДС> items, CancellationToken ct)
     {
         using var dbContext = dbFactory.CreateDbContext();
 
-        await dbContext.Set<CostCatalogUt>().AddRangeAsync(items, ct);
+        await dbContext.Set<CostCatalog_ДДС>().AddRangeAsync(items, ct);
 
         await dbContext.SaveChangesAsync(ct);
     }
 
-    public async Task UpdateRangeAsync(List<CostCatalogUt> selectedItems, CancellationToken ct)
+    public async Task UpdateRangeAsync(List<CostCatalog_ДДС> selectedItems, CancellationToken ct)
     {
         using var dbContext = dbFactory.CreateDbContext();
 
-        var existingItems = await dbContext.Set<CostCatalogUt>()
+        var existingItems = await dbContext.Set<CostCatalog_ДДС>()
             .Where(e => e.CostCategoryItemId == selectedItems[0].CostCategoryItemId)
             .ToListAsync(ct);
 
@@ -33,11 +33,11 @@ internal class CostCatalogUtService(
 
         var toRemove = existingItems.Where(e => !selectedItemIds.Contains(e.Id)).ToList();
         if (toRemove?.Count > 0)
-            dbContext.Set<CostCatalogUt>().RemoveRange(toRemove);
+            dbContext.Set<CostCatalog_ДДС>().RemoveRange(toRemove);
 
         var toAdd = selectedItems.Where(e => !existingItemIds.Contains(e.Id)).ToList();
         if (toAdd?.Count > 0)
-            await dbContext.Set<CostCatalogUt>().AddRangeAsync(toAdd, ct);
+            await dbContext.Set<CostCatalog_ДДС>().AddRangeAsync(toAdd, ct);
 
 
         await dbContext.SaveChangesAsync(ct);
@@ -47,23 +47,23 @@ internal class CostCatalogUtService(
     {
         using var dbContext = dbFactory.CreateDbContext();
 
-        await dbContext.Set<CostCatalogUt>()
+        await dbContext.Set<CostCatalog_ДДС>()
             .Where(x => x.Id == itemId)
             .ExecuteDeleteAsync(ct);
     }
 
-    public async Task<IReadOnlyList<CostCatalogUt>> GetListAsync(CancellationToken ct)
+    public async Task<IReadOnlyList<CostCatalog_ДДС>> GetListAsync(CancellationToken ct)
     {
         using var dbContext = dbFactory.CreateDbContext();
 
-        var result = await dbContext.Set<CostCatalogUt>()
+        var result = await dbContext.Set<CostCatalog_ДДС>()
             .AsNoTracking()
             .ToListAsync(ct);
 
         var catalogItems = (await utService.GetCatalog_СтатьиДвиженияДенежныхСредств_Async(new CatalogQueryParameters(), ct))
             .ToDictionary(e => e.Ref_Key);
 
-        result.ForEach(e => e.CatalogUtItem = catalogItems[e.CatalogUtRefKey]);
+        result.ForEach(e => e.Catalog_СтатьиДвиженияДенежныхСредств = catalogItems[e.Catalog_СтатьиДвиженияДенежныхСредств_RefKey]);
 
         return result;
     }
@@ -72,10 +72,10 @@ internal class CostCatalogUtService(
     {
         using var dbContext = dbFactory.CreateDbContext();
 
-        var result = await dbContext.Set<CostCatalogUt>()
+        var result = await dbContext.Set<CostCatalog_ДДС>()
             .AsNoTracking()
             .Where(e => e.CostCategoryItemId == costCategoryItemId)
-            .Select(e => e.CatalogUtRefKey)
+            .Select(e => e.Catalog_СтатьиДвиженияДенежныхСредств_RefKey)
             .ToHashSetAsync();
 
         return result;

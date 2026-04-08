@@ -15,7 +15,7 @@ public partial class Index
     [Inject] public ISnackbar Snackbar { get; set; } = default!;
 
     private readonly CancellationTokenSource _cts = new();
-    private IReadOnlyList<Catalog_СтатьиДвиженияДенежныхСредств> _catalogUtItems = [];
+    private IReadOnlyList<Catalog_СтатьиДвиженияДенежныхСредств> _oneSUtCatalogItems = [];
     private IReadOnlyList<TreeItemData<Catalog_СтатьиДвиженияДенежныхСредств>> _treeItems = [];
     private HashSet<Guid> _expandedCatalogUtIds = [];
     private bool _expandedAll;
@@ -34,7 +34,7 @@ public partial class Index
         {
             var result = await SessionStorage.GetAsync<HashSet<Guid>>(nameof(_expandedCatalogUtIds));
             _expandedCatalogUtIds = result.Success ? (result.Value ?? []) : [];
-            _expandedAll = _expandedCatalogUtIds.Count > 0 && _expandedCatalogUtIds.Count == _catalogUtItems.Count;
+            _expandedAll = _expandedCatalogUtIds.Count > 0 && _expandedCatalogUtIds.Count == _oneSUtCatalogItems.Count;
             BuildTree();
             StateHasChanged();
         }
@@ -54,7 +54,7 @@ public partial class Index
         _isLoading = true;
         try
         {
-            _catalogUtItems = await UtService.GetCatalog_СтатьиДвиженияДенежныхСредств_Async(_catalogQueryParameters, _cts.Token);
+            _oneSUtCatalogItems = await UtService.GetCatalog_СтатьиДвиженияДенежныхСредств_Async(_catalogQueryParameters, _cts.Token);
         }
         finally
         {
@@ -66,7 +66,7 @@ public partial class Index
 
     private void BuildTree()
     {
-        _treeItems = ExecuteBuildTree(_catalogUtItems, Guid.Empty, _expandedCatalogUtIds);
+        _treeItems = ExecuteBuildTree(_oneSUtCatalogItems, Guid.Empty, _expandedCatalogUtIds);
 
         StateHasChanged();
     }
@@ -92,7 +92,7 @@ public partial class Index
     {
         _treeItems.SetExpansion(true);
         _expandedAll = true;
-        _expandedCatalogUtIds = _catalogUtItems.Select(e => e.Ref_Key).ToHashSet();
+        _expandedCatalogUtIds = _oneSUtCatalogItems.Select(e => e.Ref_Key).ToHashSet();
         await SessionStorage.SetAsync(nameof(_expandedCatalogUtIds), _expandedCatalogUtIds);
     }
 

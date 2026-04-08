@@ -4,13 +4,13 @@ using XMS.Modules.CostModule.Domain;
 
 namespace XMS.Infrastructure.Data.EntityConfigurations;
 
-public class CostCatalogUtEntityTypeConfiguration : BaseEntityTypeConfiguration<CostCatalogUt>
+public class CostCatalog_ДДС_EntityTypeConfiguration : BaseEntityTypeConfiguration<CostCatalog_ДДС>
 {
-    public override void Configure(EntityTypeBuilder<CostCatalogUt> builder)
+    public override void Configure(EntityTypeBuilder<CostCatalog_ДДС> builder)
     {
         base.Configure(builder);
 
-        builder.ToTable("CostCatalogUt");
+        builder.ToTable("CostCatalog_ДДС");
 
         builder.HasOne(e => e.CostCategoryItem)
              .WithMany()
