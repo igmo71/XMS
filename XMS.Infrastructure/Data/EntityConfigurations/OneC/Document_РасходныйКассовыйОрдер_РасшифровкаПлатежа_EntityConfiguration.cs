@@ -1,16 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Integration.OneC;
-using XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
+using XMS.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
 
 namespace XMS.Infrastructure.Data.EntityConfigurations.OneC;
 
-internal class Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа_EntityConfiguration
-: IEntityTypeConfiguration<Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа>
+internal class Document_РасходныйКассовыйОрдер_РасшифровкаПлатежа_EntityConfiguration
+: IEntityTypeConfiguration<Document_РасходныйКассовыйОрдер_РасшифровкаПлатежа>
 {
-    public void Configure(EntityTypeBuilder<Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа> builder)
+    public void Configure(EntityTypeBuilder<Document_РасходныйКассовыйОрдер_РасшифровкаПлатежа> builder)
     {
-        builder.ToTable("1c_ut_Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа");
+        builder.ToTable("1c_ut_Document_РасходныйКассовыйОрдер_РасшифровкаПлатежа");
 
         builder.HasKey(e => new { e.Ref_Key, e.LineNumber });
 

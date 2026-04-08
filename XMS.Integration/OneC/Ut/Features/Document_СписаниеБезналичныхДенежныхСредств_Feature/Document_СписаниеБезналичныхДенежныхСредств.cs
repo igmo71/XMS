@@ -163,6 +163,8 @@ public class Document_СписаниеБезналичныхДенежныхСр
     [JsonConverter(typeof(StringToIntConverter))]
     public int LineNumber { get; set; }
     public decimal Сумма { get; set; }
+    public decimal СуммаВзаиморасчетов { get; set; }
+    public Guid? ВалютаВзаиморасчетов_Key { get; set; }
     public Guid? СтатьяДвиженияДенежныхСредств_Key { get; set; }
     public Guid? Подразделение_Key { get; set; }
     public Guid? Партнер_Key { get; set; }
@@ -170,8 +172,7 @@ public class Document_СписаниеБезналичныхДенежныхСр
     public Guid? НаправлениеДеятельности_Key { get; set; }
     public Guid? ОбъектРасчетов_Key { get; set; }
     public Guid? СтавкаНДС_Key { get; set; }
-    public decimal СуммаВзаиморасчетов { get; set; }
-    public Guid? ВалютаВзаиморасчетов_Key { get; set; }
+    public decimal СуммаНДС { get; set; }
 
     [JsonConverter(typeof(EmptyStringToGuidConverter))]
     public Guid? ЗаявкаНаРасходованиеДенежныхСредств { get; set; }
@@ -195,7 +196,6 @@ public class Document_СписаниеБезналичныхДенежныхСр
     //public string? ТипСуммыКредитаДепозита { get; set; }
     //public string? ДоговорСЗаказчиком_Key { get; set; }
     //public string? СтатьяКалькуляции { get; set; }
-    //public float СуммаНДС { get; set; }
     //public string? Ведомость { get; set; }
     //public string? НастройкаСчетовУчета { get; set; }
     //public int КурсЧислительВзаиморасчетов { get; set; }

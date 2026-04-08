@@ -12,8 +12,8 @@ using XMS.Infrastructure.Data;
 namespace XMS.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260320103825_RefactorIntegration")]
-    partial class RefactorIntegration
+    [Migration("20260408124527_CreateDocument_СписаниеБезналичныхДенежныхСредств")]
+    partial class CreateDocument_СписаниеБезналичныхДенежныхСредств
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -533,13 +533,156 @@ namespace XMS.Web.Migrations
                     b.ToTable("UsersUt", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Integration.OneC.Ut.Models.Catalog_СтатьиДвиженияДенежныхСредств", b =>
+            modelBuilder.Entity("XMS.Integration.OneC.Ut.Features.Catalog_КонтактныеЛицаПартнеров_Feature.Catalog_КонтактныеЛицаПартнеров", b =>
+                {
+                    b.Property<Guid>("Ref_Key")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DataVersion")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<bool>("DeletionMark")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid?>("Owner_Key")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Ref_Key");
+
+                    b.ToTable("1c_ut_Catalog_КонтактныеЛицаПартнеров", (string)null);
+                });
+
+            modelBuilder.Entity("XMS.Integration.OneC.Ut.Features.Catalog_Контрагенты_Feature.Catalog_Контрагенты", b =>
+                {
+                    b.Property<Guid>("Ref_Key")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DataVersion")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<bool>("DeletionMark")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid?>("Партнер_Key")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Ref_Key");
+
+                    b.ToTable("1c_ut_Catalog_Контрагенты", (string)null);
+                });
+
+            modelBuilder.Entity("XMS.Integration.OneC.Ut.Features.Catalog_Номенклатура_Feature.Catalog_Номенклатура", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Code")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<string>("DataVersion")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<bool>("DeletionMark")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("IsFolder")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("Parent_Key")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Ref_Key");
+
+                    b.ToTable("1c_ut_Catalog_Номенклатура", (string)null);
+                });
+
+            modelBuilder.Entity("XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature.Catalog_Партнеры", b =>
+                {
+                    b.Property<Guid>("Ref_Key")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DataVersion")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<bool>("DeletionMark")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid?>("Parent_Key")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("БизнесРегион_Key")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ДатаРегистрации")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Клиент")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Комментарий")
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<bool>("Конкурент")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("ОсновнойМенеджер_Key")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Перевозчик")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Поставщик")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ПрочиеОтношения")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ЮрФизЛицо")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.HasKey("Ref_Key");
+
+                    b.ToTable("1c_ut_Catalog_Партнеры", (string)null);
+                });
+
+            modelBuilder.Entity("XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature.Catalog_СтатьиДвиженияДенежныхСредств", b =>
+                {
+                    b.Property<Guid>("Ref_Key")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<string>("DataVersion")
                         .HasMaxLength(16)
                         .HasColumnType("nvarchar(16)");
 
@@ -561,36 +704,137 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Catalog_СтатьиДвиженияДенежныхСредств", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Integration.OneC.Ut.Models.Document_СписаниеБезналичныхДенежныхСредств", b =>
+            modelBuilder.Entity("XMS.Integration.OneC.Ut.Features.Document_ЗаказКлиента_Feature.Document_ЗаказКлиента", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("DataVersion")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeletionMark")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Number")
                         .HasMaxLength(16)
                         .HasColumnType("nvarchar(16)");
 
-                    b.Property<Guid>("Автор_Key")
+                    b.Property<bool>("Posted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("Партнер_Key")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("Валюта_Key")
+                    b.Property<Guid?>("Склад_Key")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("Договор")
+                    b.Property<decimal>("СуммаДокумента")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ХозяйственнаяОперация")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Ref_Key");
+
+                    b.ToTable("1c_ut_Document_ЗаказКлиента", (string)null);
+                });
+
+            modelBuilder.Entity("XMS.Integration.OneC.Ut.Features.Document_РеализацияТоваровУслуг_Feature.Document_РеализацияТоваровУслуг", b =>
+                {
+                    b.Property<Guid>("Ref_Key")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DataVersion")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeletionMark")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Number")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<bool>("Posted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("Партнер_Key")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("Склад_Key")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("СуммаДокумента")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ХозяйственнаяОперация")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Ref_Key");
+
+                    b.ToTable("1c_ut_Document_РеализацияТоваровУслуг", (string)null);
+                });
+
+            modelBuilder.Entity("XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств", b =>
+                {
+                    b.Property<Guid>("Ref_Key")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DataVersion")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("DeletionMark")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Number")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<bool>("Posted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("Автор_Key")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("Валюта_Key")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("Договор")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Договор_Type")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<Guid>("ДокументОснование")
+                    b.Property<Guid?>("ДокументОснование")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ДокументОснование_Type")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid?>("ЗаявкаНаРасходованиеДенежныхСредств")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ЗаявкаНаРасходованиеДенежныхСредств_Type")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -598,7 +842,7 @@ namespace XMS.Web.Migrations
                         .HasMaxLength(400)
                         .HasColumnType("nvarchar(400)");
 
-                    b.Property<Guid>("Контрагент_Key")
+                    b.Property<Guid?>("Контрагент_Key")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("НазначениеПлатежа")
@@ -609,19 +853,26 @@ namespace XMS.Web.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<Guid>("Организация_Key")
+                    b.Property<Guid?>("НаправлениеДеятельности_Key")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("Партнер_Key")
+                    b.Property<Guid?>("ОбъектРасчетов_Key")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("Подразделение_Key")
+                    b.Property<Guid?>("Организация_Key")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("СтатьяДвиженияДенежныхСредств_Key")
+                    b.Property<Guid?>("Партнер_Key")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("Подразделение_Key")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("СтатьяДвиженияДенежныхСредств_Key")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("СуммаДокумента")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ХозяйственнаяОперация")
@@ -633,7 +884,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Document_СписаниеБезналичныхДенежныхСредств", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Integration.OneC.Ut.Models.Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа", b =>
+            modelBuilder.Entity("XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .HasColumnType("uniqueidentifier");
@@ -641,32 +892,42 @@ namespace XMS.Web.Migrations
                     b.Property<int>("LineNumber")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("ВалютаВзаиморасчетов_Key")
+                    b.Property<Guid?>("ВалютаВзаиморасчетов_Key")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ЗаявкаНаРасходованиеДенежныхСредств")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ЗаявкаНаРасходованиеДенежныхСредств_Type")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Комментарий")
                         .HasMaxLength(400)
                         .HasColumnType("nvarchar(400)");
 
-                    b.Property<Guid>("НаправлениеДеятельности_Key")
+                    b.Property<Guid?>("Контрагент_Key")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ОбъектРасчетов_Key")
+                    b.Property<Guid?>("НаправлениеДеятельности_Key")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("Партнер_Key")
+                    b.Property<Guid?>("ОбъектРасчетов_Key")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("Подразделение_Key")
+                    b.Property<Guid?>("Партнер_Key")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("СтавкаНДС_Key")
+                    b.Property<Guid?>("Подразделение_Key")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("СтатьяДвиженияДенежныхСредств_Key")
+                    b.Property<Guid?>("СтавкаНДС_Key")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("СтатьяРасходов")
+                    b.Property<Guid?>("СтатьяДвиженияДенежныхСредств_Key")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("СтатьяРасходов")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("СтатьяРасходов_Type")
@@ -674,9 +935,15 @@ namespace XMS.Web.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal>("Сумма")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("СуммаВзаиморасчетов")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("СуммаНДС")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Ref_Key", "LineNumber");
@@ -684,13 +951,13 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Modules.CostModule.Domain.CostCatalogUt", b =>
+            modelBuilder.Entity("XMS.Modules.CostModule.Domain.CostCatalog_ДДС", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CatalogUtRefKey")
+                    b.Property<Guid>("Catalog_СтатьиДвиженияДенежныхСредств_RefKey")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CostCategoryItemId")
@@ -700,7 +967,7 @@ namespace XMS.Web.Migrations
 
                     b.HasIndex("CostCategoryItemId");
 
-                    b.ToTable("CostCatalogUt", (string)null);
+                    b.ToTable("CostCatalog_ДДС", (string)null);
                 });
 
             modelBuilder.Entity("XMS.Modules.CostModule.Domain.CostCategory", b =>
@@ -934,16 +1201,16 @@ namespace XMS.Web.Migrations
                     b.Navigation("Manager");
                 });
 
-            modelBuilder.Entity("XMS.Integration.OneC.Ut.Models.Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа", b =>
+            modelBuilder.Entity("XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа", b =>
                 {
-                    b.HasOne("XMS.Integration.OneC.Ut.Models.Document_СписаниеБезналичныхДенежныхСредств", null)
+                    b.HasOne("XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств", null)
                         .WithMany("РасшифровкаПлатежа")
                         .HasForeignKey("Ref_Key")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("XMS.Modules.CostModule.Domain.CostCatalogUt", b =>
+            modelBuilder.Entity("XMS.Modules.CostModule.Domain.CostCatalog_ДДС", b =>
                 {
                     b.HasOne("XMS.Modules.CostModule.Domain.CostCategoryItem", "CostCategoryItem")
                         .WithMany()
@@ -1001,7 +1268,7 @@ namespace XMS.Web.Migrations
                     b.Navigation("Children");
                 });
 
-            modelBuilder.Entity("XMS.Integration.OneC.Ut.Models.Document_СписаниеБезналичныхДенежныхСредств", b =>
+            modelBuilder.Entity("XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств", b =>
                 {
                     b.Navigation("РасшифровкаПлатежа");
                 });
