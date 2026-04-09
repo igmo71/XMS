@@ -202,14 +202,6 @@ XMS.slnx
 └── XMS.Web/
 ```
 
-## Практические замечания
-
-- `XMS.Web` использует `ru-RU` как культуру по умолчанию.
-- В `XMS.Web` подключён `ASP.NET Core Identity`.
-- В `XMS.Infrastructure` включены логирование SQL-команд и `EnableSensitiveDataLogging`, что удобно для разработки, но требует отдельной проверки перед production.
-- Автотестов в текущем решении не видно, поэтому перед изменениями в интеграциях стоит особенно внимательно прогонять ручную и интеграционную проверку.
-
-
 <img width="1865" height="925" alt="изображение" src="https://github.com/user-attachments/assets/bdaba24e-7258-4820-a0f1-463b24e868e3" />
 <img width="1864" height="926" alt="изображение" src="https://github.com/user-attachments/assets/5160f44b-f3cc-460a-89ba-d78fc5e3abcb" />
 <img width="1864" height="925" alt="изображение" src="https://github.com/user-attachments/assets/5c4d2214-3805-41b5-baba-c1e3cf5ddb6e" />

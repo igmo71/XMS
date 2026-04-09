@@ -12,6 +12,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\XMS.Core\XMS.Core.csproj" />
+		<ProjectReference Include="..\XMS.Domain\XMS.Domain.csproj" />
 	</ItemGroup>
 
 </Project>
