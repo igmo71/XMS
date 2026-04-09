@@ -16,6 +16,8 @@
 					 T="Location"
 					 Items="@_items"
 					 Loading="@_isLoading"
+					 FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+					 FilterMode="DataGridFilterMode.ColumnFilterRow"
 					 EditMode="DataGridEditMode.Form"
 					 EditTrigger="DataGridEditTrigger.Manual"
 					 CommittedItemChanges="@((item) => CommittedItemChanges(item))"

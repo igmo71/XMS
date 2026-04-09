@@ -5,6 +5,7 @@ using XMS.Integration.OneC.Ut.Abstractions;
 using XMS.Integration.OneC.Ut.Features.AccumulationRegister_ТоварыНаСкладах_Balance_Feature;
 using XMS.Integration.OneC.Ut.Features.Catalog_Пользователи_Feature;
 using XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
+using XMS.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
 using XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 using XMS.Integration.OneC.Ut.ODataClient;
 
@@ -13,6 +14,7 @@ namespace XMS.Integration.OneC.Ut.Api;
 internal class UtService(
     UtClient utClient,
     ICatalog_СтатьиДвиженияДенежныхСредств_Service catalog_СтатьиДвиженияДенежныхСредств_Service,
+    IDocument_РасходныйКассовыйОрдер_Service document_РасходныйКассовыйОрдер_Service,
     IDocument_СписаниеБезналичныхДенежныхСредств_Service document_СписаниеБезналичныхДенежныхСредств_Service) : IOneCUtService
 {
     public async Task<IReadOnlyList<UserUt>> FetchUserUtListAsync(CancellationToken ct = default)
@@ -47,6 +49,16 @@ internal class UtService(
     public async Task<ServiceResult> ResyncCatalog_СтатьиДвиженияДенежныхСредств_Async(CancellationToken ct = default)
     {
         return await catalog_СтатьиДвиженияДенежныхСредств_Service.ResyncAsync(ct);
+    }
+
+    public async Task<IReadOnlyList<Document_РасходныйКассовыйОрдер>> GetDocument_РасходныйКассовыйОрдер_Async(DocumentQueryParameters parameters, CancellationToken ct = default)
+    {
+        return await document_РасходныйКассовыйОрдер_Service.GetListAsync(parameters, ct);
+    }
+
+    public async Task<Document_РасходныйКассовыйОрдер?> GetDocument_РасходныйКассовыйОрдер_Async(Guid refKey, CancellationToken ct = default)
+    {
+        return await document_РасходныйКассовыйОрдер_Service.GetAsync(refKey, ct);
     }
 
     public async Task<IReadOnlyList<Document_СписаниеБезналичныхДенежныхСредств>> GetDocument_СписаниеБезналичныхДенежныхСредств_Async(DocumentQueryParameters parameters, CancellationToken ct = default)
