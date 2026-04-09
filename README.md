@@ -1,102 +1,105 @@
-# XMS (eXtensible (или подставьте на свое усмотрение) Management System)
-Комплексная система управления.  
-Интеграция внутренних справочников и внешних систем (1С, AD, Bitrix, Yunu)
+# XMS
 
-Состоит из:
-- `XMS.Web` — Blazor Server UI.
-- `XMS.Api` — минимальный HTTP API для модулей интеграции.
-- `XMS.Application` — прикладная логика и контракты.
-- `XMS.Domain` — доменные модели.
-- `XMS.Infrastructure` — EF Core, интеграционные клиенты, observability.
-- `XMS.Modules` — подключаемые бизнес-модули (сейчас `GodooModule`).
+XMS (`eXtensible Management System`) - модульная система управления на предприятии и интеграциями с внешними сервисами. 
+Решение состоит из двух entrypoint-приложений:
 
-## Технологический стек
+- `XMS.Web` - Blazor Server интерфейс для работы пользователей.
+- `XMS.Api` - HTTP API для интеграций, внешних вызовов и технических операций синхронизации.
 
-- ASP.NET Core (`net10.0`)
-- Blazor Server + MudBlazor
-- Entity Framework Core (SQL Server)
-- ASP.NET Core Identity
-- Serilog + Seq
-- OpenTelemetry (OTLP exporter)
+Проект собирается вокруг общей доменной модели, инфраструктурного слоя на EF Core и набора подключаемых модулей.
 
-## Структура репозитория
+## Состав решения
+
+В `XMS.slnx` сейчас подключены следующие проекты:
+
+- `XMS.Web` - UI на Blazor Server + MudBlazor.
+- `XMS.Api` - minimal API + OpenAPI/Scalar.
+- `XMS.Application` - прикладные сервисы и endpoint-расширения.
+- `XMS.Core` - базовые абстракции, общие настройки и контракты.
+- `XMS.Domain` - доменные сущности.
+- `XMS.Infrastructure` - `ApplicationDbContext`, EF Core, Serilog, OpenTelemetry, RabbitMQ event bus.
+- `XMS.Integration` - интеграции с 1C, AD и Bitrix.
+- `XMS.Modules` - прикладные модули. Сейчас в решении есть как минимум `CostModule` и `GodooModule`.
+
+## Стек
+
+- `.NET 10`
+- `ASP.NET Core`
+- `Blazor Server`
+- `MudBlazor`
+- `Entity Framework Core` + `SQL Server`
+- `ASP.NET Core Identity`
+- `Serilog` + `Seq`
+- `OpenTelemetry`
+- `RabbitMQ`
+
+## Архитектура
+
+Упрощённо поток зависимостей выглядит так:
 
 ```text
-XMS.slnx
-├── XMS.Api/
-├── XMS.Web/
-├── XMS.Application/
-├── XMS.Domain/
-├── XMS.Infrastructure/
-└── XMS.Modules/
+XMS.Web / XMS.Api
+        |
+        v
+XMS.Application ----> XMS.Integration
+        |                    |
+        v                    v
+     XMS.Domain         external systems
+        ^
+        |
+XMS.Infrastructure <---- XMS.Core
+        ^
+        |
+    XMS.Modules
 ```
+
+Что важно понимать:
+
+- `XMS.Web` и `XMS.Api` подключают одни и те же application/infrastructure/modules слои.
+- `XMS.Infrastructure` регистрирует БД, телеметрию и event bus.
+- `XMS.Integration` добавляет клиентов и endpoint'ы для 1C/AD/Bitrix.
+- `XMS.Modules` расширяет систему бизнес-модулями и своими endpoint'ами.
 
 ## Требования
 
-1. Установленный **.NET SDK 10.0**.
-2. Доступ к SQL Server.
-3. (Опционально) Seq для централизованных логов.
-4. Доступность интеграционных endpoint'ов (1С/AD/Bitrix/Yunu) или тестовые заглушки.
+Для локального запуска понадобятся:
 
-## Быстрый старт
+1. `.NET SDK 10.0`
+2. `SQL Server`
+3. `RabbitMQ`, если вы используете сценарии с очередями и уведомлениями
+4. `Seq` или другой доступный endpoint для логирования/OTLP, если хотите видеть observability локально
+5. доступные интеграционные endpoint'ы или тестовые заглушки для 1C, AD, Bitrix, Yunu
 
-### 1) Клонирование
+## Конфигурация
 
-```bash
-git clone https://github.com/igmo71/XMS.git
-cd XMS
-```
+В проекте используются:
 
-### 2) Настройка конфигурации
+- `appsettings.json`
+- `appsettings.Development.json`
+- User Secrets
+- переменные окружения
 
-В проектах используются `appsettings.json`, `appsettings.Development.json` и user secrets.
-
-Минимально требуется строка подключения БД:
+Минимум для старта - рабочая строка подключения:
 
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=XMS;User Id=sa;Password=Your_password123;TrustServerCertificate=true"
+    "DefaultConnection": "Server=localhost;Database=XMS;User Id=sa;Password=Strong_password_123;TrustServerCertificate=true"
   }
 }
 ```
 
-Рекомендуется хранить секреты (пароли, API-ключи) через user secrets/переменные окружения, а не в `appsettings.json`.
+Рекомендуемый подход:
 
-### 3) Применение миграций
+- строки подключения, пароли, API keys и service credentials хранить вне репозитория;
+- для локальной разработки использовать User Secrets;
+- для CI/CD и контейнеров использовать переменные окружения или внешний secret store.
 
-```bash
-dotnet ef database update --project XMS.Infrastructure --startup-project XMS.Web
-```
+Основные секции конфигурации, которые реально используются в решении:
 
-> Если вы запускаете API как startup-проект, можно использовать `--startup-project XMS.Api`.
-
-### 4) Запуск Web
-
-```bash
-dotnet run --project XMS.Web
-```
-
-По умолчанию профили запуска используют:
-- `http://localhost:5101`
-- `https://localhost:7012`
-
-### 5) Запуск API
-
-```bash
-dotnet run --project XMS.Api
-```
-
-По умолчанию:
-- `http://localhost:5152`
-- `https://localhost:7243`
-
-OpenAPI/Scalar поднимаются при старте приложения.
-
-## Конфигурация интеграций
-
-В решении используются секции:
-
+- `ConnectionStrings:DefaultConnection`
+- `Serilog`
+- `RabbitMqConfig`
 - `BuhClientConfig`
 - `ZupClientConfig`
 - `UtClientConfig`
@@ -104,30 +107,105 @@ OpenAPI/Scalar поднимаются при старте приложения.
 - `BitrixClientConfig`
 - `GodooBuhClientConfig`
 - `YunuClientConfig`
+- `ApiKeys` - только для `XMS.Api`
 
-Для `OneS`-клиентов обязательны `BaseAddress`, `ServiceUri`, `UserName`, `Password`.
-Для `YunuClientConfig.ApiKeys` ожидаются элементы с `Name`, `Value`, `CompanyId`.
+## Миграции БД
 
-## Наблюдаемость
+Миграции находятся в [XMS.Infrastructure/Data/Migrations](/D:/Source/Repos/XMS/XMS.Infrastructure/Data/Migrations).
 
-- Логи через Serilog (console + Seq).
-- Трейсы через OpenTelemetry OTLP (endpoint вычисляется из конфигурации Serilog Seq URL).
+Применение миграций:
 
-## Основные API эндпоинты (модуль Godoo)
+```bash
+dotnet ef database update --project XMS.Infrastructure --startup-project XMS.Web
+```
 
-- `GET /api/godoo/marketplace-relations/reload/godoo`
-- `GET /api/godoo/marketplace-relations/reload/ip`
+Если стартовым проектом выступает API:
+
+```bash
+dotnet ef database update --project XMS.Infrastructure --startup-project XMS.Api
+```
+
+## Локальный запуск
+
+### Web
+
+```bash
+dotnet run --project XMS.Web
+```
+
+Профили запуска из [launchSettings.json](/D:/Source/Repos/XMS/XMS.Web/Properties/launchSettings.json):
+
+- `http://localhost:5101`
+- `https://localhost:7012`
+
+### API
+
+```bash
+dotnet run --project XMS.Api
+```
+
+Профили запуска из [launchSettings.json](/D:/Source/Repos/XMS/XMS.Api/Properties/launchSettings.json):
+
+- `http://localhost:5152`
+- `https://localhost:7243`
+
+В API также подключены OpenAPI и Scalar UI.
+
+## Что есть в API
+
+В решении уже присутствуют endpoint'ы нескольких групп:
+
+- application endpoint'ы из `XMS.Application`
+- integration endpoint'ы для 1C UT
+- module endpoint'ы из `GodooModule`
+
+Примеры существующих маршрутов:
+
+- `PUT /api/godoo/marketplace-relations/reload/godoo`
+- `PUT /api/godoo/marketplace-relations/reload/ip`
 - `GET /integration/yunu/article-relations/godoo`
 - `GET /integration/yunu/article-relations/ip`
+- `GET /api/1c/ut/catalog-номенклатура/{refKey}`
+- `PUT /ext/1c/ut/catalog-номенклатура/resync`
+- `GET /api/1c/ut/document-заказ-клиента`
+- `PUT /ext/1c/ut/document-заказ-клиента/resync`
+
+Полный список лучше смотреть через OpenAPI/Scalar после запуска `XMS.Api`.
 
 ## Docker
 
-Для `XMS.Web` и `XMS.Api` есть `Dockerfile`. Можно собрать образы отдельно:
+Для `XMS.Web` и `XMS.Api` в репозитории есть отдельные Dockerfile:
+
+- [XMS.Web/Dockerfile](/D:/Source/Repos/XMS/XMS.Web/Dockerfile)
+- [XMS.Api/Dockerfile](/D:/Source/Repos/XMS/XMS.Api/Dockerfile)
+
+Базовые команды сборки:
 
 ```bash
 docker build -t xms-web -f XMS.Web/Dockerfile .
 docker build -t xms-api -f XMS.Api/Dockerfile .
 ```
 
-<img width="1862" height="926" alt="изображение" src="https://github.com/user-attachments/assets/6c926bc9-a986-4a0d-9c36-7070fd69d473" />
+Перед использованием контейнерной сборки стоит убедиться, что Dockerfile синхронизирован с реальным графом project references.
+
+## Структура репозитория
+
+```text
+XMS.slnx
+├── XMS.Api/
+├── XMS.Application/
+├── XMS.Core/
+├── XMS.Domain/
+├── XMS.Infrastructure/
+├── XMS.Integration/
+├── XMS.Modules/
+└── XMS.Web/
+```
+
+## Практические замечания
+
+- `XMS.Web` использует `ru-RU` как культуру по умолчанию.
+- В `XMS.Web` подключён `ASP.NET Core Identity`.
+- В `XMS.Infrastructure` включены логирование SQL-команд и `EnableSensitiveDataLogging`, что удобно для разработки, но требует отдельной проверки перед production.
+- Автотестов в текущем решении не видно, поэтому перед изменениями в интеграциях стоит особенно внимательно прогонять ручную и интеграционную проверку.
 
