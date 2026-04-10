@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
 
-namespace XMS.Infrastructure.Data.EntityConfigurations.OneC;
+namespace XMS.Infrastructure.Data.EntityConfigurations.OneC.Ut;
 
 internal class Catalog_СтатьиДвиженияДенежныхСредств_EmtityConfiguration
 : IEntityTypeConfiguration<Catalog_СтатьиДвиженияДенежныхСредств>

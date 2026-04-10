@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Integration.OneC;
 using XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 
-namespace XMS.Infrastructure.Data.EntityConfigurations.OneC;
+namespace XMS.Infrastructure.Data.EntityConfigurations.OneC.Ut;
 
 internal class Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа_EntityConfiguration
 : IEntityTypeConfiguration<Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа>

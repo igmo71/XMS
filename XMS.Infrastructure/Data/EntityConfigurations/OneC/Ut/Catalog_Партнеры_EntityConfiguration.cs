@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Integration.OneC;
 using XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature;
 
-namespace XMS.Infrastructure.Data.EntityConfigurations.OneC;
+namespace XMS.Infrastructure.Data.EntityConfigurations.OneC.Ut;
 
 internal class Catalog_Партнеры_EntityConfiguration : IEntityTypeConfiguration<Catalog_Партнеры>
 {

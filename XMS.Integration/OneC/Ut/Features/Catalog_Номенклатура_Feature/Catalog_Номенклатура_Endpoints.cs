@@ -12,7 +12,7 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_Номенклатура_Feat
 
 public static class Catalog_Номенклатура_Endpoints
 {
-    public static IEndpointRouteBuilder Map_Catalog_Номенклатура_Endpoints(this IEndpointRouteBuilder builder)
+    public static IEndpointRouteBuilder MapCatalog_Номенклатура_Endpoints(this IEndpointRouteBuilder builder)
     {
         var apiGroup = builder.MapGroup("/api/1c/ut/catalog-номенклатура")
            .WithTags("1C UT Catalog_Номенклатура");

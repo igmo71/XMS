@@ -29,7 +29,7 @@ public static class DependencyInjection
                 //.AddEntityFrameworkCoreInstrumentation()
                 //.SetSampler(new AppTraceSampler())
                 //.SetSampler(new AlwaysOnSampler())
-                .AddConsoleExporter()
+                //.AddConsoleExporter()
                 .AddOtlpExporter(options =>
                 {
                     // http://vm-xms-dev:5341/ingest/otlp/v1/traces

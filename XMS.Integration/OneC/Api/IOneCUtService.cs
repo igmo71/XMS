@@ -1,6 +1,7 @@
 ﻿using XMS.Core.Common;
 using XMS.Domain.Models;
 using XMS.Integration.OneC.Ut.Features.AccumulationRegister_ТоварыНаСкладах_Balance_Feature;
+using XMS.Integration.OneC.Ut.Features.Catalog_Пользователи_Feature;
 using XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
 using XMS.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
 using XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
@@ -12,6 +13,10 @@ public interface IOneCUtService
     Task<IReadOnlyList<UserUt>> FetchUserUtListAsync(CancellationToken ct = default);
 
     Task<IReadOnlyList<AccumulationRegister_ТоварыНаСкладах_Balance>> GetAccumulationRegister_ТоварыНаСкладах_Balance_Async(CancellationToken ct = default);
+
+    Task<IReadOnlyList<Catalog_Пользователи>> GetCatalog_Пользователи_Async(CatalogQueryParameters parameters, CancellationToken ct = default);
+    Task<Catalog_Пользователи?> GetCatalog_Пользователи_Async(Guid refKey, CancellationToken ct = default);
+    Task<ServiceResult> ResyncCatalog_Пользователи_Async(CancellationToken ct = default);
 
     Task<IReadOnlyList<Catalog_СтатьиДвиженияДенежныхСредств>> GetCatalog_СтатьиДвиженияДенежныхСредств_Async(CatalogQueryParameters parameters, CancellationToken ct = default);
     Task<Catalog_СтатьиДвиженияДенежныхСредств?> GetCatalog_СтатьиДвиженияДенежныхСредств_Async(Guid refKey, CancellationToken ct = default);

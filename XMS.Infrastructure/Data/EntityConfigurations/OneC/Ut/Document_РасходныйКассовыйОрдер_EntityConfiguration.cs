@@ -1,16 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Integration.OneC;
-using XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
+using XMS.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
 
-namespace XMS.Infrastructure.Data.EntityConfigurations.OneC;
+namespace XMS.Infrastructure.Data.EntityConfigurations.OneC.Ut;
 
-internal class Document_СписаниеБезналичныхДенежныхСредств_EntityConfiguration
-: IEntityTypeConfiguration<Document_СписаниеБезналичныхДенежныхСредств>
+internal class Document_РасходныйКассовыйОрдер_EntityConfiguration : IEntityTypeConfiguration<Document_РасходныйКассовыйОрдер>
 {
-    public void Configure(EntityTypeBuilder<Document_СписаниеБезналичныхДенежныхСредств> builder)
+    public void Configure(EntityTypeBuilder<Document_РасходныйКассовыйОрдер> builder)
     {
-        builder.ToTable("1c_ut_Document_СписаниеБезналичныхДенежныхСредств");
+        builder.ToTable("1c_ut_Document_РасходныйКассовыйОрдер");
 
         builder.HasKey(e => e.Ref_Key);
 
@@ -22,7 +21,10 @@ internal class Document_СписаниеБезналичныхДенежныхС
         builder.Property(e => e.ДокументОснование_Type).HasMaxLength(OneCSettings.VALUE);
         builder.Property(e => e.Договор_Type).HasMaxLength(OneCSettings.VALUE);
         builder.Property(e => e.ХозяйственнаяОперация).HasMaxLength(OneCSettings.VALUE);
-        builder.Property(e => e.НазначениеПлатежа).HasMaxLength(OneCSettings.COMMENT);
+        builder.Property(e => e.Выдать).HasMaxLength(OneCSettings.DESCRIPTION);
+        builder.Property(e => e.Основание).HasMaxLength(OneCSettings.DESCRIPTION);
+        builder.Property(e => e.Приложение).HasMaxLength(OneCSettings.DESCRIPTION);
+        builder.Property(e => e.ПоДокументу).HasMaxLength(OneCSettings.DESCRIPTION);
         builder.Property(e => e.НалогообложениеНДС).HasMaxLength(OneCSettings.VALUE);
         builder.Property(e => e.Комментарий).HasMaxLength(OneCSettings.COMMENT);
 
