@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Integration.OneC;
 using XMS.Integration.OneC.Ut.Features.Document_ЗаказКлиента_Feature;
 
-namespace XMS.Infrastructure.Data.EntityConfigurations.OneC;
+namespace XMS.Infrastructure.Data.EntityConfigurations.OneC.Ut;
 
 internal class Document_ЗаказКлиента_EntityConfiguration : IEntityTypeConfiguration<Document_ЗаказКлиента>
 {

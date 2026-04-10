@@ -28,7 +28,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Components\Pages\CostSection\CostAllocationPages\" />
 	  <Folder Include="Components\Pages\WarehouseSection\" />
 	</ItemGroup>
 

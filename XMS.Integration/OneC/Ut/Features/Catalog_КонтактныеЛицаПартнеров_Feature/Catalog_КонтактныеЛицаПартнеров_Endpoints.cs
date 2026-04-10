@@ -12,7 +12,7 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_КонтактныеЛица�
 
 public static class Catalog_КонтактныеЛицаПартнеров_Endpoints
 {
-    public static IEndpointRouteBuilder Map_Catalog_КонтактныеЛицаПартнеров_Endpoints(this IEndpointRouteBuilder builder)
+    public static IEndpointRouteBuilder MapCatalog_КонтактныеЛицаПартнеров_Endpoints(this IEndpointRouteBuilder builder)
     {
         var apiGroup = builder.MapGroup("/api/1c/ut/catalog_контактные-лица-партнеров")
            .WithTags("1C UT Catalog_КонтактныеЛицаПартнеров");

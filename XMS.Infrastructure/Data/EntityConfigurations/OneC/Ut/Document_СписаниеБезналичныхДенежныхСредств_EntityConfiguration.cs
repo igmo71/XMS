@@ -1,15 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using XMS.Integration.OneC;
-using XMS.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
+using XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 
-namespace XMS.Infrastructure.Data.EntityConfigurations.OneC;
+namespace XMS.Infrastructure.Data.EntityConfigurations.OneC.Ut;
 
-internal class Document_РасходныйКассовыйОрдер_EntityConfiguration : IEntityTypeConfiguration<Document_РасходныйКассовыйОрдер>
+internal class Document_СписаниеБезналичныхДенежныхСредств_EntityConfiguration
+: IEntityTypeConfiguration<Document_СписаниеБезналичныхДенежныхСредств>
 {
-    public void Configure(EntityTypeBuilder<Document_РасходныйКассовыйОрдер> builder)
+    public void Configure(EntityTypeBuilder<Document_СписаниеБезналичныхДенежныхСредств> builder)
     {
-        builder.ToTable("1c_ut_Document_РасходныйКассовыйОрдер");
+        builder.ToTable("1c_ut_Document_СписаниеБезналичныхДенежныхСредств");
 
         builder.HasKey(e => e.Ref_Key);
 
@@ -21,10 +22,7 @@ internal class Document_РасходныйКассовыйОрдер_EntityConfi
         builder.Property(e => e.ДокументОснование_Type).HasMaxLength(OneCSettings.VALUE);
         builder.Property(e => e.Договор_Type).HasMaxLength(OneCSettings.VALUE);
         builder.Property(e => e.ХозяйственнаяОперация).HasMaxLength(OneCSettings.VALUE);
-        builder.Property(e => e.Выдать).HasMaxLength(OneCSettings.DESCRIPTION);
-        builder.Property(e => e.Основание).HasMaxLength(OneCSettings.DESCRIPTION);
-        builder.Property(e => e.Приложение).HasMaxLength(OneCSettings.DESCRIPTION);
-        builder.Property(e => e.ПоДокументу).HasMaxLength(OneCSettings.DESCRIPTION);
+        builder.Property(e => e.НазначениеПлатежа).HasMaxLength(OneCSettings.COMMENT);
         builder.Property(e => e.НалогообложениеНДС).HasMaxLength(OneCSettings.VALUE);
         builder.Property(e => e.Комментарий).HasMaxLength(OneCSettings.COMMENT);
 

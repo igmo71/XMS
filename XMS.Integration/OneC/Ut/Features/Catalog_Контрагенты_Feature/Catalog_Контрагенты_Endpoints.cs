@@ -13,7 +13,7 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_Контрагенты_Featur
 public static class Catalog_Контрагенты_Endpoints
 {
 
-    public static IEndpointRouteBuilder Map_Catalog_Контрагенты_Endpoints(this IEndpointRouteBuilder builder)
+    public static IEndpointRouteBuilder MapCatalog_Контрагенты_Endpoints(this IEndpointRouteBuilder builder)
     {
         var apiGroup = builder.MapGroup("/api/1c/ut/catalog-контрагенты")
            .WithTags("1C UT Catalog_Контрагенты");
