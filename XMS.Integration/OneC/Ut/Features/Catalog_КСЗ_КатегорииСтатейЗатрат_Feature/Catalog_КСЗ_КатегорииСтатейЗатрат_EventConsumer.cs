@@ -13,5 +13,5 @@ internal class Catalog_КСЗ_КатегорииСтатейЗатрат_EventCo
     IServiceProvider serviceProvider,
     IHostEnvironment hostEnvironment,
     ILogger<Catalog_Номенклатура_EventConsumer> logger)
-    : CatalogEventConsumer<Entity, CatalogEvent, Handler>(factory, serviceProvider, hostEnvironment, logger)
+    : CatalogEventConsumer<Entity, Entity, Handler>(factory, serviceProvider, hostEnvironment, logger)
 { }

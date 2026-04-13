@@ -2,7 +2,7 @@
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_КСЗ_КатегорииСтатейЗатрат_Feature;
 
-public class Catalog_КСЗ_КатегорииСтатейЗатрат : ICatalog, IOneCEvent
+public class Catalog_КСЗ_КатегорииСтатейЗатрат : ICatalog, IOneCEvent, ISyncable
 {
     public Guid Ref_Key { get; set; }
     public bool DeletionMark { get; set; }

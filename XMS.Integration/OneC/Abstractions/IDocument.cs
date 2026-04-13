@@ -1,10 +1,7 @@
 ﻿namespace XMS.Integration.OneC.Abstractions;
 
-public interface IDocument
+public interface IDocument : IOdataEntity
 {
-    Guid Ref_Key { get; set; }
-    string? DataVersion { get; set; }
-    bool DeletionMark { get; set; }
     bool Posted { get; set; }
     string? Number { get; set; }
     DateTime Date { get; set; }

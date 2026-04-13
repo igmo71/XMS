@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
+using XMS.Integration.OneC.Abstractions;
 
 namespace XMS.Integration.OneC.Common;
 
@@ -67,13 +68,13 @@ public abstract class ODataClient<TConfig>(HttpClient httpClient, IOptions<TConf
         return result;
     }
 
-    public async Task<TValue?> PatchValueAsync<TValue>(TValue value, string? uri, CancellationToken ct = default)
+    public async Task<TValue?> PatchValueAsync<TValue>(TValue value, string? uri, CancellationToken ct = default) where TValue : class, IOdataEntity
     {
         var jsonString = JsonSerializer.Serialize(value, _serializerOptions);
 
         using var stringContent = new StringContent(jsonString, Encoding.UTF8, MediaTypeNames.Application.Json);
 
-        using var response = await _httpClient.PatchAsync($"{_clientConfig.ServiceUri}/{uri}", stringContent, ct);
+        using var response = await _httpClient.PatchAsync($"{_clientConfig.ServiceUri}/{uri}(guid'{value.Ref_Key}')", stringContent, ct);
 
         var content = await response.Content.ReadAsStringAsync(ct);
 
