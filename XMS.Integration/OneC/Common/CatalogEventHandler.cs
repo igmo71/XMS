@@ -3,10 +3,9 @@ using Microsoft.Extensions.Logging;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Common;
 using XMS.Integration.OneC.Abstractions;
-using XMS.Integration.OneC.Common;
 using XMS.Integration.OneC.Ut.ODataClient;
 
-namespace XMS.Integration.OneC;
+namespace XMS.Integration.OneC.Common;
 
 internal abstract class CatalogEventHandler<TEntity, TEvent>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
     : BaseService, IOneCEventHandler<TEvent>
@@ -44,7 +43,7 @@ internal abstract class CatalogEventHandler<TEntity, TEvent>(UtClient utClient, 
 
     private async Task<TEntity?> FetchByRefKeyAsync(Guid refKey, CancellationToken ct)
     {
-        var uri = SyncHelper.GetUriByRefKey<TEntity>(refKey);
+        var uri = IntegrationHelper.GetUriByRefKey<TEntity>(refKey);
 
         var rootObject = await utClient.GetValueAsync<RootObject<TEntity>>(uri, ct);
 

@@ -1,5 +1,6 @@
 ﻿using XMS.Domain.Models;
 using XMS.Integration.OneC.Api;
+using XMS.Integration.OneC.Common;
 using XMS.Integration.OneC.Zup.Models;
 using XMS.Integration.OneC.Zup.ODataClient;
 

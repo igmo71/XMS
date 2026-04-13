@@ -1,6 +1,6 @@
 ﻿using XMS.Integration.OneC.Abstractions;
 
-namespace XMS.Integration.OneC;
+namespace XMS.Integration.OneC.Common;
 
 public class CatalogEvent : IOneCEvent
 {

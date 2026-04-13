@@ -3,7 +3,7 @@ using XMS.Integration.OneC.Abstractions;
 
 namespace XMS.Integration.OneC.Common;
 
-internal class SyncHelper
+public class IntegrationHelper
 {
     public static string GetUri<T>() where T : ISyncable
     {

@@ -7,7 +7,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
 
-namespace XMS.Integration.OneC;
+namespace XMS.Integration.OneC.Common;
 
 public abstract class ODataClient<TConfig>(HttpClient httpClient, IOptions<TConfig> options, ILogger<ODataClient<TConfig>> logger)
     where TConfig : ODataClientConfig

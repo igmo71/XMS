@@ -7,7 +7,10 @@ using XMS.Modules.CostModule.Domain;
 
 namespace XMS.Modules.CostModule.Application;
 
-internal class CostCategoryService(IDbContextFactoryProxy dbFactory, ICostCategoryItemService costCategoryItemService) : ICostCategoryService
+internal class CostCategoryService(
+    IDbContextFactoryProxy dbFactory,
+    ICostCategoryItemService costCategoryItemService,
+    ICostCategoryIntegrationService integrationService) : ICostCategoryService
 {
     public async Task CreateAsync(CostCategory item, CancellationToken ct = default)
     {
@@ -20,6 +23,8 @@ internal class CostCategoryService(IDbContextFactoryProxy dbFactory, ICostCatego
         dbContext.Set<CostCategory>().Add(item);
 
         await dbContext.SaveChangesAsync(ct);
+
+        await integrationService.PublishAsync(item);
     }
 
     public async Task UpdateAsync(CostCategory item, CancellationToken ct = default)
@@ -34,6 +39,8 @@ internal class CostCategoryService(IDbContextFactoryProxy dbFactory, ICostCatego
         await costCategoryItemService.UpdateByCategoryAsync(item, dbContext, ct);
 
         await dbContext.SaveChangesAsync(ct);
+
+        await integrationService.PublishAsync(item);
     }
 
     public async Task<ServiceResult> DeleteAsync(Guid id, CancellationToken ct = default)
@@ -58,6 +65,8 @@ internal class CostCategoryService(IDbContextFactoryProxy dbFactory, ICostCatego
         existing.DeletedAt = DateTime.UtcNow;
 
         await dbContext.SaveChangesAsync(ct);
+
+        await integrationService.PublishAsync(existing);
 
         return ServiceResult.Success();
     }

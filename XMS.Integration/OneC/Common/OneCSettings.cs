@@ -1,4 +1,4 @@
-﻿namespace XMS.Integration.OneC;
+﻿namespace XMS.Integration.OneC.Common;
 
 public static class OneCSettings
 {

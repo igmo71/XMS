@@ -1,4 +1,5 @@
 ﻿using XMS.Core.Common;
+using XMS.Integration.OneC.Common;
 
 namespace XMS.Integration.OneC.Abstractions;
 

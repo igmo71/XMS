@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace XMS.Integration.OneC;
+namespace XMS.Integration.OneC.Common;
 
 public class RootObject<TValue>
 {

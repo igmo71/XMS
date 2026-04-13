@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
+using XMS.Integration.OneC.Common;
 using Entity = XMS.Integration.OneC.Ut.Features.Catalog_Контрагенты_Feature.Catalog_Контрагенты;
 using Handler = XMS.Integration.OneC.Ut.Abstractions.ICatalog_Контрагенты_EventHandler;
 

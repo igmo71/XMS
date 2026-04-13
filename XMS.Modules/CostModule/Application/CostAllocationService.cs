@@ -1,5 +1,5 @@
-﻿using XMS.Integration.OneC;
-using XMS.Integration.OneC.Api;
+﻿using XMS.Integration.OneC.Api;
+using XMS.Integration.OneC.Common;
 using XMS.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
 using XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 using XMS.Modules.CostModule.Abstractions;

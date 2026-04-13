@@ -13,7 +13,7 @@ using XMS.Integration.OneC.Ut.ODataClient;
 using XMS.Integration.OneC.Zup.Api;
 using XMS.Integration.OneC.Zup.ODataClient;
 
-namespace XMS.Integration.OneC;
+namespace XMS.Integration.OneC.Common;
 
 public static class DependencyInjection
 {

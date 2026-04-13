@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using XMS.Core;
+using XMS.Integration.OneC.Common;
 using XMS.Integration.OneC.Ut.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
@@ -77,14 +78,4 @@ public static class Catalog_СтатьиДвиженияДенежныхСред
 
         return TypedResults.Ok();
     }
-
-    //private static async Task<IResult> NotifyCatalog_СтатьиДвиженияДенежныхСредств(HttpContext httpContext,
-    //    [FromServices] IEventPublisher publisher,
-    //    [FromServices] IHostEnvironment hostEnvironment,
-    //    [FromBody] CatalogEvent catalogEvent)
-    //{
-    //    await publisher.PublishAsync(Catalog_СтатьиДвиженияДенежныхСредств.GetExchangeName(hostEnvironment), catalogEvent);
-
-    //    return TypedResults.Ok();
-    //}
 }

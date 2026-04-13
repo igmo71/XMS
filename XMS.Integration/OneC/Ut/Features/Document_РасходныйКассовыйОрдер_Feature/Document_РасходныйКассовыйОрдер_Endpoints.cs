@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using XMS.Core;
+using XMS.Integration.OneC.Common;
 using XMS.Integration.OneC.Ut.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
@@ -79,14 +80,4 @@ public static class Document_РасходныйКассовыйОрдер_Endpoi
 
         return TypedResults.Ok();
     }
-
-    //private static async Task<IResult> NotifyDocument_РасходныйКассовыйОрдер(HttpContext httpContext,
-    //    [FromServices] IEventPublisher publisher,
-    //    [FromServices] IHostEnvironment hostEnvironment,
-    //    [FromBody] DocumentEvent documentEvent)
-    //{
-    //    await publisher.PublishAsync(Document_РасходныйКассовыйОрдер.GetExchangeName(hostEnvironment), documentEvent);
-
-    //    return TypedResults.Ok();
-    //}
 }

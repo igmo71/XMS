@@ -2,6 +2,7 @@
 using XMS.Integration.OneC.Api;
 using XMS.Integration.OneC.Buh.Models;
 using XMS.Integration.OneC.Buh.ODataClient;
+using XMS.Integration.OneC.Common;
 
 namespace XMS.Integration.OneC.Buh.Api;
 

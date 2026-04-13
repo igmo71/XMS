@@ -3,9 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using XMS.Core.Abstractions.EventBus;
 using XMS.Integration.OneC.Abstractions;
-using XMS.Integration.OneC.Common;
 
-namespace XMS.Integration.OneC;
+namespace XMS.Integration.OneC.Common;
 
 internal static class IntegrationEventPublisher
 {
@@ -14,7 +13,11 @@ internal static class IntegrationEventPublisher
         [FromServices] IHostEnvironment hostEnvironment,
         [FromBody] CatalogEvent catalogEvent) where TEntity : ISyncable
     {
-        await publisher.PublishAsync(SyncHelper.GetExchangeName<TEntity>(hostEnvironment), catalogEvent);
+        //var operationName = $"{nameof(IntegrationEventPublisher)}.{nameof(Publish)}";
+        //using var activity = AppTelemetry.ActivitySource.StartActivity(operationName, ActivityKind.Consumer)
+        //    ?? new Activity(operationName).Start();
+
+        await publisher.PublishAsync(IntegrationHelper.GetExchangeName<TEntity>(hostEnvironment), catalogEvent);
 
         return TypedResults.Ok();
     }

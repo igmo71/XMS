@@ -21,7 +21,7 @@ internal class UtService(
 {
     public async Task<IReadOnlyList<UserUt>> FetchUserUtListAsync(CancellationToken ct = default)
     {
-        var rootObject = await utClient.GetValueFromJsonAsync<RootObject<Catalog_Пользователи>>(SyncHelper.GetUri<Catalog_Пользователи>(), ct);
+        var rootObject = await utClient.GetValueFromJsonAsync<RootObject<Catalog_Пользователи>>(IntegrationHelper.GetUri<Catalog_Пользователи>(), ct);
 
         var result = rootObject?.Value?.Select(x => new UserUt
         {

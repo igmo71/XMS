@@ -3,14 +3,13 @@ using Microsoft.Extensions.Logging;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Common;
 using XMS.Integration.OneC.Abstractions;
-using XMS.Integration.OneC.Common;
 using XMS.Integration.OneC.Ut.ODataClient;
 
-namespace XMS.Integration.OneC;
+namespace XMS.Integration.OneC.Common;
 
-internal abstract class DocumentService<TEntity>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
-    : BaseService, IDocumentService<TEntity>
-    where TEntity : class, IDocument, ISyncable
+internal abstract class CatalogService<TEntity>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
+    : BaseService, ICatalogService<TEntity>
+    where TEntity : class, ICatalog, ISyncable
 {
     public async Task<TEntity?> GetAsync(Guid refKey, CancellationToken ct = default)
     {
@@ -22,48 +21,40 @@ internal abstract class DocumentService<TEntity>(UtClient utClient, IDbContextFa
         return result;
     }
 
-    public async Task<IReadOnlyList<TEntity>> GetListAsync(DocumentQueryParameters parameters, CancellationToken ct = default)
+    public async Task<IReadOnlyList<TEntity>> GetListAsync(CatalogQueryParameters parameters, CancellationToken ct = default)
     {
         using var dbContext = dbFactory.CreateDbContext();
 
         var result = await dbContext.Set<TEntity>()
             .AsNoTracking()
-            .HandleDocumentQuery(parameters)
+            .HandleCatalogQuery(parameters)
             .ToListAsync(ct);
 
         return result ?? [];
     }
 
-    public async Task<ServiceResult> ResyncAsync(DateTime from, DateTime to, CancellationToken ct = default)
+    public async Task<ServiceResult> ResyncAsync(CancellationToken ct = default)
     {
         using var activity = StartActivity();
 
         using var dbContext = dbFactory.CreateDbContext();
 
         await dbContext.Set<TEntity>()
-            .Where(e => e.Date >= from && e.Date < to)
             .ExecuteDeleteAsync(ct);
 
-        var currentDay = from;
+        var items = await FetchListAsync(ct);
 
-        while (currentDay < to)
-        {
-            var items = await FetchListAsyncByDate(currentDay, ct);
+        await dbContext.Set<TEntity>()
+            .AddRangeAsync(items, ct);
 
-            await dbContext.Set<TEntity>()
-                .AddRangeAsync(items, ct);
-
-            await dbContext.SaveChangesAsync(ct);
-
-            currentDay = currentDay.AddDays(1);
-        }
+        await dbContext.SaveChangesAsync(ct);
 
         return ServiceResult.Success();
     }
 
-    private async Task<IReadOnlyList<TEntity>> FetchListAsyncByDate(DateTime date, CancellationToken ct)
+    private async Task<IReadOnlyList<TEntity>> FetchListAsync(CancellationToken ct)
     {
-        var uri = SyncHelper.GetUriByDate<TEntity>(date, date.AddDays(1));
+        var uri = IntegrationHelper.GetUri<TEntity>();
 
         var rootObject = await utClient.GetValueFromJsonAsync<RootObject<TEntity>>(uri, ct);
 

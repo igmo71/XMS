@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using XMS.Core;
+using XMS.Integration.OneC.Common;
 using XMS.Integration.OneC.Ut.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_Пользователи_Feature;
@@ -75,14 +76,4 @@ public static class Catalog_Пользователи_Endpoints
 
         return TypedResults.Ok();
     }
-
-    //private static async Task<IResult> NotifyCatalog_Пользователи(HttpContext httpContext,
-    //    [FromServices] IEventPublisher publisher,
-    //    [FromServices] IHostEnvironment hostEnvironment,
-    //    [FromBody] CatalogEvent catalogEvent)
-    //{
-    //    await publisher.PublishAsync(ISyncable<Catalog_Пользователи>.GetExchangeName(hostEnvironment), catalogEvent);
-
-    //    return TypedResults.Ok();
-    //}
 }
