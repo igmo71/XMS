@@ -1,10 +1,12 @@
-﻿using Microsoft.Extensions.Hosting;
-using XMS.Integration.OneC.Abstractions;
+﻿using XMS.Integration.OneC.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Document_РеализацияТоваровУслуг_Feature;
 
-public class Document_РеализацияТоваровУслуг : IDocument
+public class Document_РеализацияТоваровУслуг : IDocument, ISyncable
 {
+    public static string? Select =>
+        "Ref_Key,DataVersion,DeletionMark,Number,Date,Posted,СуммаДокумента,ХозяйственнаяОперация,Партнер_Key,Склад_Key";
+
     public Guid Ref_Key { get; set; }
     public string? DataVersion { get; set; }
     public bool DeletionMark { get; set; }
@@ -15,20 +17,6 @@ public class Document_РеализацияТоваровУслуг : IDocument
     public string? ХозяйственнаяОперация { get; set; }
     public Guid? Партнер_Key { get; set; }
     public Guid? Склад_Key { get; set; }
-
-    public static string Uri => "Document_РеализацияТоваровУслуг?$format=json&$inlinecount=allpages" +
-        "&$select=Ref_Key,DataVersion,DeletionMark,Number,Date,Posted,СуммаДокумента,ХозяйственнаяОперация,Партнер_Key,Склад_Key";
-
-    public static string GetUriByRefKey(Guid refKey) => $"{Uri}&$filter=Ref_Key eq guid'{refKey}'";
-
-    public static string GetUriByDate(DateTime? from = null, DateTime? to = null) =>
-        $"{Uri}&$filter=DeletionMark eq false and Posted eq true and Date ge datetime'{from:s}' and Date lt datetime'{to:s}'";
-
-    public static string GetExchangeName(IHostEnvironment hostEnvironment) =>
-        hostEnvironment.IsDevelopment() ? $"dev_{nameof(Document_РеализацияТоваровУслуг)}" : $"{nameof(Document_РеализацияТоваровУслуг)}";
-
-    public static string GetQueueName(IHostEnvironment hostEnvironment) =>
-        hostEnvironment.IsDevelopment() ? $"dev_{nameof(Document_РеализацияТоваровУслуг)}" : $"xms_{nameof(Document_РеализацияТоваровУслуг)}";
 
     //public string АдресДоставки { get; set; }
     //public string БанковскийСчетОрганизации_Key { get; set; }

@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
-
-namespace XMS.Integration.OneC.Abstractions;
+﻿namespace XMS.Integration.OneC.Abstractions;
 
 public interface IDocument
 {
@@ -10,12 +8,6 @@ public interface IDocument
     bool Posted { get; set; }
     string? Number { get; set; }
     DateTime Date { get; set; }
-
-    static abstract string Uri { get; }
-    static abstract string GetUriByRefKey(Guid refKey);
-    static abstract string GetUriByDate(DateTime? from = null, DateTime? to = null);
-    static abstract string GetExchangeName(IHostEnvironment hostEnvironment);
-    static abstract string GetQueueName(IHostEnvironment hostEnvironment);
 }
 
 public interface IOneCDocumentItem

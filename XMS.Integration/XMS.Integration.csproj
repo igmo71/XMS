@@ -15,4 +15,8 @@
 		<ProjectReference Include="..\XMS.Domain\XMS.Domain.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="OneC\Ut\Features\Catalog_КСЗ_КатегорииСтатейЗатрат_Feature\" />
+	</ItemGroup>
+
 </Project>

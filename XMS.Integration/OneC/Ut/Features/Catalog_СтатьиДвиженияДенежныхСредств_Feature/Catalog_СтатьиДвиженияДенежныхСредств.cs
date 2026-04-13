@@ -1,33 +1,19 @@
-﻿using Microsoft.Extensions.Hosting;
-using System.ComponentModel.DataAnnotations;
-using XMS.Integration.OneC.Abstractions;
+﻿using XMS.Integration.OneC.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
 
-public class Catalog_СтатьиДвиженияДенежныхСредств : ICatalog
+public class Catalog_СтатьиДвиженияДенежныхСредств : ICatalog, ISyncable
 {
+    public static string? Select => "Ref_Key,DataVersion,DeletionMark,Description,Code,Parent_Key,IsFolder";
+
     public Guid Ref_Key { get; set; }
-    [MaxLength(OneCSettings.CODE)] public string? DataVersion { get; set; }
-    [MaxLength(OneCSettings.DESCRIPTION)] public string? Description { get; set; }
+    public string? DataVersion { get; set; }
     public bool DeletionMark { get; set; }
-    [MaxLength(OneCSettings.CODE)] public string? Code { get; set; }
     public Guid? Parent_Key { get; set; }
     public bool IsFolder { get; set; }
+    public string? Description { get; set; }
+    public string? Code { get; set; }
 
-    public static string Uri => "Catalog_СтатьиДвиженияДенежныхСредств?$format=json&$select=Ref_Key,Description,DeletionMark,Code,Parent_Key,IsFolder&$inlinecount=allpages";
-
-    public static string GetUriByRefKey(Guid refKey)
-    {
-        string uri = $"{Uri}&$filter=Ref_Key eq guid'{refKey}'";
-
-        return uri;
-    }
-
-    public static string GetExchangeName(IHostEnvironment hostEnvironment) =>
-        hostEnvironment.IsDevelopment() ? $"dev_{nameof(Catalog_СтатьиДвиженияДенежныхСредств)}" : $"{nameof(Catalog_СтатьиДвиженияДенежныхСредств)}";
-
-    public static string GetQueueName(IHostEnvironment hostEnvironment) =>
-        hostEnvironment.IsDevelopment() ? $"dev_{nameof(Catalog_СтатьиДвиженияДенежныхСредств)}" : $"xms_{nameof(Catalog_СтатьиДвиженияДенежныхСредств)}";
 
     //public string DataVersion { get; set; }
     //public string КорреспондирующийСчет { get; set; }

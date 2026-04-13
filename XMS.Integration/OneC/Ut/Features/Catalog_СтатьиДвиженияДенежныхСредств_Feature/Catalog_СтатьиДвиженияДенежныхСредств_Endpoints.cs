@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Hosting;
 using XMS.Core;
-using XMS.Core.Abstractions.EventBus;
 using XMS.Integration.OneC.Ut.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
@@ -14,33 +12,35 @@ public static class Catalog_СтатьиДвиженияДенежныхСред
 {
     public static IEndpointRouteBuilder MapCatalog_СтатьиДвиженияДенежныхСредств_Endpoints(this IEndpointRouteBuilder builder)
     {
+        string feature = nameof(Catalog_СтатьиДвиженияДенежныхСредств);
 
         var apiGroup = builder.MapGroup("/api/1c/ut/catalog-статьи-движения-денежных-средств")
-           .WithTags("1C UT Catalog_СтатьиДвиженияДенежныхСредств");
+            .WithTags($"1C UT {feature}");
 
         apiGroup.MapGet("/{refKey}", GetCatalog_СтатьиДвиженияДенежныхСредств_ByRefKey)
-            .WithName(nameof(GetCatalog_СтатьиДвиженияДенежныхСредств_ByRefKey))
-            .WithSummary(nameof(GetCatalog_СтатьиДвиженияДенежныхСредств_ByRefKey))
-            .WithDescription("Get Catalog_СтатьиДвиженияДенежныхСредств By Ref_Key from DB");
+            .WithName($"Get{feature}_ByRefKey")
+            .WithSummary($"Get{feature}_ByRefKey")
+            .WithDescription($"Get {feature} By Ref_Key from DB");
 
         apiGroup.MapGet("/", GetCatalog_СтатьиДвиженияДенежныхСредств_List)
-            .WithName(nameof(GetCatalog_СтатьиДвиженияДенежныхСредств_List))
-            .WithSummary(nameof(GetCatalog_СтатьиДвиженияДенежныхСредств_List))
-            .WithDescription("Get Catalog_СтатьиДвиженияДенежныхСредств List from DB");
+            .WithName($"Get{feature}_List")
+            .WithSummary($"Get{feature}_List")
+            .WithDescription($"Get {feature} List from DB");
 
 
         var extGroup = builder.MapGroup("/ext/1c/ut/catalog-статьи-движения-денежных-средств")
-            .WithTags("1C UT Catalog_СтатьиДвиженияДенежныхСредств");
-
-        extGroup.MapPatch("/notify", NotifyCatalog_СтатьиДвиженияДенежныхСредств)
-            .WithName(nameof(NotifyCatalog_СтатьиДвиженияДенежныхСредств))
-            .WithSummary(nameof(NotifyCatalog_СтатьиДвиженияДенежныхСредств))
-            .WithDescription("Notify Catalog_СтатьиДвиженияДенежныхСредств");
+            .WithTags($"1C UT {feature}");
 
         extGroup.MapPut("/resync", ResyncCatalog_СтатьиДвиженияДенежныхСредств)
-            .WithName(nameof(ResyncCatalog_СтатьиДвиженияДенежныхСредств))
-            .WithSummary(nameof(ResyncCatalog_СтатьиДвиженияДенежныхСредств))
-            .WithDescription("Resync Catalog_СтатьиДвиженияДенежныхСредств from OneS Ut and save to DB");
+            .WithName($"Resync{feature}")
+            .WithSummary($"Resync{feature}")
+            .WithDescription($"Resync {feature} from OneS Ut and save to DB");
+
+        extGroup.MapPatch("/notify", IntegrationEventPublisher.Publish<Catalog_СтатьиДвиженияДенежныхСредств>)
+            .WithName($"Notify{feature}")
+            .WithSummary($"Notify{feature}")
+            .WithDescription($"Notify {feature}");
+
         return builder;
     }
 
@@ -78,13 +78,13 @@ public static class Catalog_СтатьиДвиженияДенежныхСред
         return TypedResults.Ok();
     }
 
-    private static async Task<IResult> NotifyCatalog_СтатьиДвиженияДенежныхСредств(HttpContext httpContext,
-        [FromServices] IRabbitPublisher publisher,
-        [FromServices] IHostEnvironment hostEnvironment,
-        [FromBody] CatalogEvent catalogEvent)
-    {
-        await publisher.PublishAsync(Catalog_СтатьиДвиженияДенежныхСредств.GetExchangeName(hostEnvironment), catalogEvent);
+    //private static async Task<IResult> NotifyCatalog_СтатьиДвиженияДенежныхСредств(HttpContext httpContext,
+    //    [FromServices] IEventPublisher publisher,
+    //    [FromServices] IHostEnvironment hostEnvironment,
+    //    [FromBody] CatalogEvent catalogEvent)
+    //{
+    //    await publisher.PublishAsync(Catalog_СтатьиДвиженияДенежныхСредств.GetExchangeName(hostEnvironment), catalogEvent);
 
-        return TypedResults.Ok();
-    }
+    //    return TypedResults.Ok();
+    //}
 }

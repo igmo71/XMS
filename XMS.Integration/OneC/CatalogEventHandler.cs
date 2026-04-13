@@ -3,13 +3,14 @@ using Microsoft.Extensions.Logging;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Common;
 using XMS.Integration.OneC.Abstractions;
+using XMS.Integration.OneC.Common;
 using XMS.Integration.OneC.Ut.ODataClient;
 
 namespace XMS.Integration.OneC;
 
 internal abstract class CatalogEventHandler<TEntity, TEvent>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
     : BaseService, IOneCEventHandler<TEvent>
-    where TEntity : class, ICatalog
+    where TEntity : class, ICatalog, ISyncable
     where TEvent : class, IOneCEvent
 {
     public async Task<ServiceResult> HandleEvent(TEvent oneCNotifyMessage, CancellationToken ct = default)
@@ -43,7 +44,7 @@ internal abstract class CatalogEventHandler<TEntity, TEvent>(UtClient utClient, 
 
     private async Task<TEntity?> FetchByRefKeyAsync(Guid refKey, CancellationToken ct)
     {
-        var uri = TEntity.GetUriByRefKey(refKey);
+        var uri = SyncHelper.GetUriByRefKey<TEntity>(refKey);
 
         var rootObject = await utClient.GetValueAsync<RootObject<TEntity>>(uri, ct);
 

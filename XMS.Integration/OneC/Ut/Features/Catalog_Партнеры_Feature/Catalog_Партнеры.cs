@@ -1,12 +1,14 @@
-﻿using Microsoft.Extensions.Hosting;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using XMS.Core.Common;
 using XMS.Integration.OneC.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature;
 
-public class Catalog_Партнеры : ICatalog
+public class Catalog_Партнеры : ICatalog, ISyncable
 {
+    public static string? Select =>
+        "Ref_Key,DataVersion,DeletionMark,Parent_Key,Description,ОсновнойМенеджер_Key,БизнесРегион_Key,ДатаРегистрации,ЮрФизЛицо,Комментарий,Клиент,Поставщик,Конкурент,Перевозчик,ПрочиеОтношения";
+
     public Guid Ref_Key { get; set; }
     public string? DataVersion { get; set; }
     public bool DeletionMark { get; set; }
@@ -24,20 +26,6 @@ public class Catalog_Партнеры : ICatalog
 
     [JsonConverter(typeof(StringTrimConverter))]
     public string? Комментарий { get; set; }
-
-    public static string Uri => "Catalog_Партнеры?$format=json&$inlinecount=allpages" +
-        "&$select=Ref_Key,DataVersion,DeletionMark,Parent_Key,Description,ОсновнойМенеджер_Key,БизнесРегион_Key,ДатаРегистрации,ЮрФизЛицо," +
-            "Комментарий,НаименованиеПолное,ДополнительнаяИнформация,Клиент,Поставщик,Конкурент,Перевозчик,ПрочиеОтношения";
-
-    public static string GetUriByRefKey(Guid refKey) => $"{Uri}&$filter=Ref_Key eq guid'{refKey}'";
-
-    public static string GetExchangeName(IHostEnvironment hostEnvironment) =>
-        hostEnvironment.IsDevelopment() ? $"dev_{nameof(Catalog_Партнеры)}" : $"{nameof(Catalog_Партнеры)}";
-
-    public static string GetQueueName(IHostEnvironment hostEnvironment) =>
-        hostEnvironment.IsDevelopment() ? $"dev_{nameof(Catalog_Партнеры)}" : $"xms_{nameof(Catalog_Партнеры)}";
-
-
 
     //public bool ОбслуживаетсяТорговымиПредставителями { get; set; }
     //public string? НаименованиеПолное { get; set; }

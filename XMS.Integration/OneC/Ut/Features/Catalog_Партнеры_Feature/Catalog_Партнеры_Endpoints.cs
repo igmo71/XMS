@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Hosting;
 using XMS.Core;
-using XMS.Core.Abstractions.EventBus;
 using XMS.Integration.OneC.Ut.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature;
@@ -31,15 +29,15 @@ public static class Catalog_Партнеры_Endpoints
         var extGroup = builder.MapGroup("/ext/1c/ut/catalog-партнеры")
             .WithTags("1C UT Catalog_Партнеры");
 
-        extGroup.MapPatch("/notify", NotifyCatalog_Партнеры)
-            .WithName(nameof(NotifyCatalog_Партнеры))
-            .WithSummary(nameof(NotifyCatalog_Партнеры))
-            .WithDescription("Notify Catalog_Партнеры");
-
         extGroup.MapPut("/resync", ResyncCatalog_Партнеры)
             .WithName(nameof(ResyncCatalog_Партнеры))
             .WithSummary(nameof(ResyncCatalog_Партнеры))
             .WithDescription("Resync Catalog_Партнеры from OneS Ut and save to DB");
+
+        extGroup.MapPatch("/notify", IntegrationEventPublisher.Publish<Catalog_Партнеры>)
+            .WithName("NotifyCatalog_Партнеры")
+            .WithSummary("NotifyCatalog_Партнеры")
+            .WithDescription("Notify Catalog_Партнеры");
 
         return builder;
     }
@@ -77,13 +75,13 @@ public static class Catalog_Партнеры_Endpoints
         return TypedResults.Ok();
     }
 
-    private static async Task<IResult> NotifyCatalog_Партнеры(HttpContext httpContext,
-        [FromServices] IRabbitPublisher publisher,
-        [FromServices] IHostEnvironment hostEnvironment,
-        [FromBody] CatalogEvent catalogEvent)
-    {
-        await publisher.PublishAsync(Catalog_Партнеры.GetExchangeName(hostEnvironment), catalogEvent);
+    //private static async Task<IResult> NotifyCatalog_Партнеры(HttpContext httpContext,
+    //    [FromServices] IEventPublisher publisher,
+    //    [FromServices] IHostEnvironment hostEnvironment,
+    //    [FromBody] CatalogEvent catalogEvent)
+    //{
+    //    await publisher.PublishAsync(Catalog_Партнеры.GetExchangeName(hostEnvironment), catalogEvent);
 
-        return TypedResults.Ok();
-    }
+    //    return TypedResults.Ok();
+    //}
 }

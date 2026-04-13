@@ -19,7 +19,7 @@ public static class DependencyInjection
             Password = rabbitMqConfig.Password
         });
 
-        services.AddSingleton<IRabbitPublisher, RabbitPublisher>();
+        services.AddSingleton<IEventPublisher, RabbitPublisher>();
 
         return services;
     }

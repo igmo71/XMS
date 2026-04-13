@@ -1,12 +1,15 @@
-﻿using Microsoft.Extensions.Hosting;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using XMS.Core.Common;
 using XMS.Integration.OneC.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
 
-public class Document_РасходныйКассовыйОрдер : IDocument
+public class Document_РасходныйКассовыйОрдер : IDocument, ISyncable
 {
+    public static string? Select => "Ref_Key,DataVersion,DeletionMark,Posted,Number,Date,СуммаДокумента,СтатьяДвиженияДенежныхСредств_Key,Организация_Key,Подразделение_Key,Автор_Key," +
+        "Партнер_Key,Контрагент_Key,НаправлениеДеятельности_Key,ОбъектРасчетов_Key,Валюта_Key,ЗаявкаНаРасходованиеДенежныхСредств,ЗаявкаНаРасходованиеДенежныхСредств_Type," +
+        "ДокументОснование,ДокументОснование_Type,Договор,Договор_Type,ХозяйственнаяОперация,Выдать,Основание,Приложение,ПоДокументу,НалогообложениеНДС,Комментарий,РасшифровкаПлатежа";
+
     public Guid Ref_Key { get; set; }
     public string? DataVersion { get; set; }
     public bool DeletionMark { get; set; }
@@ -47,22 +50,6 @@ public class Document_РасходныйКассовыйОрдер : IDocument
     public string? Комментарий { get; set; }
 
     public List<Document_РасходныйКассовыйОрдер_РасшифровкаПлатежа>? РасшифровкаПлатежа { get; set; }
-
-    public static string Uri => "Document_РасходныйКассовыйОрдер?$format=json&$inlinecount=allpages" +
-       "&$select=Ref_Key,DataVersion,DeletionMark,Posted,Number,Date,СуммаДокумента,СтатьяДвиженияДенежныхСредств_Key,Организация_Key,Подразделение_Key,Автор_Key," +
-        "Партнер_Key,Контрагент_Key,НаправлениеДеятельности_Key,ОбъектРасчетов_Key,Валюта_Key,ЗаявкаНаРасходованиеДенежныхСредств,ЗаявкаНаРасходованиеДенежныхСредств_Type," +
-        "ДокументОснование,ДокументОснование_Type,Договор,Договор_Type,ХозяйственнаяОперация,Выдать,Основание,Приложение,ПоДокументу,НалогообложениеНДС,Комментарий,РасшифровкаПлатежа";
-
-    public static string GetUriByRefKey(Guid refKey) => $"{Uri}&$filter=Ref_Key eq guid'{refKey}'";
-
-    public static string GetUriByDate(DateTime? from = null, DateTime? to = null) =>
-        $"{Uri}&$filter=DeletionMark eq false and Posted eq true and Date ge datetime'{from:s}' and Date lt datetime'{to:s}'";
-
-    public static string GetExchangeName(IHostEnvironment hostEnvironment) =>
-        hostEnvironment.IsDevelopment() ? $"dev_{nameof(Document_РасходныйКассовыйОрдер)}" : $"{nameof(Document_РасходныйКассовыйОрдер)}";
-
-    public static string GetQueueName(IHostEnvironment hostEnvironment) =>
-        hostEnvironment.IsDevelopment() ? $"dev_{nameof(Document_РасходныйКассовыйОрдер)}" : $"xms_{nameof(Document_РасходныйКассовыйОрдер)}";
 
     //public object[] ВыплатаЗаработнойПлаты { get; set; }
     //public object[] ДополнительныеРеквизиты { get; set; }

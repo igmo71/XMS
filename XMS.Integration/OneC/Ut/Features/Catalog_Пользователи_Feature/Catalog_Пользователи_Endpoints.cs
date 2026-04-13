@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Hosting;
 using XMS.Core;
-using XMS.Core.Abstractions.EventBus;
 using XMS.Integration.OneC.Ut.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_Пользователи_Feature;
@@ -14,32 +12,34 @@ public static class Catalog_Пользователи_Endpoints
 {
     public static IEndpointRouteBuilder MapCatalog_Пользователи_Endpoints(this IEndpointRouteBuilder builder)
     {
+        string feature = nameof(Catalog_Пользователи);
+
         var apiGroup = builder.MapGroup("/api/1c/ut/catalog-пользователи")
-            .WithTags("1C UT Catalog_Пользователи");
+            .WithTags($"1C UT {feature}");
 
         apiGroup.MapGet("/{refKey}", GetCatalog_Пользователи_ByRefKey)
-            .WithName(nameof(GetCatalog_Пользователи_ByRefKey))
-            .WithSummary(nameof(GetCatalog_Пользователи_ByRefKey))
-            .WithDescription("Get Catalog_Пользователи By Ref_Key from DB");
+            .WithName($"Get{feature}_ByRefKey")
+            .WithSummary($"Get{feature}_ByRefKey")
+            .WithDescription($"Get {feature} By Ref_Key from DB");
 
         apiGroup.MapGet("/", GetCatalog_Пользователи_List)
-            .WithName(nameof(GetCatalog_Пользователи_List))
-            .WithSummary(nameof(GetCatalog_Пользователи_List))
-            .WithDescription("Get Catalog_Пользователи List from DB");
+            .WithName($"Get{feature}_List")
+            .WithSummary($"Get{feature}_List")
+            .WithDescription($"Get {feature} List from DB");
 
 
         var extGroup = builder.MapGroup("/ext/1c/ut/catalog-пользователи")
-            .WithTags("1C UT Catalog_Пользователи");
-
-        extGroup.MapPatch("/notify", NotifyCatalog_Пользователи)
-            .WithName(nameof(NotifyCatalog_Пользователи))
-            .WithSummary(nameof(NotifyCatalog_Пользователи))
-            .WithDescription("Notify Catalog_Пользователи");
+            .WithTags($"1C UT {feature}");
 
         extGroup.MapPut("/resync", ResyncCatalog_Пользователи)
-            .WithName(nameof(ResyncCatalog_Пользователи))
-            .WithSummary(nameof(ResyncCatalog_Пользователи))
-            .WithDescription("Resync Catalog_Пользователи from OneS Ut and save to DB");
+            .WithName($"Resync{feature}")
+            .WithSummary($"Resync{feature}")
+            .WithDescription($"Resync {feature} from OneS Ut and save to DB");
+
+        extGroup.MapPatch("/notify", IntegrationEventPublisher.Publish<Catalog_Пользователи>)
+            .WithName($"Notify{feature}")
+            .WithSummary($"Notify{feature}")
+            .WithDescription($"Notify {feature}");
 
         return builder;
     }
@@ -76,13 +76,13 @@ public static class Catalog_Пользователи_Endpoints
         return TypedResults.Ok();
     }
 
-    private static async Task<IResult> NotifyCatalog_Пользователи(HttpContext httpContext,
-        [FromServices] IRabbitPublisher publisher,
-        [FromServices] IHostEnvironment hostEnvironment,
-        [FromBody] CatalogEvent catalogEvent)
-    {
-        await publisher.PublishAsync(Catalog_Пользователи.GetExchangeName(hostEnvironment), catalogEvent);
+    //private static async Task<IResult> NotifyCatalog_Пользователи(HttpContext httpContext,
+    //    [FromServices] IEventPublisher publisher,
+    //    [FromServices] IHostEnvironment hostEnvironment,
+    //    [FromBody] CatalogEvent catalogEvent)
+    //{
+    //    await publisher.PublishAsync(ISyncable<Catalog_Пользователи>.GetExchangeName(hostEnvironment), catalogEvent);
 
-        return TypedResults.Ok();
-    }
+    //    return TypedResults.Ok();
+    //}
 }

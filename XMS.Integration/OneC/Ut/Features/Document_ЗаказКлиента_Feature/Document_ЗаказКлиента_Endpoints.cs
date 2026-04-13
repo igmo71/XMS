@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Hosting;
 using XMS.Core;
-using XMS.Core.Abstractions.EventBus;
 using XMS.Integration.OneC.Ut.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Document_ЗаказКлиента_Feature;
@@ -14,33 +12,34 @@ public static class Document_ЗаказКлиента_Endpoints
 {
     public static IEndpointRouteBuilder MapDocument_ЗаказКлиента_Endpoints(this IEndpointRouteBuilder builder)
     {
+        string feature = nameof(Document_ЗаказКлиента);
 
         var apiGroup = builder.MapGroup("/api/1c/ut/document-заказ-клиента")
-            .WithTags("1C UT Document_ЗаказКлиента");
+            .WithTags($"1C UT {feature}");
 
         apiGroup.MapGet("/", GetDocument_ЗаказКлиента_ByDate)
-            .WithName(nameof(GetDocument_ЗаказКлиента_ByDate))
-            .WithSummary(nameof(GetDocument_ЗаказКлиента_ByDate))
-            .WithDescription("Get Document_ЗаказКлиента by Date from DB");
+            .WithName($"Get{feature}_ByDate")
+            .WithSummary($"Get{feature}_ByDate")
+            .WithDescription($"Get {feature} by Date from DB");
 
         apiGroup.MapGet("/{refKey}", GetDocument_ЗаказКлиента_ByRefKey)
-            .WithName(nameof(GetDocument_ЗаказКлиента_ByRefKey))
-            .WithSummary(nameof(GetDocument_ЗаказКлиента_ByRefKey))
-            .WithDescription("Get Document_ЗаказКлиента By Date from DB");
+            .WithName($"Get{feature}_ByRefKey")
+            .WithSummary($"Get{feature}_ByRefKey")
+            .WithDescription($"Get {feature} By Ref_Key from DB");
 
 
         var extGroup = builder.MapGroup("/ext/1c/ut/document-заказ-клиента")
-            .WithTags("1C UT Document_ЗаказКлиента");
-
-        extGroup.MapPatch("/notify", NotifyDocument_ЗаказКлиента)
-            .WithName(nameof(NotifyDocument_ЗаказКлиента))
-            .WithSummary(nameof(NotifyDocument_ЗаказКлиента))
-            .WithDescription("Notify Document_ЗаказКлиента");
+            .WithTags($"1C UT {feature}");
 
         extGroup.MapPut("/resync", ResyncDocument_ЗаказКлиента_ByDate)
-            .WithName(nameof(ResyncDocument_ЗаказКлиента_ByDate))
-            .WithSummary(nameof(ResyncDocument_ЗаказКлиента_ByDate))
-            .WithDescription("Resync Document_ЗаказКлиента from OneS Ut and save to DB");
+            .WithName($"Resync{feature}_ByDate")
+            .WithSummary($"Resync{feature}_ByDate")
+            .WithDescription($"Resync {feature} from OneS Ut and save to DB");
+
+        extGroup.MapPatch("/notify", IntegrationEventPublisher.Publish<Document_ЗаказКлиента>)
+            .WithName($"Notify{feature}")
+            .WithSummary($"Notify{feature}")
+            .WithDescription($"Notify {feature}");
 
         return builder;
     }
@@ -71,16 +70,6 @@ public static class Document_ЗаказКлиента_Endpoints
         return TypedResults.Ok(result);
     }
 
-    private static async Task<IResult> NotifyDocument_ЗаказКлиента(HttpContext httpContext,
-        [FromServices] IRabbitPublisher publisher,
-        [FromServices] IHostEnvironment hostEnvironment,
-        [FromBody] DocumentEvent documentEvent)
-    {
-        await publisher.PublishAsync(Document_ЗаказКлиента.GetExchangeName(hostEnvironment), documentEvent);
-
-        return TypedResults.Ok();
-    }
-
     private static async Task<Results<Ok, BadRequest>> ResyncDocument_ЗаказКлиента_ByDate(
         [FromServices] IDocument_ЗаказКлиента_Service documentService,
         [FromQuery] DateTime from,
@@ -90,4 +79,14 @@ public static class Document_ЗаказКлиента_Endpoints
 
         return TypedResults.Ok();
     }
+
+    //private static async Task<IResult> NotifyDocument_ЗаказКлиента(HttpContext httpContext,
+    //    [FromServices] IEventPublisher publisher,
+    //    [FromServices] IHostEnvironment hostEnvironment,
+    //    [FromBody] DocumentEvent documentEvent)
+    //{
+    //    await publisher.PublishAsync(Document_ЗаказКлиента.GetExchangeName(hostEnvironment), documentEvent);
+
+    //    return TypedResults.Ok();
+    //}
 }

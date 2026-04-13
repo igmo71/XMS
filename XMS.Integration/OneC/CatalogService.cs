@@ -3,13 +3,14 @@ using Microsoft.Extensions.Logging;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Common;
 using XMS.Integration.OneC.Abstractions;
+using XMS.Integration.OneC.Common;
 using XMS.Integration.OneC.Ut.ODataClient;
 
 namespace XMS.Integration.OneC;
 
 internal abstract class CatalogService<TEntity>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
     : BaseService, ICatalogService<TEntity>
-    where TEntity : class, ICatalog
+    where TEntity : class, ICatalog, ISyncable
 {
     public async Task<TEntity?> GetAsync(Guid refKey, CancellationToken ct = default)
     {
@@ -54,7 +55,7 @@ internal abstract class CatalogService<TEntity>(UtClient utClient, IDbContextFac
 
     private async Task<IReadOnlyList<TEntity>> FetchListAsync(CancellationToken ct)
     {
-        var uri = TEntity.Uri;
+        var uri = SyncHelper.GetUri<TEntity>();
 
         var rootObject = await utClient.GetValueFromJsonAsync<RootObject<TEntity>>(uri, ct);
 

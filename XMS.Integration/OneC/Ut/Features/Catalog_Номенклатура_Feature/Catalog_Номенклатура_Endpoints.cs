@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Hosting;
 using XMS.Core;
-using XMS.Core.Abstractions.EventBus;
 using XMS.Integration.OneC.Ut.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_Номенклатура_Feature;
@@ -14,32 +12,34 @@ public static class Catalog_Номенклатура_Endpoints
 {
     public static IEndpointRouteBuilder MapCatalog_Номенклатура_Endpoints(this IEndpointRouteBuilder builder)
     {
+        string feature = nameof(Catalog_Номенклатура);
+
         var apiGroup = builder.MapGroup("/api/1c/ut/catalog-номенклатура")
-           .WithTags("1C UT Catalog_Номенклатура");
+            .WithTags($"1C UT {feature}");
 
         apiGroup.MapGet("/{refKey}", GetCatalog_Номенклатура_ByRefKey)
-            .WithName(nameof(GetCatalog_Номенклатура_ByRefKey))
-            .WithSummary(nameof(GetCatalog_Номенклатура_ByRefKey))
-            .WithDescription("Get Catalog_Номенклатура By Ref_Key from DB");
+            .WithName($"Get{feature}_ByRefKey")
+            .WithSummary($"Get{feature}_ByRefKey")
+            .WithDescription($"Get {feature} By Ref_Key from DB");
 
         apiGroup.MapGet("/", GetCatalog_Номенклатура_List)
-            .WithName(nameof(GetCatalog_Номенклатура_List))
-            .WithSummary(nameof(GetCatalog_Номенклатура_List))
-            .WithDescription("Get Catalog_Номенклатура List from DB");
+            .WithName($"Get{feature}_List")
+            .WithSummary($"Get{feature}_List")
+            .WithDescription($"Get {feature} List from DB");
 
 
         var extGroup = builder.MapGroup("/ext/1c/ut/catalog-номенклатура")
-            .WithTags("1C UT Catalog_Номенклатура");
-
-        extGroup.MapPatch("/notify", NotifyCatalog_Номенклатура)
-            .WithName(nameof(NotifyCatalog_Номенклатура))
-            .WithSummary(nameof(NotifyCatalog_Номенклатура))
-            .WithDescription("Notify Catalog_Номенклатура");
+            .WithTags($"1C UT {feature}");
 
         extGroup.MapPut("/resync", ResyncCatalog_Номенклатура)
-            .WithName(nameof(ResyncCatalog_Номенклатура))
-            .WithSummary(nameof(ResyncCatalog_Номенклатура))
-            .WithDescription("Resync Catalog_Номенклатура from OneS Ut and save to DB");
+            .WithName($"Resync{feature}")
+            .WithSummary($"Resync{feature}")
+            .WithDescription($"Resync {feature} from OneS Ut and save to DB");
+
+        extGroup.MapPatch("/notify", IntegrationEventPublisher.Publish<Catalog_Номенклатура>)
+            .WithName($"Notify{feature}")
+            .WithSummary($"Notify{feature}")
+            .WithDescription($"Notify {feature}");
 
         return builder;
     }
@@ -77,13 +77,13 @@ public static class Catalog_Номенклатура_Endpoints
         return TypedResults.Ok();
     }
 
-    private static async Task<IResult> NotifyCatalog_Номенклатура(HttpContext httpContext,
-        [FromServices] IRabbitPublisher publisher,
-        [FromServices] IHostEnvironment hostEnvironment,
-        [FromBody] CatalogEvent catalogEvent)
-    {
-        await publisher.PublishAsync(Catalog_Номенклатура.GetExchangeName(hostEnvironment), catalogEvent);
+    //private static async Task<IResult> NotifyCatalog_Номенклатура(HttpContext httpContext,
+    //    [FromServices] IEventPublisher publisher,
+    //    [FromServices] IHostEnvironment hostEnvironment,
+    //    [FromBody] CatalogEvent catalogEvent)
+    //{
+    //    await publisher.PublishAsync(Catalog_Номенклатура.GetExchangeName(hostEnvironment), catalogEvent);
 
-        return TypedResults.Ok();
-    }
+    //    return TypedResults.Ok();
+    //}
 }

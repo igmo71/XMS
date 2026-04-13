@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Hosting;
 using XMS.Core;
-using XMS.Core.Abstractions.EventBus;
 using XMS.Integration.OneC.Ut.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_КонтактныеЛицаПартнеров_Feature;
@@ -14,32 +12,34 @@ public static class Catalog_КонтактныеЛицаПартнеров_Endpo
 {
     public static IEndpointRouteBuilder MapCatalog_КонтактныеЛицаПартнеров_Endpoints(this IEndpointRouteBuilder builder)
     {
+        string feature = nameof(Catalog_КонтактныеЛицаПартнеров);
+
         var apiGroup = builder.MapGroup("/api/1c/ut/catalog_контактные-лица-партнеров")
-           .WithTags("1C UT Catalog_КонтактныеЛицаПартнеров");
+            .WithTags($"1C UT {feature}");
 
         apiGroup.MapGet("/{refKey}", GetCatalog_КонтактныеЛицаПартнеров_ByRefKey)
-            .WithName(nameof(GetCatalog_КонтактныеЛицаПартнеров_ByRefKey))
-            .WithSummary(nameof(GetCatalog_КонтактныеЛицаПартнеров_ByRefKey))
-            .WithDescription("Get Catalog_КонтактныеЛицаПартнеров By Ref_Key from DB");
+            .WithName($"Get{feature}_ByRefKey")
+            .WithSummary($"Get{feature}_ByRefKey")
+            .WithDescription($"Get {feature} By Ref_Key from DB");
 
         apiGroup.MapGet("/", GetCatalog_КонтактныеЛицаПартнеров_List)
-            .WithName(nameof(GetCatalog_КонтактныеЛицаПартнеров_List))
-            .WithSummary(nameof(GetCatalog_КонтактныеЛицаПартнеров_List))
-            .WithDescription("Get Catalog_КонтактныеЛицаПартнеров List from DB");
+            .WithName($"Get{feature}_List")
+            .WithSummary($"Get{feature}_List")
+            .WithDescription($"Get {feature} List from DB");
 
 
         var extGroup = builder.MapGroup("/ext/1c/ut/catalog-контактные-лица-партнеров")
-            .WithTags("1C UT Catalog_КонтактныеЛицаПартнеров");
-
-        extGroup.MapPatch("/notify", NotifyCatalog_КонтактныеЛицаПартнеров)
-            .WithName(nameof(NotifyCatalog_КонтактныеЛицаПартнеров))
-            .WithSummary(nameof(NotifyCatalog_КонтактныеЛицаПартнеров))
-            .WithDescription("Notify Catalog_КонтактныеЛицаПартнеров");
+            .WithTags($"1C UT {feature}");
 
         extGroup.MapPut("/resync", ResyncCatalog_КонтактныеЛицаПартнеров)
-            .WithName(nameof(ResyncCatalog_КонтактныеЛицаПартнеров))
-            .WithSummary(nameof(ResyncCatalog_КонтактныеЛицаПартнеров))
-            .WithDescription("Resync Catalog_КонтактныеЛицаПартнеров from OneS Ut and save to DB");
+            .WithName($"Resync{feature}")
+            .WithSummary($"Resync{feature}")
+            .WithDescription($"Resync {feature} from OneS Ut and save to DB");
+
+        extGroup.MapPatch("/notify", IntegrationEventPublisher.Publish<Catalog_КонтактныеЛицаПартнеров>)
+            .WithName($"Notify{feature}")
+            .WithSummary($"Notify{feature}")
+            .WithDescription($"Notify {feature}");
 
         return builder;
     }
@@ -77,13 +77,13 @@ public static class Catalog_КонтактныеЛицаПартнеров_Endpo
         return TypedResults.Ok();
     }
 
-    private static async Task<IResult> NotifyCatalog_КонтактныеЛицаПартнеров(HttpContext httpContext,
-        [FromServices] IRabbitPublisher publisher,
-        [FromServices] IHostEnvironment hostEnvironment,
-        [FromBody] CatalogEvent catalogEvent)
-    {
-        await publisher.PublishAsync(Catalog_КонтактныеЛицаПартнеров.GetExchangeName(hostEnvironment), catalogEvent);
+    //private static async Task<IResult> NotifyCatalog_КонтактныеЛицаПартнеров(HttpContext httpContext,
+    //    [FromServices] IEventPublisher publisher,
+    //    [FromServices] IHostEnvironment hostEnvironment,
+    //    [FromBody] CatalogEvent catalogEvent)
+    //{
+    //    await publisher.PublishAsync(Catalog_КонтактныеЛицаПартнеров.GetExchangeName(hostEnvironment), catalogEvent);
 
-        return TypedResults.Ok();
-    }
+    //    return TypedResults.Ok();
+    //}
 }

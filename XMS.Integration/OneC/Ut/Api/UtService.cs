@@ -1,6 +1,7 @@
 ﻿using XMS.Core.Common;
 using XMS.Domain.Models;
 using XMS.Integration.OneC.Api;
+using XMS.Integration.OneC.Common;
 using XMS.Integration.OneC.Ut.Abstractions;
 using XMS.Integration.OneC.Ut.Features.AccumulationRegister_ТоварыНаСкладах_Balance_Feature;
 using XMS.Integration.OneC.Ut.Features.Catalog_Пользователи_Feature;
@@ -20,7 +21,7 @@ internal class UtService(
 {
     public async Task<IReadOnlyList<UserUt>> FetchUserUtListAsync(CancellationToken ct = default)
     {
-        var rootObject = await utClient.GetValueFromJsonAsync<RootObject<Catalog_Пользователи>>(Catalog_Пользователи.Uri, ct);
+        var rootObject = await utClient.GetValueFromJsonAsync<RootObject<Catalog_Пользователи>>(SyncHelper.GetUri<Catalog_Пользователи>(), ct);
 
         var result = rootObject?.Value?.Select(x => new UserUt
         {

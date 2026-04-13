@@ -3,13 +3,14 @@ using Microsoft.Extensions.Logging;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Common;
 using XMS.Integration.OneC.Abstractions;
+using XMS.Integration.OneC.Common;
 using XMS.Integration.OneC.Ut.ODataClient;
 
 namespace XMS.Integration.OneC;
 
 internal abstract class DocumentService<TEntity>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
     : BaseService, IDocumentService<TEntity>
-    where TEntity : class, IDocument
+    where TEntity : class, IDocument, ISyncable
 {
     public async Task<TEntity?> GetAsync(Guid refKey, CancellationToken ct = default)
     {
@@ -62,7 +63,7 @@ internal abstract class DocumentService<TEntity>(UtClient utClient, IDbContextFa
 
     private async Task<IReadOnlyList<TEntity>> FetchListAsyncByDate(DateTime date, CancellationToken ct)
     {
-        var uri = TEntity.GetUriByDate(date, date.AddDays(1));
+        var uri = SyncHelper.GetUriByDate<TEntity>(date, date.AddDays(1));
 
         var rootObject = await utClient.GetValueFromJsonAsync<RootObject<TEntity>>(uri, ct);
 

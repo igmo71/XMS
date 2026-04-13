@@ -6,7 +6,7 @@ using XMS.Core.Abstractions.EventBus;
 
 namespace XMS.Infrastructure.EventBus;
 
-internal class RabbitPublisher(IConnectionFactory factory) : IRabbitPublisher
+internal class RabbitPublisher(IConnectionFactory factory) : IEventPublisher
 {
     private static readonly JsonSerializerOptions _jsonOptions = new()
     {

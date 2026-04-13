@@ -6,6 +6,7 @@ using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
 using XMS.Integration.OneC.Abstractions;
+using XMS.Integration.OneC.Common;
 
 namespace XMS.Integration.OneC;
 
@@ -23,8 +24,8 @@ public abstract class DocumentEventConsumer<TEntity, TEvent, THandler>(
         using var connection = await factory.CreateConnectionAsync(stoppingToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
-        string queueName = TEntity.GetQueueName(hostEnvironment);
-        string exchangeName = TEntity.GetExchangeName(hostEnvironment);
+        string queueName = SyncHelper.GetQueueName<TEntity>(hostEnvironment);
+        string exchangeName = SyncHelper.GetExchangeName<TEntity>(hostEnvironment);
 
         await channel.ExchangeDeclareAsync(exchangeName, ExchangeType.Fanout, durable: true, cancellationToken: stoppingToken);
         await channel.QueueDeclareAsync(queueName, durable: true, exclusive: false, autoDelete: false, cancellationToken: stoppingToken);
