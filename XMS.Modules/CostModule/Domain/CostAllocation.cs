@@ -5,14 +5,20 @@ using XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДе�
 
 namespace XMS.Modules.CostModule.Domain;
 
-internal class CostAllocation : BaseEntity
+public class CostAllocation : BaseEntity, ISoftDeletable
 {
+    public bool IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
+
+    public bool IsAllocated { get; set; }
+
     public Guid? PaymentVoucherId { get; set; }
     public PaymentVoucherType PaymentVoucherType { get; set; }
 
     public string? Number { get; set; }
     public DateTime Date { get; set; }
     public decimal TotalAmount { get; set; }
+    public string? BusinessOperation { get; set; }
     public string? PaymentPurpose { get; set; }
 
     public Guid? CostCategoryId { get; set; }
@@ -20,6 +26,9 @@ internal class CostAllocation : BaseEntity
 
     public Guid? CostItemId { get; set; }
     public CostItem? CostItem { get; set; }
+
+    public Guid? AuthorId { get; set; }
+    public Employee? Author { get; set; }
 
     public Guid? ManagerId { get; set; }
     public Employee? Manager { get; set; }
@@ -36,15 +45,13 @@ internal class CostAllocation : BaseEntity
     /// <summary>
     /// Статья Движения Денежных Средств - Ref_Key
     /// </summary>
-    public Guid Catalog_СтатьяДДС_Key { get; set; }
+    public Guid? Catalog_СтатьяДДС_Key { get; set; }
 
     /// <summary>
     /// Статья Движения Денежных Средств
     /// </summary>
     [NotMapped]
-    public Catalog_СтатьиДвиженияДенежныхСредств? Catalog_СтатьиДДС { get; set; }
-
-    public bool IsAllocated { get; set; }
+    public Catalog_СтатьиДвиженияДенежныхСредств? Catalog_СтатьяДДС { get; set; }
 
     public string? Comment { get; set; }
 

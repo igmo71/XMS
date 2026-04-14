@@ -1,30 +1,27 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
-using XMS.Integration.OneC.Abstractions;
+using XMS.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
+using XMS.Modules.CostModule.Abstractions;
 
-namespace XMS.Integration.OneC.Common;
+namespace XMS.Modules.CostModule.Application;
 
-public abstract class DocumentEventConsumer<TEntity, TEvent, THandler>(
+internal class Document_РасходныйКассовыйОрдер_ReceivedEventConsumer(
     IConnectionFactory factory,
-    IServiceProvider serviceProvider,
+    ICostAllocationService costAllocationService,
     IHostEnvironment hostEnvironment,
-    ILogger logger) : BackgroundService
-    where TEntity : class, IDocument
-    where TEvent : class, IOneCEvent
-    where THandler : class, IOneCEventHandler<TEvent>
+    ILogger<Document_РасходныйКассовыйОрдер_ReceivedEventConsumer> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         using var connection = await factory.CreateConnectionAsync(stoppingToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
-        string exchangeName = IntegrationHelper.GetExchangeName<TEntity>(hostEnvironment);
-        string queueName = IntegrationHelper.GetQueueName<TEntity>(hostEnvironment);
+        string exchangeName = $"{nameof(Document_РасходныйКассовыйОрдер)}_received";
+        string queueName = $"{nameof(Document_РасходныйКассовыйОрдер)}_received";
 
         await channel.ExchangeDeclareAsync(exchangeName, ExchangeType.Fanout, durable: true, cancellationToken: stoppingToken);
         await channel.QueueDeclareAsync(queueName, durable: true, exclusive: false, autoDelete: false, cancellationToken: stoppingToken);
@@ -39,13 +36,11 @@ public abstract class DocumentEventConsumer<TEntity, TEvent, THandler>(
 
             try
             {
-                using var scope = serviceProvider.CreateScope();
-                var handler = scope.ServiceProvider.GetRequiredService<THandler>();
 
-                var message = JsonSerializer.Deserialize<TEvent>(jsonMessage);
-                if (message != null)
+                var dto = JsonSerializer.Deserialize<Document_РасходныйКассовыйОрдер_Dto>(jsonMessage);
+                if (dto != null)
                 {
-                    await handler.HandleEvent(message);
+                    await costAllocationService.HandleDocument_СписаниеБезналичныхДенежныхСредств_ReceivedAsync(dto);
                 }
                 await channel.BasicAckAsync(ea.DeliveryTag, multiple: false, cancellationToken: stoppingToken);
             }
@@ -56,9 +51,5 @@ public abstract class DocumentEventConsumer<TEntity, TEvent, THandler>(
                 await Task.Delay(TimeSpan.FromSeconds(60), stoppingToken);
             }
         };
-
-        await channel.BasicConsumeAsync(queueName, autoAck: false, consumer: consumer, cancellationToken: stoppingToken);
-
-        await Task.Delay(Timeout.Infinite, stoppingToken);
     }
 }

@@ -28,5 +28,5 @@ public class CostCatalog_ДДС : BaseEntity
     /// Статья Движения Денежных Средств
     /// </summary>
     [NotMapped]
-    public Catalog_СтатьиДвиженияДенежныхСредств? Catalog_СтатьиДДС { get; set; }
+    public Catalog_СтатьиДвиженияДенежныхСредств? Catalog_СтатьяДДС { get; set; }
 }

@@ -1,6 +1,6 @@
 ﻿namespace XMS.Modules.CostModule.Domain;
 
-internal enum PaymentVoucherType
+public enum PaymentVoucherType
 {
     // Списание безнадичных ДС
     Bank,

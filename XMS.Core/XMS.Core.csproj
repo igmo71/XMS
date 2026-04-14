@@ -7,6 +7,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Abstractions\Integration\**" />
+	  <EmbeddedResource Remove="Abstractions\Integration\**" />
+	  <None Remove="Abstractions\Integration\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
 
@@ -14,10 +20,6 @@
 		<PackageReference Include="EFCore.BulkExtensions" Version="10.0.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.5" />
 		<PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Abstractions\Integration\" />
 	</ItemGroup>
 
 </Project>

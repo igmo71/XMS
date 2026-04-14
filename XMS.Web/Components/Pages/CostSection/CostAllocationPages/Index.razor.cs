@@ -42,7 +42,7 @@ public partial class Index : IDisposable
         {
             var parameters = BuildParameters();
 
-            var expenseCashOrdersTask = CostAllocationService.GetDocument_РасходныйКассовыйОрдер_Async(parameters, _cts.Token);
+            var expenseCashOrdersTask = CostAllocationService.GetDocumentРасходныйКассовыйОрдерAsync(parameters, _cts.Token);
             var cashlessWriteOffsTask = CostAllocationService.GetDocument_СписаниеБезналичныхДенежныхСредств_Async(parameters, _cts.Token);
 
             await Task.WhenAll(expenseCashOrdersTask, cashlessWriteOffsTask);

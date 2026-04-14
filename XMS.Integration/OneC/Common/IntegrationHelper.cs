@@ -38,5 +38,5 @@ public class IntegrationHelper
         hostEnvironment.IsDevelopment() ? $"dev_{typeof(T).Name}" : $"{typeof(T).Name}";
 
     public static string GetQueueName<T>(IHostEnvironment hostEnvironment) =>
-        hostEnvironment.IsDevelopment() ? $"dev_{typeof(T).Name}" : $"xms_{typeof(T).Name}";
+        hostEnvironment.IsDevelopment() ? $"dev_{typeof(T).Name}" : $"{typeof(T).Name}";
 }

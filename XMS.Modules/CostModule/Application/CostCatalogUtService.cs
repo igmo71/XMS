@@ -67,7 +67,7 @@ internal class CostCatalogUtService(
         var catalogItems = (await utService.GetCatalog_СтатьиДвиженияДенежныхСредств_Async(new CatalogQueryParameters(), ct))
             .ToDictionary(e => e.Ref_Key);
 
-        result.ForEach(e => e.Catalog_СтатьиДДС = catalogItems[e.Catalog_СтатьяДДС_Key]);
+        result.ForEach(e => e.Catalog_СтатьяДДС = catalogItems[e.Catalog_СтатьяДДС_Key]);
 
         return result;
     }
