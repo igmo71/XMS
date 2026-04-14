@@ -90,6 +90,8 @@ internal class CostCategoryService(
 
         await dbContext.SaveChangesAsync(ct);
 
+        await integrationService.PublishAsync(existing);
+
         return ServiceResult.Success();
     }
 
