@@ -42,7 +42,7 @@ internal class Document_РасходныйКассовыйОрдер_EventHandle
 
             await dbContext.SaveChangesAsync(ct);
 
-            await eventPublisher.PublishAsync($"{nameof(Document_РасходныйКассовыйОрдер)}_fetched", Document_РасходныйКассовыйОрдер_Dto.From(fetchedItem));
+            await eventPublisher.PublishAsync($"{nameof(Document_РасходныйКассовыйОрдер)}_received", Document_РасходныйКассовыйОрдер_Dto.From(fetchedItem));
         }
         else
         {

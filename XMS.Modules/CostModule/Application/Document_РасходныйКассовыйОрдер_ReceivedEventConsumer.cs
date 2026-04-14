@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -11,7 +12,7 @@ namespace XMS.Modules.CostModule.Application;
 
 internal class Document_РасходныйКассовыйОрдер_ReceivedEventConsumer(
     IConnectionFactory factory,
-    ICostAllocationService costAllocationService,
+    IServiceProvider serviceProvider,
     IHostEnvironment hostEnvironment,
     ILogger<Document_РасходныйКассовыйОрдер_ReceivedEventConsumer> logger) : BackgroundService
 {
@@ -36,11 +37,13 @@ internal class Document_РасходныйКассовыйОрдер_ReceivedEve
 
             try
             {
+                using var scope = serviceProvider.CreateScope();
+                var handler = scope.ServiceProvider.GetRequiredService<ICostAllocationService>();
 
                 var dto = JsonSerializer.Deserialize<Document_РасходныйКассовыйОрдер_Dto>(jsonMessage);
                 if (dto != null)
                 {
-                    await costAllocationService.HandleDocument_СписаниеБезналичныхДенежныхСредств_ReceivedAsync(dto);
+                    await handler.HandleDocument_РасходныйКассовыйОрдер_ReceivedAsync(dto);
                 }
                 await channel.BasicAckAsync(ea.DeliveryTag, multiple: false, cancellationToken: stoppingToken);
             }
@@ -51,5 +54,9 @@ internal class Document_РасходныйКассовыйОрдер_ReceivedEve
                 await Task.Delay(TimeSpan.FromSeconds(60), stoppingToken);
             }
         };
+
+        await channel.BasicConsumeAsync(queueName, autoAck: false, consumer: consumer, cancellationToken: stoppingToken);
+
+        await Task.Delay(Timeout.Infinite, stoppingToken);
     }
 }

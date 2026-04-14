@@ -1507,7 +1507,7 @@ namespace XMS.Web.Migrations
 
             modelBuilder.Entity("XMS.Modules.CostModule.Domain.CostAllocation", b =>
                 {
-                    b.HasOne("XMS.Domain.Models.Employee", "Author")
+                    b.HasOne("XMS.Domain.Models.UserUt", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -1537,7 +1537,7 @@ namespace XMS.Web.Migrations
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("XMS.Domain.Models.Employee", "Manager")
+                    b.HasOne("XMS.Domain.Models.UserUt", "Manager")
                         .WithMany()
                         .HasForeignKey("ManagerId")
                         .OnDelete(DeleteBehavior.NoAction);

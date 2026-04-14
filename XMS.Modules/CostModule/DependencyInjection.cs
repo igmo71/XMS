@@ -16,6 +16,9 @@ public static class DependencyInjection
         services.AddScoped<ICostCategoryIntegrationService, CostCategoryIntegrationService>();
         services.AddScoped<ICostItemService, CostItemService>();
 
+        services.AddHostedService<Document_РасходныйКассовыйОрдер_ReceivedEventConsumer>();
+        services.AddHostedService<Document_РасходныйКассовыйОрдер_DeletedEventConsumer>();
+
         return services;
     }
 }

@@ -12,7 +12,7 @@ using XMS.Infrastructure.Data;
 namespace XMS.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260414121145_CreateCostAllocations")]
+    [Migration("20260414140405_CreateCostAllocations")]
     partial class CreateCostAllocations
     {
         /// <inheritdoc />
@@ -1510,7 +1510,7 @@ namespace XMS.Web.Migrations
 
             modelBuilder.Entity("XMS.Modules.CostModule.Domain.CostAllocation", b =>
                 {
-                    b.HasOne("XMS.Domain.Models.Employee", "Author")
+                    b.HasOne("XMS.Domain.Models.UserUt", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -1540,7 +1540,7 @@ namespace XMS.Web.Migrations
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("XMS.Domain.Models.Employee", "Manager")
+                    b.HasOne("XMS.Domain.Models.UserUt", "Manager")
                         .WithMany()
                         .HasForeignKey("ManagerId")
                         .OnDelete(DeleteBehavior.NoAction);

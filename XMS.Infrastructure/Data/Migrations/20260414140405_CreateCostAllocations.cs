@@ -64,21 +64,21 @@ namespace XMS.Web.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
-                        name: "FK_CostAllocations_Employees_AuthorId",
-                        column: x => x.AuthorId,
-                        principalTable: "Employees",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_CostAllocations_Employees_ManagerId",
-                        column: x => x.ManagerId,
-                        principalTable: "Employees",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_CostAllocations_Locations_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_CostAllocations_UsersUt_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "UsersUt",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_CostAllocations_UsersUt_ManagerId",
+                        column: x => x.ManagerId,
+                        principalTable: "UsersUt",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(

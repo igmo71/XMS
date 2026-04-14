@@ -23,7 +23,7 @@ internal class CostAllocationService(IOneCUtService utService, IDbContextFactory
         return await utService.GetDocument_СписаниеБезналичныхДенежныхСредств_Async(parameters, ct);
     }
 
-    public async Task HandleDocument_СписаниеБезналичныхДенежныхСредств_ReceivedAsync(Document_РасходныйКассовыйОрдер_Dto dto, CancellationToken ct = default)
+    public async Task HandleDocument_РасходныйКассовыйОрдер_ReceivedAsync(Document_РасходныйКассовыйОрдер_Dto dto, CancellationToken ct = default)
     {
         using var dbContext = dbFactory.CreateDbContext();
 
@@ -33,13 +33,15 @@ internal class CostAllocationService(IOneCUtService utService, IDbContextFactory
         {
             var created = new CostAllocation
             {
+                PaymentVoucherId = dto.Ref_Key,
+                PaymentVoucherType = PaymentVoucherType.Bank,
                 IsAllocated = false,
                 Number = dto.Number,
                 Date = dto.Date,
                 TotalAmount = dto.СуммаДокумента,
                 PaymentPurpose = dto.ХозяйственнаяОперация,
-                CostCategoryId = dto.КСЗ_КатегорияЗатрат_Key,
-                Catalog_СтатьяДДС_Key = dto.СтатьяДвиженияДенежныхСредств_Key,
+                CostCategoryId = dto.КСЗ_КатегорияЗатрат_Key == Guid.Empty ? null : dto.КСЗ_КатегорияЗатрат_Key,
+                Catalog_СтатьяДДС_Key = dto.СтатьяДвиженияДенежныхСредств_Key == Guid.Empty ? null : dto.СтатьяДвиженияДенежныхСредств_Key,
                 BusinessOperation = dto.ХозяйственнаяОперация,
                 AuthorId = dto.Автор_Key,
                 Comment = dto.Комментарий
@@ -54,8 +56,8 @@ internal class CostAllocationService(IOneCUtService utService, IDbContextFactory
             existing.Date = dto.Date;
             existing.TotalAmount = dto.СуммаДокумента;
             existing.PaymentPurpose = dto.ХозяйственнаяОперация;
-            existing.CostCategoryId = dto.КСЗ_КатегорияЗатрат_Key;
-            existing.Catalog_СтатьяДДС_Key = dto.СтатьяДвиженияДенежныхСредств_Key;
+            existing.CostCategoryId = dto.КСЗ_КатегорияЗатрат_Key == Guid.Empty ? null : dto.КСЗ_КатегорияЗатрат_Key;
+            existing.Catalog_СтатьяДДС_Key = dto.СтатьяДвиженияДенежныхСредств_Key == Guid.Empty ? null : dto.СтатьяДвиженияДенежныхСредств_Key;
             existing.BusinessOperation = dto.ХозяйственнаяОперация;
             existing.AuthorId = dto.Автор_Key;
             existing.Comment = dto.Комментарий;
@@ -64,7 +66,7 @@ internal class CostAllocationService(IOneCUtService utService, IDbContextFactory
         await dbContext.SaveChangesAsync(ct);
     }
 
-    public async Task HandleDocument_СписаниеБезналичныхДенежныхСредств_DeletedAsync(Document_РасходныйКассовыйОрдер_Dto dto, CancellationToken ct = default)
+    public async Task HandleDocument_РасходныйКассовыйОрдер_DeletedAsync(Document_РасходныйКассовыйОрдер_Dto dto, CancellationToken ct = default)
     {
         using var dbContext = dbFactory.CreateDbContext();
 
