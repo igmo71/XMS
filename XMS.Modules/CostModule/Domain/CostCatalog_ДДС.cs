@@ -22,11 +22,11 @@ public class CostCatalog_ДДС : BaseEntity
     /// <summary>
     /// Статья Движения Денежных Средств - Ref_Key
     /// </summary>
-    public Guid Catalog_СтатьиДвиженияДенежныхСредств_RefKey { get; set; }
+    public Guid Catalog_СтатьяДДС_Key { get; set; }
 
     /// <summary>
     /// Статья Движения Денежных Средств
     /// </summary>
     [NotMapped]
-    public Catalog_СтатьиДвиженияДенежныхСредств? Catalog_СтатьиДвиженияДенежныхСредств { get; set; }
+    public Catalog_СтатьиДвиженияДенежныхСредств? Catalog_СтатьиДДС { get; set; }
 }

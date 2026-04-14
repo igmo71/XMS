@@ -55,7 +55,7 @@
 
 									<MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">
 
-										<MudText Typo="Typo.body2">@selectedCostCatalogUt.Catalog_СтатьиДвиженияДенежныхСредств?.Description</MudText>
+										<MudText Typo="Typo.body2">@selectedCostCatalogUt.Catalog_СтатьиДДС?.Description</MudText>
 
 										@if (selectedCostCatalogUtId == _deletingCostCatalogUtId)
 										{
@@ -70,7 +70,7 @@
 								}
 								<TreeViewDrawer CostCategoryItemId="@costCategoryItemId"
 												CatalogUtItemsTree="CatalogUtItemsTree"
-												SelectedCatalogUtItemIds="CostCatalogUtLookup[costCategoryItemId].Select(e => e.Catalog_СтатьиДвиженияДенежныхСредств_RefKey).ToHashSet()"
+												SelectedCatalogUtItemIds="CostCatalogUtLookup[costCategoryItemId].Select(e => e.Catalog_СтатьяДДС_Key).ToHashSet()"
 												OnUpdateCostCatalog="OnUpdateCostCatalogUt" />
 							</div>
 						</MudStack>

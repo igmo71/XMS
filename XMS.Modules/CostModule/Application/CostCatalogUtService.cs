@@ -38,7 +38,7 @@ internal class CostCatalogUtService(
             dbContext.Set<CostCatalog_ДДС>().RemoveRange(toRemove);
 
         var toAdd = selectedItems
-            .Where(e => !existingItemIds.Contains(e.Id) && e.Catalog_СтатьиДвиженияДенежныхСредств_RefKey != Guid.Empty)
+            .Where(e => !existingItemIds.Contains(e.Id) && e.Catalog_СтатьяДДС_Key != Guid.Empty)
             .ToList();
         if (toAdd?.Count > 0)
             await dbContext.Set<CostCatalog_ДДС>().AddRangeAsync(toAdd, ct);
@@ -67,7 +67,7 @@ internal class CostCatalogUtService(
         var catalogItems = (await utService.GetCatalog_СтатьиДвиженияДенежныхСредств_Async(new CatalogQueryParameters(), ct))
             .ToDictionary(e => e.Ref_Key);
 
-        result.ForEach(e => e.Catalog_СтатьиДвиженияДенежныхСредств = catalogItems[e.Catalog_СтатьиДвиженияДенежныхСредств_RefKey]);
+        result.ForEach(e => e.Catalog_СтатьиДДС = catalogItems[e.Catalog_СтатьяДДС_Key]);
 
         return result;
     }
@@ -79,7 +79,7 @@ internal class CostCatalogUtService(
         var result = await dbContext.Set<CostCatalog_ДДС>()
             .AsNoTracking()
             .Where(e => e.CostCategoryItemId == costCategoryItemId)
-            .Select(e => e.Catalog_СтатьиДвиженияДенежныхСредств_RefKey)
+            .Select(e => e.Catalog_СтатьяДДС_Key)
             .ToHashSetAsync();
 
         return result;

@@ -1,0 +1,63 @@
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using XMS.Domain.Abstractions;
+using XMS.Domain.Models;
+using XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
+
+namespace XMS.Modules.CostModule.Domain;
+
+internal class CostAllocation : BaseEntity
+{
+    public Guid? PaymentVoucherId { get; set; }
+    public PaymentVoucherType PaymentVoucherType { get; set; }
+
+    public string? Number { get; set; }
+    public DateTime Date { get; set; }
+    public decimal TotalAmount { get; set; }
+    public string? PaymentPurpose { get; set; }
+
+    public Guid? CostCategoryId { get; set; }
+    public CostCategory? CostCategory { get; set; }
+
+    public Guid? CostItemId { get; set; }
+    public CostItem? CostItem { get; set; }
+
+    public Guid? ManagerId { get; set; }
+    public Employee? Manager { get; set; }
+
+    public Guid? DepartmentId { get; set; }
+    public Department? Department { get; set; }
+
+    public Guid? LocationId { get; set; }
+    public Location? Location { get; set; }
+
+    public Guid? CityId { get; set; }
+    public City? City { get; set; }
+
+    /// <summary>
+    /// Статья Движения Денежных Средств - Ref_Key
+    /// </summary>
+    public Guid Catalog_СтатьяДДС_Key { get; set; }
+
+    /// <summary>
+    /// Статья Движения Денежных Средств
+    /// </summary>
+    [NotMapped]
+    public Catalog_СтатьиДвиженияДенежныхСредств? Catalog_СтатьиДДС { get; set; }
+
+    public bool IsAllocated { get; set; }
+
+    public string? Comment { get; set; }
+
+    public string? Name
+    {
+        get
+        {
+            return PaymentVoucherType switch
+            {
+                PaymentVoucherType.Bank => "Списание безналичных ДС",
+                PaymentVoucherType.Cash => "Расходный кассовый ордер",
+                _ => string.Empty
+            };
+        }
+    }
+}

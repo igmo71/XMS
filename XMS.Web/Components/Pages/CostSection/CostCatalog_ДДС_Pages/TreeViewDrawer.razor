@@ -117,9 +117,9 @@
 		_isProcessing = true;
 
 		var newCostCatalogUtList = SelectedCatalogUtItemIds.Count == 0
-		? [new CostCatalog_ДДС { Catalog_СтатьиДвиженияДенежныхСредств_RefKey = Guid.Empty, CostCategoryItemId = CostCategoryItemId }]
+		? [new CostCatalog_ДДС { Catalog_СтатьяДДС_Key = Guid.Empty, CostCategoryItemId = CostCategoryItemId }]
 		: SelectedCatalogUtItemIds
-			.Select(refKey => new CostCatalog_ДДС { Catalog_СтатьиДвиженияДенежныхСредств_RefKey = refKey, CostCategoryItemId = CostCategoryItemId })
+			.Select(refKey => new CostCatalog_ДДС { Catalog_СтатьяДДС_Key = refKey, CostCategoryItemId = CostCategoryItemId })
 			.ToList();
 
 		await OnUpdateCostCatalog.InvokeAsync(newCostCatalogUtList);
