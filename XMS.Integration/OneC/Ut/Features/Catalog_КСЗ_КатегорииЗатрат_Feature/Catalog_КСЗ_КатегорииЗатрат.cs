@@ -1,8 +1,8 @@
 ﻿using XMS.Integration.OneC.Abstractions;
 
-namespace XMS.Integration.OneC.Ut.Features.Catalog_КСЗ_КатегорииСтатейЗатрат_Feature;
+namespace XMS.Integration.OneC.Ut.Features.Catalog_КСЗ_КатегорииЗатрат_Feature;
 
-public class Catalog_КСЗ_КатегорииСтатейЗатрат : ICatalog, IOneCEvent, ISyncable
+public class Catalog_КСЗ_КатегорииЗатрат : ICatalog, IOneCEvent, ISyncable
 {
     public Guid Ref_Key { get; set; }
     public bool DeletionMark { get; set; }

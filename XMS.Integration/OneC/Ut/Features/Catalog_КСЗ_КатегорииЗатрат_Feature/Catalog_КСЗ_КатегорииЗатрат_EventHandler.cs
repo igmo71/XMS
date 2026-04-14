@@ -3,13 +3,13 @@ using XMS.Core.Common;
 using XMS.Integration.OneC.Common;
 using XMS.Integration.OneC.Ut.Abstractions;
 using XMS.Integration.OneC.Ut.ODataClient;
-using Entity = XMS.Integration.OneC.Ut.Features.Catalog_КСЗ_КатегорииСтатейЗатрат_Feature.Catalog_КСЗ_КатегорииСтатейЗатрат;
+using Entity = XMS.Integration.OneC.Ut.Features.Catalog_КСЗ_КатегорииЗатрат_Feature.Catalog_КСЗ_КатегорииЗатрат;
 
-namespace XMS.Integration.OneC.Ut.Features.Catalog_КСЗ_КатегорииСтатейЗатрат_Feature;
+namespace XMS.Integration.OneC.Ut.Features.Catalog_КСЗ_КатегорииЗатрат_Feature;
 
-internal class Catalog_КСЗ_КатегорииСтатейЗатрат_EventHandler(
+internal class Catalog_КСЗ_КатегорииЗатрат_EventHandler(
     UtClient utClient,
-    ILogger<Entity> logger) : BaseService, ICatalog_КСЗ_КатегорииСтатейЗатрат_EventHandler
+    ILogger<Entity> logger) : BaseService, ICatalog_КСЗ_КатегорииЗатрат_EventHandler
 {
     public async Task<ServiceResult> HandleEvent(Entity entityEvent, CancellationToken ct = default)
     {
