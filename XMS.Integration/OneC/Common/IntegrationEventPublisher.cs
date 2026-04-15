@@ -13,11 +13,11 @@ internal static class IntegrationEventPublisher
         [FromServices] IEventPublisher publisher,
         [FromServices] IHostEnvironment hostEnvironment,
         [FromServices] ILogger<CatalogNotification> logger,
-        [FromBody] CatalogNotification catalogEvent) where TEntity : ISyncable
+        [FromBody] CatalogNotification catalogNotification) where TEntity : ISyncable
     {
-        await publisher.PublishAsync(IntegrationHelper.GetEventName<TEntity>(IntegrationType.Notify, hostEnvironment), catalogEvent);
+        await publisher.PublishAsync(IntegrationHelper.GetEventName<TEntity>(IntegrationType.Notify, hostEnvironment), catalogNotification);
 
-        logger.LogDebug("{Source} {Request.Path} {@catalogEvent}", nameof(PublishCatalogNotificationAsync), httpContext.Request.Path.Value, catalogEvent);
+        logger.LogDebug("{Source} {Request.Path} {@catalogNotification}", nameof(PublishCatalogNotificationAsync), httpContext.Request.Path.Value, catalogNotification);
 
         return TypedResults.Ok();
     }
@@ -27,11 +27,11 @@ internal static class IntegrationEventPublisher
         [FromServices] IEventPublisher publisher,
         [FromServices] IHostEnvironment hostEnvironment,
         [FromServices] ILogger<DocumentNotification> logger,
-        [FromBody] DocumentNotification documentEvent) where TEntity : ISyncable
+        [FromBody] DocumentNotification documentNotification) where TEntity : ISyncable
     {
-        await publisher.PublishAsync(IntegrationHelper.GetEventName<TEntity>(IntegrationType.Notify, hostEnvironment), documentEvent);
+        await publisher.PublishAsync(IntegrationHelper.GetEventName<TEntity>(IntegrationType.Notify, hostEnvironment), documentNotification);
 
-        logger.LogDebug("{Source} {Request.Path} {@documentEvent}", nameof(PublishDocumentNotificationAsync), httpContext.Request.Path.Value, documentEvent);
+        logger.LogDebug("{Source} {Request.Path} {@documentNotification}", nameof(PublishDocumentNotificationAsync), httpContext.Request.Path.Value, documentNotification);
 
         return TypedResults.Ok();
     }
@@ -40,11 +40,11 @@ internal static class IntegrationEventPublisher
         [FromServices] IEventPublisher publisher,
         [FromServices] IHostEnvironment hostEnvironment,
         [FromServices] ILogger<DocumentNotification> logger,
-        [FromBody] DocumentNotification documentEvent) where TEntity : ISyncable
+        [FromBody] DocumentNotification documentNotification) where TEntity : ISyncable
     {
-        await publisher.PublishAsync(IntegrationHelper.GetEventName<TEntity>(IntegrationType.Notify, hostEnvironment), documentEvent);
+        await publisher.PublishAsync(IntegrationHelper.GetEventName<TEntity>(IntegrationType.Notify, hostEnvironment), documentNotification);
 
-        logger.LogDebug("{Source} {Request.Path} {@documentEvent}", nameof(PublishDocumentNotificationAsync), httpContext.Request.Path.Value, documentEvent);
+        logger.LogDebug("{Source} {Request.Path} {@documentNotification}", nameof(PublishDocumentNotificationPostAsync), httpContext.Request.Path.Value, documentNotification);
 
         return TypedResults.Ok();
     }

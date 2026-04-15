@@ -13,6 +13,8 @@ public class CostAllocationEntityTypeConfiguration : BaseEntityTypeConfiguration
 
         builder.ToTable("CostAllocations");
 
+        builder.Property(e => e.TotalAmount).HasPrecision(18, 2);
+
         builder.HasOne(e => e.CostCategory).WithMany()
             .HasForeignKey(e => e.CostCategoryId).HasPrincipalKey(e => e.Id)
             .OnDelete(DeleteBehavior.SetNull);
