@@ -3,5 +3,5 @@ using XMS.Integration.OneC.Common;
 
 namespace XMS.Integration.OneC.Ut.Abstractions;
 
-public interface IDocument_РеализацияТоваровУслуг_NotificationHandler : IOneCEventHandler<DocumentNotification>
+public interface IDocument_РеализацияТоваровУслуг_NotificationHandler : IIntegrationEventHandler<DocumentNotification>
 { }

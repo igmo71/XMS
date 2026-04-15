@@ -3,17 +3,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using System.Net.Mime;
+using System.Reflection;
 using System.Text;
+using XMS.Integration.OneC.Abstractions;
 using XMS.Integration.OneC.Api;
 using XMS.Integration.OneC.Buh.Api;
 using XMS.Integration.OneC.Buh.ODataClient;
+using XMS.Integration.OneC.Common;
 using XMS.Integration.OneC.Ut;
 using XMS.Integration.OneC.Ut.Api;
 using XMS.Integration.OneC.Ut.ODataClient;
 using XMS.Integration.OneC.Zup.Api;
 using XMS.Integration.OneC.Zup.ODataClient;
 
-namespace XMS.Integration.OneC.Common;
+namespace XMS.Integration.OneC;
 
 public static class DependencyInjection
 {
@@ -26,6 +29,8 @@ public static class DependencyInjection
         services.AddOneCClient<UtClient, UtClientConfig>(configuration);
         services.AddOneCClient<BuhClient, BuhClientConfig>(configuration);
         services.AddOneCClient<ZupClient, ZupClientConfig>(configuration);
+
+        services.AddIntegrationEventHandlers();
 
         services.AddUtCServices();
 
@@ -61,6 +66,23 @@ public static class DependencyInjection
 
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
         });
+
+        return services;
+    }
+
+    private static IServiceCollection AddIntegrationEventHandlers(this IServiceCollection services)
+    {
+        var handlerRegistrations = Assembly.GetExecutingAssembly()
+            .GetTypes()
+            .Where(t => t is { IsClass: true, IsAbstract: false })
+            .SelectMany(t => t.GetInterfaces()
+                .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IIntegrationEventHandler<>))
+                .Select(i => new { Interface = i, Implementation = t }));
+
+        foreach (var reg in handlerRegistrations)
+        {
+            services.AddScoped(reg.Interface, reg.Implementation);
+        }
 
         return services;
     }

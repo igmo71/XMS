@@ -11,11 +11,6 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EFCore.BulkExtensions" Version="10.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.5" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\XMS.Core\XMS.Core.csproj" />
     <ProjectReference Include="..\XMS.Domain\XMS.Domain.csproj" />
     <ProjectReference Include="..\XMS.Integration\XMS.Integration.csproj" />

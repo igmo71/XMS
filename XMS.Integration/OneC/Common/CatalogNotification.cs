@@ -2,7 +2,7 @@
 
 namespace XMS.Integration.OneC.Common;
 
-public class CatalogNotification : IOneCEvent
+public class CatalogNotification : IIntegrationEvent
 {
     public Guid Ref_Key { get; set; }
     public string? DataVersion { get; set; }

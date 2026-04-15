@@ -3,5 +3,5 @@ using XMS.Integration.OneC.Ut.Features.Catalog_КСЗ_КатегорииЗатр
 
 namespace XMS.Integration.OneC.Ut.Abstractions;
 
-internal interface ICatalog_КСЗ_КатегорииЗатрат_NotificationHandler : IOneCEventHandler<Catalog_КСЗ_КатегорииЗатрат>
+internal interface ICatalog_КСЗ_КатегорииЗатрат_NotificationHandler : IIntegrationEventHandler<Catalog_КСЗ_КатегорииЗатрат>
 { }

@@ -15,8 +15,8 @@ public abstract class DocumentNotificationConsumer<TEntity, TEvent, THandler>(
     IHostEnvironment hostEnvironment,
     ILogger logger) : BackgroundService
     where TEntity : class, IDocument
-    where TEvent : class, IOneCEvent
-    where THandler : class, IOneCEventHandler<TEvent>
+    where TEvent : class, IIntegrationEvent
+    where THandler : class, IIntegrationEventHandler<TEvent>
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

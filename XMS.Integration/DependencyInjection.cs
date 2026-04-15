@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using XMS.Integration.AD;
 using XMS.Integration.Bitrix;
-using XMS.Integration.OneC.Common;
+using XMS.Integration.OneC;
 
 namespace XMS.Integration;
 

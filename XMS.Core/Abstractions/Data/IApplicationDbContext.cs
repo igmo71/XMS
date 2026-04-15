@@ -1,5 +1,4 @@
-﻿using EFCore.BulkExtensions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace XMS.Core.Abstractions.Data;
 
@@ -11,5 +10,6 @@ public interface IApplicationDbContext : IDisposable
 
     Task<int> SaveChangesAsync(CancellationToken token);
 
-    Task BulkInsertAsync<TEntity>(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null, CancellationToken ct = default) where TEntity : class;
+    // EFCore.BulkExtensions
+    //Task BulkInsertAsync<TEntity>(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null, CancellationToken ct = default) where TEntity : class;
 }

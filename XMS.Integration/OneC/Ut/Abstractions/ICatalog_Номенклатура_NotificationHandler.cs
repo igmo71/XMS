@@ -3,5 +3,5 @@ using XMS.Integration.OneC.Common;
 
 namespace XMS.Integration.OneC.Ut.Abstractions;
 
-public interface ICatalog_Номенклатура_NotificationHandler : IOneCEventHandler<CatalogNotification>
+public interface ICatalog_Номенклатура_NotificationHandler : IIntegrationEventHandler<CatalogNotification>
 { }

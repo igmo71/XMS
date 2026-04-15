@@ -1,4 +1,3 @@
-using EFCore.BulkExtensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using XMS.Core.Abstractions.Data;
@@ -20,7 +19,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public void UpdateValues<TEntity>(TEntity existing, TEntity newItem) where TEntity : class =>
         Entry(existing).CurrentValues.SetValues(newItem);
 
-    public Task BulkInsertAsync<TEntity>(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null, CancellationToken ct = default)
-        where TEntity : class =>
-        this.BulkInsertAsync(entities, bulkConfig, cancellationToken: ct);
+    // EFCore.BulkExtensions
+    //public Task BulkInsertAsync<TEntity>(IEnumerable<TEntity> entities, BulkConfig? bulkConfig = null, CancellationToken ct = default)
+    //    where TEntity : class =>
+    //    this.BulkInsertAsync(entities, bulkConfig, cancellationToken: ct);
 }

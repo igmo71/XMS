@@ -8,22 +8,21 @@ using XMS.Integration.OneC.Ut.ODataClient;
 namespace XMS.Integration.OneC.Common;
 
 internal abstract class CatalogNotificationHandler<TEntity, TEvent>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
-    : BaseService, IOneCEventHandler<TEvent>
+    : BaseService, IIntegrationEventHandler<TEvent>
     where TEntity : class, ICatalog, ISyncable
-    where TEvent : class, IOneCEvent
+    where TEvent : class, IIntegrationEvent
 {
-    public async Task<ServiceResult> HandleEvent(TEvent oneCNotifyMessage, CancellationToken ct = default)
+    public async Task HandleAsync(TEvent oneCNotifyMessage, CancellationToken ct = default)
     {
         using var activity = StartActivity();
 
-        logger.LogDebug("{Source} - Start {@message}", nameof(HandleEvent), oneCNotifyMessage);
+        logger.LogDebug("{Source} - Start {@message}", nameof(HandleAsync), oneCNotifyMessage);
 
         var fetchedItem = await FetchByRefKeyAsync(oneCNotifyMessage.Ref_Key, ct);
 
         if (fetchedItem is null)
         {
-            logger.LogError("{Source} - Failed to feath {@message}", nameof(HandleEvent), oneCNotifyMessage);
-            return ServiceError.NotFound;
+            logger.LogError("{Source} - Failed to feath {@message}", nameof(HandleAsync), oneCNotifyMessage);
         }
 
         using var dbContext = dbFactory.CreateDbContext();
@@ -36,9 +35,7 @@ internal abstract class CatalogNotificationHandler<TEntity, TEvent>(UtClient utC
 
         await dbContext.SaveChangesAsync(ct);
 
-        logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleEvent), oneCNotifyMessage, fetchedItem);
-
-        return ServiceResult.Success();
+        logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleAsync), oneCNotifyMessage, fetchedItem);
     }
 
     private async Task<TEntity?> FetchByRefKeyAsync(Guid refKey, CancellationToken ct)

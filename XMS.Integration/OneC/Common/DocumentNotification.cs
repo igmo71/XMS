@@ -2,7 +2,7 @@
 
 namespace XMS.Integration.OneC.Common;
 
-public class DocumentNotification : IOneCEvent
+public class DocumentNotification : IIntegrationEvent
 {
     public Guid Ref_Key { get; set; }
     public string? DataVersion { get; set; }

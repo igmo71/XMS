@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
 using XMS.Integration.OneC.Abstractions;
@@ -15,8 +13,8 @@ public abstract class CatalogNotificationConsumer<TEntity, TEvent, THandler>(
     IHostEnvironment hostEnvironment,
     ILogger logger) : BackgroundService
     where TEntity : class, ICatalog
-    where TEvent : class, IOneCEvent
-    where THandler : class, IOneCEventHandler<TEvent>
+    where TEvent : class, IIntegrationEvent
+    where THandler : class, IIntegrationEventHandler<TEvent>
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
