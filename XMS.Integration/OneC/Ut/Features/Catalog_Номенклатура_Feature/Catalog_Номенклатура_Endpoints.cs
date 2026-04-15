@@ -37,7 +37,7 @@ public static class Catalog_Номенклатура_Endpoints
             .WithSummary($"Resync{feature}")
             .WithDescription($"Resync {feature} from OneS Ut and save to DB");
 
-        extGroup.MapPatch("/notify", IntegrationEventPublisher.Publish<Catalog_Номенклатура>)
+        extGroup.MapPatch("/notify", IntegrationEventPublisher.PublishCatalogNotificationAsync<Catalog_Номенклатура>)
             .WithName($"Notify{feature}")
             .WithSummary($"Notify{feature}")
             .WithDescription($"Notify {feature}");
