@@ -35,7 +35,7 @@ internal class Catalog_КСЗ_КатегорииЗатрат_EventHandler(
         return ServiceResult.Success();
     }
 
-    private async Task<Entity> FetchByRefKeyAsync(Guid refKey, CancellationToken ct)
+    private async Task<Entity?> FetchByRefKeyAsync(Guid refKey, CancellationToken ct)
     {
         var uri = IntegrationHelper.GetUriByRefKey<Entity>(refKey);
 
