@@ -5,6 +5,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
+using XMS.Integration.OneC.Common;
 using XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 using XMS.Modules.CostModule.Abstractions.Integration;
 
@@ -16,10 +17,6 @@ internal class Document_СписаниеБезналичныхДенежныхС
     ILogger<Document_СписаниеБезналичныхДенежныхСредств_EventConsumer> logger,
     IHostEnvironment hostEnvironment) : BackgroundService
 {
-    private string _basicName = hostEnvironment.IsDevelopment()
-            ? $"dev_{nameof(Document_СписаниеБезналичныхДенежныхСредств)}"
-            : $"{nameof(Document_СписаниеБезналичныхДенежныхСредств)}";
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await ProcessReceivedEvent(stoppingToken);
@@ -32,8 +29,10 @@ internal class Document_СписаниеБезналичныхДенежныхС
         using var connection = await factory.CreateConnectionAsync(stoppingToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
-        string exchangeName = $"{_basicName}_received";
-        string queueName = $"{_basicName}_received";
+        string exchangeName = IntegrationHelper.GetEventName<Document_СписаниеБезналичныхДенежныхСредств>(
+            IntegrationType.Received, hostEnvironment);
+        string queueName = IntegrationHelper.GetEventName<Document_СписаниеБезналичныхДенежныхСредств>(
+            IntegrationType.Received, hostEnvironment);
 
         await channel.ExchangeDeclareAsync(exchangeName, ExchangeType.Fanout, durable: true, cancellationToken: stoppingToken);
         await channel.QueueDeclareAsync(queueName, durable: true, exclusive: false, autoDelete: false, cancellationToken: stoppingToken);
@@ -76,8 +75,10 @@ internal class Document_СписаниеБезналичныхДенежныхС
         using var connection = await factory.CreateConnectionAsync(stoppingToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
-        string exchangeName = $"{_basicName}_deleted";
-        string queueName = $"{_basicName}_deleted";
+        string exchangeName = IntegrationHelper.GetEventName<Document_СписаниеБезналичныхДенежныхСредств>(
+            IntegrationType.Deleted, hostEnvironment);
+        string queueName = IntegrationHelper.GetEventName<Document_СписаниеБезналичныхДенежныхСредств>(
+            IntegrationType.Deleted, hostEnvironment);
 
         await channel.ExchangeDeclareAsync(exchangeName, ExchangeType.Fanout, durable: true, cancellationToken: stoppingToken);
         await channel.QueueDeclareAsync(queueName, durable: true, exclusive: false, autoDelete: false, cancellationToken: stoppingToken);

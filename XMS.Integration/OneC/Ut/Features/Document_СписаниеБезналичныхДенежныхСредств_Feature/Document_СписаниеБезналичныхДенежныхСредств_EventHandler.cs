@@ -38,21 +38,21 @@ internal class Document_СписаниеБезналичныхДенежныхС
             .Where(e => e.Ref_Key == oneCNotifyMessage.Ref_Key)
             .ExecuteDeleteAsync(ct);
 
-        string basicExchangeName = hostEnvironment.IsDevelopment()
-            ? $"dev_{nameof(Document_СписаниеБезналичныхДенежныхСредств)}"
-            : $"{nameof(Document_СписаниеБезналичныхДенежныхСредств)}";
-
         if (!fetchedItem.DeletionMark && fetchedItem.Posted)
         {
             await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>().AddAsync(fetchedItem, ct);
 
             await dbContext.SaveChangesAsync(ct);
 
-            await eventPublisher.PublishAsync($"{basicExchangeName}_received", Document_СписаниеБезналичныхДенежныхСредств_Dto.From(fetchedItem));
+            await eventPublisher.PublishAsync(
+                IntegrationHelper.GetEventName<Document_СписаниеБезналичныхДенежныхСредств>(IntegrationType.Received, hostEnvironment),
+                Document_СписаниеБезналичныхДенежныхСредств_Dto.From(fetchedItem));
         }
         else
         {
-            await eventPublisher.PublishAsync($"{basicExchangeName}_deleted", Document_СписаниеБезналичныхДенежныхСредств_Dto.From(fetchedItem));
+            await eventPublisher.PublishAsync(
+                IntegrationHelper.GetEventName<Document_СписаниеБезналичныхДенежныхСредств>(IntegrationType.Deleted, hostEnvironment),
+                Document_СписаниеБезналичныхДенежныхСредств_Dto.From(fetchedItem));
         }
 
         logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleEvent), oneCNotifyMessage, fetchedItem);

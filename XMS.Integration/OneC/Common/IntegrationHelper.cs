@@ -34,9 +34,15 @@ public class IntegrationHelper
     private static string FilterUriByDate(string uri, DateTime? from = null, DateTime? to = null) =>
         $"{uri}&$filter=DeletionMark eq false and Posted eq true and Date ge datetime'{from:s}' and Date lt datetime'{to:s}'";
 
-    public static string GetExchangeName<T>(IHostEnvironment hostEnvironment) =>
-        hostEnvironment.IsDevelopment() ? $"dev_{typeof(T).Name}" : $"{typeof(T).Name}";
-
-    public static string GetQueueName<T>(IHostEnvironment hostEnvironment) =>
-        hostEnvironment.IsDevelopment() ? $"dev_{typeof(T).Name}" : $"{typeof(T).Name}";
+    public static string GetEventName<T>(IntegrationType integrationType, IHostEnvironment hostEnvironment)
+    {
+        return integrationType switch
+        {
+            IntegrationType.Notify => hostEnvironment.IsDevelopment() ? $"dev.{typeof(T).Name}.notify" : $"xms.{typeof(T).Name}.notify",
+            IntegrationType.Received => hostEnvironment.IsDevelopment() ? $"dev.{typeof(T).Name}.received" : $"xms.{typeof(T).Name}.received",
+            IntegrationType.Deleted => hostEnvironment.IsDevelopment() ? $"dev.{typeof(T).Name}.deleted" : $"xms.{typeof(T).Name}.deleted",
+            IntegrationType.Outbound => hostEnvironment.IsDevelopment() ? $"dev.{typeof(T).Name}.outbound" : $"xms.{typeof(T).Name}.outbound",
+            _ => throw new ArgumentOutOfRangeException(nameof(integrationType), integrationType, null)
+        };
+    }
 }

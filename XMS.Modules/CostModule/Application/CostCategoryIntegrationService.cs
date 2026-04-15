@@ -12,7 +12,7 @@ internal class CostCategoryIntegrationService(IEventPublisher publisher, IHostEn
     public async Task PublishAsync(CostCategory item)
     {
         await publisher.PublishAsync(
-            IntegrationHelper.GetExchangeName<Catalog_КСЗ_КатегорииЗатрат>(hostEnvironment),
+            IntegrationHelper.GetEventName<Catalog_КСЗ_КатегорииЗатрат>(IntegrationType.Outbound, hostEnvironment),
             new Catalog_КСЗ_КатегорииЗатрат
             {
                 Ref_Key = item.Id,

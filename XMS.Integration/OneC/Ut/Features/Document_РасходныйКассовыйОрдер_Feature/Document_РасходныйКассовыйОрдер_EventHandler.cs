@@ -38,21 +38,21 @@ internal class Document_РасходныйКассовыйОрдер_EventHandle
             .Where(e => e.Ref_Key == oneCNotifyMessage.Ref_Key)
             .ExecuteDeleteAsync(ct);
 
-        string basicExchangeName = hostEnvironment.IsDevelopment()
-            ? $"dev_{nameof(Document_РасходныйКассовыйОрдер)}"
-            : $"{nameof(Document_РасходныйКассовыйОрдер)}";
-
         if (!fetchedItem.DeletionMark && fetchedItem.Posted)
         {
             await dbContext.Set<Document_РасходныйКассовыйОрдер>().AddAsync(fetchedItem, ct);
 
             await dbContext.SaveChangesAsync(ct);
 
-            await eventPublisher.PublishAsync($"{basicExchangeName}_received", Document_РасходныйКассовыйОрдер_Dto.From(fetchedItem));
+            await eventPublisher.PublishAsync(
+                IntegrationHelper.GetEventName<Document_РасходныйКассовыйОрдер>(IntegrationType.Received, hostEnvironment),
+                Document_РасходныйКассовыйОрдер_Dto.From(fetchedItem));
         }
         else
         {
-            await eventPublisher.PublishAsync($"{basicExchangeName}_deleted", Document_РасходныйКассовыйОрдер_Dto.From(fetchedItem));
+            await eventPublisher.PublishAsync(
+                IntegrationHelper.GetEventName<Document_РасходныйКассовыйОрдер>(IntegrationType.Deleted, hostEnvironment),
+                Document_РасходныйКассовыйОрдер_Dto.From(fetchedItem));
         }
 
         logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleEvent), oneCNotifyMessage, fetchedItem);

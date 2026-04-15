@@ -40,7 +40,7 @@ internal class CostCategoryService(
 
         await dbContext.SaveChangesAsync(ct);
 
-        await integrationService.PublishAsync(item);
+        await integrationService.PublishAsync(existing);
     }
 
     public async Task<ServiceResult> DeleteAsync(Guid id, CancellationToken ct = default)

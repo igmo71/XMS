@@ -13,11 +13,7 @@ internal static class IntegrationEventPublisher
         [FromServices] IHostEnvironment hostEnvironment,
         [FromBody] CatalogEvent catalogEvent) where TEntity : ISyncable
     {
-        //var operationName = $"{nameof(IntegrationEventPublisher)}.{nameof(Publish)}";
-        //using var activity = AppTelemetry.ActivitySource.StartActivity(operationName, ActivityKind.Consumer)
-        //    ?? new Activity(operationName).Start();
-
-        await publisher.PublishAsync(IntegrationHelper.GetExchangeName<TEntity>(hostEnvironment), catalogEvent);
+        await publisher.PublishAsync(IntegrationHelper.GetEventName<TEntity>(IntegrationType.Notify, hostEnvironment), catalogEvent);
 
         return TypedResults.Ok();
     }

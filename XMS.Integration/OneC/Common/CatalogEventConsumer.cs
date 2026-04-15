@@ -23,8 +23,8 @@ public abstract class CatalogEventConsumer<TEntity, TEvent, THandler>(
         using var connection = await factory.CreateConnectionAsync(stoppingToken);
         using var channel = await connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
-        string exchangeName = IntegrationHelper.GetExchangeName<TEntity>(hostEnvironment);
-        string queueName = IntegrationHelper.GetQueueName<TEntity>(hostEnvironment);
+        string exchangeName = IntegrationHelper.GetEventName<TEntity>(IntegrationType.Notify, hostEnvironment);
+        string queueName = IntegrationHelper.GetEventName<TEntity>(IntegrationType.Notify, hostEnvironment);
 
         await channel.ExchangeDeclareAsync(exchangeName, ExchangeType.Fanout, durable: true, cancellationToken: stoppingToken);
         await channel.QueueDeclareAsync(queueName, durable: true, exclusive: false, autoDelete: false, cancellationToken: stoppingToken);
