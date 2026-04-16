@@ -4,7 +4,7 @@ namespace XMS.Integration.Abstractions;
 
 public interface IIntegrationEvent : IEvent
 {
-    Guid Ref_Key { get; set; }
-    string? DataVersion { get; set; }
-    public bool DeletionMark { get; set; }
+    Guid Ref_Key { get; init; }
+    string? DataVersion { get; init; }
+    public bool DeletionMark { get; init; }
 }

@@ -2,7 +2,7 @@
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_Номенклатура_Feature;
 
-public class Catalog_Номенклатура : ICatalog, ISyncable
+public class Catalog_Номенклатура : ICatalog, ISelectable
 {
     public static string? Select => "Ref_Key,DataVersion,DeletionMark,Parent_Key,IsFolder,Code,Description";
 

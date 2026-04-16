@@ -1,33 +1,41 @@
 ﻿using Microsoft.Extensions.Logging;
 using XMS.Core.Common;
-using XMS.Integration.OneC.Ut.Abstractions;
+using XMS.Integration.Abstractions;
 using XMS.Integration.OneC.Ut.ODataClient;
-using Entity = XMS.Integration.OneC.Ut.Features.Catalog_КСЗ_КатегорииЗатрат_Feature.Catalog_КСЗ_КатегорииЗатрат;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_КСЗ_КатегорииЗатрат_Feature;
 
 internal class Catalog_КСЗ_КатегорииЗатрат_OutboundHandler(
     UtClient utClient,
-    ILogger<Entity> logger) : BaseService, ICatalog_КСЗ_КатегорииЗатрат_OutboundHandler
+    ILogger<Catalog_КСЗ_КатегорииЗатрат_OutboundHandler> logger)
+    : BaseService, IIntegrationEventHandler<Catalog_КСЗ_КатегорииЗатрат_Outbound>
 {
-    public async Task HandleAsync(Entity entityEvent, CancellationToken ct = default)
+    public async Task HandleAsync(Catalog_КСЗ_КатегорииЗатрат_Outbound outboundEvent, CancellationToken ct = default)
     {
         using var activity = StartActivity();
 
-        logger.LogDebug("{Source} - Start {@entityEvent}", nameof(HandleAsync), entityEvent);
+        logger.LogDebug("{Source} - Start {@entityEvent}", nameof(HandleAsync), outboundEvent);
 
-        var fetchedItem = await utClient.FetchByRefKeyAsync<Entity>(entityEvent.Ref_Key, ct);
+        var uri = $"Catalog_КСЗ_КатегорииЗатрат?$format=json&$inlinecount=allpages&$filter=Ref_Key eq guid'{outboundEvent.Ref_Key}'";
+        var fetchedItem = await utClient.FetchByRefKeyAsync<Catalog_КСЗ_КатегорииЗатрат>(outboundEvent.Ref_Key, ct);
 
         if (fetchedItem is null)
         {
-            logger.LogDebug("{Source} - Not Exists {@entityEvent}", nameof(HandleAsync), entityEvent);
-            var created = await utClient.PostValueAsync(entityEvent, typeof(Entity).Name, ct);
+            logger.LogDebug("{Source} - Not Exists {@entityEvent}", nameof(HandleAsync), outboundEvent);
+            var created = await utClient.PostValueAsync(outboundEvent, typeof(Catalog_КСЗ_КатегорииЗатрат).Name, ct);
             logger.LogDebug("{Source} - Created {@created}", nameof(HandleAsync), created);
         }
         else
         {
-            logger.LogDebug("{Source} - Exists {@entityEvent}", nameof(HandleAsync), entityEvent);
-            var updated = await utClient.PatchValueAsync(entityEvent, typeof(Entity).Name, ct);
+            logger.LogDebug("{Source} - Exists {@entityEvent}", nameof(HandleAsync), outboundEvent);
+            var updated = await utClient.PatchValueAsync(new Catalog_КСЗ_КатегорииЗатрат
+            {
+                Ref_Key = outboundEvent.Ref_Key,
+                DataVersion = outboundEvent.DataVersion,
+                DeletionMark = outboundEvent.DeletionMark,
+                Description = outboundEvent.Description,
+                Parent_Key = outboundEvent.Parent_Key
+            }, typeof(Catalog_КСЗ_КатегорииЗатрат).Name, ct);
             logger.LogDebug("{Source} - Updated {@updated}", nameof(HandleAsync), updated);
         }
     }

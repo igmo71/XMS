@@ -1,6 +1,8 @@
 ﻿using Scalar.AspNetCore;
 using Serilog;
 using XMS.Application;
+using XMS.Core.Abstractions.EventBus;
+using XMS.Core.Common;
 using XMS.Infrastructure;
 using XMS.Integration;
 using XMS.Modules;
@@ -26,6 +28,8 @@ public class Program
         builder.Services.AddProblemDetails();
 
         builder.Services.AddAppPersistenceInfrastructure(builder.Configuration);
+
+        builder.Services.AddSingleton<IEventNamingService, EventNamingService>();
 
         builder.Services.AddAppIntegrationServices(builder.Configuration);
 

@@ -4,7 +4,7 @@ using XMS.Integration.OneC.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature;
 
-public class Catalog_Партнеры : ICatalog, ISyncable
+public class Catalog_Партнеры : ICatalog, ISelectable
 {
     public static string? Select =>
         "Ref_Key,DataVersion,DeletionMark,Parent_Key,Description,ОсновнойМенеджер_Key,БизнесРегион_Key,ДатаРегистрации,ЮрФизЛицо,Комментарий,Клиент,Поставщик,Конкурент,Перевозчик,ПрочиеОтношения";

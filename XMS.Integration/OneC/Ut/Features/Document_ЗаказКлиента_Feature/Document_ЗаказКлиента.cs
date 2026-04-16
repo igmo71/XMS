@@ -2,7 +2,7 @@
 
 namespace XMS.Integration.OneC.Ut.Features.Document_ЗаказКлиента_Feature;
 
-public class Document_ЗаказКлиента : IDocument, ISyncable
+public class Document_ЗаказКлиента : IDocument, ISelectable
 {
     public static string? Select =>
         "Ref_Key,DataVersion,DeletionMark,Number,Date,Posted,СуммаДокумента,ХозяйственнаяОперация,Партнер_Key,Склад_Key";

@@ -90,7 +90,7 @@ public abstract class ODataClient<TConfig>(HttpClient httpClient, IOptions<TConf
         return result;
     }
 
-    public async Task<T?> FetchByRefKeyAsync<T>(Guid refKey, CancellationToken ct) where T : class, ISyncable
+    public async Task<T?> FetchByRefKeyAsync<T>(Guid refKey, CancellationToken ct) where T : class, ISelectable
     {
         var uri = IntegrationHelper.GetUriByRefKey<T>(refKey);
 

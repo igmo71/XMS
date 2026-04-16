@@ -7,9 +7,9 @@ using XMS.Modules.CostModule.Domain;
 namespace XMS.Modules.CostModule.Integration;
 
 internal class Document_СписаниеБезналичныхДенежныхСредств_DeletedHandler(IDbContextFactoryProxy dbFactory)
-    : IIntegrationEventHandler<Document_СписаниеБезналичныхДенежныхСредств_Dto>
+    : IIntegrationEventHandler<Document_СписаниеБезналичныхДенежныхСредств_Deleted>
 {
-    public async Task HandleAsync(Document_СписаниеБезналичныхДенежныхСредств_Dto dto, CancellationToken ct = default)
+    public async Task HandleAsync(Document_СписаниеБезналичныхДенежныхСредств_Deleted dto, CancellationToken ct = default)
     {
         using var dbContext = dbFactory.CreateDbContext();
 

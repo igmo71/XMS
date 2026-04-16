@@ -10,7 +10,7 @@ namespace XMS.Integration.OneC.Common;
 
 internal abstract class CatalogNotificationHandler<TEntity, TEvent>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
     : BaseService, IIntegrationEventHandler<TEvent>
-    where TEntity : class, ICatalog, ISyncable
+    where TEntity : class, ICatalog, ISelectable
     where TEvent : class, IIntegrationEvent
 {
     public async Task HandleAsync(TEvent oneCNotifyMessage, CancellationToken ct = default)

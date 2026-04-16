@@ -37,7 +37,7 @@ public static class Catalog_СтатьиДвиженияДенежныхСред
             .WithSummary($"Resync{feature}")
             .WithDescription($"Resync {feature} from OneS Ut and save to DB");
 
-        extGroup.MapPatch("/notify", IntegrationEventPublisher.PublishCatalogNotificationAsync<Catalog_СтатьиДвиженияДенежныхСредств>)
+        extGroup.MapPatch("/notify", IntegrationEventPublisher.PublishCatalogNotificationAsync<Catalog_СтатьиДвиженияДенежныхСредств_Notification>)
             .WithName($"Notify{feature}")
             .WithSummary($"Notify{feature}")
             .WithDescription($"Notify {feature}");

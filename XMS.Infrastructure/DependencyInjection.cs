@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Resources;
@@ -56,7 +55,7 @@ public static class DependencyInjection
         services.AddHostedService(sp => new RabbitMqConsumer(
             serviceProvider: sp,
             connectionFactory: sp.GetRequiredService<IConnectionFactory>(),
-            hostEnvironment: sp.GetRequiredService<IHostEnvironment>(),
+            eventNaming: sp.GetRequiredService<IEventNamingService>(),
             logger: sp.GetRequiredService<ILogger<RabbitMqConsumer>>(),
             handlers: handlerInterfaces));
 

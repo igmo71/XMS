@@ -4,31 +4,41 @@ using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text.Json;
+using XMS.Core.Abstractions.EventBus;
+using XMS.Integration.Abstractions;
 
 namespace XMS.Infrastructure.EventBus;
 
 internal class RabbitMqConsumer(
     IServiceProvider serviceProvider,
     IConnectionFactory connectionFactory,
-    IHostEnvironment hostEnvironment,
+    IEventNamingService eventNaming,
     ILogger<RabbitMqConsumer> logger,
     List<Type> handlers) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
         using var connection = await connectionFactory.CreateConnectionAsync(ct);
-        using var channel = await connection.CreateChannelAsync(cancellationToken: ct);
 
-        foreach (var interfaceType in handlers)
+        string DeadLetterExchange = $"{eventNaming.DeadLetterName}.exchange";
+        string DeadLetterQueue = $"{eventNaming.DeadLetterName}.queue";
+
+        using var deadLetterChannel = await connection.CreateChannelAsync(cancellationToken: ct);
+        await deadLetterChannel.ExchangeDeclareAsync(DeadLetterExchange, ExchangeType.Fanout, durable: true, cancellationToken: ct);
+        await deadLetterChannel.QueueDeclareAsync(DeadLetterQueue, durable: true, exclusive: false, autoDelete: false, cancellationToken: ct);
+        await deadLetterChannel.QueueBindAsync(DeadLetterQueue, DeadLetterExchange, string.Empty, cancellationToken: ct);
+
+        foreach (var handlerType in handlers)
         {
-            var currentInterface = interfaceType;
-            var eventType = currentInterface.GetGenericArguments()[0];
+            var channel = await connection.CreateChannelAsync(cancellationToken: ct);
 
-            var prefix = hostEnvironment.IsDevelopment() ? "dev" : "xms";
-            string eventName = $"{prefix}.{eventType.Name}.notify";
+            var currentHandlerType = handlerType;
+            var eventType = currentHandlerType.GetGenericArguments()[0];
+            var eventName = eventNaming.GetEventName(eventType);
 
+            var args = new Dictionary<string, object?> { { "x-dead-letter-exchange", DeadLetterExchange } };
             await channel.ExchangeDeclareAsync(exchange: eventName, ExchangeType.Fanout, durable: true, cancellationToken: ct);
-            await channel.QueueDeclareAsync(queue: eventName, durable: true, exclusive: false, autoDelete: false, cancellationToken: ct);
+            await channel.QueueDeclareAsync(queue: eventName, durable: true, exclusive: false, autoDelete: false, arguments: args, cancellationToken: ct);
             await channel.QueueBindAsync(queue: eventName, exchange: eventName, routingKey: string.Empty, cancellationToken: ct);
 
             var consumer = new AsyncEventingBasicConsumer(channel);
@@ -37,22 +47,27 @@ internal class RabbitMqConsumer(
             {
                 using var scope = serviceProvider.CreateScope();
 
-                var handler = scope.ServiceProvider.GetRequiredService(currentInterface);
+                using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                timeoutCts.CancelAfter(TimeSpan.FromSeconds(30));
 
-                var eventValue = JsonSerializer.Deserialize(ea.Body.Span, eventType);
+                object? eventValue = null;
                 try
                 {
-                    if (eventValue != null)
-                        await ((dynamic)handler).HandleAsync((dynamic)eventValue, ct);
-                    else
-                        logger.LogWarning("Received null event for {eventType}", eventType.Name);
+                    var handler = scope.ServiceProvider.GetRequiredService(currentHandlerType);
 
+                    if (handler is IIntegrationEventHandler integrationEventHandler)
+                    {
+                        eventValue = JsonSerializer.Deserialize(ea.Body.Span, eventType);
+
+                        if (eventValue is IIntegrationEvent integrationEvent)
+                            await integrationEventHandler.HandleAsync(integrationEvent, timeoutCts.Token);
+                    }
                     await channel.BasicAckAsync(ea.DeliveryTag, multiple: false, cancellationToken: ct);
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "{@eventValue}", eventValue);
-                    await channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: true, cancellationToken: ct);
+                    logger.LogError(ex, "EventBus - Error handilng {eventName} {@eventValue}", eventName, eventValue);
+                    await channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false, cancellationToken: ct);
                     await Task.Delay(1000, ct);
                 }
             };

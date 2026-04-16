@@ -8,9 +8,9 @@ using XMS.Integration.OneC.Ut.ODataClient;
 
 namespace XMS.Integration.OneC.Common;
 
-internal class DocumentNotificationHandler<TEntity, TEvent>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
+internal abstract class DocumentNotificationHandler<TEntity, TEvent>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
     : BaseService, IIntegrationEventHandler<TEvent>
-    where TEntity : class, IDocument, ISyncable
+    where TEntity : class, IDocument, ISelectable
     where TEvent : class, IIntegrationEvent
 {
     public async Task HandleAsync(TEvent oneCNotifyMessage, CancellationToken ct = default)

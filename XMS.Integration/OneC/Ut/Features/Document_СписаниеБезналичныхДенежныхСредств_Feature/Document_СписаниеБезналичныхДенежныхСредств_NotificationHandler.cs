@@ -1,26 +1,28 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Abstractions.EventBus;
 using XMS.Core.Common;
+using XMS.Integration.Abstractions;
 using XMS.Integration.OneC.Common;
-using XMS.Integration.OneC.Ut.Abstractions;
 using XMS.Integration.OneC.Ut.ODataClient;
-using Dto = XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств_Dto;
+using DeletedEvent = XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств_Deleted;
 using Entity = XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств;
+using ReceivedEvent = XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств_Received;
 
 namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
+
+public record Document_СписаниеБезналичныхДенежныхСредств_Notification : DocumentNotification;
 
 internal class Document_СписаниеБезналичныхДенежныхСредств_NotificationHandler(
     UtClient utClient,
     IDbContextFactoryProxy dbFactory,
     IEventPublisher eventPublisher,
     ILogger<Document_СписаниеБезналичныхДенежныхСредств_NotificationHandler> logger,
-    IHostEnvironment hostEnvironment)
-    : BaseService, IDocument_СписаниеБезналичныхДенежныхСредств_NotificationHandler
+    IEventNamingService eventNaming)
+    : BaseService, IIntegrationEventHandler<Document_СписаниеБезналичныхДенежныхСредств_Notification>
 {
-    public async Task HandleAsync(DocumentNotification oneCNotifyMessage, CancellationToken ct = default)
+    public async Task HandleAsync(Document_СписаниеБезналичныхДенежныхСредств_Notification oneCNotifyMessage, CancellationToken ct = default)
     {
         using var activity = StartActivity();
 
@@ -45,18 +47,13 @@ internal class Document_СписаниеБезналичныхДенежныхС
         if (!fetchedItem.DeletionMark && fetchedItem.Posted)
         {
             await dbContext.Set<Entity>().AddAsync(fetchedItem, ct);
-
             await dbContext.SaveChangesAsync(ct);
 
-            await eventPublisher.PublishAsync(
-                IntegrationHelper.GetEventName<Entity>(IntegrationType.Received, hostEnvironment),
-                Dto.From(fetchedItem), ct);
+            await eventPublisher.PublishAsync(eventNaming.GetEventName<ReceivedEvent>(), ReceivedEvent.From(fetchedItem), ct);
         }
         else
         {
-            await eventPublisher.PublishAsync(
-                IntegrationHelper.GetEventName<Entity>(IntegrationType.Deleted, hostEnvironment),
-                Dto.From(fetchedItem), ct);
+            await eventPublisher.PublishAsync(eventNaming.GetEventName<DeletedEvent>(), DeletedEvent.From(fetchedItem), ct);
         }
 
         if (logger.IsEnabled(LogLevel.Debug))

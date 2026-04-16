@@ -2,11 +2,11 @@
 
 namespace XMS.Integration.OneC.Common;
 
-public class CatalogNotification : IIntegrationEvent
+public record CatalogNotification : IIntegrationEvent
 {
-    public Guid Ref_Key { get; set; }
-    public string? DataVersion { get; set; }
-    public bool DeletionMark { get; set; }
+    public Guid Ref_Key { get; init; }
+    public string? DataVersion { get; init; }
+    public bool DeletionMark { get; init; }
 
-    public string? Description { get; set; }
+    public string? Description { get; init; }
 }

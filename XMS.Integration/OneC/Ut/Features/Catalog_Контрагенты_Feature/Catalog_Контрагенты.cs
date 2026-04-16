@@ -2,7 +2,7 @@
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_Контрагенты_Feature;
 
-public class Catalog_Контрагенты : ICatalog, ISyncable
+public class Catalog_Контрагенты : ICatalog, ISelectable
 {
     public static string? Select => "Ref_Key,DataVersion,DeletionMark,Description,Партнер_Key";
 

@@ -7,9 +7,9 @@ using XMS.Modules.CostModule.Domain;
 namespace XMS.Modules.CostModule.Integration;
 
 internal class Document_РасходныйКассовыйОрдер_DeletedHandler(IDbContextFactoryProxy dbFactory)
-    : IIntegrationEventHandler<Document_РасходныйКассовыйОрдер_Dto>
+    : IIntegrationEventHandler<Document_РасходныйКассовыйОрдер_Deleted>
 {
-    public async Task HandleAsync(Document_РасходныйКассовыйОрдер_Dto dto, CancellationToken ct = default)
+    public async Task HandleAsync(Document_РасходныйКассовыйОрдер_Deleted dto, CancellationToken ct = default)
     {
         using var dbContext = dbFactory.CreateDbContext();
 

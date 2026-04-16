@@ -2,14 +2,14 @@
 
 namespace XMS.Integration.OneC.Common;
 
-public class DocumentNotification : IIntegrationEvent
+public record DocumentNotification : IIntegrationEvent
 {
-    public Guid Ref_Key { get; set; }
-    public string? DataVersion { get; set; }
-    public bool DeletionMark { get; set; }
+    public Guid Ref_Key { get; init; }
+    public string? DataVersion { get; init; }
+    public bool DeletionMark { get; init; }
 
-    public bool Posted { get; set; }
-    public string? Number { get; set; }
-    public DateTime? Date { get; set; }
+    public bool Posted { get; init; }
+    public string? Number { get; init; }
+    public DateTime? Date { get; init; }
 
 }
