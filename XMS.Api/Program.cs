@@ -29,7 +29,11 @@ public class Program
 
         builder.Services.AddAppIntegrationServices(builder.Configuration);
 
-        var integrationEventHandlers = builder.Services.AddAppIntegrationEventHandlers();
+        var assembliesWithHandlers = AppDomain.CurrentDomain
+            .GetAssemblies()
+            .Where(a => a.FullName!.StartsWith("XMS."))
+            .ToArray();
+        var integrationEventHandlers = builder.Services.AddAppIntegrationEventHandlers(assembliesWithHandlers);
         builder.Services.AddAppEventBus(builder.Configuration, integrationEventHandlers);
 
         builder.Services.AddApplicationServices();
