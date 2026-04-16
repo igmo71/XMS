@@ -7,7 +7,10 @@ using MudBlazor.Translations;
 using Serilog;
 using System.Globalization;
 using XMS.Application;
+using XMS.Core.Abstractions.EventBus;
+using XMS.Core.Common;
 using XMS.Domain.Models;
+using XMS.Infrastructure;
 using XMS.Infrastructure.Data;
 using XMS.Integration;
 using XMS.Modules;
@@ -88,6 +91,10 @@ public class Program
 
         builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+        builder.Services.AddSingleton<IEventNamingService, EventNamingService>();
+        builder.Services.AddAppEventConnectionFactory(builder.Configuration);
+        builder.Services.AddAppEventPublisher(builder.Configuration);
+        builder.Services.AddAppPersistenceInfrastructure(builder.Configuration);
         builder.Services.AddAppIntegrationServices(builder.Configuration);
         builder.Services.AddApplicationServices();
         builder.Services.AddApplicationModules(builder.Configuration);

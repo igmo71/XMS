@@ -30,16 +30,18 @@ public class Program
         builder.Services.AddAppPersistenceInfrastructure(builder.Configuration);
 
         builder.Services.AddSingleton<IEventNamingService, EventNamingService>();
-
-        builder.Services.AddAppIntegrationServices(builder.Configuration);
+        builder.Services.AddAppEventConnectionFactory(builder.Configuration);
+        builder.Services.AddAppEventPublisher(builder.Configuration);
 
         var assembliesWithHandlers = AppDomain.CurrentDomain
             .GetAssemblies()
             .Where(a => a.FullName!.StartsWith("XMS."))
             .ToArray();
         var integrationEventHandlers = builder.Services.AddAppIntegrationEventHandlers(assembliesWithHandlers);
-        builder.Services.AddAppEventBus(builder.Configuration, integrationEventHandlers);
+        builder.Services.AddAppEventConsumer(builder.Configuration, integrationEventHandlers);
 
+
+        builder.Services.AddAppIntegrationServices(builder.Configuration);
         builder.Services.AddApplicationServices();
         builder.Services.AddApplicationModules(builder.Configuration);
 

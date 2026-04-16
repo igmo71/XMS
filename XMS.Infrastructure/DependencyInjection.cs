@@ -36,9 +36,7 @@ public static class DependencyInjection
 
         return services;
     }
-
-
-    public static IServiceCollection AddAppEventBus(this IServiceCollection services, IConfiguration configuration, List<Type> handlerInterfaces)
+    public static IServiceCollection AddAppEventConnectionFactory(this IServiceCollection services, IConfiguration configuration)
     {
         var rabbitMqConfig = configuration.GetSection(nameof(RabbitMqConfig)).Get<RabbitMqConfig>()
                     ?? throw new InvalidOperationException("RabbitMqConfig Not Found");
@@ -50,8 +48,18 @@ public static class DependencyInjection
             Password = rabbitMqConfig.Password
         });
 
+        return services;
+    }
+
+    public static IServiceCollection AddAppEventPublisher(this IServiceCollection services, IConfiguration configuration)
+    {
         services.AddSingleton<IEventPublisher, RabbitMqPublisher>();
 
+        return services;
+    }
+
+    public static IServiceCollection AddAppEventConsumer(this IServiceCollection services, IConfiguration configuration, List<Type> handlerInterfaces)
+    {
         services.AddHostedService(sp => new RabbitMqConsumer(
             serviceProvider: sp,
             connectionFactory: sp.GetRequiredService<IConnectionFactory>(),
