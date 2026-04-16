@@ -1,6 +1,11 @@
-﻿namespace XMS.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-public class Document_РасходныйКассовыйОрдер_Dto
+
+using XMS.Integration.Abstractions;
+
+namespace XMS.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
+
+public class Document_РасходныйКассовыйОрдер_Dto : IIntegrationEvent
 {
     public Guid Ref_Key { get; set; }
     public string? Number { get; set; }
@@ -11,6 +16,10 @@ public class Document_РасходныйКассовыйОрдер_Dto
     public Guid? СтатьяДвиженияДенежныхСредств_Key { get; set; }
     public string? ХозяйственнаяОперация { get; set; }
     public string? Комментарий { get; set; }
+
+    // TODO: Кастыть...
+    [NotMapped] public string? DataVersion { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    [NotMapped] public bool DeletionMark { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     public static Document_РасходныйКассовыйОрдер_Dto From(Document_РасходныйКассовыйОрдер source) =>
         new()

@@ -5,7 +5,7 @@ namespace XMS.Integration.OneC.Common;
 
 public class IntegrationHelper
 {
-    public static string GetUri<T>() where T : ISyncable
+    public static string GetUri<T>() where T : class, ISyncable
     {
         var result = $"{typeof(T).Name}?$format=json&$inlinecount=allpages";
 
@@ -14,27 +14,13 @@ public class IntegrationHelper
 
         return result;
     }
-    public static string GetUriByRefKey<T>(Guid refKey) where T : ISyncable
-    {
-        var uri = GetUri<T>();
-        var result = FilterByRefKey(uri, refKey);
-        return result;
-    }
+    public static string GetUriByRefKey<T>(Guid refKey) where T : class, ISyncable =>
+        $"{GetUri<T>()}&$filter=Ref_Key eq guid'{refKey}'";
 
-    public static string GetUriByDate<T>(DateTime? from = null, DateTime? to = null) where T : ISyncable
-    {
-        var uri = GetUri<T>();
-        var result = FilterUriByDate(uri, from, to);
-        return result;
-    }
+    public static string GetUriByDate<T>(DateTime? from = null, DateTime? to = null) where T : class, ISyncable =>
+        $"{GetUri<T>()}&$filter=DeletionMark eq false and Posted eq true and Date ge datetime'{from:s}' and Date lt datetime'{to:s}'";
 
-    private static string FilterByRefKey(string uri, Guid refKey) =>
-        $"{uri}&$filter=Ref_Key eq guid'{refKey}'";
-
-    private static string FilterUriByDate(string uri, DateTime? from = null, DateTime? to = null) =>
-        $"{uri}&$filter=DeletionMark eq false and Posted eq true and Date ge datetime'{from:s}' and Date lt datetime'{to:s}'";
-
-    public static string GetEventName<T>(IntegrationType integrationType, IHostEnvironment hostEnvironment)
+    public static string GetEventName<T>(IntegrationType integrationType, IHostEnvironment hostEnvironment) where T : class, ISyncable
     {
         return integrationType switch
         {
@@ -45,4 +31,6 @@ public class IntegrationHelper
             _ => throw new ArgumentOutOfRangeException(nameof(integrationType), integrationType, null)
         };
     }
+
+
 }

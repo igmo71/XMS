@@ -1,6 +1,9 @@
-﻿namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using XMS.Integration.Abstractions;
 
-public class Document_СписаниеБезналичныхДенежныхСредств_Dto
+namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
+
+public class Document_СписаниеБезналичныхДенежныхСредств_Dto : IIntegrationEvent
 {
     public Guid Ref_Key { get; set; }
     public string? Number { get; set; }
@@ -12,6 +15,10 @@ public class Document_СписаниеБезналичныхДенежныхСр
     public string? ХозяйственнаяОперация { get; set; }
     public string? НазначениеПлатежа { get; set; }
     public string? Комментарий { get; set; }
+
+    // TODO: Кастыль
+    [NotMapped] public string? DataVersion { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    [NotMapped] public bool DeletionMark { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     public static Document_СписаниеБезналичныхДенежныхСредств_Dto From(Document_СписаниеБезналичныхДенежныхСредств source) =>
         new()

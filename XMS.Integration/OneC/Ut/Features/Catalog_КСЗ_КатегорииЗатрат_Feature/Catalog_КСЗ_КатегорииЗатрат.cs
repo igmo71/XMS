@@ -1,4 +1,5 @@
-﻿using XMS.Integration.OneC.Abstractions;
+﻿using XMS.Integration.Abstractions;
+using XMS.Integration.OneC.Abstractions;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_КСЗ_КатегорииЗатрат_Feature;
 

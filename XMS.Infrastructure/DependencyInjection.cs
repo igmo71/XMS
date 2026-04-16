@@ -1,10 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using RabbitMQ.Client;
 using XMS.Core.Abstractions.Data;
+using XMS.Core.Abstractions.EventBus;
 using XMS.Core.Common;
 using XMS.Infrastructure.Data;
 using XMS.Infrastructure.EventBus;
@@ -13,32 +17,8 @@ namespace XMS.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, string serviceName)
+    public static IServiceCollection AddAppPersistenceInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddOpenTelemetry()
-            .ConfigureResource(resource =>
-            {
-                resource.AddService(serviceName);
-                resource.AddAttributes(new Dictionary<string, object> { ["Application"] = "XMS" });
-            })
-            .WithTracing(tracing => tracing
-                .AddSource(AppTelemetry.SourceName)
-                .AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation()
-                .AddSqlClientInstrumentation()
-                //.AddEntityFrameworkCoreInstrumentation()
-                //.SetSampler(new AppTraceSampler())
-                //.SetSampler(new AlwaysOnSampler())
-                //.AddConsoleExporter()
-                .AddOtlpExporter(options =>
-                {
-                    // http://vm-xms-dev:5341/ingest/otlp/v1/traces
-                    var seqServerUri = ResolveSeqServerUri(configuration);
-                    options.Endpoint = new Uri(seqServerUri, "/ingest/otlp/v1/traces");
-
-                    options.Protocol = OtlpExportProtocol.HttpProtobuf;
-                }));
-
 
         services.AddDbContextFactory<ApplicationDbContext>((sp, options) =>
         {
@@ -51,9 +31,64 @@ public static class DependencyInjection
         });
         services.AddDatabaseDeveloperPageExceptionFilter();
 
-        services.AddEventBus(configuration);
+
 
         services.AddScoped<IDbContextFactoryProxy, DbContextFactoryProxy>();
+
+        return services;
+    }
+
+
+    public static IServiceCollection AddAppEventBus(this IServiceCollection services, IConfiguration configuration, List<Type> handlerInterfaces)
+    {
+        var rabbitMqConfig = configuration.GetSection(nameof(RabbitMqConfig)).Get<RabbitMqConfig>()
+                    ?? throw new InvalidOperationException("RabbitMqConfig Not Found");
+
+        services.AddSingleton<IConnectionFactory>(sp => new ConnectionFactory
+        {
+            HostName = rabbitMqConfig.Host,
+            UserName = rabbitMqConfig.Username,
+            Password = rabbitMqConfig.Password
+        });
+
+        services.AddSingleton<IEventPublisher, RabbitMqPublisher>();
+
+        services.AddHostedService(sp => new RabbitMqConsumer(
+            serviceProvider: sp,
+            connectionFactory: sp.GetRequiredService<IConnectionFactory>(),
+            hostEnvironment: sp.GetRequiredService<IHostEnvironment>(),
+            logger: sp.GetRequiredService<ILogger<RabbitMqConsumer>>(),
+            handlers: handlerInterfaces));
+
+        return services;
+    }
+
+    public static IServiceCollection AddAppOpenTelemetry(this IServiceCollection services, IConfiguration configuration, string serviceName)
+    {
+
+        services.AddOpenTelemetry()
+            .ConfigureResource(resource =>
+            {
+                resource.AddService(serviceName);
+                resource.AddAttributes(new Dictionary<string, object> { ["Application"] = "XMS" });
+            })
+            .WithTracing(tracing => tracing
+                .AddSource(AppTelemetry.SourceName)
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddSqlClientInstrumentation()
+                //.AddEntityFrameworkCoreInstrumentation()
+                //.SetSampler(new AlwaysOnSampler())
+                .SetSampler(new AppTraceSampler())
+                //.AddConsoleExporter()
+                .AddOtlpExporter(options =>
+                {
+                    // http://vm-xms-dev:5341/ingest/otlp/v1/traces
+                    var seqServerUri = ResolveSeqServerUri(configuration);
+                    options.Endpoint = new Uri(seqServerUri, "/ingest/otlp/v1/traces");
+
+                    options.Protocol = OtlpExportProtocol.HttpProtobuf;
+                }));
 
         return services;
     }

@@ -7,6 +7,8 @@ using XMS.Core.Common;
 using XMS.Integration.OneC.Common;
 using XMS.Integration.OneC.Ut.Abstractions;
 using XMS.Integration.OneC.Ut.ODataClient;
+using Dto = XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств_Dto;
+using Entity = XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств;
 
 namespace XMS.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 
@@ -18,56 +20,46 @@ internal class Document_СписаниеБезналичныхДенежныхС
     IHostEnvironment hostEnvironment)
     : BaseService, IDocument_СписаниеБезналичныхДенежныхСредств_NotificationHandler
 {
-    public async Task<ServiceResult> HandleEvent(DocumentNotification oneCNotifyMessage, CancellationToken ct = default)
+    public async Task HandleAsync(DocumentNotification oneCNotifyMessage, CancellationToken ct = default)
     {
         using var activity = StartActivity();
 
-        logger.LogDebug("{Source} - Start {@message}", nameof(HandleEvent), oneCNotifyMessage);
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Start {@message}", nameof(HandleAsync), oneCNotifyMessage);
 
-        var fetchedItem = await FetchByRefKeyAsync(oneCNotifyMessage.Ref_Key, ct);
+        var fetchedItem = await utClient.FetchByRefKeyAsync<Entity>(oneCNotifyMessage.Ref_Key, ct);
 
         if (fetchedItem is null)
         {
-            logger.LogError("{Source} - Failed to feath {@message}", nameof(HandleEvent), oneCNotifyMessage);
-            return ServiceError.NotFound;
+            if (logger.IsEnabled(LogLevel.Warning))
+                logger.LogWarning("{Source} - Failed to feath {@message}", nameof(HandleAsync), oneCNotifyMessage);
+            return;
         }
 
         using var dbContext = dbFactory.CreateDbContext();
 
-        await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
+        await dbContext.Set<Entity>()
             .Where(e => e.Ref_Key == oneCNotifyMessage.Ref_Key)
             .ExecuteDeleteAsync(ct);
 
         if (!fetchedItem.DeletionMark && fetchedItem.Posted)
         {
-            await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>().AddAsync(fetchedItem, ct);
+            await dbContext.Set<Entity>().AddAsync(fetchedItem, ct);
 
             await dbContext.SaveChangesAsync(ct);
 
             await eventPublisher.PublishAsync(
-                IntegrationHelper.GetEventName<Document_СписаниеБезналичныхДенежныхСредств>(IntegrationType.Received, hostEnvironment),
-                Document_СписаниеБезналичныхДенежныхСредств_Dto.From(fetchedItem));
+                IntegrationHelper.GetEventName<Entity>(IntegrationType.Received, hostEnvironment),
+                Dto.From(fetchedItem), ct);
         }
         else
         {
             await eventPublisher.PublishAsync(
-                IntegrationHelper.GetEventName<Document_СписаниеБезналичныхДенежныхСредств>(IntegrationType.Deleted, hostEnvironment),
-                Document_СписаниеБезналичныхДенежныхСредств_Dto.From(fetchedItem));
+                IntegrationHelper.GetEventName<Entity>(IntegrationType.Deleted, hostEnvironment),
+                Dto.From(fetchedItem), ct);
         }
 
-        logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleEvent), oneCNotifyMessage, fetchedItem);
-
-        return ServiceResult.Success();
-    }
-
-    private async Task<Document_СписаниеБезналичныхДенежныхСредств?> FetchByRefKeyAsync(Guid refKey, CancellationToken ct)
-    {
-        var uri = IntegrationHelper.GetUriByRefKey<Document_СписаниеБезналичныхДенежныхСредств>(refKey);
-
-        var rootObject = await utClient.GetValueAsync<RootObject<Document_СписаниеБезналичныхДенежныхСредств>>(uri, ct);
-
-        var result = rootObject?.Value?.FirstOrDefault();
-
-        return result;
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleAsync), oneCNotifyMessage, fetchedItem);
     }
 }

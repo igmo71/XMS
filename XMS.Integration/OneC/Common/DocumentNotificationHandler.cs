@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Common;
+using XMS.Integration.Abstractions;
 using XMS.Integration.OneC.Abstractions;
 using XMS.Integration.OneC.Ut.ODataClient;
 
@@ -12,20 +13,22 @@ internal class DocumentNotificationHandler<TEntity, TEvent>(UtClient utClient, I
     where TEntity : class, IDocument, ISyncable
     where TEvent : class, IIntegrationEvent
 {
-    public async Task<ServiceResult> HandleEvent(TEvent oneCNotifyMessage, CancellationToken ct = default)
+    public async Task HandleAsync(TEvent oneCNotifyMessage, CancellationToken ct = default)
     {
-        //await Task.Delay(1000, ct); // 1С не успевает отпустить документ, когда мы его уже запрашиваем
+        await Task.Delay(1000, ct); // TODO: 1С не успевает отпустить документ, когда мы его уже запрашиваем
 
         using var activity = StartActivity();
 
-        logger.LogDebug("{Source} - Start {@message}", nameof(HandleEvent), oneCNotifyMessage);
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Start {@message}", nameof(HandleAsync), oneCNotifyMessage);
 
-        var fetchedItem = await FetchByRefKeyAsync(oneCNotifyMessage.Ref_Key, ct);
+        var fetchedItem = await utClient.FetchByRefKeyAsync<TEntity>(oneCNotifyMessage.Ref_Key, ct);
 
         if (fetchedItem is null)
         {
-            logger.LogError("{Source} - Failed to feath {@message}", nameof(HandleEvent), oneCNotifyMessage);
-            return ServiceError.NotFound;
+            if (logger.IsEnabled(LogLevel.Warning))
+                logger.LogWarning("{Source} - Failed to fetch {@message}", nameof(HandleAsync), oneCNotifyMessage);
+            return;
         }
 
         using var dbContext = dbFactory.CreateDbContext();
@@ -34,26 +37,14 @@ internal class DocumentNotificationHandler<TEntity, TEvent>(UtClient utClient, I
             .Where(e => e.Ref_Key == oneCNotifyMessage.Ref_Key)
             .ExecuteDeleteAsync(ct);
 
-        if (!fetchedItem.DeletionMark && fetchedItem.Posted)
+        if (fetchedItem is not null && !fetchedItem.DeletionMark && fetchedItem.Posted)
         {
             await dbContext.Set<TEntity>().AddAsync(fetchedItem, ct);
 
             await dbContext.SaveChangesAsync(ct);
         }
 
-        logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleEvent), oneCNotifyMessage, fetchedItem);
-
-        return ServiceResult.Success();
-    }
-
-    private async Task<TEntity?> FetchByRefKeyAsync(Guid refKey, CancellationToken ct)
-    {
-        var uri = IntegrationHelper.GetUriByRefKey<TEntity>(refKey);
-
-        var rootObject = await utClient.GetValueAsync<RootObject<TEntity>>(uri, ct);
-
-        var result = rootObject?.Value?.FirstOrDefault();
-
-        return result;
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleAsync), oneCNotifyMessage, fetchedItem);
     }
 }

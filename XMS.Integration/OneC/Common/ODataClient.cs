@@ -89,4 +89,15 @@ public abstract class ODataClient<TConfig>(HttpClient httpClient, IOptions<TConf
 
         return result;
     }
+
+    public async Task<T?> FetchByRefKeyAsync<T>(Guid refKey, CancellationToken ct) where T : class, ISyncable
+    {
+        var uri = IntegrationHelper.GetUriByRefKey<T>(refKey);
+
+        var rootObject = await GetValueAsync<RootObject<T>>(uri, ct);
+
+        var result = rootObject?.Value?.FirstOrDefault();
+
+        return result;
+    }
 }

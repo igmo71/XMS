@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Common;
+using XMS.Integration.Abstractions;
 using XMS.Integration.OneC.Abstractions;
 using XMS.Integration.OneC.Ut.ODataClient;
 
@@ -16,13 +17,16 @@ internal abstract class CatalogNotificationHandler<TEntity, TEvent>(UtClient utC
     {
         using var activity = StartActivity();
 
-        logger.LogDebug("{Source} - Start {@message}", nameof(HandleAsync), oneCNotifyMessage);
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Start {@message}", nameof(HandleAsync), oneCNotifyMessage);
 
-        var fetchedItem = await FetchByRefKeyAsync(oneCNotifyMessage.Ref_Key, ct);
+        var fetchedItem = await utClient.FetchByRefKeyAsync<TEntity>(oneCNotifyMessage.Ref_Key, ct);
 
         if (fetchedItem is null)
         {
-            logger.LogError("{Source} - Failed to feath {@message}", nameof(HandleAsync), oneCNotifyMessage);
+            if (logger.IsEnabled(LogLevel.Warning))
+                logger.LogWarning("{Source} - Failed to fetch {@message}", nameof(HandleAsync), oneCNotifyMessage);
+            return;
         }
 
         using var dbContext = dbFactory.CreateDbContext();
@@ -35,17 +39,7 @@ internal abstract class CatalogNotificationHandler<TEntity, TEvent>(UtClient utC
 
         await dbContext.SaveChangesAsync(ct);
 
-        logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleAsync), oneCNotifyMessage, fetchedItem);
-    }
-
-    private async Task<TEntity?> FetchByRefKeyAsync(Guid refKey, CancellationToken ct)
-    {
-        var uri = IntegrationHelper.GetUriByRefKey<TEntity>(refKey);
-
-        var rootObject = await utClient.GetValueAsync<RootObject<TEntity>>(uri, ct);
-
-        var result = rootObject?.Value?.FirstOrDefault();
-
-        return result;
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleAsync), oneCNotifyMessage, fetchedItem);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using XMS.Core.Abstractions.EventBus;
 
-namespace XMS.Integration.OneC.Abstractions;
+namespace XMS.Integration.Abstractions;
 
 public interface IIntegrationEvent : IEvent
 {

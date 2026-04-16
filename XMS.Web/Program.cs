@@ -6,10 +6,8 @@ using MudBlazor.Services;
 using MudBlazor.Translations;
 using Serilog;
 using System.Globalization;
-using System.Reflection;
 using XMS.Application;
 using XMS.Domain.Models;
-using XMS.Infrastructure;
 using XMS.Infrastructure.Data;
 using XMS.Integration;
 using XMS.Modules;
@@ -90,8 +88,7 @@ public class Program
 
         builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
-        builder.Services.AddInfrastructure(builder.Configuration, Assembly.GetExecutingAssembly().GetName().Name ?? "XMS.Web");
-        builder.Services.AddIntegration(builder.Configuration);
+        builder.Services.AddAppIntegrationServices(builder.Configuration);
         builder.Services.AddApplicationServices();
         builder.Services.AddApplicationModules(builder.Configuration);
 

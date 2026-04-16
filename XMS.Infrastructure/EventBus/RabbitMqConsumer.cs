@@ -43,7 +43,7 @@ internal class RabbitMqConsumer(
                 try
                 {
                     if (eventValue != null)
-                        await ((dynamic)handler).HandleAsync(eventValue, ct);
+                        await ((dynamic)handler).HandleAsync((dynamic)eventValue, ct);
                     else
                         logger.LogWarning("Received null event for {eventType}", eventType.Name);
 

@@ -13,7 +13,7 @@ internal static class IntegrationEventPublisher
         [FromServices] IEventPublisher publisher,
         [FromServices] IHostEnvironment hostEnvironment,
         [FromServices] ILogger<CatalogNotification> logger,
-        [FromBody] CatalogNotification catalogNotification) where TEntity : ISyncable
+        [FromBody] CatalogNotification catalogNotification) where TEntity : class, ISyncable
     {
         await publisher.PublishAsync(IntegrationHelper.GetEventName<TEntity>(IntegrationType.Notify, hostEnvironment), catalogNotification);
 
@@ -27,7 +27,7 @@ internal static class IntegrationEventPublisher
         [FromServices] IEventPublisher publisher,
         [FromServices] IHostEnvironment hostEnvironment,
         [FromServices] ILogger<DocumentNotification> logger,
-        [FromBody] DocumentNotification documentNotification) where TEntity : ISyncable
+        [FromBody] DocumentNotification documentNotification) where TEntity : class, ISyncable
     {
         await publisher.PublishAsync(IntegrationHelper.GetEventName<TEntity>(IntegrationType.Notify, hostEnvironment), documentNotification);
 
@@ -40,7 +40,7 @@ internal static class IntegrationEventPublisher
         [FromServices] IEventPublisher publisher,
         [FromServices] IHostEnvironment hostEnvironment,
         [FromServices] ILogger<DocumentNotification> logger,
-        [FromBody] DocumentNotification documentNotification) where TEntity : ISyncable
+        [FromBody] DocumentNotification documentNotification) where TEntity : class, ISyncable
     {
         await publisher.PublishAsync(IntegrationHelper.GetEventName<TEntity>(IntegrationType.Notify, hostEnvironment), documentNotification);
 
