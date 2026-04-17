@@ -28,7 +28,10 @@ public abstract class ODataClient<TConfig>(HttpClient httpClient, IOptions<TConf
 
     public async Task<TValue?> GetValueAsync<TValue>(string? uri, CancellationToken ct = default)
     {
-        var response = await _httpClient.GetAsync($"{_clientConfig.ServiceUri}/{uri}", ct);
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Start {Uri}", nameof(GetValueAsync), uri);
+
+        using var response = await _httpClient.GetAsync($"{_clientConfig.ServiceUri}/{uri}", ct);
 
         var content = await response.Content.ReadAsStringAsync(ct);
 
@@ -41,11 +44,17 @@ public abstract class ODataClient<TConfig>(HttpClient httpClient, IOptions<TConf
 
         var result = JsonSerializer.Deserialize<TValue>(content);
 
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Ok {Uri} {@Result}", nameof(GetValueAsync), uri, result);
+
         return result;
     }
 
     public async Task<TValue?> PostValueAsync<TValue>(TValue value, string? uri, CancellationToken ct = default)
     {
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Start {Uri} {@Value}", nameof(PostValueAsync), uri, value);
+
         var jsonString = JsonSerializer.Serialize(value, _serializerOptions);
 
         using var stringContent = new StringContent(jsonString, Encoding.UTF8, MediaTypeNames.Application.Json);
@@ -63,13 +72,17 @@ public abstract class ODataClient<TConfig>(HttpClient httpClient, IOptions<TConf
 
         var result = JsonSerializer.Deserialize<TValue>(content);
 
-        logger.LogDebug("{Source} - Ok {Uri} {JsonString} {@Value} {@Result}", nameof(PostValueAsync), uri, jsonString, value, result);
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Ok {Uri} {JsonString} {@Value} {@Result}", nameof(PostValueAsync), uri, jsonString, value, result);
 
         return result;
     }
 
     public async Task<TValue?> PatchValueAsync<TValue>(TValue value, string? uri, CancellationToken ct = default) where TValue : class, IOdataEntity
     {
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Start {Uri} {@Value}", nameof(PatchValueAsync), uri, value);
+
         var jsonString = JsonSerializer.Serialize(value, _serializerOptions);
 
         using var stringContent = new StringContent(jsonString, Encoding.UTF8, MediaTypeNames.Application.Json);
@@ -86,6 +99,9 @@ public abstract class ODataClient<TConfig>(HttpClient httpClient, IOptions<TConf
         }
 
         var result = JsonSerializer.Deserialize<TValue>(content);
+
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Ok {Uri} {JsonString} {@Value} {@Result}", nameof(PatchValueAsync), uri, jsonString, value, result);
 
         return result;
     }

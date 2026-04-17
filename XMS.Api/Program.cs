@@ -14,6 +14,7 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        Console.WriteLine($"XMS.Api Environment: {builder.Environment.EnvironmentName}");
 
         builder.Host.UseSerilog((context, services, configuration) =>
         {

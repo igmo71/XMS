@@ -29,6 +29,7 @@ public class Program
         CultureInfo.DefaultThreadCurrentUICulture = culture;
 
         var builder = WebApplication.CreateBuilder(args);
+        Console.WriteLine($"XMS.Web Environment: {builder.Environment.EnvironmentName}");
 
         builder.Host.UseSerilog((context, services, configuration) =>
         {

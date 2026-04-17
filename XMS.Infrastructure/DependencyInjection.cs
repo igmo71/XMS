@@ -84,6 +84,7 @@ public static class DependencyInjection
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
                 .AddSqlClientInstrumentation()
+                .AddRabbitMQInstrumentation()
                 //.AddEntityFrameworkCoreInstrumentation()
                 //.SetSampler(new AlwaysOnSampler())
                 .SetSampler(new AppTraceSampler())

@@ -15,10 +15,10 @@ internal abstract class CatalogNotificationHandler<TEntity, TEvent>(UtClient utC
 {
     public async Task HandleAsync(TEvent oneCNotifyMessage, CancellationToken ct = default)
     {
-        using var activity = StartActivity();
-
         if (logger.IsEnabled(LogLevel.Debug))
             logger.LogDebug("{Source} - Start {@message}", nameof(HandleAsync), oneCNotifyMessage);
+
+        using var activity = StartActivity();
 
         var fetchedItem = await utClient.FetchByRefKeyAsync<TEntity>(oneCNotifyMessage.Ref_Key, ct);
 

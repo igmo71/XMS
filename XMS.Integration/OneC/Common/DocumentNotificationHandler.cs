@@ -15,12 +15,12 @@ internal abstract class DocumentNotificationHandler<TEntity, TEvent>(UtClient ut
 {
     public async Task HandleAsync(TEvent oneCNotifyMessage, CancellationToken ct = default)
     {
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Start {@message}", nameof(HandleAsync), oneCNotifyMessage);
+
         await Task.Delay(1000, ct); // TODO: 1С не успевает отпустить документ, когда мы его уже запрашиваем
 
         using var activity = StartActivity();
-
-        if (logger.IsEnabled(LogLevel.Debug))
-            logger.LogDebug("{Source} - Start {@message}", nameof(HandleAsync), oneCNotifyMessage);
 
         var fetchedItem = await utClient.FetchByRefKeyAsync<TEntity>(oneCNotifyMessage.Ref_Key, ct);
 

@@ -42,11 +42,6 @@ public static class Document_ЗаказКлиента_Endpoints
             .WithSummary($"Notify{feature}")
             .WithDescription($"Notify {feature}");
 
-        extGroup.MapPatch("/notify/post", IntegrationEventPublisher.PublishDocumentNotificationPostAsync<Document_ЗаказКлиента_Notification>)
-            .WithName($"Notify{feature}_Post")
-            .WithSummary($"Notify{feature}_Post")
-            .WithDescription($"Notify {feature}_Post");
-
         return builder;
     }
 

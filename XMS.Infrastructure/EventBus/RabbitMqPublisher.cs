@@ -1,10 +1,11 @@
-﻿using RabbitMQ.Client;
+﻿using Microsoft.Extensions.Logging;
+using RabbitMQ.Client;
 using System.Text.Json;
 using XMS.Core.Abstractions.EventBus;
 
 namespace XMS.Infrastructure.EventBus;
 
-internal class RabbitMqPublisher(IConnectionFactory connectionFactory) : IEventPublisher, IAsyncDisposable
+internal class RabbitMqPublisher(IConnectionFactory connectionFactory, ILogger<RabbitMqPublisher> logger) : IEventPublisher, IAsyncDisposable
 {
     private IConnection? _connection;
     private readonly SemaphoreSlim _connectionLock = new(1, 1);
@@ -17,6 +18,9 @@ internal class RabbitMqPublisher(IConnectionFactory connectionFactory) : IEventP
         await channel.ExchangeDeclareAsync(exchange, ExchangeType.Fanout, durable: true, cancellationToken: ct);
 
         var body = JsonSerializer.SerializeToUtf8Bytes(eventValue);
+
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} {exchange} {eventValue}", nameof(PublishAsync), exchange, eventValue);
 
         await channel.BasicPublishAsync(exchange: exchange, routingKey: string.Empty, body: body, cancellationToken: ct);
     }

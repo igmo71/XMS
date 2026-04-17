@@ -59,8 +59,14 @@ internal class RabbitMqConsumer(
                     {
                         eventValue = JsonSerializer.Deserialize(ea.Body.Span, eventType);
 
+                        if (logger.IsEnabled(LogLevel.Debug))
+                            logger.LogDebug("Received {eventName} {@eventValue}", eventName, eventValue);
+
                         if (eventValue is IIntegrationEvent integrationEvent)
                             await integrationEventHandler.HandleAsync(integrationEvent, timeoutCts.Token);
+
+                        if (logger.IsEnabled(LogLevel.Debug))
+                            logger.LogDebug("Handled {eventName} {@eventValue}", eventName, eventValue);
                     }
                     await channel.BasicAckAsync(ea.DeliveryTag, multiple: false, cancellationToken: ct);
                 }

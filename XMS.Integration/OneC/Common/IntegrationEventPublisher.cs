@@ -13,11 +13,11 @@ internal static class IntegrationEventPublisher
         [FromServices] ILogger<CatalogNotification> logger,
         [FromBody] CatalogNotification catalogNotification)
     {
-        await publisher.PublishAsync(eventNaming.GetEventName<TEntity>(), catalogNotification);
-
         if (logger.IsEnabled(LogLevel.Debug))
             logger.LogDebug("{Source} {Request.Path} {@catalogNotification}",
                 nameof(PublishCatalogNotificationAsync), httpContext.Request.Path.Value, catalogNotification);
+
+        await publisher.PublishAsync(eventNaming.GetEventName<TEntity>(), catalogNotification);
 
         return TypedResults.Ok();
     }
@@ -29,26 +29,13 @@ internal static class IntegrationEventPublisher
         [FromServices] ILogger<DocumentNotification> logger,
         [FromBody] DocumentNotification documentNotification)
     {
-        await publisher.PublishAsync(eventNaming.GetEventName<TEntity>(), documentNotification);
+
 
         if (logger.IsEnabled(LogLevel.Debug))
             logger.LogDebug("{Source} {Request.Path} {@documentNotification}",
                 nameof(PublishDocumentNotificationAsync), httpContext.Request.Path.Value, documentNotification);
 
-        return TypedResults.Ok();
-    }
-
-    public static async Task<IResult> PublishDocumentNotificationPostAsync<TEntity>(HttpContext httpContext,
-        [FromServices] IEventPublisher publisher,
-        [FromServices] IEventNamingService eventNaming,
-        [FromServices] ILogger<DocumentNotification> logger,
-        [FromBody] DocumentNotification documentNotification)
-    {
         await publisher.PublishAsync(eventNaming.GetEventName<TEntity>(), documentNotification);
-
-        if (logger.IsEnabled(LogLevel.Debug))
-            logger.LogDebug("{Source} {Request.Path} {@documentNotification}",
-                nameof(PublishDocumentNotificationPostAsync), httpContext.Request.Path.Value, documentNotification);
 
         return TypedResults.Ok();
     }
