@@ -35,7 +35,7 @@ public abstract class ODataClient<TConfig>(HttpClient httpClient, IOptions<TConf
         if (!response.IsSuccessStatusCode)
         {
             var error = JsonSerializer.Deserialize<OneCError>(content);
-            logger.LogError("{Source} {Uri} {@Error}", nameof(PostValueAsync), uri, error);
+            logger.LogError("{Source} {Uri} {@Error} {content}", nameof(GetValueAsync), uri, error, content);
             return default;
         }
 

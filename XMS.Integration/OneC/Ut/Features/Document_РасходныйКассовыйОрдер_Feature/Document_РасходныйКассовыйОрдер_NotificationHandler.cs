@@ -44,9 +44,6 @@ internal class Document_РасходныйКассовыйОрдер_Notificatio
             .Where(e => e.Ref_Key == oneCNotifyMessage.Ref_Key)
             .ExecuteDeleteAsync(ct);
 
-
-
-
         if (!fetchedItem.DeletionMark && fetchedItem.Posted)
         {
             await dbContext.Set<Entity>().AddAsync(fetchedItem, ct);
