@@ -1,8 +1,6 @@
-﻿using XMS.Core.Abstractions.EventBus;
+﻿namespace XMS.Integration.Abstractions;
 
-namespace XMS.Integration.Abstractions;
-
-public interface IIntegrationEvent : IEvent
+public interface IIntegrationEvent //: IAppEvent
 {
     Guid Ref_Key { get; init; }
     string? DataVersion { get; init; }

@@ -5,15 +5,16 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text.Json;
 using XMS.Core.Abstractions.EventBus;
+using XMS.EventBus.Abstractions;
 using XMS.Integration.Abstractions;
 
 namespace XMS.Infrastructure.EventBus;
 
-internal class RabbitMqConsumer(
+internal class RabbitMqIntegrationConsumer(
     IServiceProvider serviceProvider,
     IConnectionFactory connectionFactory,
     IEventNamingService eventNaming,
-    ILogger<RabbitMqConsumer> logger,
+    ILogger<RabbitMqIntegrationConsumer> logger,
     List<Type> handlers) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken ct)

@@ -9,8 +9,10 @@ using RabbitMQ.Client;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Abstractions.EventBus;
 using XMS.Core.Common;
+using XMS.EventBus.Abstractions;
 using XMS.Infrastructure.Data;
 using XMS.Infrastructure.EventBus;
+using XMS.Integration.Abstractions;
 
 namespace XMS.Infrastructure;
 
@@ -36,7 +38,7 @@ public static class DependencyInjection
 
         return services;
     }
-    public static IServiceCollection AddAppEventConnectionFactory(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddRabbitMqEventConnectionFactory(this IServiceCollection services, IConfiguration configuration)
     {
         var rabbitMqConfig = configuration.GetSection(nameof(RabbitMqConfig)).Get<RabbitMqConfig>()
                     ?? throw new InvalidOperationException("RabbitMqConfig Not Found");
@@ -51,20 +53,20 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddAppEventPublisher(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddIntegrationEventPublisher(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<IEventPublisher, RabbitMqPublisher>();
+        services.AddSingleton<IIntegrationEventPublisher, RabbitMqIntegrationPublisher>();
 
         return services;
     }
 
-    public static IServiceCollection AddAppEventConsumer(this IServiceCollection services, IConfiguration configuration, List<Type> handlerInterfaces)
+    public static IServiceCollection AddIntegrationEventConsumer(this IServiceCollection services, IConfiguration configuration, List<Type> handlerInterfaces)
     {
-        services.AddHostedService(sp => new RabbitMqConsumer(
+        services.AddHostedService(sp => new RabbitMqIntegrationConsumer(
             serviceProvider: sp,
             connectionFactory: sp.GetRequiredService<IConnectionFactory>(),
             eventNaming: sp.GetRequiredService<IEventNamingService>(),
-            logger: sp.GetRequiredService<ILogger<RabbitMqConsumer>>(),
+            logger: sp.GetRequiredService<ILogger<RabbitMqIntegrationConsumer>>(),
             handlers: handlerInterfaces));
 
         return services;

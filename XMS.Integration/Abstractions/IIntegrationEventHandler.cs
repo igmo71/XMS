@@ -10,15 +10,13 @@ public interface IIntegrationEventHandler<in TEvent> : IIntegrationEventHandler
 {
     Task HandleAsync(TEvent eventValue, CancellationToken ct);
 
-    // Явная реализация базового метода (Default Interface Member)
-    // Перенаправляет вызов на типизированный метод
-    Task IIntegrationEventHandler.HandleAsync(IIntegrationEvent eventValue, CancellationToken ct)
+    Task IIntegrationEventHandler.HandleAsync(IIntegrationEvent integrationEvent, CancellationToken ct)
     {
-        if (eventValue is TEvent typedEvent)
+        if (integrationEvent is TEvent typedEvent)
         {
             return HandleAsync(typedEvent, ct);
         }
 
-        throw new ArgumentException($"Event type {eventValue.GetType().Name} does not match handler event type {typeof(TEvent).Name}");
+        throw new ArgumentException($"Event type {integrationEvent.GetType().Name} does not match handler event type {typeof(TEvent).Name}");
     }
 }

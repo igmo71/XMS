@@ -13,7 +13,6 @@ public static class DependencyInjection
         services.AddScoped<ICostCatalogUtService, CostCatalogUtService>();
         services.AddScoped<ICostCategoryItemService, CostCategoryItemService>();
         services.AddScoped<ICostCategoryService, CostCategoryService>();
-        services.AddScoped<ICostCategoryIntegrationService, CostCategoryIntegrationService>();
         services.AddScoped<ICostItemService, CostItemService>();
 
         return services;

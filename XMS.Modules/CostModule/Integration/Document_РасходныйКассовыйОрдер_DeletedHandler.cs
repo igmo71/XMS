@@ -1,19 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using XMS.Core.Abstractions.Data;
-using XMS.Integration.Abstractions;
-using XMS.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
+using XMS.Core.Abstractions.EventBus;
+using XMS.EventBus.Abstractions;
+using XMS.EventBus.Events;
 using XMS.Modules.CostModule.Domain;
 
 namespace XMS.Modules.CostModule.Integration;
 
 internal class Document_РасходныйКассовыйОрдер_DeletedHandler(IDbContextFactoryProxy dbFactory)
-    : IIntegrationEventHandler<Document_РасходныйКассовыйОрдер_Deleted>
+    : IAppEventHandler<Document_РасходныйКассовыйОрдер_Deleted>
 {
-    public async Task HandleAsync(Document_РасходныйКассовыйОрдер_Deleted dto, CancellationToken ct = default)
+    public async Task HandleAsync(Document_РасходныйКассовыйОрдер_Deleted deleted, CancellationToken ct = default)
     {
         using var dbContext = dbFactory.CreateDbContext();
 
-        var existing = await dbContext.Set<CostAllocation>().FirstOrDefaultAsync(e => e.PaymentVoucherId == dto.Ref_Key, ct);
+        var existing = await dbContext.Set<CostAllocation>().FirstOrDefaultAsync(e => e.PaymentVoucherId == deleted.Ref_Key, ct);
 
         if (existing is not null)
         {

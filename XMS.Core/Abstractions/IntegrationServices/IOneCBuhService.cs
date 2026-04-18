@@ -1,6 +1,6 @@
 ﻿using XMS.Domain.Models;
 
-namespace XMS.Integration.OneC.Api;
+namespace XMS.Core.Abstractions.IntegrationServices;
 
 public interface IOneCBuhService
 {

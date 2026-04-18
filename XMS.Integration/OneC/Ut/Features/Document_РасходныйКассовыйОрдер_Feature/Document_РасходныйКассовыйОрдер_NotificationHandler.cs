@@ -3,12 +3,13 @@ using Microsoft.Extensions.Logging;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Abstractions.EventBus;
 using XMS.Core.Common;
+using XMS.EventBus.Abstractions;
 using XMS.Integration.Abstractions;
 using XMS.Integration.OneC.Common;
 using XMS.Integration.OneC.Ut.ODataClient;
-using DeletedEvent = XMS.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature.Document_РасходныйКассовыйОрдер_Deleted;
+using DeletedEvent = XMS.EventBus.Events.Document_РасходныйКассовыйОрдер_Deleted;
 using Entity = XMS.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature.Document_РасходныйКассовыйОрдер;
-using ReceivedEvent = XMS.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature.Document_РасходныйКассовыйОрдер_Received;
+using ReceivedEvent = XMS.EventBus.Events.Document_РасходныйКассовыйОрдер_Received;
 
 namespace XMS.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
 
@@ -17,9 +18,8 @@ public record Document_РасходныйКассовыйОрдер_Notification
 internal class Document_РасходныйКассовыйОрдер_NotificationHandler(
     UtClient utClient,
     IDbContextFactoryProxy dbFactory,
-    IEventPublisher eventPublisher,
-    ILogger<Document_РасходныйКассовыйОрдер_NotificationHandler> logger,
-    IEventNamingService eventNaming)
+    IAppEventPublisher appEventPublisher,
+    ILogger<Document_РасходныйКассовыйОрдер_NotificationHandler> logger)
     : BaseService, IIntegrationEventHandler<Document_РасходныйКассовыйОрдер_Notification>
 {
     public async Task HandleAsync(Document_РасходныйКассовыйОрдер_Notification oneCNotifyMessage, CancellationToken ct = default)
@@ -49,11 +49,35 @@ internal class Document_РасходныйКассовыйОрдер_Notificatio
             await dbContext.Set<Entity>().AddAsync(fetchedItem, ct);
             await dbContext.SaveChangesAsync(ct);
 
-            await eventPublisher.PublishAsync(eventNaming.GetEventName<ReceivedEvent>(), ReceivedEvent.From(fetchedItem), ct);
+            var receivedEvent = new DeletedEvent()
+            {
+                Ref_Key = fetchedItem.Ref_Key,
+                Date = fetchedItem.Date,
+                Number = fetchedItem.Number,
+                СуммаДокумента = fetchedItem.СуммаДокумента,
+                Автор_Key = fetchedItem.Автор_Key,
+                КСЗ_КатегорияЗатрат_Key = fetchedItem.КСЗ_КатегорияЗатрат_Key,
+                СтатьяДвиженияДенежныхСредств_Key = fetchedItem.СтатьяДвиженияДенежныхСредств_Key,
+                ХозяйственнаяОперация = fetchedItem.ХозяйственнаяОперация,
+                Комментарий = fetchedItem.Комментарий
+            };
+            await appEventPublisher.PublishAsync(receivedEvent, ct);
         }
         else
         {
-            await eventPublisher.PublishAsync(eventNaming.GetEventName<DeletedEvent>(), DeletedEvent.From(fetchedItem), ct);
+            var deletedEvent = new ReceivedEvent()
+            {
+                Ref_Key = fetchedItem.Ref_Key,
+                Date = fetchedItem.Date,
+                Number = fetchedItem.Number,
+                СуммаДокумента = fetchedItem.СуммаДокумента,
+                Автор_Key = fetchedItem.Автор_Key,
+                КСЗ_КатегорияЗатрат_Key = fetchedItem.КСЗ_КатегорияЗатрат_Key,
+                СтатьяДвиженияДенежныхСредств_Key = fetchedItem.СтатьяДвиженияДенежныхСредств_Key,
+                ХозяйственнаяОперация = fetchedItem.ХозяйственнаяОперация,
+                Комментарий = fetchedItem.Комментарий
+            };
+            await appEventPublisher.PublishAsync(deletedEvent, ct);
         }
 
         if (logger.IsEnabled(LogLevel.Debug))

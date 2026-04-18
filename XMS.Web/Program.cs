@@ -10,6 +10,8 @@ using XMS.Application;
 using XMS.Core.Abstractions.EventBus;
 using XMS.Core.Common;
 using XMS.Domain.Models;
+using XMS.EventBus;
+using XMS.EventBus.Abstractions;
 using XMS.Infrastructure;
 using XMS.Infrastructure.Data;
 using XMS.Integration;
@@ -93,8 +95,10 @@ public class Program
         builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
         builder.Services.AddSingleton<IEventNamingService, EventNamingService>();
-        builder.Services.AddAppEventConnectionFactory(builder.Configuration);
-        builder.Services.AddAppEventPublisher(builder.Configuration);
+        builder.Services.AddSingleton<IAppEventPublisher, AppEventPublisher>();
+        builder.Services.AddAppEventHandlers();
+        builder.Services.AddRabbitMqEventConnectionFactory(builder.Configuration);
+        builder.Services.AddIntegrationEventPublisher(builder.Configuration);
         builder.Services.AddAppPersistenceInfrastructure(builder.Configuration);
         builder.Services.AddAppIntegrationServices(builder.Configuration);
         builder.Services.AddApplicationServices();

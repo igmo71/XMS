@@ -3,6 +3,8 @@ using Serilog;
 using XMS.Application;
 using XMS.Core.Abstractions.EventBus;
 using XMS.Core.Common;
+using XMS.EventBus;
+using XMS.EventBus.Abstractions;
 using XMS.Infrastructure;
 using XMS.Integration;
 using XMS.Modules;
@@ -31,16 +33,18 @@ public class Program
         builder.Services.AddAppPersistenceInfrastructure(builder.Configuration);
 
         builder.Services.AddSingleton<IEventNamingService, EventNamingService>();
-        builder.Services.AddAppEventConnectionFactory(builder.Configuration);
-        builder.Services.AddAppEventPublisher(builder.Configuration);
+        builder.Services.AddRabbitMqEventConnectionFactory(builder.Configuration);
+        builder.Services.AddIntegrationEventPublisher(builder.Configuration);
 
         var assembliesWithHandlers = AppDomain.CurrentDomain
             .GetAssemblies()
             .Where(a => a.FullName!.StartsWith("XMS."))
             .ToArray();
         var integrationEventHandlers = builder.Services.AddAppIntegrationEventHandlers(assembliesWithHandlers);
-        builder.Services.AddAppEventConsumer(builder.Configuration, integrationEventHandlers);
+        builder.Services.AddIntegrationEventConsumer(builder.Configuration, integrationEventHandlers);
 
+        builder.Services.AddSingleton<IAppEventPublisher, AppEventPublisher>();
+        builder.Services.AddAppEventHandlers();
 
         builder.Services.AddAppIntegrationServices(builder.Configuration);
         builder.Services.AddApplicationServices();

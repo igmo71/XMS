@@ -3,7 +3,6 @@ using XMS.Application.Abstractions.Services;
 using XMS.Core.Abstractions.Data;
 using XMS.Core.Common;
 using XMS.Domain.Models;
-using XMS.Integration.AD;
 
 namespace XMS.Application.Services;
 

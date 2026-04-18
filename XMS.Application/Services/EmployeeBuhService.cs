@@ -2,7 +2,6 @@
 using XMS.Application.Abstractions.Services;
 using XMS.Core.Abstractions.Data;
 using XMS.Domain.Models;
-using XMS.Integration.OneC.Api;
 
 namespace XMS.Application.Services;
 

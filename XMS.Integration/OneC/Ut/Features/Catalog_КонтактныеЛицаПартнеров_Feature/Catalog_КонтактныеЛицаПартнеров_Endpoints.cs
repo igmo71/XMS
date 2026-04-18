@@ -37,7 +37,7 @@ public static class Catalog_КонтактныеЛицаПартнеров_Endpo
             .WithSummary($"Resync{feature}")
             .WithDescription($"Resync {feature} from OneS Ut and save to DB");
 
-        extGroup.MapPatch("/notify", IntegrationEventPublisher.PublishCatalogNotificationAsync<Catalog_КонтактныеЛицаПартнеров_Notification>)
+        extGroup.MapPatch("/notify", CatalogPublisher.PublishAsync<Catalog_КонтактныеЛицаПартнеров_Notification>)
             .WithName($"Notify{feature}")
             .WithSummary($"Notify{feature}")
             .WithDescription($"Notify {feature}");

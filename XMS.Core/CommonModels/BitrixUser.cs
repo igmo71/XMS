@@ -1,15 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace XMS.Integration.Bitrix.Models;
-
-internal class BitrixAuthResponse
-{
-    [JsonPropertyName("result")]
-    public bool Result { get; set; }
-
-    [JsonPropertyName("user")]
-    public BitrixUser? User { get; set; }
-}
+﻿namespace XMS.Core.CommonModels;
 
 public class BitrixUser
 {

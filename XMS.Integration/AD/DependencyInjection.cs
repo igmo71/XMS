@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using XMS.Core.Abstractions.IntegrationServices;
 
 namespace XMS.Integration.AD;
 

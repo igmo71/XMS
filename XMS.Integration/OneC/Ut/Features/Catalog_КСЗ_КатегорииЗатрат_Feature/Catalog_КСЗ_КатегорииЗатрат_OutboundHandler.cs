@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using XMS.Core.Abstractions.EventBus;
 using XMS.Core.Common;
-using XMS.Integration.Abstractions;
+using XMS.EventBus.Abstractions;
+using XMS.EventBus.Events;
 using XMS.Integration.OneC.Ut.ODataClient;
 
 namespace XMS.Integration.OneC.Ut.Features.Catalog_КСЗ_КатегорииЗатрат_Feature;
@@ -8,9 +10,9 @@ namespace XMS.Integration.OneC.Ut.Features.Catalog_КСЗ_КатегорииЗа
 internal class Catalog_КСЗ_КатегорииЗатрат_OutboundHandler(
     UtClient utClient,
     ILogger<Catalog_КСЗ_КатегорииЗатрат_OutboundHandler> logger)
-    : BaseService, IIntegrationEventHandler<Catalog_КСЗ_КатегорииЗатрат_Outbound>
+    : BaseService, IAppEventHandler<CostCategoryCommonEvent>
 {
-    public async Task HandleAsync(Catalog_КСЗ_КатегорииЗатрат_Outbound outboundEvent, CancellationToken ct = default)
+    public async Task HandleAsync(CostCategoryCommonEvent outboundEvent, CancellationToken ct = default)
     {
         using var activity = StartActivity();
 

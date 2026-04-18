@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using XMS.Application.Common;
 using XMS.Core.Abstractions.Data;
+using XMS.Core.Abstractions.EventBus;
 using XMS.Core.Common;
+using XMS.EventBus.Abstractions;
+using XMS.EventBus.Events;
 using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Domain;
 
@@ -10,7 +13,7 @@ namespace XMS.Modules.CostModule.Application;
 internal class CostCategoryService(
     IDbContextFactoryProxy dbFactory,
     ICostCategoryItemService costCategoryItemService,
-    ICostCategoryIntegrationService integrationService) : ICostCategoryService
+    IAppEventPublisher appPublisher) : ICostCategoryService
 {
     public async Task CreateAsync(CostCategory item, CancellationToken ct = default)
     {
@@ -24,7 +27,7 @@ internal class CostCategoryService(
 
         await dbContext.SaveChangesAsync(ct);
 
-        await integrationService.PublishAsync(item);
+        await appPublisher.PublishAsync(MapCommonEvent(item), ct);
     }
 
     public async Task UpdateAsync(CostCategory item, CancellationToken ct = default)
@@ -40,7 +43,7 @@ internal class CostCategoryService(
 
         await dbContext.SaveChangesAsync(ct);
 
-        await integrationService.PublishAsync(existing);
+        await appPublisher.PublishAsync(MapCommonEvent(item), ct);
     }
 
     public async Task<ServiceResult> DeleteAsync(Guid id, CancellationToken ct = default)
@@ -66,7 +69,7 @@ internal class CostCategoryService(
 
         await dbContext.SaveChangesAsync(ct);
 
-        await integrationService.PublishAsync(existing);
+        await appPublisher.PublishAsync(MapCommonEvent(existing), ct);
 
         return ServiceResult.Success();
     }
@@ -90,9 +93,20 @@ internal class CostCategoryService(
 
         await dbContext.SaveChangesAsync(ct);
 
-        await integrationService.PublishAsync(existing);
+        await appPublisher.PublishAsync(MapCommonEvent(existing), ct);
 
         return ServiceResult.Success();
+    }
+
+    private static CostCategoryCommonEvent MapCommonEvent(CostCategory item)
+    {
+        return new CostCategoryCommonEvent
+        {
+            Ref_Key = item.Id,
+            DeletionMark = item.IsDeleted,
+            Description = item.Name,
+            Parent_Key = item.ParentId
+        };
     }
 
     public async Task<CostCategory?> GetByIdAsync(Guid id, CancellationToken ct = default)

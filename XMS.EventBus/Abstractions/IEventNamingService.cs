@@ -1,4 +1,4 @@
-﻿namespace XMS.Core.Abstractions.EventBus;
+﻿namespace XMS.EventBus.Abstractions;
 
 public interface IEventNamingService
 {

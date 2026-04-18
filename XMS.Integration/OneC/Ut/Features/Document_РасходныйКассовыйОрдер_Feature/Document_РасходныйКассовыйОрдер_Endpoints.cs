@@ -37,7 +37,7 @@ public static class Document_РасходныйКассовыйОрдер_Endpoi
             .WithSummary($"Resync{feature}_ByDate")
             .WithDescription($"Resync {feature} from OneS Ut and save to DB");
 
-        extGroup.MapPatch("/notify", IntegrationEventPublisher.PublishDocumentNotificationAsync<Document_РасходныйКассовыйОрдер_Notification>)
+        extGroup.MapPatch("/notify", DocumentPublisher.PublishAsync<Document_РасходныйКассовыйОрдер_Notification>)
             .WithName($"Notify{feature}")
             .WithSummary($"Notify{feature}")
             .WithDescription($"Notify {feature}");

@@ -2,18 +2,25 @@
 using RabbitMQ.Client;
 using System.Text.Json;
 using XMS.Core.Abstractions.EventBus;
+using XMS.EventBus.Abstractions;
+using XMS.Integration.Abstractions;
 
 namespace XMS.Infrastructure.EventBus;
 
-internal class RabbitMqPublisher(IConnectionFactory connectionFactory, ILogger<RabbitMqPublisher> logger) : IEventPublisher, IAsyncDisposable
+internal class RabbitMqIntegrationPublisher(
+    IConnectionFactory connectionFactory,
+    ILogger<RabbitMqIntegrationPublisher> logger,
+    IEventNamingService eventNaming) : IIntegrationEventPublisher, IAsyncDisposable
 {
     private IConnection? _connection;
     private readonly SemaphoreSlim _connectionLock = new(1, 1);
 
-    public async Task PublishAsync<TEvent>(string exchange, TEvent eventValue, CancellationToken ct = default)
+    public async Task PublishAsync<TEvent>(TEvent eventValue, CancellationToken ct = default)
+        where TEvent : class, IIntegrationEvent
     {
         using var connection = await GetConnectionAsync(ct);
         using var channel = await connection.CreateChannelAsync(cancellationToken: ct);
+        var exchange = eventNaming.GetEventName(typeof(TEvent));
 
         await channel.ExchangeDeclareAsync(exchange, ExchangeType.Fanout, durable: true, cancellationToken: ct);
 
