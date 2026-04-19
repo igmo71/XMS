@@ -1,12 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text.Json;
-using XMS.Core.Abstractions.EventBus;
-using XMS.EventBus.Abstractions;
-using XMS.Integration.Abstractions;
+using XMS.Application.Abstractions.EventBus;
 
 namespace XMS.Infrastructure.EventBus;
 

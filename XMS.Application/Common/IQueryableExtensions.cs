@@ -1,5 +1,4 @@
-﻿using XMS.Core;
-using XMS.Domain.Abstractions;
+﻿using XMS.Domain.Abstractions;
 
 namespace XMS.Application.Common;
 

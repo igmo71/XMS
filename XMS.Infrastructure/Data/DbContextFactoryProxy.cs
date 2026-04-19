@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XMS.Core.Abstractions.Data;
 
 namespace XMS.Infrastructure.Data;
 

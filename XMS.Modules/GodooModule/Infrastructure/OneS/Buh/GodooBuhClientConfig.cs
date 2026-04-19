@@ -1,6 +1,4 @@
-﻿using XMS.Integration.OneC.Common;
-
-namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh;
+﻿namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh;
 
 internal class GodooBuhClientConfig : ODataClientConfig
 {

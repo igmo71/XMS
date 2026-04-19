@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using XMS.Integration.OneC.Common;
 
 namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh;
 

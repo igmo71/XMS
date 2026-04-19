@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -6,13 +6,9 @@ using OpenTelemetry.Exporter;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using RabbitMQ.Client;
-using XMS.Core.Abstractions.Data;
-using XMS.Core.Abstractions.EventBus;
-using XMS.Core.Common;
-using XMS.EventBus.Abstractions;
+using XMS.Application.Abstractions.EventBus;
 using XMS.Infrastructure.Data;
 using XMS.Infrastructure.EventBus;
-using XMS.Integration.Abstractions;
 
 namespace XMS.Infrastructure;
 

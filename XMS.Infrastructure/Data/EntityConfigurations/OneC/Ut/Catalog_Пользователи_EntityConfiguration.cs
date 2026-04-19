@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using XMS.Integration.OneC.Common;
-using XMS.Integration.OneC.Ut.Features.Catalog_Пользователи_Feature;
 
 namespace XMS.Infrastructure.Data.EntityConfigurations.OneC.Ut;
 

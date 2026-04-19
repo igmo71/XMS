@@ -1,12 +1,9 @@
-﻿using Scalar.AspNetCore;
+using Scalar.AspNetCore;
 using Serilog;
 using XMS.Application;
-using XMS.Core.Abstractions.EventBus;
-using XMS.Core.Common;
-using XMS.EventBus;
-using XMS.EventBus.Abstractions;
+using XMS.Application.Core.Common;
+using XMS.Application.Abstractions.EventBus;
 using XMS.Infrastructure;
-using XMS.Integration;
 using XMS.Modules;
 
 namespace XMS.Api;

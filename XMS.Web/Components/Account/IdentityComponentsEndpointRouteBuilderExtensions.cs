@@ -11,7 +11,7 @@ using XMS.Domain.Models;
 using XMS.Web.Components.Account.Pages;
 using XMS.Web.Components.Account.Pages.Manage;
 
-namespace Microsoft.AspNetCore.Routing;
+namespace XMS.Web.Components.Account;
 
 internal static class IdentityComponentsEndpointRouteBuilderExtensions
 {

@@ -1,6 +1,4 @@
-﻿using XMS.Core;
-
-namespace XMS.Application.Common;
+﻿namespace XMS.Application.Common;
 
 public record QueryParameters(
     int? Skip = AppSettings.Default.Skip,

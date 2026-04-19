@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Diagnostics;
-using XMS.Core.Abstractions.IntegrationServices;
-using XMS.Integration.OneC.Api;
-using XMS.Integration.OneC.Common;
-using XMS.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
 using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Domain;
 

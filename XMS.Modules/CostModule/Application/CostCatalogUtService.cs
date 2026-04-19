@@ -1,7 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XMS.Core.Abstractions.Data;
-using XMS.Core.Abstractions.IntegrationServices;
-using XMS.Integration.OneC.Common;
 using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Domain;
 

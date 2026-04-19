@@ -1,0 +1,4 @@
+namespace XMS.Application.Abstractions.Integration.OneC.Ut;
+
+public interface IDocument_СписаниеБезналичныхДенежныхСредств_Service : IDocumentService<Document_СписаниеБезналичныхДенежныхСредств>
+{ }

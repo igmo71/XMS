@@ -1,37 +1,35 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace XMS.Web.Migrations
+namespace XMS.Web.Migrations;
+
+/// <inheritdoc />
+public partial class CreateCatalog_КонтактныеЛицаПартнеров : Migration
 {
     /// <inheritdoc />
-    public partial class CreateCatalog_КонтактныеЛицаПартнеров : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.CreateTable(
-                name: "1c_ut_Catalog_КонтактныеЛицаПартнеров",
-                columns: table => new
-                {
-                    Ref_Key = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DataVersion = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: true),
-                    DeletionMark = table.Column<bool>(type: "bit", nullable: false),
-                    Owner_Key = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_1c_ut_Catalog_КонтактныеЛицаПартнеров", x => x.Ref_Key);
-                });
-        }
+        migrationBuilder.CreateTable(
+            name: "1c_ut_Catalog_КонтактныеЛицаПартнеров",
+            columns: table => new
+            {
+                Ref_Key = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                DataVersion = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: true),
+                DeletionMark = table.Column<bool>(type: "bit", nullable: false),
+                Owner_Key = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_1c_ut_Catalog_КонтактныеЛицаПартнеров", x => x.Ref_Key);
+            });
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropTable(
-                name: "1c_ut_Catalog_КонтактныеЛицаПартнеров");
-        }
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropTable(
+            name: "1c_ut_Catalog_КонтактныеЛицаПартнеров");
     }
 }

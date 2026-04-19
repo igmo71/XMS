@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
-using XMS.Core.CommonModels;
 using XMS.Domain.Models;
-using XMS.Integration.Bitrix;
-using XMS.Integration.Bitrix.Models;
 
 namespace XMS.Web.Components.Account;
 

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using XMS.Core.Abstractions.Data;
 using XMS.Domain.Models;
 
 namespace XMS.Infrastructure.Data;

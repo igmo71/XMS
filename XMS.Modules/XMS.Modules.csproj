@@ -12,7 +12,6 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\XMS.Application\XMS.Application.csproj" />
-	  <ProjectReference Include="..\XMS.EventBus\XMS.EventBus.csproj" />
 	</ItemGroup>
 
 </Project>
