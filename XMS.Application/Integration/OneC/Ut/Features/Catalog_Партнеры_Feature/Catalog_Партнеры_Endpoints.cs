@@ -32,7 +32,7 @@ public static class Catalog_Партнеры_Endpoints
             .WithSummary(nameof(ResyncCatalog_Партнеры))
             .WithDescription("Resync Catalog_Партнеры from OneS Ut and save to DB");
 
-        extGroup.MapPatch("/notify", CatalogPublisher.PublishAsync<Catalog_Партнеры_Notification>)
+        extGroup.MapPatch("/notify", CatalogPublisher.PublishAsync<Catalog_Партнеры>)
             .WithName("NotifyCatalog_Партнеры")
             .WithSummary("NotifyCatalog_Партнеры")
             .WithDescription("Notify Catalog_Партнеры");

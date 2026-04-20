@@ -20,7 +20,7 @@ internal class RabbitMqIntegrationPublisher(
     {
         using var connection = await GetConnectionAsync(ct);
         using var channel = await connection.CreateChannelAsync(cancellationToken: ct);
-        var exchange = eventNaming.GetEventName(typeof(TEvent));
+        var exchange = $"{eventNaming.GetEventName(typeof(TEvent))}_Notification";
 
         await channel.ExchangeDeclareAsync(exchange, ExchangeType.Fanout, durable: true, cancellationToken: ct);
 

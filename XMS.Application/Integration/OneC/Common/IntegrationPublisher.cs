@@ -24,10 +24,10 @@ internal static class CatalogPublisher
 
 internal static class DocumentPublisher
 {
-    public static async Task<IResult> PublishAsync<TEntity>(HttpContext httpContext,
+    public static async Task<IResult> PublishAsync<TEvent>(HttpContext httpContext,
         [FromServices] IIntegrationEventPublisher publisher,
-        [FromServices] ILogger<TEntity> logger,
-        [FromBody] IDocument documentNotification)
+        [FromServices] ILogger<TEvent> logger,
+        [FromBody] TEvent documentNotification) where TEvent : class, IOdataEntity
     {
         if (logger.IsEnabled(LogLevel.Debug))
             logger.LogDebug("{Source} {Request.Path} {@documentNotification}",

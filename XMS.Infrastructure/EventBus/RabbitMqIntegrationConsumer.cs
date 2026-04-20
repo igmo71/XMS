@@ -5,6 +5,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text.Json;
 using XMS.Application.Abstractions.EventBus;
+using XMS.Application.Abstractions.Integration.OneC;
 using XMS.Application.Abstractions.Integration.OneC.Events;
 
 namespace XMS.Infrastructure.EventBus;
@@ -34,7 +35,8 @@ internal class RabbitMqIntegrationConsumer(
 
             var currentHandlerType = handlerType;
             var eventType = currentHandlerType.GetGenericArguments()[0];
-            var eventName = eventNaming.GetEventName(eventType);
+            //var eventName = eventNaming.GetEventName(eventType);
+            var eventName = $"{eventNaming.GetEventName(eventType)}_Notification";
 
             var args = new Dictionary<string, object?> { { "x-dead-letter-exchange", DeadLetterExchange } };
             await channel.ExchangeDeclareAsync(exchange: eventName, ExchangeType.Fanout, durable: true, cancellationToken: ct);
@@ -48,7 +50,7 @@ internal class RabbitMqIntegrationConsumer(
                 using var scope = serviceProvider.CreateScope();
 
                 using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-                timeoutCts.CancelAfter(TimeSpan.FromSeconds(30));
+                timeoutCts.CancelAfter(TimeSpan.FromMinutes(5));
 
                 object? eventValue = null;
                 try
@@ -62,7 +64,7 @@ internal class RabbitMqIntegrationConsumer(
                         if (logger.IsEnabled(LogLevel.Debug))
                             logger.LogDebug("Received {eventName} {@eventValue}", eventName, eventValue);
 
-                        if (eventValue is IIntegrationEvent integrationEvent)
+                        if (eventValue is IOdataEntity integrationEvent)
                             await integrationEventHandler.HandleAsync(integrationEvent, timeoutCts.Token);
 
                         if (logger.IsEnabled(LogLevel.Debug))

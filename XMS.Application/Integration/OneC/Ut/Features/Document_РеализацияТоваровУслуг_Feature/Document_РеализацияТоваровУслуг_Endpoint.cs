@@ -34,7 +34,7 @@ public static class Document_РеализацияТоваровУслуг_Endpoi
             .WithSummary($"Resync{feature}_ByDate")
             .WithDescription($"Resync {feature} from OneS Ut and save to DB");
 
-        extGroup.MapPatch("/notify", DocumentPublisher.PublishAsync<Document_РеализацияТоваровУслуг_Notification>)
+        extGroup.MapPatch("/notify", DocumentPublisher.PublishAsync<Document_РеализацияТоваровУслуг>)
             .WithName($"Notify{feature}")
             .WithSummary($"Notify{feature}")
             .WithDescription($"Notify {feature}");

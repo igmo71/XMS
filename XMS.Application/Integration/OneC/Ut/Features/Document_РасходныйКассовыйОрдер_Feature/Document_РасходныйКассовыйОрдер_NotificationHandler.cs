@@ -38,7 +38,7 @@ internal class Document_РасходныйКассовыйОрдер_Notificatio
             await dbContext.Set<Document_РасходныйКассовыйОрдер>().AddAsync(fetchedItem, ct);
             await dbContext.SaveChangesAsync(ct);
 
-            var receivedEvent = new Document_РасходныйКассовыйОрдер()
+            var receivedEvent = new Document_РасходныйКассовыйОрдер_Received()
             {
                 Ref_Key = fetchedItem.Ref_Key,
                 Date = fetchedItem.Date,
@@ -54,7 +54,7 @@ internal class Document_РасходныйКассовыйОрдер_Notificatio
         }
         else
         {
-            var deletedEvent = new Document_РасходныйКассовыйОрдер()
+            var deletedEvent = new Document_РасходныйКассовыйОрдер_Deleted()
             {
                 Ref_Key = fetchedItem.Ref_Key,
                 Date = fetchedItem.Date,

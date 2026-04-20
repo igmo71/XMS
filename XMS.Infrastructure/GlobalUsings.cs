@@ -1,5 +1,4 @@
 global using XMS.Application.Abstractions.Data;
-global using XMS.Application.Abstractions.Integration.Events;
 global using XMS.Application.Integration.OneC.Ut.Features.Catalog_КонтактныеЛицаПартнеров_Feature;
 global using XMS.Application.Integration.OneC.Ut.Features.Catalog_Контрагенты_Feature;
 global using XMS.Application.Integration.OneC.Ut.Features.Catalog_Номенклатура_Feature;

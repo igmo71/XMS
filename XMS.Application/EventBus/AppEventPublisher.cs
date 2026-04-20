@@ -10,15 +10,23 @@ public class AppEventPublisher(
     public async Task PublishAsync<TEvent>(TEvent eventValue, CancellationToken ct) where TEvent : class, IAppEvent
     {
         using var scope = scopeFactory.CreateScope();
+
         var handlers = scope.ServiceProvider.GetServices<IAppEventHandler<TEvent>>();
 
         if (handlers == null || !handlers.Any())
             return;
 
-        //foreach (var handler in handlers)
-        //{
-        //    await handler.HandleAsync(eventValue, ct);
-        //}
+        foreach (var handler in handlers)
+        {
+            await handler.HandleAsync(eventValue, ct);
+        }
+
+        //await ExecuteAllHandlers(eventValue, handlers, ct);
+    }
+
+    private async Task ExecuteAllHandlers<TEvent>(TEvent eventValue, IEnumerable<IAppEventHandler<TEvent>> handlers, CancellationToken ct) where TEvent : class, IAppEvent
+    {
+        var exceptions = new List<Exception>();
 
         var tasks = handlers.Select(async handler =>
         {
@@ -26,13 +34,23 @@ public class AppEventPublisher(
             {
                 await handler.HandleAsync(eventValue, ct);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                logger.LogError("{Source} Error handling {EventType} with handler {HandlerType}",
+                logger.LogError(ex, "{Source} Error handling {EventType} with handler {HandlerType}",
                     nameof(PublishAsync), typeof(TEvent).Name, handler.GetType().Name);
+
+                lock (exceptions)
+                {
+                    exceptions.Add(ex);
+                }
             }
         });
 
         await Task.WhenAll(tasks);
+
+        if (exceptions.Count > 0)
+        {
+            throw new AggregateException($"One or more handlers failed for {typeof(TEvent).Name}.", exceptions);
+        }
     }
 }
