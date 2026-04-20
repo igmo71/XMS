@@ -1,4 +1,6 @@
-﻿namespace XMS.Application.Integration.OneC.Common;
+﻿using XMS.Application.Common;
+
+namespace XMS.Application.Integration.OneC.Common;
 
 public record struct CatalogQueryParameters(
     string? DescriptionTerm = null,

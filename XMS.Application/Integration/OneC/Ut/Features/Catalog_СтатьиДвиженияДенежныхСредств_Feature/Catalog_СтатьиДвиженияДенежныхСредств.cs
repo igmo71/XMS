@@ -1,6 +1,9 @@
-﻿namespace XMS.Application.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
+﻿using XMS.Application.Abstractions.EventBus;
+using XMS.Application.Abstractions.Integration.OneC;
 
-public class Catalog_СтатьиДвиженияДенежныхСредств : Catalog, ISelectable, IAppEvent
+namespace XMS.Application.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
+
+public class Catalog_СтатьиДвиженияДенежныхСредств : Catalog, IAppEvent
 {
     public static string? Select => "Ref_Key,DataVersion,DeletionMark,Description,Code,Parent_Key,IsFolder";
 

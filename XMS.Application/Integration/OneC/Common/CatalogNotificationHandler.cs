@@ -1,6 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using XMS.Application.Abstractions.Data;
+using XMS.Application.Abstractions.EventBus;
+using XMS.Application.Abstractions.Integration.OneC;
 using XMS.Application.Abstractions.Integration.OneC.Events;
+using XMS.Application.Common;
+using XMS.Application.Integration.OneC.Ut.ODataClient;
 
 namespace XMS.Application.Integration.OneC.Common;
 
@@ -10,7 +15,7 @@ internal abstract class CatalogNotificationHandler<TEntity>(
     IAppEventPublisher appEventPublisher,
     ILogger logger)
     : BaseService, IIntegrationEventHandler<TEntity>
-    where TEntity : Catalog, ISelectable, IAppEvent
+    where TEntity : Catalog, IAppEvent
 {
     public async Task HandleAsync(TEntity oneCNotifyMessage, CancellationToken ct = default)
     {

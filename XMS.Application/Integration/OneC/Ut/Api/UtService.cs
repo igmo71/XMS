@@ -1,4 +1,14 @@
-﻿using XMS.Domain.Models;
+﻿using XMS.Application.Abstractions.Integration.OneC.Ut;
+using XMS.Application.Abstractions.Integration.Services;
+using XMS.Application.Common;
+using XMS.Application.Integration.OneC.Common;
+using XMS.Application.Integration.OneC.Ut.Features.AccumulationRegister_ТоварыНаСкладах_Balance_Feature;
+using XMS.Application.Integration.OneC.Ut.Features.Catalog_Пользователи_Feature;
+using XMS.Application.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
+using XMS.Application.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
+using XMS.Application.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
+using XMS.Application.Integration.OneC.Ut.ODataClient;
+using XMS.Domain.Models;
 
 namespace XMS.Application.Integration.OneC.Ut.Api;
 

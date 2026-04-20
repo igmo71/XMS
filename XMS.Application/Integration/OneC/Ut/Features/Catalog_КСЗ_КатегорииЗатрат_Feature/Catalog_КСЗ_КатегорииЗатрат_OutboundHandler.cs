@@ -1,4 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using XMS.Application.Abstractions.EventBus;
+using XMS.Application.Common;
+using XMS.Application.EventBus.Events;
+using XMS.Application.Integration.OneC.Ut.ODataClient;
 
 namespace XMS.Application.Integration.OneC.Ut.Features.Catalog_КСЗ_КатегорииЗатрат_Feature;
 

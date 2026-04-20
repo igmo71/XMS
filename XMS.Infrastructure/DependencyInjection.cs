@@ -8,7 +8,7 @@ using OpenTelemetry.Trace;
 using RabbitMQ.Client;
 using XMS.Application.Abstractions.EventBus;
 using XMS.Application.Abstractions.Integration.OneC.Events;
-using XMS.Application.Core.Common;
+using XMS.Application.Common;
 using XMS.Infrastructure.Data;
 using XMS.Infrastructure.EventBus;
 

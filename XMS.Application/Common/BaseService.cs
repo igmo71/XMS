@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace XMS.Application.Core.Common;
+namespace XMS.Application.Common;
 
 public abstract class BaseService
 {

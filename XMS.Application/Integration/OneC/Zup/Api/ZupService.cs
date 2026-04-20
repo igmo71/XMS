@@ -1,4 +1,7 @@
+using XMS.Application.Abstractions.Integration.Services;
+using XMS.Application.Integration.OneC.Common;
 using XMS.Application.Integration.OneC.Zup.Models;
+using XMS.Application.Integration.OneC.Zup.ODataClient;
 using XMS.Domain.Models;
 
 namespace XMS.Application.Integration.OneC.Zup.Api;

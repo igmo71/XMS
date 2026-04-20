@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using XMS.Application.Abstractions.Data;
+using XMS.Application.Abstractions.EventBus;
 using XMS.Application.Common;
+using XMS.Application.EventBus.Events;
 using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Domain;
 

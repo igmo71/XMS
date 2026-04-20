@@ -1,5 +1,8 @@
 using Microsoft.Extensions.Logging;
-using Entity = XMS.Application.Integration.OneC.Ut.Features.Document_РеализацияТоваровУслуг_Feature.Document_РеализацияТоваровУслуг;
+using XMS.Application.Abstractions.Data;
+using XMS.Application.Abstractions.Integration.OneC.Ut;
+using XMS.Application.Integration.OneC.Common;
+using XMS.Application.Integration.OneC.Ut.ODataClient;
 
 namespace XMS.Application.Integration.OneC.Ut.Features.Document_РеализацияТоваровУслуг_Feature;
 
@@ -7,5 +10,5 @@ internal class Document_РеализацияТоваровУслуг_Service(
     UtClient utClient,
     IDbContextFactoryProxy dbFactory,
     ILogger<Document_РеализацияТоваровУслуг_Service> logger)
-    : DocumentService<Entity>(utClient, dbFactory, logger), IDocument_РеализацияТоваровУслуг_Service
+    : DocumentService<Document_РеализацияТоваровУслуг>(utClient, dbFactory, logger), IDocument_РеализацияТоваровУслуг_Service
 { }

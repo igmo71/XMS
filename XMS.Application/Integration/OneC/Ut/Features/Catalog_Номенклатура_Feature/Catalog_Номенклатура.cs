@@ -1,6 +1,9 @@
-﻿namespace XMS.Application.Integration.OneC.Ut.Features.Catalog_Номенклатура_Feature;
+﻿using XMS.Application.Abstractions.EventBus;
+using XMS.Application.Abstractions.Integration.OneC;
 
-public class Catalog_Номенклатура : Catalog, ISelectable, IAppEvent
+namespace XMS.Application.Integration.OneC.Ut.Features.Catalog_Номенклатура_Feature;
+
+public class Catalog_Номенклатура : Catalog, IAppEvent
 {
     public static string? Select => "Ref_Key,DataVersion,DeletionMark,Parent_Key,IsFolder,Code,Description";
 

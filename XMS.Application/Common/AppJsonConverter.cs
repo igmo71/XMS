@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace XMS.Application.Core.Common;
+namespace XMS.Application.Common;
 
 public class FlexibleStringConverter : JsonConverter<string>
 {

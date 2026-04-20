@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using XMS.Application.Abstractions.EventBus;
 
 namespace XMS.Application.EventBus;
 

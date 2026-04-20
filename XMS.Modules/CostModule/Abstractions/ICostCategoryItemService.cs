@@ -1,4 +1,5 @@
-﻿using XMS.Modules.CostModule.Domain;
+﻿using XMS.Application.Abstractions.Data;
+using XMS.Modules.CostModule.Domain;
 
 namespace XMS.Modules.CostModule.Abstractions;
 

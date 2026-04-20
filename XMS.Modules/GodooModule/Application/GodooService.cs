@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using XMS.Application.Common;
 using XMS.Modules.GodooModule.Abstractions;
 using XMS.Modules.GodooModule.Application.Mapping;
 using XMS.Modules.GodooModule.Domain;

@@ -1,6 +1,9 @@
-﻿namespace XMS.Application.Integration.OneC.Ut.Features.Catalog_Контрагенты_Feature;
+﻿using XMS.Application.Abstractions.EventBus;
+using XMS.Application.Abstractions.Integration.OneC;
 
-public class Catalog_Контрагенты : Catalog, ISelectable, IAppEvent
+namespace XMS.Application.Integration.OneC.Ut.Features.Catalog_Контрагенты_Feature;
+
+public class Catalog_Контрагенты : Catalog, IAppEvent
 {
     public static string? Select => "Ref_Key,DataVersion,DeletionMark,Description,Партнер_Key";
 

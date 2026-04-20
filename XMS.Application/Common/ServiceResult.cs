@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using XMS.Application.Abstractions.Common;
 
-namespace XMS.Application.Core.Common;
+namespace XMS.Application.Common;
 
 public class ServiceResult : IServiceResult
 {

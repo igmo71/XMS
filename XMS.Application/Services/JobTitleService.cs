@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using XMS.Application.Abstractions.Data;
 using XMS.Application.Abstractions.Services;
 using XMS.Application.Common;
 using XMS.Domain.Models;

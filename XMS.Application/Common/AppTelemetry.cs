@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace XMS.Application.Core.Common;
+namespace XMS.Application.Common;
 
 public class AppTelemetry
 {

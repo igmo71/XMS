@@ -1,4 +1,7 @@
-﻿using XMS.Modules.CostModule.Domain;
+﻿using XMS.Application.Integration.OneC.Common;
+using XMS.Application.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
+using XMS.Application.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
+using XMS.Modules.CostModule.Domain;
 
 namespace XMS.Modules.CostModule.Abstractions;
 

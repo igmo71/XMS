@@ -1,3 +1,5 @@
+using XMS.Application.Abstractions.EventBus;
+
 namespace XMS.Application.EventBus.Events;
 
 public class CostCategoryCommonEvent : IAppEvent

@@ -1,7 +1,7 @@
 ﻿using System.Text.Encodings.Web;
 using System.Text.Json;
 
-namespace XMS.Application.Core;
+namespace XMS.Application.Common;
 
 public static class AppSettings
 {

@@ -1,3 +1,6 @@
+using XMS.Application.Common;
+using XMS.Application.Integration.OneC.Common;
+
 namespace XMS.Application.Abstractions.Integration.OneC;
 
 public interface ICatalogService<TEntity> where TEntity : Catalog

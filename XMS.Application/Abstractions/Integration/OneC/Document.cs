@@ -1,6 +1,6 @@
 namespace XMS.Application.Abstractions.Integration.OneC;
 
-public abstract class Document : IOdataEntity
+public abstract class Document : IOdataEntity, ISelectable
 {
     public Guid Ref_Key { get; set; }
     public string? DataVersion { get; set; }

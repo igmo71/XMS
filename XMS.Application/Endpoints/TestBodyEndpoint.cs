@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using XMS.Application.Common;
 
 namespace XMS.Application.Endpoints;
 

@@ -1,11 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using XMS.Application.Abstractions.Data;
+using XMS.Application.Abstractions.Integration.OneC;
+using XMS.Application.Common;
+using XMS.Application.Integration.OneC.Ut.ODataClient;
 
 namespace XMS.Application.Integration.OneC.Common;
 
-internal abstract class DocumentService<TEntity>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
+internal abstract class DocumentService<TEntity>(
+    UtClient utClient,
+    IDbContextFactoryProxy dbFactory,
+    ILogger logger)
     : BaseService, IDocumentService<TEntity>
-    where TEntity : Document, ISelectable
+    where TEntity : Document
 {
     public async Task<TEntity?> GetAsync(Guid refKey, CancellationToken ct = default)
     {

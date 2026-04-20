@@ -1,6 +1,9 @@
-﻿namespace XMS.Application.Integration.OneC.Ut.Features.Document_РеализацияТоваровУслуг_Feature;
+﻿using XMS.Application.Abstractions.EventBus;
+using XMS.Application.Abstractions.Integration.OneC;
 
-public class Document_РеализацияТоваровУслуг : Document, ISelectable, IAppEvent
+namespace XMS.Application.Integration.OneC.Ut.Features.Document_РеализацияТоваровУслуг_Feature;
+
+public class Document_РеализацияТоваровУслуг : Document, IAppEvent
 {
     public static string? Select =>
         "Ref_Key,DataVersion,DeletionMark,Number,Date,Posted,СуммаДокумента,ХозяйственнаяОперация,Партнер_Key,Склад_Key";

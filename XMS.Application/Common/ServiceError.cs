@@ -1,4 +1,4 @@
-﻿namespace XMS.Application.Core.Common;
+﻿namespace XMS.Application.Common;
 
 public sealed record ServiceError(int Code, string Name, string? Description = null)
 {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using XMS.Application.Abstractions.Integration.OneC;
 
 namespace XMS.Application.Integration.OneC.Common;
 

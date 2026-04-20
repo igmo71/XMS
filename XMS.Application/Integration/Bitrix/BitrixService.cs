@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using XMS.Application.Abstractions.Integration.Services;
 
 namespace XMS.Application.Integration.Bitrix;
 

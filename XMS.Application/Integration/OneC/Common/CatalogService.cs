@@ -1,11 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using XMS.Application.Abstractions.Data;
+using XMS.Application.Abstractions.Integration.OneC;
+using XMS.Application.Common;
+using XMS.Application.Integration.OneC.Ut.ODataClient;
 
 namespace XMS.Application.Integration.OneC.Common;
 
-internal abstract class CatalogService<TEntity>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
+internal abstract class CatalogService<TEntity>(
+    UtClient utClient,
+    IDbContextFactoryProxy dbFactory,
+    ILogger logger)
     : BaseService, ICatalogService<TEntity>
-    where TEntity : Catalog, ISelectable
+    where TEntity : Catalog
 {
     public async Task<TEntity?> GetAsync(Guid refKey, CancellationToken ct = default)
     {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using XMS.Application.Abstractions.Integration.OneC;
 using XMS.Application.Abstractions.Integration.OneC.Events;
 
 namespace XMS.Application.Integration.OneC.Common;

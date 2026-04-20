@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
+using XMS.Application.Abstractions.EventBus;
 
 namespace XMS.Application.EventBus;
 

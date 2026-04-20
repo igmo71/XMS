@@ -1,8 +1,11 @@
 ﻿using System.Text.Json.Serialization;
+using XMS.Application.Abstractions.EventBus;
+using XMS.Application.Abstractions.Integration.OneC;
+using XMS.Application.Common;
 
 namespace XMS.Application.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature;
 
-public class Catalog_Партнеры : Catalog, ISelectable, IAppEvent
+public class Catalog_Партнеры : Catalog, IAppEvent
 {
     public static string? Select =>
         "Ref_Key,DataVersion,DeletionMark,Parent_Key,Description,ОсновнойМенеджер_Key,БизнесРегион_Key,ДатаРегистрации,ЮрФизЛицо,Комментарий,Клиент,Поставщик,Конкурент,Перевозчик,ПрочиеОтношения";

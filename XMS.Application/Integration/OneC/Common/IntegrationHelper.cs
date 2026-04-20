@@ -1,4 +1,6 @@
-﻿namespace XMS.Application.Integration.OneC.Common;
+﻿using XMS.Application.Abstractions.Integration.OneC;
+
+namespace XMS.Application.Integration.OneC.Common;
 
 public class IntegrationHelper
 {
