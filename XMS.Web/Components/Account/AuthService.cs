@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
-using XMS.Application.Abstractions.Integration.Services;
+using XMS.Application.Abstractions.Integration;
 using XMS.Application.Integration.Bitrix;
 using XMS.Domain.Models;
 

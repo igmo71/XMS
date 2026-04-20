@@ -6,7 +6,7 @@ using XMS.Application.Integration.OneC.Ut.Features.Document_РасходныйК
 using XMS.Application.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 using XMS.Domain.Models;
 
-namespace XMS.Application.Abstractions.Integration.Services;
+namespace XMS.Application.Abstractions.Integration;
 
 public interface IOneCUtService
 {

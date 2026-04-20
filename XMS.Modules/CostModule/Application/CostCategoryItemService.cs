@@ -62,4 +62,17 @@ internal class CostCategoryItemService(IDbContextFactoryProxy dbFactory) : ICost
 
         return result;
     }
+
+    public async Task CreateAsync(Guid costCategoryId, Guid costItemId, CancellationToken ct = default)
+    {
+        using var dbContext = dbFactory.CreateDbContext();
+
+        await dbContext.Set<CostCategoryItem>().AddAsync(new CostCategoryItem
+        {
+            CategoryId = costCategoryId,
+            ItemId = costItemId
+        }, ct);
+
+        await dbContext.SaveChangesAsync(ct);
+    }
 }

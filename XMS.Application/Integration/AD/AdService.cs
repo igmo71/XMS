@@ -1,4 +1,4 @@
-﻿using XMS.Application.Abstractions.Integration.Services;
+﻿using XMS.Application.Abstractions.Integration;
 using XMS.Domain.Models;
 
 namespace XMS.Application.Integration.AD;

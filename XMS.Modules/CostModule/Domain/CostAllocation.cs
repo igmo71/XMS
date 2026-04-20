@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using XMS.Application.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
-using XMS.Domain.Abstractions;
+﻿using XMS.Domain.Abstractions;
 using XMS.Domain.Models;
 
 namespace XMS.Modules.CostModule.Domain;
@@ -41,17 +39,6 @@ public class CostAllocation : BaseEntity, ISoftDeletable
 
     public Guid? CityId { get; set; }
     public City? City { get; set; }
-
-    /// <summary>
-    /// Статья Движения Денежных Средств - Ref_Key
-    /// </summary>
-    public Guid? Catalog_СтатьяДДС_Key { get; set; }
-
-    /// <summary>
-    /// Статья Движения Денежных Средств
-    /// </summary>
-    [NotMapped]
-    public Catalog_СтатьиДвиженияДенежныхСредств? Catalog_СтатьяДДС { get; set; }
 
     public string? Comment { get; set; }
 

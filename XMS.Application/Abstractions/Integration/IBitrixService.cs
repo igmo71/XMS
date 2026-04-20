@@ -1,6 +1,6 @@
 using XMS.Application.Integration.Bitrix;
 
-namespace XMS.Application.Abstractions.Integration.Services;
+namespace XMS.Application.Abstractions.Integration;
 
 public interface IBitrixService
 {

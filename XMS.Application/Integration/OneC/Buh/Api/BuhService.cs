@@ -1,4 +1,4 @@
-using XMS.Application.Abstractions.Integration.Services;
+using XMS.Application.Abstractions.Integration;
 using XMS.Application.Integration.OneC.Buh.Models;
 using XMS.Application.Integration.OneC.Buh.ODataClient;
 using XMS.Application.Integration.OneC.Common;

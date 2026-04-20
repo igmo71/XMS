@@ -1,6 +1,6 @@
 using XMS.Domain.Models;
 
-namespace XMS.Application.Abstractions.Integration.Services;
+namespace XMS.Application.Abstractions.Integration;
 
 public interface IOneCZupService
 {

@@ -1,5 +1,5 @@
-﻿using XMS.Application.Abstractions.Integration.OneC.Ut;
-using XMS.Application.Abstractions.Integration.Services;
+﻿using XMS.Application.Abstractions.Integration;
+using XMS.Application.Abstractions.Integration.OneC.Ut;
 using XMS.Application.Common;
 using XMS.Application.Integration.OneC.Common;
 using XMS.Application.Integration.OneC.Ut.Features.AccumulationRegister_ТоварыНаСкладах_Balance_Feature;
