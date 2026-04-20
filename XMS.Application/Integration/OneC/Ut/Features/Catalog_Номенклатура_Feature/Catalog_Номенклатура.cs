@@ -1,16 +1,12 @@
 ﻿namespace XMS.Application.Integration.OneC.Ut.Features.Catalog_Номенклатура_Feature;
 
-public class Catalog_Номенклатура : ICatalog, ISelectable
+public class Catalog_Номенклатура : Catalog, ISelectable, IAppEvent
 {
     public static string? Select => "Ref_Key,DataVersion,DeletionMark,Parent_Key,IsFolder,Code,Description";
 
-    public Guid Ref_Key { get; set; }
-    public string? DataVersion { get; set; }
-    public bool DeletionMark { get; set; }
     public Guid Parent_Key { get; set; }
     public bool IsFolder { get; set; }
     public string? Code { get; set; }
-    public string? Description { get; set; }
 
 
     //public string Артикул { get; set; }

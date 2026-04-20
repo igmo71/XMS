@@ -15,5 +15,6 @@ public class IntegrationHelper
         $"{GetUri<T>()}&$filter=Ref_Key eq guid'{refKey}'";
 
     public static string GetUriByDate<T>(DateTime? from = null, DateTime? to = null) where T : class, ISelectable =>
-        $"{GetUri<T>()}&$filter=DeletionMark eq false and Posted eq true and Date ge datetime'{from:s}' and Date lt datetime'{to:s}'";
+        //$"{GetUri<T>()}&$filter=DeletionMark eq false and Posted eq true and Date ge datetime'{from:s}' and Date lt datetime'{to:s}'";
+        $"{GetUri<T>()}&$filter=Date ge datetime'{from:s}' and Date lt datetime'{to:s}'";
 }

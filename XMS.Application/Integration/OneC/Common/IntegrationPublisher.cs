@@ -7,10 +7,10 @@ namespace XMS.Application.Integration.OneC.Common;
 
 internal static class CatalogPublisher
 {
-    public static async Task<IResult> PublishAsync<TEntity>(HttpContext httpContext,
+    public static async Task<IResult> PublishAsync<TEvent>(HttpContext httpContext,
         [FromServices] IIntegrationEventPublisher publisher,
-        [FromServices] ILogger<TEntity> logger,
-        [FromBody] ICatalog catalogNotification)
+        [FromServices] ILogger<TEvent> logger,
+        [FromBody] TEvent catalogNotification) where TEvent : class, IOdataEntity
     {
         if (logger.IsEnabled(LogLevel.Debug))
             logger.LogDebug("{Source} {Request.Path} {@catalogNotification}",

@@ -1,16 +1,10 @@
 ﻿namespace XMS.Application.Integration.OneC.Ut.Features.Document_РеализацияТоваровУслуг_Feature;
 
-public class Document_РеализацияТоваровУслуг : IDocument, ISelectable
+public class Document_РеализацияТоваровУслуг : Document, ISelectable, IAppEvent
 {
     public static string? Select =>
         "Ref_Key,DataVersion,DeletionMark,Number,Date,Posted,СуммаДокумента,ХозяйственнаяОперация,Партнер_Key,Склад_Key";
 
-    public Guid Ref_Key { get; set; }
-    public string? DataVersion { get; set; }
-    public bool DeletionMark { get; set; }
-    public string? Number { get; set; }
-    public DateTime Date { get; set; }
-    public bool Posted { get; set; }
     public decimal СуммаДокумента { get; set; }
     public string? ХозяйственнаяОперация { get; set; }
     public Guid? Партнер_Key { get; set; }

@@ -2,16 +2,12 @@
 
 namespace XMS.Application.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature;
 
-public class Catalog_Партнеры : ICatalog, ISelectable
+public class Catalog_Партнеры : Catalog, ISelectable, IAppEvent
 {
     public static string? Select =>
         "Ref_Key,DataVersion,DeletionMark,Parent_Key,Description,ОсновнойМенеджер_Key,БизнесРегион_Key,ДатаРегистрации,ЮрФизЛицо,Комментарий,Клиент,Поставщик,Конкурент,Перевозчик,ПрочиеОтношения";
 
-    public Guid Ref_Key { get; set; }
-    public string? DataVersion { get; set; }
-    public bool DeletionMark { get; set; }
     public Guid? Parent_Key { get; set; }
-    public string? Description { get; set; }
     public Guid? ОсновнойМенеджер_Key { get; set; }
     public Guid? БизнесРегион_Key { get; set; }
     public DateTime ДатаРегистрации { get; set; }

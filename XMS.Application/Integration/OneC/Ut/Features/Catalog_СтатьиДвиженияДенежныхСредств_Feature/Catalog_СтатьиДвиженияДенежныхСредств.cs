@@ -1,15 +1,11 @@
 ﻿namespace XMS.Application.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
 
-public class Catalog_СтатьиДвиженияДенежныхСредств : ICatalog, ISelectable
+public class Catalog_СтатьиДвиженияДенежныхСредств : Catalog, ISelectable, IAppEvent
 {
     public static string? Select => "Ref_Key,DataVersion,DeletionMark,Description,Code,Parent_Key,IsFolder";
 
-    public Guid Ref_Key { get; set; }
-    public string? DataVersion { get; set; }
-    public bool DeletionMark { get; set; }
     public Guid? Parent_Key { get; set; }
     public bool IsFolder { get; set; }
-    public string? Description { get; set; }
     public string? Code { get; set; }
 
 

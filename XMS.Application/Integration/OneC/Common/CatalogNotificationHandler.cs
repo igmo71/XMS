@@ -4,9 +4,13 @@ using XMS.Application.Abstractions.Integration.OneC.Events;
 
 namespace XMS.Application.Integration.OneC.Common;
 
-internal abstract class CatalogNotificationHandler<TEntity>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
+internal abstract class CatalogNotificationHandler<TEntity>(
+    UtClient utClient,
+    IDbContextFactoryProxy dbFactory,
+    IAppEventPublisher appEventPublisher,
+    ILogger logger)
     : BaseService, IIntegrationEventHandler<TEntity>
-    where TEntity : class, ICatalog, ISelectable
+    where TEntity : Catalog, ISelectable, IAppEvent
 {
     public async Task HandleAsync(TEntity oneCNotifyMessage, CancellationToken ct = default)
     {
@@ -33,6 +37,8 @@ internal abstract class CatalogNotificationHandler<TEntity>(UtClient utClient, I
         await dbContext.Set<TEntity>().AddAsync(fetchedItem, ct);
 
         await dbContext.SaveChangesAsync(ct);
+
+        await appEventPublisher.PublishAsync(fetchedItem, ct);
 
         if (logger.IsEnabled(LogLevel.Debug))
             logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleAsync), oneCNotifyMessage, fetchedItem);

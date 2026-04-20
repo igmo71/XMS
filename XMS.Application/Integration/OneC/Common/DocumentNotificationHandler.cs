@@ -4,9 +4,13 @@ using XMS.Application.Abstractions.Integration.OneC.Events;
 
 namespace XMS.Application.Integration.OneC.Common;
 
-internal abstract class DocumentNotificationHandler<TEntity>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
+internal abstract class DocumentNotificationHandler<TEntity>(
+    UtClient utClient,
+    IDbContextFactoryProxy dbFactory,
+    IAppEventPublisher appEventPublisher,
+    ILogger logger)
     : BaseService, IIntegrationEventHandler<TEntity>
-    where TEntity : class, IDocument, ISelectable
+    where TEntity : Document, ISelectable, IAppEvent
 {
     public async Task HandleAsync(TEntity oneCNotifyMessage, CancellationToken ct = default)
     {
@@ -32,12 +36,11 @@ internal abstract class DocumentNotificationHandler<TEntity>(UtClient utClient, 
             .Where(e => e.Ref_Key == oneCNotifyMessage.Ref_Key)
             .ExecuteDeleteAsync(ct);
 
-        if (fetchedItem is not null && !fetchedItem.DeletionMark && fetchedItem.Posted)
-        {
-            await dbContext.Set<TEntity>().AddAsync(fetchedItem, ct);
+        await dbContext.Set<TEntity>().AddAsync(fetchedItem, ct);
 
-            await dbContext.SaveChangesAsync(ct);
-        }
+        await dbContext.SaveChangesAsync(ct);
+
+        await appEventPublisher.PublishAsync(fetchedItem, ct);
 
         if (logger.IsEnabled(LogLevel.Debug))
             logger.LogDebug("{Source} - Ok {@message} {@fetchedItem}", nameof(HandleAsync), oneCNotifyMessage, fetchedItem);

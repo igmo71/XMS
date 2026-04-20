@@ -5,7 +5,7 @@ namespace XMS.Application.Integration.OneC.Common;
 
 internal abstract class CatalogService<TEntity>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
     : BaseService, ICatalogService<TEntity>
-    where TEntity : class, ICatalog, ISelectable
+    where TEntity : Catalog, ISelectable
 {
     public async Task<TEntity?> GetAsync(Guid refKey, CancellationToken ct = default)
     {

@@ -5,7 +5,7 @@ namespace XMS.Application.Integration.OneC.Common;
 
 internal abstract class DocumentService<TEntity>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
     : BaseService, IDocumentService<TEntity>
-    where TEntity : class, IDocument, ISelectable
+    where TEntity : Document, ISelectable
 {
     public async Task<TEntity?> GetAsync(Guid refKey, CancellationToken ct = default)
     {

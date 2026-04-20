@@ -2,18 +2,12 @@
 
 namespace XMS.Application.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 
-public class Document_СписаниеБезналичныхДенежныхСредств : IDocument, ISelectable, IAppEvent
+public class Document_СписаниеБезналичныхДенежныхСредств : Document, ISelectable, IAppEvent
 {
     public static string? Select => "Ref_Key,DataVersion,DeletionMark,Posted,Number,Date,СуммаДокумента,СтатьяДвиженияДенежныхСредств_Key,Организация_Key,Подразделение_Key,Автор_Key," +
         "Партнер_Key,Контрагент_Key,НаправлениеДеятельности_Key,ОбъектРасчетов_Key,Валюта_Key,ЗаявкаНаРасходованиеДенежныхСредств,ЗаявкаНаРасходованиеДенежныхСредств_Type," +
         "ДокументОснование,ДокументОснование_Type,Договор,Договор_Type,ХозяйственнаяОперация,НазначениеПлатежа,НалогообложениеНДС,Комментарий,РасшифровкаПлатежа,КСЗ_КатегорияЗатрат_Key";
 
-    public Guid Ref_Key { get; set; }
-    public string? DataVersion { get; set; }
-    public bool DeletionMark { get; set; }
-    public bool Posted { get; set; }
-    public string? Number { get; set; }
-    public DateTime Date { get; set; }
     public decimal СуммаДокумента { get; set; }
     public Guid? СтатьяДвиженияДенежныхСредств_Key { get; set; }
     public Guid? Организация_Key { get; set; }

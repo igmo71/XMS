@@ -5,7 +5,7 @@ namespace XMS.Application.Integration.OneC.Common;
 public static class QueryableExtensions
 {
     public static IQueryable<TEntity> HandleDocumentQuery<TEntity>(this IQueryable<TEntity> query, DocumentQueryParameters parameters)
-        where TEntity : IDocument
+        where TEntity : Document
     {
         query = query.OrderBy(e => e.Number);
 
@@ -28,7 +28,7 @@ public static class QueryableExtensions
     }
 
     public static IQueryable<TEntity> HandleCatalogQuery<TEntity>(this IQueryable<TEntity> query, CatalogQueryParameters parameters)
-       where TEntity : ICatalog
+       where TEntity : Catalog
     {
         query = query.OrderBy(e => e.Description);
 
