@@ -1,19 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using XMS.Application.Abstractions.Data;
-using XMS.Application.Core.Common;
-using XMS.Application.Abstractions.Integration.Events;
-using XMS.Application.Abstractions.Integration.OneC;
-using XMS.Application.Integration.OneC.Ut.ODataClient;
+using XMS.Application.Abstractions.Integration.OneC.Events;
 
 namespace XMS.Application.Integration.OneC.Common;
 
-internal abstract class CatalogNotificationHandler<TEntity, TEvent>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
-    : BaseService, IIntegrationEventHandler<TEvent>
+internal abstract class CatalogNotificationHandler<TEntity>(UtClient utClient, IDbContextFactoryProxy dbFactory, ILogger logger)
+    : BaseService, IIntegrationEventHandler<TEntity>
     where TEntity : class, ICatalog, ISelectable
-    where TEvent : class, IIntegrationEvent
 {
-    public async Task HandleAsync(TEvent oneCNotifyMessage, CancellationToken ct = default)
+    public async Task HandleAsync(TEntity oneCNotifyMessage, CancellationToken ct = default)
     {
         if (logger.IsEnabled(LogLevel.Debug))
             logger.LogDebug("{Source} - Start {@message}", nameof(HandleAsync), oneCNotifyMessage);

@@ -7,8 +7,8 @@ using MudBlazor.Translations;
 using Serilog;
 using System.Globalization;
 using XMS.Application;
-using XMS.Application.Core.Common;
 using XMS.Application.Abstractions.EventBus;
+using XMS.Application.EventBus;
 using XMS.Domain.Models;
 using XMS.Infrastructure;
 using XMS.Infrastructure.Data;
@@ -97,7 +97,7 @@ public class Program
         builder.Services.AddRabbitMqEventConnectionFactory(builder.Configuration);
         builder.Services.AddIntegrationEventPublisher(builder.Configuration);
         builder.Services.AddAppPersistenceInfrastructure(builder.Configuration);
-        builder.Services.AddAppIntegrationServices(builder.Configuration);
+        builder.Services.AddIntegrationServices(builder.Configuration);
         builder.Services.AddApplicationServices();
         builder.Services.AddApplicationModules(builder.Configuration);
 

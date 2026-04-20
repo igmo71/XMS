@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 
-namespace XMS.Application.Core.Common;
+namespace XMS.Application.EventBus;
 
 public class EventNamingService(IHostEnvironment hostEnvironment) : IEventNamingService
 {

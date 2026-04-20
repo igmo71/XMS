@@ -1,28 +1,24 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using DeletedEvent = XMS.Application.EventBus.Events.Document_РасходныйКассовыйОрдер_Deleted;
-using Entity = XMS.Application.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature.Document_РасходныйКассовыйОрдер;
-using ReceivedEvent = XMS.Application.EventBus.Events.Document_РасходныйКассовыйОрдер_Received;
+using XMS.Application.Abstractions.Integration.OneC.Events;
 
 namespace XMS.Application.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
-
-public record Document_РасходныйКассовыйОрдер_Notification : DocumentNotification;
 
 internal class Document_РасходныйКассовыйОрдер_NotificationHandler(
     UtClient utClient,
     IDbContextFactoryProxy dbFactory,
     IAppEventPublisher appEventPublisher,
     ILogger<Document_РасходныйКассовыйОрдер_NotificationHandler> logger)
-    : BaseService, IIntegrationEventHandler<Document_РасходныйКассовыйОрдер_Notification>
+    : BaseService, IIntegrationEventHandler<Document_РасходныйКассовыйОрдер>
 {
-    public async Task HandleAsync(Document_РасходныйКассовыйОрдер_Notification oneCNotifyMessage, CancellationToken ct = default)
+    public async Task HandleAsync(Document_РасходныйКассовыйОрдер oneCNotifyMessage, CancellationToken ct = default)
     {
         using var activity = StartActivity();
 
         if (logger.IsEnabled(LogLevel.Debug))
             logger.LogDebug("{Source} - Start {@message}", nameof(HandleAsync), oneCNotifyMessage);
 
-        var fetchedItem = await utClient.FetchByRefKeyAsync<Entity>(oneCNotifyMessage.Ref_Key, ct);
+        var fetchedItem = await utClient.FetchByRefKeyAsync<Document_РасходныйКассовыйОрдер>(oneCNotifyMessage.Ref_Key, ct);
 
         if (fetchedItem is null)
         {
@@ -33,16 +29,16 @@ internal class Document_РасходныйКассовыйОрдер_Notificatio
 
         using var dbContext = dbFactory.CreateDbContext();
 
-        await dbContext.Set<Entity>()
+        await dbContext.Set<Document_РасходныйКассовыйОрдер>()
             .Where(e => e.Ref_Key == oneCNotifyMessage.Ref_Key)
             .ExecuteDeleteAsync(ct);
 
         if (!fetchedItem.DeletionMark && fetchedItem.Posted)
         {
-            await dbContext.Set<Entity>().AddAsync(fetchedItem, ct);
+            await dbContext.Set<Document_РасходныйКассовыйОрдер>().AddAsync(fetchedItem, ct);
             await dbContext.SaveChangesAsync(ct);
 
-            var receivedEvent = new DeletedEvent()
+            var receivedEvent = new Document_РасходныйКассовыйОрдер()
             {
                 Ref_Key = fetchedItem.Ref_Key,
                 Date = fetchedItem.Date,
@@ -58,7 +54,7 @@ internal class Document_РасходныйКассовыйОрдер_Notificatio
         }
         else
         {
-            var deletedEvent = new ReceivedEvent()
+            var deletedEvent = new Document_РасходныйКассовыйОрдер()
             {
                 Ref_Key = fetchedItem.Ref_Key,
                 Date = fetchedItem.Date,

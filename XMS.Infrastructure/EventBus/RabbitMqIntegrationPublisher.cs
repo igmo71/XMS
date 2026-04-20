@@ -2,6 +2,8 @@ using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using System.Text.Json;
 using XMS.Application.Abstractions.EventBus;
+using XMS.Application.Abstractions.Integration.OneC;
+using XMS.Application.Abstractions.Integration.OneC.Events;
 
 namespace XMS.Infrastructure.EventBus;
 
@@ -14,7 +16,7 @@ internal class RabbitMqIntegrationPublisher(
     private readonly SemaphoreSlim _connectionLock = new(1, 1);
 
     public async Task PublishAsync<TEvent>(TEvent eventValue, CancellationToken ct = default)
-        where TEvent : class, IIntegrationEvent
+        where TEvent : class, IOdataEntity
     {
         using var connection = await GetConnectionAsync(ct);
         using var channel = await connection.CreateChannelAsync(cancellationToken: ct);

@@ -1,5 +1,5 @@
-using XMS.Domain.Models;
 using XMS.Application.Integration.OneC.Buh.Models;
+using XMS.Domain.Models;
 
 namespace XMS.Application.Integration.OneC.Buh.Api;
 

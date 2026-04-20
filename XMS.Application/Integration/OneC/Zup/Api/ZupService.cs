@@ -1,5 +1,5 @@
-using XMS.Domain.Models;
 using XMS.Application.Integration.OneC.Zup.Models;
+using XMS.Domain.Models;
 
 namespace XMS.Application.Integration.OneC.Zup.Api;
 

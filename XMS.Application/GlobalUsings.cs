@@ -1,19 +1,17 @@
 global using XMS.Application.Abstractions.Common;
 global using XMS.Application.Abstractions.Data;
 global using XMS.Application.Abstractions.EventBus;
-global using XMS.Application.Abstractions.Integration.Events;
 global using XMS.Application.Abstractions.Integration.OneC;
 global using XMS.Application.Abstractions.Integration.OneC.Ut;
 global using XMS.Application.Abstractions.Integration.Services;
 global using XMS.Application.Core;
 global using XMS.Application.Core.Common;
-global using XMS.Application.Core.CommonModels;
 global using XMS.Application.EventBus.Events;
+global using XMS.Application.Integration.OneC.Buh.ODataClient;
 global using XMS.Application.Integration.OneC.Common;
 global using XMS.Application.Integration.OneC.Ut.Features.AccumulationRegister_ТоварыНаСкладах_Balance_Feature;
 global using XMS.Application.Integration.OneC.Ut.Features.Catalog_КонтактныеЛицаПартнеров_Feature;
 global using XMS.Application.Integration.OneC.Ut.Features.Catalog_Контрагенты_Feature;
-global using XMS.Application.Integration.OneC.Ut.Features.Catalog_КСЗ_КатегорииЗатрат_Feature;
 global using XMS.Application.Integration.OneC.Ut.Features.Catalog_Номенклатура_Feature;
 global using XMS.Application.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature;
 global using XMS.Application.Integration.OneC.Ut.Features.Catalog_Пользователи_Feature;
@@ -23,5 +21,4 @@ global using XMS.Application.Integration.OneC.Ut.Features.Document_Расход�
 global using XMS.Application.Integration.OneC.Ut.Features.Document_РеализацияТоваровУслуг_Feature;
 global using XMS.Application.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 global using XMS.Application.Integration.OneC.Ut.ODataClient;
-global using XMS.Application.Integration.OneC.Buh.ODataClient;
 global using XMS.Application.Integration.OneC.Zup.ODataClient;

@@ -2,7 +2,7 @@
 
 namespace XMS.Application.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 
-public class Document_СписаниеБезналичныхДенежныхСредств : IDocument, ISelectable
+public class Document_СписаниеБезналичныхДенежныхСредств : IDocument, ISelectable, IAppEvent
 {
     public static string? Select => "Ref_Key,DataVersion,DeletionMark,Posted,Number,Date,СуммаДокумента,СтатьяДвиженияДенежныхСредств_Key,Организация_Key,Подразделение_Key,Автор_Key," +
         "Партнер_Key,Контрагент_Key,НаправлениеДеятельности_Key,ОбъектРасчетов_Key,Валюта_Key,ЗаявкаНаРасходованиеДенежныхСредств,ЗаявкаНаРасходованиеДенежныхСредств_Type," +

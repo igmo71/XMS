@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using XMS.Application.EventBus.Events;
 using XMS.Modules.CostModule.Domain;
 
 namespace XMS.Modules.CostModule.Integration;

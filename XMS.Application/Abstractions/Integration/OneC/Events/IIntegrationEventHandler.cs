@@ -1,16 +1,16 @@
-namespace XMS.Application.Abstractions.Integration.Events;
+namespace XMS.Application.Abstractions.Integration.OneC.Events;
 
 public interface IIntegrationEventHandler
 {
-    Task HandleAsync(IIntegrationEvent integrationEvent, CancellationToken ct);
+    Task HandleAsync(IOdataEntity integrationEvent, CancellationToken ct);
 }
 
 public interface IIntegrationEventHandler<in TEvent> : IIntegrationEventHandler
-    where TEvent : class, IIntegrationEvent
+    where TEvent : class, IOdataEntity
 {
     Task HandleAsync(TEvent eventValue, CancellationToken ct);
 
-    Task IIntegrationEventHandler.HandleAsync(IIntegrationEvent integrationEvent, CancellationToken ct)
+    Task IIntegrationEventHandler.HandleAsync(IOdataEntity integrationEvent, CancellationToken ct)
     {
         if (integrationEvent is TEvent typedEvent)
         {

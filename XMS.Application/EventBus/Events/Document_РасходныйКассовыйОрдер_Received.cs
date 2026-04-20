@@ -1,5 +1,3 @@
-using XMS.Application.Abstractions.EventBus;
-
 namespace XMS.Application.EventBus.Events;
 
 public record Document_РасходныйКассовыйОрдер_Received : IAppEvent

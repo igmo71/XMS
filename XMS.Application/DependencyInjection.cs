@@ -5,31 +5,14 @@ using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Reflection;
 using System.Text;
-using XMS.Application.Abstractions.EventBus;
-using XMS.Application.Abstractions.Integration.Events;
-using XMS.Application.Abstractions.Integration.OneC.Ut;
-using XMS.Application.Abstractions.Integration.Services;
+using XMS.Application.Abstractions.Integration.OneC.Events;
 using XMS.Application.Abstractions.Services;
 using XMS.Application.Endpoints;
 using XMS.Application.Integration.AD;
 using XMS.Application.Integration.Bitrix;
 using XMS.Application.Integration.OneC.Buh.Api;
-using XMS.Application.Integration.OneC.Buh.ODataClient;
-using XMS.Application.Integration.OneC.Common;
 using XMS.Application.Integration.OneC.Ut.Api;
-using XMS.Application.Integration.OneC.Ut.ODataClient;
-using XMS.Application.Integration.OneC.Ut.Features.Catalog_КонтактныеЛицаПартнеров_Feature;
-using XMS.Application.Integration.OneC.Ut.Features.Catalog_Контрагенты_Feature;
-using XMS.Application.Integration.OneC.Ut.Features.Catalog_Номенклатура_Feature;
-using XMS.Application.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature;
-using XMS.Application.Integration.OneC.Ut.Features.Catalog_Пользователи_Feature;
-using XMS.Application.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
-using XMS.Application.Integration.OneC.Ut.Features.Document_ЗаказКлиента_Feature;
-using XMS.Application.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
-using XMS.Application.Integration.OneC.Ut.Features.Document_РеализацияТоваровУслуг_Feature;
-using XMS.Application.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 using XMS.Application.Integration.OneC.Zup.Api;
-using XMS.Application.Integration.OneC.Zup.ODataClient;
 using XMS.Application.Services;
 
 namespace XMS.Application;
@@ -70,7 +53,7 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddAppIntegrationServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddIntegrationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddOneCServices(configuration);
         services.AddAdServices(configuration);
@@ -79,7 +62,7 @@ public static class DependencyInjection
         return services;
     }
 
-    public static List<Type> AddAppIntegrationEventHandlers(this IServiceCollection services, params Assembly[] assemblies)
+    public static List<Type> AddIntegrationEventHandlers(this IServiceCollection services, params Assembly[] assemblies)
     {
         if (assemblies == null || assemblies.Length == 0)
         {

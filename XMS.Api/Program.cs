@@ -1,8 +1,8 @@
 using Scalar.AspNetCore;
 using Serilog;
 using XMS.Application;
-using XMS.Application.Core.Common;
 using XMS.Application.Abstractions.EventBus;
+using XMS.Application.EventBus;
 using XMS.Infrastructure;
 using XMS.Modules;
 
@@ -37,13 +37,13 @@ public class Program
             .GetAssemblies()
             .Where(a => a.FullName!.StartsWith("XMS."))
             .ToArray();
-        var integrationEventHandlers = builder.Services.AddAppIntegrationEventHandlers(assembliesWithHandlers);
+        var integrationEventHandlers = builder.Services.AddIntegrationEventHandlers(assembliesWithHandlers);
         builder.Services.AddIntegrationEventConsumer(builder.Configuration, integrationEventHandlers);
 
         builder.Services.AddSingleton<IAppEventPublisher, AppEventPublisher>();
         builder.Services.AddAppEventHandlers();
 
-        builder.Services.AddAppIntegrationServices(builder.Configuration);
+        builder.Services.AddIntegrationServices(builder.Configuration);
         builder.Services.AddApplicationServices();
         builder.Services.AddApplicationModules(builder.Configuration);
 

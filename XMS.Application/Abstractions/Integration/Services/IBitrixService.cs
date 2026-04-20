@@ -1,3 +1,5 @@
+using XMS.Application.Integration.Bitrix;
+
 namespace XMS.Application.Abstractions.Integration.Services;
 
 public interface IBitrixService

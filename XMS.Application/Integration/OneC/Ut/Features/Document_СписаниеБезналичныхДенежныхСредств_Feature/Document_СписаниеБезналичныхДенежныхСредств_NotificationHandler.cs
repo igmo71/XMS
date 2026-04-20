@@ -1,28 +1,24 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using DeletedEvent = XMS.Application.EventBus.Events.Document_СписаниеБезналичныхДенежныхСредств_Deleted;
-using Entity = XMS.Application.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств;
-using ReceivedEvent = XMS.Application.EventBus.Events.Document_СписаниеБезналичныхДенежныхСредств_Received;
+using XMS.Application.Abstractions.Integration.OneC.Events;
 
 namespace XMS.Application.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
-
-public record Document_СписаниеБезналичныхДенежныхСредств_Notification : DocumentNotification;
 
 internal class Document_СписаниеБезналичныхДенежныхСредств_NotificationHandler(
     UtClient utClient,
     IDbContextFactoryProxy dbFactory,
     IAppEventPublisher eventPublisher,
     ILogger<Document_СписаниеБезналичныхДенежныхСредств_NotificationHandler> logger)
-    : BaseService, IIntegrationEventHandler<Document_СписаниеБезналичныхДенежныхСредств_Notification>
+    : BaseService, IIntegrationEventHandler<Document_СписаниеБезналичныхДенежныхСредств>
 {
-    public async Task HandleAsync(Document_СписаниеБезналичныхДенежныхСредств_Notification oneCNotifyMessage, CancellationToken ct = default)
+    public async Task HandleAsync(Document_СписаниеБезналичныхДенежныхСредств oneCNotifyMessage, CancellationToken ct = default)
     {
         using var activity = StartActivity();
 
         if (logger.IsEnabled(LogLevel.Debug))
             logger.LogDebug("{Source} - Start {@message}", nameof(HandleAsync), oneCNotifyMessage);
 
-        var fetchedItem = await utClient.FetchByRefKeyAsync<Entity>(oneCNotifyMessage.Ref_Key, ct);
+        var fetchedItem = await utClient.FetchByRefKeyAsync<Document_СписаниеБезналичныхДенежныхСредств>(oneCNotifyMessage.Ref_Key, ct);
 
         if (fetchedItem is null)
         {
@@ -33,16 +29,16 @@ internal class Document_СписаниеБезналичныхДенежныхС
 
         using var dbContext = dbFactory.CreateDbContext();
 
-        await dbContext.Set<Entity>()
+        await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>()
             .Where(e => e.Ref_Key == oneCNotifyMessage.Ref_Key)
             .ExecuteDeleteAsync(ct);
 
         if (!fetchedItem.DeletionMark && fetchedItem.Posted)
         {
-            await dbContext.Set<Entity>().AddAsync(fetchedItem, ct);
+            await dbContext.Set<Document_СписаниеБезналичныхДенежныхСредств>().AddAsync(fetchedItem, ct);
             await dbContext.SaveChangesAsync(ct);
 
-            var receivedEvent = new ReceivedEvent
+            var receivedEvent = new Document_СписаниеБезналичныхДенежныхСредств
             {
                 Ref_Key = fetchedItem.Ref_Key,
                 Date = fetchedItem.Date,
@@ -59,7 +55,7 @@ internal class Document_СписаниеБезналичныхДенежныхС
         }
         else
         {
-            var deletedEvent = new DeletedEvent
+            var deletedEvent = new Document_СписаниеБезналичныхДенежныхСредств
             {
                 Ref_Key = fetchedItem.Ref_Key,
                 Date = fetchedItem.Date,
