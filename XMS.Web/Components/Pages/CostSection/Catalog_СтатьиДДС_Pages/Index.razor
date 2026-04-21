@@ -1,4 +1,4 @@
-﻿@page "/cost-section/catalog-статьи-движения-денежных-средств"
+﻿@page "/cost-section/catalog-статьи-ддс"
 @using Microsoft.AspNetCore.Authorization
 @using XMS.Application.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature
 @attribute [Authorize]
@@ -41,13 +41,13 @@
 						<MudIcon Icon="@GetIcon(item)"
 								 Class="@(item.Value?.DeletionMark == true ? "mr-2 text-secondary" : "mr-2")" />
 						<MudStack Row="true" Class="d-flex justify-space-between flex-grow-1 gap-4">
-							<MudText Typo="@(item.HasChildren? Typo.body1: Typo.body2)"
+							<MudText Typo="@(item.HasChildren ? Typo.body1 : Typo.body2)"
 									 Class="@(item.Value?.DeletionMark == true ? "text-secondary text-decoration-line-through" : "")">
 								@item.Value?.Description
 							</MudText>
 							<MudText>@item.Value?.Code</MudText>
 						</MudStack>
-						
+
 					</Content>
 				</MudTreeViewItem>
 			</ItemTemplate>

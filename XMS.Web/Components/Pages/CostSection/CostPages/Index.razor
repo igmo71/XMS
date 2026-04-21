@@ -89,9 +89,9 @@
 				<ToolBarContent>
 					<MudText Typo="Typo.h5">Статьи Затрат</MudText>
 					<MudSpacer />
-					<MudButton Color="Color.Primary" OnClick="NewItemAsync" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add">
+					@* <MudButton Color="Color.Primary" OnClick="NewItemAsync" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add">
 						Добавить
-					</MudButton>
+					</MudButton> *@
 				</ToolBarContent>
 				<Columns>
 					<PropertyColumn Property="x => x.Name" Title="Наименование">
@@ -106,7 +106,7 @@
 							</MudChip>
 						</CellTemplate>
 					</PropertyColumn>
-					<TemplateColumn>
+					@* <TemplateColumn>
 						<CellTemplate>
 							<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@context.Actions.StartEditingItemAsync" title="Изменить" />
 							@if (context.Item.IsDeleted)
@@ -118,7 +118,7 @@
 								<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Warning" OnClick="@(() => DeleteItemAsync(context.Item))" title="Удалить" />
 							}
 						</CellTemplate>
-					</TemplateColumn>
+					</TemplateColumn> *@
 				</Columns>
 				<LoadingContent>
 					<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">

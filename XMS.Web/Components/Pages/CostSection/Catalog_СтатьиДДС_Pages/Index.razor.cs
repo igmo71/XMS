@@ -6,7 +6,7 @@ using XMS.Application.Integration.OneC.Common;
 using XMS.Application.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
 using XMS.Web.Components.Common;
 
-namespace XMS.Web.Components.Pages.CostSection.Catalog_СтатьиДвиженияДенежныхСредств_Pages;
+namespace XMS.Web.Components.Pages.CostSection.Catalog_СтатьиДДС_Pages;
 
 public partial class Index
 {
