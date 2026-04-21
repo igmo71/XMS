@@ -4,138 +4,128 @@
 @attribute [Authorize]
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-4">
-    <MudPaper Class="pa-4">
-        <MudDataGrid T="CostAllocation"
-                     Items="@_items"
-                     Loading="@_isLoading"
-                     ReadOnly="false"
-                     EditMode="DataGridEditMode.Cell"
-                     Filterable="true"
-                     Bordered="true"
-                     Dense="true"
-                     Hover="true"
-                     Striped="true"
-                     SortMode="SortMode.Multiple"
-                     FilterMode="DataGridFilterMode.ColumnFilterRow"
-                     FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
-                     RowClassFunc="GetRowClass">
-            <ToolBarContent>
-                <MudText Typo="Typo.h5">Распределение затрат</MudText>
-                <MudSpacer />
-                <MudChip T="string" Color="Color.Warning" Variant="Variant.Outlined" Size="Size.Small">
-                    Warning: не заполнены City, Location или Department
-                </MudChip>
-            </ToolBarContent>
-            <Columns>
-                <PropertyColumn Property="x => x.Name" Title="Тип документа" Editable="false" />
-                <PropertyColumn Property="x => x.Number" Title="Номер" Editable="false" />
-                <TemplateColumn Title="Дата">
-                    <CellTemplate>
-                        @context.Item.Date.ToString("dd.MM.yyyy")
-                    </CellTemplate>
-                </TemplateColumn>
-                <TemplateColumn Title="Сумма">
-                    <CellTemplate>
-                        @context.Item.TotalAmount.ToString("N2")
-                    </CellTemplate>
-                </TemplateColumn>
-                <PropertyColumn Property="x => x.BusinessOperation" Title="Операция" Editable="false" />
-                <PropertyColumn Property="x => x.PaymentPurpose" Title="Назначение платежа" Editable="false" />
-                <PropertyColumn Property="x => x.CostCategory == null ? string.Empty : x.CostCategory.Name" Title="Категория затрат" Editable="false" />
-                <PropertyColumn Property="x => x.CostItem == null ? string.Empty : x.CostItem.Name" Title="Статья затрат" Editable="false" />
-                <PropertyColumn Property="x => x.Author == null ? string.Empty : x.Author.Name" Title="Автор" Editable="false" />
-                <PropertyColumn Property="x => x.Manager == null ? string.Empty : x.Manager.Name" Title="Менеджер" Editable="false" />
-                <PropertyColumn Property="x => x.Department == null ? string.Empty : x.Department.Name" Title="Department">
-                    <CellTemplate>
-                        @context.Item.Department?.Name
-                    </CellTemplate>
-                    <EditTemplate>
-                        <MudSelect T="Guid?"
-                                   Value="context.Item.DepartmentId"
-                                   ValueChanged="@(value => OnDepartmentChangedAsync(context.Item, value))"
-                                   Variant="Variant.Outlined"
-                                   Dense="true"
-                                   Clearable="true">
-                            @foreach (var department in _departments)
-                            {
-                                <MudSelectItem T="Guid?" Value="@((Guid?)department.Id)">@department.Name</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </EditTemplate>
-                </PropertyColumn>
-                <PropertyColumn Property="x => x.Location == null ? string.Empty : x.Location.Name" Title="Location">
-                    <CellTemplate>
-                        @context.Item.Location?.Name
-                    </CellTemplate>
-                    <EditTemplate>
-                        <MudSelect T="Guid?"
-                                   Value="context.Item.LocationId"
-                                   ValueChanged="@(value => OnLocationChangedAsync(context.Item, value))"
-                                   Variant="Variant.Outlined"
-                                   Dense="true"
-                                   Clearable="true">
-                            @foreach (var location in _locations)
-                            {
-                                <MudSelectItem T="Guid?" Value="@((Guid?)location.Id)">@location.Name</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </EditTemplate>
-                </PropertyColumn>
-                <PropertyColumn Property="x => x.City == null ? string.Empty : x.City.Name" Title="City">
-                    <CellTemplate>
-                        @context.Item.City?.Name
-                    </CellTemplate>
-                    <EditTemplate>
-                        <MudSelect T="Guid?"
-                                   Value="context.Item.CityId"
-                                   ValueChanged="@(value => OnCityChangedAsync(context.Item, value))"
-                                   Variant="Variant.Outlined"
-                                   Dense="true"
-                                   Clearable="true">
-                            @foreach (var city in _cities)
-                            {
-                                <MudSelectItem T="Guid?" Value="@((Guid?)city.Id)">@city.Name</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </EditTemplate>
-                </PropertyColumn>
-                <PropertyColumn Property="x => x.Comment" Title="Комментарий" Editable="false" />
-                <TemplateColumn Title="Статус">
-                    <CellTemplate>
-                        @if (HasMissingRequiredLinks(context.Item))
-                        {
-                            <MudChip T="string" Color="Color.Warning" Size="Size.Small" Variant="Variant.Text">
-                                Нужно заполнить
-                            </MudChip>
-                        }
-                        else
-                        {
-                            <MudChip T="string" Color="Color.Success" Size="Size.Small" Variant="Variant.Text">
-                                Заполнено
-                            </MudChip>
-                        }
-                    </CellTemplate>
-                </TemplateColumn>
-            </Columns>
-            <LoadingContent>
-                <MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
-                    Загрузка распределений из БД...
-                </MudAlert>
-            </LoadingContent>
-            <NoRecordsContent>
-                <MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
-                    Данные для распределения пока отсутствуют.
-                </MudAlert>
-            </NoRecordsContent>
-            <PagerContent>
-                <MudDataGridPager T="CostAllocation" />
-            </PagerContent>
-        </MudDataGrid>
-    </MudPaper>
+	<MudPaper Class="pa-4">
+		<MudDataGrid T="CostAllocation"
+					 Items="@_items"
+					 Loading="@_isLoading"
+					 ReadOnly="false"
+					 EditMode="DataGridEditMode.Cell"
+					 Filterable="true"
+					 Bordered="true"
+					 Dense="true"
+					 Hover="true"
+					 Striped="true"
+					 SortMode="SortMode.Multiple"
+					 FilterMode="DataGridFilterMode.ColumnFilterRow"
+					 FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+					 RowClassFunc="GetRowClass">
+			<ToolBarContent>
+				<MudText Typo="Typo.h5">Распределение затрат</MudText>
+				<MudSpacer />
+				<MudChip T="string" Color="Color.Warning" Variant="Variant.Outlined" Size="Size.Small">
+					Warning: не заполнены City, Location или Department
+				</MudChip>
+			</ToolBarContent>
+			<Columns>
+				<PropertyColumn Property="x => x.Name" Title="Тип документа" Editable="false" />
+				<PropertyColumn Property="x => x.Number" Title="Номер" Editable="false" />
+				<PropertyColumn Property="x => x.Date" Title="Дата" Format="dd.MM.yyyy" Editable="false" />
+				<PropertyColumn Property="x => x.TotalAmount" Title="Сумма" Format="N2" Editable="false" />
+				<PropertyColumn Property="x => x.BusinessOperation" Title="Операция" Editable="false" />
+				@* <PropertyColumn Property="x => x.PaymentPurpose" Title="Назначение платежа" Editable="false" /> *@
+				<PropertyColumn Property="x => x.CostCategory == null ? string.Empty : x.CostCategory.Name" Title="Категория затрат" Editable="false" />
+				<PropertyColumn Property="x => x.CostItem == null ? string.Empty : x.CostItem.Name" Title="Статья затрат" Editable="false" />
+				<PropertyColumn Property="x => x.Author == null ? string.Empty : x.Author.Name" Title="Автор" Editable="false">
+					<CellTemplate>
+						<div title="@context.Item.Author?.Name">
+							@(context.Item.Author?.Name is string s ? (s.Contains(' ') ? s.Substring(0, s.IndexOf(' ')) : s) : string.Empty)
+						</div>
+
+					</CellTemplate>
+				</PropertyColumn>
+				<PropertyColumn Property="x => x.Manager == null ? string.Empty : x.Manager.Name" Title="Менеджер" Editable="false" />
+				<PropertyColumn Property="x => x.Department == null ? string.Empty : x.Department.Name" Title="Department">
+					<CellTemplate>
+						@context.Item.Department?.Name
+					</CellTemplate>
+					<EditTemplate>
+						<MudSelect T="Guid?"
+								   Value="context.Item.DepartmentId"
+								   ValueChanged="@(value => OnDepartmentChangedAsync(context.Item, value))"
+								   Variant="Variant.Outlined"
+								   Dense="true"
+								   Clearable="true">
+							@foreach (var department in _departments)
+							{
+								<MudSelectItem T="Guid?" Value="@((Guid?)department.Id)">@department.Name</MudSelectItem>
+							}
+						</MudSelect>
+					</EditTemplate>
+				</PropertyColumn>
+				<PropertyColumn Property="x => x.Location == null ? string.Empty : x.Location.Name" Title="Location">
+					<CellTemplate>
+						@context.Item.Location?.Name
+					</CellTemplate>
+					<EditTemplate>
+						<MudSelect T="Guid?"
+								   Value="context.Item.LocationId"
+								   ValueChanged="@(value => OnLocationChangedAsync(context.Item, value))"
+								   Variant="Variant.Outlined"
+								   Dense="true"
+								   Clearable="true">
+							@foreach (var location in _locations)
+							{
+								<MudSelectItem T="Guid?" Value="@((Guid?)location.Id)">@location.Name</MudSelectItem>
+							}
+						</MudSelect>
+					</EditTemplate>
+				</PropertyColumn>
+				<PropertyColumn Property="x => x.City == null ? string.Empty : x.City.Name" Title="City">
+					<CellTemplate>
+						@context.Item.City?.Name
+					</CellTemplate>
+					<EditTemplate>
+						<MudSelect T="Guid?"
+								   Value="context.Item.CityId"
+								   ValueChanged="@(value => OnCityChangedAsync(context.Item, value))"
+								   Variant="Variant.Outlined"
+								   Dense="true"
+								   Clearable="true">
+							@foreach (var city in _cities)
+							{
+								<MudSelectItem T="Guid?" Value="@((Guid?)city.Id)">@city.Name</MudSelectItem>
+							}
+						</MudSelect>
+					</EditTemplate>
+				</PropertyColumn>
+				<PropertyColumn Property="x => x.Comment" Title="Комментарий" Editable="false">
+					<CellTemplate>
+						<div title="@(context.Item.Comment)">
+							@(context.Item.Comment is string s ? s.Substring(0, Math.Min(12, s.Length)) : string.Empty)
+						</div>
+					</CellTemplate>
+				</PropertyColumn>
+
+			</Columns>
+			<LoadingContent>
+				<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
+					Загрузка распределений из БД...
+				</MudAlert>
+			</LoadingContent>
+			<NoRecordsContent>
+				<MudAlert Severity="Severity.Info" ContentAlignment="HorizontalAlignment.Center">
+					Данные для распределения пока отсутствуют.
+				</MudAlert>
+			</NoRecordsContent>
+			<PagerContent>
+				<MudDataGridPager T="CostAllocation" />
+			</PagerContent>
+		</MudDataGrid>
+	</MudPaper>
 </MudContainer>
 
 <style>
-    .cost-allocation-warning-row td {
-        background-color: rgba(255, 152, 0, 0.12) !important;
-    }
+	.cost-allocation-warning-row td {
+		background-color: rgba(255, 152, 0, 0.12) !important;
+	}
 </style>
