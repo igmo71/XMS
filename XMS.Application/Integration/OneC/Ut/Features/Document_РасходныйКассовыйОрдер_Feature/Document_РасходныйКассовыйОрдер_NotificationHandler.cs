@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using XMS.Application.Abstractions.Data;
 using XMS.Application.Abstractions.EventBus;
@@ -10,6 +11,7 @@ internal class Document_РасходныйКассовыйОрдер_Notificatio
     UtClient utClient,
     IDbContextFactoryProxy dbFactory,
     IAppEventPublisher appEventPublisher,
-    ILogger<Document_РасходныйКассовыйОрдер_NotificationHandler> logger)
-    : DocumentNotificationHandler<Document_РасходныйКассовыйОрдер>(utClient, dbFactory, appEventPublisher, logger)
+    ILogger<Document_РасходныйКассовыйОрдер_NotificationHandler> logger,
+    IConfiguration configuration)
+    : DocumentNotificationHandler<Document_РасходныйКассовыйОрдер>(utClient, dbFactory, appEventPublisher, logger, configuration)
 { }

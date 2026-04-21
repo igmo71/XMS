@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using XMS.Application.Abstractions.Data;
 using XMS.Application.Abstractions.EventBus;
 using XMS.Application.Abstractions.Integration;
+using XMS.Application.Common;
 using XMS.Application.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
 using XMS.Modules.CostModule.Domain;
 
@@ -9,11 +11,16 @@ namespace XMS.Modules.CostModule.Integration;
 
 internal class Document_РасходныйКассовыйОрдер_Handler(
     IDbContextFactoryProxy dbFactory,
-    IOneCUtService oneCUtService)
-    : IAppEventHandler<Document_РасходныйКассовыйОрдер>
+    IOneCUtService oneCUtService,
+    ILogger<Document_РасходныйКассовыйОрдер_Handler> logger)
+    : BaseService, IAppEventHandler<Document_РасходныйКассовыйОрдер>
 {
     public async Task HandleAsync(Document_РасходныйКассовыйОрдер documentEvent, CancellationToken ct = default)
     {
+        using var activity = this.StartActivity();
+
+        logger.LogDebug("{Source} - Start {@documentEvent}", nameof(HandleAsync), documentEvent);
+
         using var dbContext = dbFactory.CreateDbContext();
 
         List<Guid> catalog_СтатьяДДС_RefKeys = [];
@@ -28,43 +35,64 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
                 .ToList() ?? [];
         }
 
+        logger.LogDebug("{Source} - RefKeys: {@catalog_СтатьяДДС_RefKeys} {@documentEvent}", nameof(HandleAsync), catalog_СтатьяДДС_RefKeys, documentEvent);
+
         foreach (var key in catalog_СтатьяДДС_RefKeys)
         {
             var catalog_СтатьяДДС = await oneCUtService.GetCatalog_СтатьиДвиженияДенежныхСредств_Async(key, ct);
+
             if (catalog_СтатьяДДС != null)
             {
                 var existingCostItem = await dbContext.Set<CostItem>()
                     .FirstOrDefaultAsync(e => e.Id == catalog_СтатьяДДС.Ref_Key, cancellationToken: ct);
 
+                logger.LogDebug("{Source} - existingCostItem: {@existingCostItem} {@documentEvent}", nameof(HandleAsync), existingCostItem, documentEvent);
+
                 if (existingCostItem == null)
-                    await dbContext.Set<CostItem>().AddAsync(new CostItem
+                {
+                    var createdCostItem = dbContext.Set<CostItem>().Add(new CostItem
                     {
                         Id = catalog_СтатьяДДС.Ref_Key,
                         Name = catalog_СтатьяДДС.Description ?? string.Empty
-                    }, ct);
+                    }).Entity;
+
+                    logger.LogDebug("{Source} - createdCostItem: {@createdCostItem} {@documentEvent}", nameof(HandleAsync), createdCostItem, documentEvent);
+                }
                 else
+                {
                     existingCostItem.Name = catalog_СтатьяДДС.Description ?? string.Empty;
+                }
 
                 if (documentEvent.КСЗ_КатегорияЗатрат_Key != null && documentEvent.КСЗ_КатегорияЗатрат_Key != Guid.Empty)
                 {
                     var existingCostCategoryItem = await dbContext.Set<CostCategoryItem>()
                         .FirstOrDefaultAsync(e => e.CategoryId == documentEvent.КСЗ_КатегорияЗатрат_Key && e.ItemId == catalog_СтатьяДДС.Ref_Key, ct);
 
+                    logger.LogDebug("{Source} - existingCostCategoryItem: {@existingCostCategoryItem} {@documentEvent}", nameof(HandleAsync), existingCostCategoryItem, documentEvent);
+
                     if (existingCostCategoryItem == null)
-                        await dbContext.Set<CostCategoryItem>().AddAsync(new CostCategoryItem
+                    {
+                        var createdCostCategoryItem = dbContext.Set<CostCategoryItem>().Add(new CostCategoryItem
                         {
                             CategoryId = (Guid)documentEvent.КСЗ_КатегорияЗатрат_Key,
                             ItemId = catalog_СтатьяДДС.Ref_Key
-                        }, ct);
+                        }).Entity;
+
+                        logger.LogDebug("{Source} - createdCostCategoryItem: {@createdCostCategoryItem} {@documentEvent}", nameof(HandleAsync), createdCostCategoryItem, documentEvent);
+                    }
 
                     var existingCostAllocation = await dbContext.Set<CostAllocation>()
                         .FirstOrDefaultAsync(e => e.PaymentVoucherId == documentEvent.Ref_Key, ct);
 
+                    logger.LogDebug("{Source} - existingCostAllocation: {@existingCostAllocation} {@documentEvent}", nameof(HandleAsync), existingCostAllocation, documentEvent);
+
                     if (existingCostAllocation is null)
                     {
-                        var created = new CostAllocation
+                        var createdCostAllocation = dbContext.Set<CostAllocation>().Add(new CostAllocation
                         {
                             IsAllocated = false,
+                            IsDeleted = documentEvent.DeletionMark || !documentEvent.Posted,
+                            DeletedAt = documentEvent.DeletionMark || !documentEvent.Posted ? DateTime.UtcNow : null,
                             PaymentVoucherId = documentEvent.Ref_Key,
                             PaymentVoucherType = PaymentVoucherType.Cash,
                             Number = documentEvent.Number,
@@ -76,15 +104,15 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
                             PaymentPurpose = null,
                             AuthorId = documentEvent.Автор_Key,
                             Comment = documentEvent.Комментарий
-                        };
+                        }).Entity;
 
-                        await dbContext.Set<CostAllocation>().AddAsync(created, ct);
+                        logger.LogDebug("{Source} - createdCostAllocation: {@createdCostAllocation} {@documentEvent}", nameof(HandleAsync), createdCostAllocation, documentEvent);
                     }
                     else
                     {
+                        //existingCostAllocation.IsAllocated = false;
                         existingCostAllocation.IsDeleted = documentEvent.DeletionMark || !documentEvent.Posted;
                         existingCostAllocation.DeletedAt = documentEvent.DeletionMark || !documentEvent.Posted ? DateTime.UtcNow : null;
-                        //existingCostAllocation.IsAllocated = false;
                         existingCostAllocation.PaymentVoucherType = PaymentVoucherType.Cash;
                         existingCostAllocation.Number = documentEvent.Number;
                         existingCostAllocation.Date = documentEvent.Date;
@@ -101,5 +129,7 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
         }
 
         await dbContext.SaveChangesAsync(ct);
+
+        logger.LogDebug("{Source} - Ok {@documentEvent}", nameof(HandleAsync), documentEvent);
     }
 }

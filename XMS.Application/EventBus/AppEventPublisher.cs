@@ -10,6 +10,8 @@ public class AppEventPublisher(
 {
     public async Task PublishAsync<TEvent>(TEvent eventValue, CancellationToken ct) where TEvent : class, IAppEvent
     {
+        logger.LogDebug("{Source} - Start {@eventValue}", nameof(PublishAsync), eventValue);
+
         using var scope = scopeFactory.CreateScope();
 
         var handlers = scope.ServiceProvider.GetServices<IAppEventHandler<TEvent>>();
@@ -19,10 +21,15 @@ public class AppEventPublisher(
 
         foreach (var handler in handlers)
         {
+            logger.LogDebug("{Source} {handler} {@eventValue}", nameof(PublishAsync), handler.GetType().Name, eventValue);
+
             await handler.HandleAsync(eventValue, ct);
         }
 
         //await ExecuteAllHandlers(eventValue, handlers, ct);
+
+
+        logger.LogDebug("{Source} - Ok {@eventValue}", nameof(PublishAsync), eventValue);
     }
 
     private async Task ExecuteAllHandlers<TEvent>(TEvent eventValue, IEnumerable<IAppEventHandler<TEvent>> handlers, CancellationToken ct) where TEvent : class, IAppEvent

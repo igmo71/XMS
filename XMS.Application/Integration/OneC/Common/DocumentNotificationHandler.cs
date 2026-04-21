@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using XMS.Application.Abstractions.Data;
 using XMS.Application.Abstractions.EventBus;
@@ -13,7 +14,8 @@ internal abstract class DocumentNotificationHandler<TEntity>(
     UtClient utClient,
     IDbContextFactoryProxy dbFactory,
     IAppEventPublisher appEventPublisher,
-    ILogger logger)
+    ILogger logger,
+    IConfiguration configuration)
     : BaseService, IIntegrationEventHandler<TEntity>
     where TEntity : Document, IAppEvent
 {
@@ -22,7 +24,9 @@ internal abstract class DocumentNotificationHandler<TEntity>(
         if (logger.IsEnabled(LogLevel.Debug))
             logger.LogDebug("{Source} - Start {@message}", nameof(HandleAsync), oneCNotifyMessage);
 
-        await Task.Delay(1000, ct); // TODO: 1С не успевает отпустить документ, когда мы его уже запрашиваем
+        var integrationHandleDelay = configuration.GetValue<int>("Settings:IntegrationHandleDelay");
+
+        await Task.Delay(TimeSpan.FromSeconds(integrationHandleDelay), ct); // TODO: 1С не успевает отпустить документ, когда мы его уже запрашиваем
 
         using var activity = StartActivity();
 
