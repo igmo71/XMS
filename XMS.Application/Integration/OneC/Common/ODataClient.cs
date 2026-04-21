@@ -38,7 +38,8 @@ public abstract class ODataClient<TConfig>(HttpClient httpClient, IOptions<TConf
         if (!response.IsSuccessStatusCode)
         {
             var error = JsonSerializer.Deserialize<OneCError>(content);
-            logger.LogError("{Source} {Uri} {@Error} {content}", nameof(GetValueAsync), uri, error, content);
+            if (logger.IsEnabled(LogLevel.Error))
+                logger.LogError("{Source} {Uri} {@Error} {content}", nameof(GetValueAsync), uri, error, content);
             return default;
         }
 
@@ -66,7 +67,8 @@ public abstract class ODataClient<TConfig>(HttpClient httpClient, IOptions<TConf
         if (!response.IsSuccessStatusCode)
         {
             var error = JsonSerializer.Deserialize<OneCError>(content);
-            logger.LogError("{Source} {Uri} {JsonString} {@Value} {@Error}", nameof(PostValueAsync), uri, jsonString, value, error);
+            if (logger.IsEnabled(LogLevel.Error))
+                logger.LogError("{Source} {Uri} {JsonString} {@Value} {@Error}", nameof(PostValueAsync), uri, jsonString, value, error);
             return default;
         }
 
@@ -94,7 +96,8 @@ public abstract class ODataClient<TConfig>(HttpClient httpClient, IOptions<TConf
         if (!response.IsSuccessStatusCode)
         {
             var error = JsonSerializer.Deserialize<OneCError>(content);
-            logger.LogError("{Source} {Uri} {JsonString} {@Value} {@Error}", nameof(PatchValueAsync), uri, jsonString, value, error);
+            if (logger.IsEnabled(LogLevel.Error))
+                logger.LogError("{Source} {Uri} {JsonString} {@Value} {@Error}", nameof(PatchValueAsync), uri, jsonString, value, error);
             return default;
         }
 

@@ -10,7 +10,8 @@ public class AppEventPublisher(
 {
     public async Task PublishAsync<TEvent>(TEvent eventValue, CancellationToken ct) where TEvent : class, IAppEvent
     {
-        logger.LogDebug("{Source} - Start {@eventValue}", nameof(PublishAsync), eventValue);
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Start {@eventValue}", nameof(PublishAsync), eventValue);
 
         using var scope = scopeFactory.CreateScope();
 
@@ -21,7 +22,8 @@ public class AppEventPublisher(
 
         foreach (var handler in handlers)
         {
-            logger.LogDebug("{Source} {handler} {@eventValue}", nameof(PublishAsync), handler.GetType().Name, eventValue);
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug("{Source} {handler} {@eventValue}", nameof(PublishAsync), handler.GetType().Name, eventValue);
 
             await handler.HandleAsync(eventValue, ct);
         }
@@ -29,7 +31,8 @@ public class AppEventPublisher(
         //await ExecuteAllHandlers(eventValue, handlers, ct);
 
 
-        logger.LogDebug("{Source} - Ok {@eventValue}", nameof(PublishAsync), eventValue);
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Ok {@eventValue}", nameof(PublishAsync), eventValue);
     }
 
     private async Task ExecuteAllHandlers<TEvent>(TEvent eventValue, IEnumerable<IAppEventHandler<TEvent>> handlers, CancellationToken ct) where TEvent : class, IAppEvent
@@ -44,8 +47,9 @@ public class AppEventPublisher(
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "{Source} Error handling {EventType} with handler {HandlerType}",
-                    nameof(PublishAsync), typeof(TEvent).Name, handler.GetType().Name);
+                if (logger.IsEnabled(LogLevel.Error))
+                    logger.LogError(ex, "{Source} Error handling {EventType} with handler {HandlerType}",
+                        nameof(PublishAsync), typeof(TEvent).Name, handler.GetType().Name);
 
                 lock (exceptions)
                 {

@@ -74,7 +74,8 @@ internal class RabbitMqIntegrationConsumer(
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "EventBus - Error handilng {eventName} {@eventValue}", eventName, eventValue);
+                    if (logger.IsEnabled(LogLevel.Error))
+                        logger.LogError(ex, "EventBus - Error handilng {eventName} {@eventValue}", eventName, eventValue);
                     await channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false, cancellationToken: ct);
                     await Task.Delay(1000, ct);
                 }

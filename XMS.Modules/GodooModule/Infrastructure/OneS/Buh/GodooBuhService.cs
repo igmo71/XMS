@@ -19,9 +19,15 @@ internal class GodooBuhService(GodooBuhClient buhClient, ILogger<GodooBuhService
         var rootObject = await buhClient.GetValueFromJsonAsync<RootObject<InformationRegister_НоменклатураМаркетплейсов>>(uri, ct);
 
         if (rootObject?.Value?.Length == 0)
-            logger.LogDebug("{Source} - Not Found by {uri}", nameof(GetMarketplaceRelationListAsync), uri);
+        {
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug("{Source} - Not Found by {uri}", nameof(GetMarketplaceRelationListAsync), uri);
+        }
         else
-            logger.LogDebug("{Source} - Found by {uri}", nameof(GetMarketplaceRelationListAsync), uri);
+        {
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug("{Source} - Found by {uri}", nameof(GetMarketplaceRelationListAsync), uri);
+        }
 
         return rootObject?.Value ?? [];
     }
@@ -41,9 +47,15 @@ internal class GodooBuhService(GodooBuhClient buhClient, ILogger<GodooBuhService
         var relationCreated = await buhClient.PostValueAsync(relationToCreate, nameof(InformationRegister_НоменклатураМаркетплейсов), ct);
 
         if (relationCreated is null)
-            logger.LogError("{Source} - Error {@RelationToCreate}", nameof(CreateMarketplaceRelationAsync), relationToCreate);
+        {
+            if (logger.IsEnabled(LogLevel.Error))
+                logger.LogError("{Source} - Error {@RelationToCreate}", nameof(CreateMarketplaceRelationAsync), relationToCreate);
+        }
         else
-            logger.LogInformation("{Source} - Ok {@RelationCreated}", nameof(CreateMarketplaceRelationAsync), relationCreated);
+        {
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation("{Source} - Ok {@RelationCreated}", nameof(CreateMarketplaceRelationAsync), relationCreated);
+        }
     }
 
     public async Task<IReadOnlyList<Catalog_Номенклатура>> GetProductListAsync(string yunuProductId, CancellationToken ct = default)
@@ -53,9 +65,15 @@ internal class GodooBuhService(GodooBuhClient buhClient, ILogger<GodooBuhService
         var rootObject = await buhClient.GetValueFromJsonAsync<RootObject<Catalog_Номенклатура>>(uri, ct);
 
         if (rootObject?.Value?.Length == 0)
-            logger.LogDebug("{Source} - Not Found by {uri}", nameof(GetProductListAsync), uri);
+        {
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug("{Source} - Not Found by {uri}", nameof(GetProductListAsync), uri);
+        }
         else
-            logger.LogDebug("{Source} - Found by {uri}", nameof(GetProductListAsync), uri);
+        {
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug("{Source} - Found by {uri}", nameof(GetProductListAsync), uri);
+        }
 
         return rootObject?.Value ?? [];
     }
@@ -72,9 +90,15 @@ internal class GodooBuhService(GodooBuhClient buhClient, ILogger<GodooBuhService
         var createdProduct = await buhClient.PostValueAsync(newProduct, nameof(Catalog_Номенклатура), ct);
 
         if (createdProduct is null)
-            logger.LogError("{Source} - Error {@ProductToCreate}", nameof(CreateProductAsync), newProduct);
+        {
+            if (logger.IsEnabled(LogLevel.Error))
+                logger.LogError("{Source} - Error {@ProductToCreate}", nameof(CreateProductAsync), newProduct);
+        }
         else
-            logger.LogInformation("{Source} - Ok {@ProductCreated}", nameof(CreateProductAsync), createdProduct);
+        {
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation("{Source} - Ok {@ProductCreated}", nameof(CreateProductAsync), createdProduct);
+        }
 
         return createdProduct;
     }
@@ -106,8 +130,14 @@ internal class GodooBuhService(GodooBuhClient buhClient, ILogger<GodooBuhService
         var createdRecord = await buhClient.PostValueAsync(recordToCreate, nameof(InformationRegister_НоменклатураКонтрагентовБЭД), ct);
 
         if (createdRecord is null)
-            logger.LogError("{Source} - Error {@RecordToCreate}", nameof(CreateInformationRegister_НоменклатураКонтрагентовБЭД), recordToCreate);
+        {
+            if (logger.IsEnabled(LogLevel.Error))
+                logger.LogError("{Source} - Error {@RecordToCreate}", nameof(CreateInformationRegister_НоменклатураКонтрагентовБЭД), recordToCreate);
+        }
         else
-            logger.LogInformation("{Source} - Ok {@CreatedRecord}", nameof(CreateInformationRegister_НоменклатураКонтрагентовБЭД), createdRecord);
+        {
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation("{Source} - Ok {@CreatedRecord}", nameof(CreateInformationRegister_НоменклатураКонтрагентовБЭД), createdRecord);
+        }
     }
 }

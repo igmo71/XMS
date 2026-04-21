@@ -12,7 +12,8 @@ public class ApiKeyAuthFilter(ILogger<ApiKeyAuthFilter> logger, IConfiguration c
 
         if (!httpContext.Request.Headers.TryGetValue("X-Api-Key", out var extractedApiKey))
         {
-            logger.LogWarning("{Source} X-Api-Key missing", nameof(ApiKeyAuthFilter));
+            if (logger.IsEnabled(LogLevel.Warning))
+                logger.LogWarning("{Source} X-Api-Key missing", nameof(ApiKeyAuthFilter));
             return Results.Problem(detail: "X-Api-Key missing", title: "Unauthorized", statusCode: 401);
         }
 
@@ -20,7 +21,8 @@ public class ApiKeyAuthFilter(ILogger<ApiKeyAuthFilter> logger, IConfiguration c
 
         if (string.IsNullOrEmpty(clientName))
         {
-            logger.LogWarning("{Source} Access attempt with invalid key {ApiKey}", nameof(ApiKeyAuthFilter), extractedApiKey.ToString());
+            if (logger.IsEnabled(LogLevel.Warning))
+                logger.LogWarning("{Source} Access attempt with invalid key {ApiKey}", nameof(ApiKeyAuthFilter), extractedApiKey.ToString());
             return Results.Problem(detail: "Access attempt with invalid key", title: "Unauthorized", statusCode: 401);
         }
 

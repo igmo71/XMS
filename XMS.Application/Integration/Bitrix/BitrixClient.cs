@@ -13,7 +13,8 @@ internal class BitrixClient(HttpClient httpClient, ILogger<BitrixClient> logger)
 
         var result = JsonSerializer.Deserialize<TResponse>(content);
 
-        logger.LogDebug("{Source} {Uri} {@Result}", nameof(PostDataAsync), uri, result);
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} {Uri} {@Result}", nameof(PostDataAsync), uri, result);
 
         return result;
     }

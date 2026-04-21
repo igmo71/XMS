@@ -21,7 +21,8 @@ internal class GodooService(
 
         if (yunuArticleRelation?.Products == null)
         {
-            logger.LogError("{Source} Failed to load YunuArticleRelation", nameof(Reload));
+            if (logger.IsEnabled(LogLevel.Error))
+                logger.LogError("{Source} Failed to load YunuArticleRelation", nameof(Reload));
             return;
         }
 
@@ -38,7 +39,10 @@ internal class GodooService(
                     var yunuProductId = ProductIdMap.From(yunuRelation);
 
                     if (string.IsNullOrEmpty(yunuProductId))
-                        logger.LogError("OfferId or VendorCode Not Found {yunuProduct}", yunuProduct);
+                    {
+                        if (logger.IsEnabled(LogLevel.Error))
+                            logger.LogError("OfferId or VendorCode Not Found {yunuProduct}", yunuProduct);
+                    }
 
                     await godooOneSBuhService.CreateInformationRegister_НоменклатураКонтрагентовБЭД(
                         oneSProduct, yunuProduct, yunuRelation, ct);
@@ -63,25 +67,29 @@ internal class GodooService(
 
         if (products.Count == 0)
         {
-            logger.LogDebug("{Source} Product Not Exists", nameof(GetOrCreateProduct));
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug("{Source} Product Not Exists", nameof(GetOrCreateProduct));
             return await godooOneSBuhService.CreateProductAsync(yunuProduct, ct);
         }
         else if (products.Count == 1)
         {
             var product = products[0];
-            logger.LogDebug("{Source} Product Exists {@Product}", nameof(GetOrCreateProduct), product);
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug("{Source} Product Exists {@Product}", nameof(GetOrCreateProduct), product);
             return product;
         }
         else if (products.Count > 1)
         {
             var product = products[0];
-            logger.LogWarning("{Source} Products Count greater than 1. Take first. {@Products} {@Product}",
-                nameof(GetOrCreateProduct), products, product);
+            if (logger.IsEnabled(LogLevel.Warning))
+                logger.LogWarning("{Source} Products Count greater than 1. Take first. {@Products} {@Product}",
+                    nameof(GetOrCreateProduct), products, product);
             return product;
         }
         else
         {
-            logger.LogError("{Source} Can't find or create Product", nameof(GetOrCreateProduct));
+            if (logger.IsEnabled(LogLevel.Error))
+                logger.LogError("{Source} Can't find or create Product", nameof(GetOrCreateProduct));
             return null;
         }
     }
@@ -92,13 +100,15 @@ internal class GodooService(
 
         if (marketplaceRelation.Count == 0)
         {
-            logger.LogDebug("{Source} Not Exists {@GodooMarketplaceRelation}", nameof(CreateMarketplaceRelationIfNotExists), godooMarketplaceRelation);
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug("{Source} Not Exists {@GodooMarketplaceRelation}", nameof(CreateMarketplaceRelationIfNotExists), godooMarketplaceRelation);
 
             await godooOneSBuhService.CreateMarketplaceRelationAsync(godooMarketplaceRelation, ct);
         }
         else
         {
-            logger.LogDebug("{Source} Exists {@GodooMarketplaceRelation}", nameof(CreateMarketplaceRelationIfNotExists), godooMarketplaceRelation);
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug("{Source} Exists {@GodooMarketplaceRelation}", nameof(CreateMarketplaceRelationIfNotExists), godooMarketplaceRelation);
         }
     }
 }

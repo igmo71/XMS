@@ -62,8 +62,9 @@ public class AuthService(
 
         if (!result.Succeeded)
         {
-            logger.LogError("{Source} {Operation} {@Errors}",
-                nameof(RegisterBitrixUserAsync), nameof(userManager.CreateAsync), result.Errors);
+            if (logger.IsEnabled(LogLevel.Error))
+                logger.LogError("{Source} {Operation} {@Errors}",
+                    nameof(RegisterBitrixUserAsync), nameof(userManager.CreateAsync), result.Errors);
 
             return null;
         }
@@ -75,8 +76,11 @@ public class AuthService(
             result = await userManager.ConfirmEmailAsync(user, code);
 
             if (!result.Succeeded)
-                logger.LogError("{Source} {Operation} {@Errors}",
-                    nameof(RegisterBitrixUserAsync), nameof(userManager.ConfirmEmailAsync), result.Errors);
+            {
+                if (logger.IsEnabled(LogLevel.Error))
+                    logger.LogError("{Source} {Operation} {@Errors}",
+                        nameof(RegisterBitrixUserAsync), nameof(userManager.ConfirmEmailAsync), result.Errors);
+            }
         }
 
         return user;

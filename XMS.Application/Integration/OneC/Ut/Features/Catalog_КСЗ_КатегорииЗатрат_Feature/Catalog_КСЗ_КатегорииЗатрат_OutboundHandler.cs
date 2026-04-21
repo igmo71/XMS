@@ -15,20 +15,24 @@ internal class Catalog_КСЗ_КатегорииЗатрат_OutboundHandler(
     {
         using var activity = StartActivity();
 
-        logger.LogDebug("{Source} - Start {@entityEvent}", nameof(HandleAsync), outboundEvent);
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Start {@entityEvent}", nameof(HandleAsync), outboundEvent);
 
         var uri = $"Catalog_КСЗ_КатегорииЗатрат?$format=json&$inlinecount=allpages&$filter=Ref_Key eq guid'{outboundEvent.Ref_Key}'";
         var fetchedItem = await utClient.FetchByRefKeyAsync<Catalog_КСЗ_КатегорииЗатрат>(outboundEvent.Ref_Key, ct);
 
         if (fetchedItem is null)
         {
-            logger.LogDebug("{Source} - Not Exists {@entityEvent}", nameof(HandleAsync), outboundEvent);
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug("{Source} - Not Exists {@entityEvent}", nameof(HandleAsync), outboundEvent);
             var created = await utClient.PostValueAsync(outboundEvent, typeof(Catalog_КСЗ_КатегорииЗатрат).Name, ct);
-            logger.LogDebug("{Source} - Created {@created}", nameof(HandleAsync), created);
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug("{Source} - Created {@created}", nameof(HandleAsync), created);
         }
         else
         {
-            logger.LogDebug("{Source} - Exists {@entityEvent}", nameof(HandleAsync), outboundEvent);
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug("{Source} - Exists {@entityEvent}", nameof(HandleAsync), outboundEvent);
             var updated = await utClient.PatchValueAsync(new Catalog_КСЗ_КатегорииЗатрат
             {
                 Ref_Key = outboundEvent.Ref_Key,
@@ -37,7 +41,8 @@ internal class Catalog_КСЗ_КатегорииЗатрат_OutboundHandler(
                 Description = outboundEvent.Description,
                 Parent_Key = outboundEvent.Parent_Key
             }, typeof(Catalog_КСЗ_КатегорииЗатрат).Name, ct);
-            logger.LogDebug("{Source} - Updated {@updated}", nameof(HandleAsync), updated);
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug("{Source} - Updated {@updated}", nameof(HandleAsync), updated);
         }
     }
 }

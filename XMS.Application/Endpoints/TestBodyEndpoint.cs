@@ -14,7 +14,8 @@ public static class TestBodyEndpoint
     {
         routeBuilder.MapPost("/api/test-body", (HttpContext httpContext, ILogger<ServiceResult> logger, [FromBody] JsonElement testBody) =>
         {
-            logger.LogDebug("TestBody {TestBody}", testBody);
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug("TestBody {TestBody}", testBody);
 
             return TypedResults.Ok(testBody);
         })

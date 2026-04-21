@@ -19,7 +19,8 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
     {
         using var activity = this.StartActivity();
 
-        logger.LogDebug("{Source} - Start {@documentEvent}", nameof(HandleAsync), documentEvent);
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Start {@documentEvent}", nameof(HandleAsync), documentEvent);
 
         using var dbContext = dbFactory.CreateDbContext();
 
@@ -35,7 +36,8 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
                 .ToList() ?? [];
         }
 
-        logger.LogDebug("{Source} - RefKeys: {@catalog_СтатьяДДС_RefKeys} {@documentEvent}", nameof(HandleAsync), catalog_СтатьяДДС_RefKeys, documentEvent);
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - RefKeys: {@catalog_СтатьяДДС_RefKeys} {@documentEvent}", nameof(HandleAsync), catalog_СтатьяДДС_RefKeys, documentEvent);
 
         foreach (var key in catalog_СтатьяДДС_RefKeys)
         {
@@ -46,7 +48,8 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
                 var existingCostItem = await dbContext.Set<CostItem>()
                     .FirstOrDefaultAsync(e => e.Id == catalog_СтатьяДДС.Ref_Key, cancellationToken: ct);
 
-                logger.LogDebug("{Source} - existingCostItem: {@existingCostItem} {@documentEvent}", nameof(HandleAsync), existingCostItem, documentEvent);
+                if (logger.IsEnabled(LogLevel.Debug))
+                    logger.LogDebug("{Source} - existingCostItem: {@existingCostItem} {@documentEvent}", nameof(HandleAsync), existingCostItem, documentEvent);
 
                 if (existingCostItem == null)
                 {
@@ -56,7 +59,8 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
                         Name = catalog_СтатьяДДС.Description ?? string.Empty
                     }).Entity;
 
-                    logger.LogDebug("{Source} - createdCostItem: {@createdCostItem} {@documentEvent}", nameof(HandleAsync), createdCostItem, documentEvent);
+                    if (logger.IsEnabled(LogLevel.Debug))
+                        logger.LogDebug("{Source} - createdCostItem: {@createdCostItem} {@documentEvent}", nameof(HandleAsync), createdCostItem, documentEvent);
                 }
                 else
                 {
@@ -68,7 +72,8 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
                     var existingCostCategoryItem = await dbContext.Set<CostCategoryItem>()
                         .FirstOrDefaultAsync(e => e.CategoryId == documentEvent.КСЗ_КатегорияЗатрат_Key && e.ItemId == catalog_СтатьяДДС.Ref_Key, ct);
 
-                    logger.LogDebug("{Source} - existingCostCategoryItem: {@existingCostCategoryItem} {@documentEvent}", nameof(HandleAsync), existingCostCategoryItem, documentEvent);
+                    if (logger.IsEnabled(LogLevel.Debug))
+                        logger.LogDebug("{Source} - existingCostCategoryItem: {@existingCostCategoryItem} {@documentEvent}", nameof(HandleAsync), existingCostCategoryItem, documentEvent);
 
                     if (existingCostCategoryItem == null)
                     {
@@ -78,13 +83,15 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
                             ItemId = catalog_СтатьяДДС.Ref_Key
                         }).Entity;
 
-                        logger.LogDebug("{Source} - createdCostCategoryItem: {@createdCostCategoryItem} {@documentEvent}", nameof(HandleAsync), createdCostCategoryItem, documentEvent);
+                        if (logger.IsEnabled(LogLevel.Debug))
+                            logger.LogDebug("{Source} - createdCostCategoryItem: {@createdCostCategoryItem} {@documentEvent}", nameof(HandleAsync), createdCostCategoryItem, documentEvent);
                     }
 
                     var existingCostAllocation = await dbContext.Set<CostAllocation>()
                         .FirstOrDefaultAsync(e => e.PaymentVoucherId == documentEvent.Ref_Key, ct);
 
-                    logger.LogDebug("{Source} - existingCostAllocation: {@existingCostAllocation} {@documentEvent}", nameof(HandleAsync), existingCostAllocation, documentEvent);
+                    if (logger.IsEnabled(LogLevel.Debug))
+                        logger.LogDebug("{Source} - existingCostAllocation: {@existingCostAllocation} {@documentEvent}", nameof(HandleAsync), existingCostAllocation, documentEvent);
 
                     if (existingCostAllocation is null)
                     {
@@ -106,7 +113,8 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
                             Comment = documentEvent.Комментарий
                         }).Entity;
 
-                        logger.LogDebug("{Source} - createdCostAllocation: {@createdCostAllocation} {@documentEvent}", nameof(HandleAsync), createdCostAllocation, documentEvent);
+                        if (logger.IsEnabled(LogLevel.Debug))
+                            logger.LogDebug("{Source} - createdCostAllocation: {@createdCostAllocation} {@documentEvent}", nameof(HandleAsync), createdCostAllocation, documentEvent);
                     }
                     else
                     {
@@ -130,6 +138,7 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
 
         await dbContext.SaveChangesAsync(ct);
 
-        logger.LogDebug("{Source} - Ok {@documentEvent}", nameof(HandleAsync), documentEvent);
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - Ok {@documentEvent}", nameof(HandleAsync), documentEvent);
     }
 }
