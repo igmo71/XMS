@@ -20,12 +20,12 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
 
         if (documentEvent.СтатьяДвиженияДенежныхСредств_Key != null && documentEvent.СтатьяДвиженияДенежныхСредств_Key != Guid.Empty)
             catalog_СтатьяДДС_RefKeys.Add((Guid)documentEvent.СтатьяДвиженияДенежныхСредств_Key);
-
         else
         {
             catalog_СтатьяДДС_RefKeys = documentEvent.РасшифровкаПлатежа?
-            .Where(e => e.СтатьяДвиженияДенежныхСредств_Key != null && e.СтатьяДвиженияДенежныхСредств_Key != Guid.Empty)
-            .Select(e => (Guid)e.СтатьяДвиженияДенежныхСредств_Key!).ToList() ?? [];
+                .Where(e => e.СтатьяДвиженияДенежныхСредств_Key != null && e.СтатьяДвиженияДенежныхСредств_Key != Guid.Empty)
+                .Select(e => (Guid)e.СтатьяДвиженияДенежныхСредств_Key!)
+                .ToList() ?? [];
         }
 
         foreach (var key in catalog_СтатьяДДС_RefKeys)
@@ -73,6 +73,7 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
                             CostCategoryId = documentEvent.КСЗ_КатегорияЗатрат_Key == Guid.Empty ? null : documentEvent.КСЗ_КатегорияЗатрат_Key,
                             CostItemId = catalog_СтатьяДДС.Ref_Key,
                             BusinessOperation = documentEvent.ХозяйственнаяОперация,
+                            PaymentPurpose = null,
                             AuthorId = documentEvent.Автор_Key,
                             Comment = documentEvent.Комментарий
                         };
@@ -81,17 +82,17 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
                     }
                     else
                     {
-                        existingCostAllocation.IsDeleted = documentEvent.DeletionMark || !documentEvent.Posted ? true : false;
+                        existingCostAllocation.IsDeleted = documentEvent.DeletionMark || !documentEvent.Posted;
                         existingCostAllocation.DeletedAt = documentEvent.DeletionMark || !documentEvent.Posted ? DateTime.UtcNow : null;
                         //existingCostAllocation.IsAllocated = false;
                         existingCostAllocation.PaymentVoucherType = PaymentVoucherType.Cash;
                         existingCostAllocation.Number = documentEvent.Number;
                         existingCostAllocation.Date = documentEvent.Date;
                         existingCostAllocation.TotalAmount = documentEvent.СуммаДокумента;
-                        existingCostAllocation.PaymentPurpose = documentEvent.ХозяйственнаяОперация;
                         existingCostAllocation.CostCategoryId = documentEvent.КСЗ_КатегорияЗатрат_Key == Guid.Empty ? null : documentEvent.КСЗ_КатегорияЗатрат_Key;
                         existingCostAllocation.CostItemId = catalog_СтатьяДДС.Ref_Key;
                         existingCostAllocation.BusinessOperation = documentEvent.ХозяйственнаяОперация;
+                        existingCostAllocation.PaymentPurpose = null;
                         existingCostAllocation.AuthorId = documentEvent.Автор_Key;
                         existingCostAllocation.Comment = documentEvent.Комментарий;
                     }
