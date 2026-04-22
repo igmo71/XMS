@@ -9,18 +9,17 @@
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-4">
 	<MudPaper>
 		<MudDataGrid @ref="_employeeGrid" T="Employee" Items="@_employees" Culture="@(new CultureInfo("ru-RU", false))"
-					 Style="max-height: calc(100vh - 96px); overflow-y: auto;"
-					 FixedHeader
+					 Style="max-height: calc(100vh - 96px); overflow-y: auto;"					 
 					 Loading="@_isLoading"
 					 ReadOnly="false"
-					 CommittedItemChanges="@((item) => CommittedItemChanges(item))"
+					 CommittedItemChanges="@((item) => CommittedItemChanges(item))"	
 					 QuickFilter="QuickFilter"
 					 EditMode="DataGridEditMode.Form"
 					 EditTrigger="@DataGridEditTrigger.Manual"
 					 FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
 					 FilterMode="DataGridFilterMode.ColumnFilterRow"
 					 ColumnResizeMode="ResizeMode.Container"
-					 Dense Hover Striped Bordered Filterable Groupable
+					 FixedHeader Dense Hover Striped Bordered Filterable Groupable
 					 DragDropColumnReordering ApplyDropClassesOnDragStarted HorizontalScrollbar
 					 DragIndicatorIcon="@Icons.Material.Filled.DragIndicator">
 			<ToolBarContent>

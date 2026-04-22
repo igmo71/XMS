@@ -103,14 +103,15 @@ public partial class Index : IDisposable
         }
     }
 
-    private bool HasMissingRequiredLinks(CostAllocation item)
+    private static bool HasMissingRequiredLinks(CostAllocation item)
     {
         return item.CityId is null || item.LocationId is null || item.DepartmentId is null;
     }
 
-    private string GetRowClass(CostAllocation item, int rowNumber)
+    private static string GetCellClass(CostAllocation item)
     {
-        return HasMissingRequiredLinks(item) ? "cost-allocation-warning-row" : string.Empty;
+        var result = HasMissingRequiredLinks(item) ? "mud-theme-warning" : string.Empty;
+        return result;
     }
 
     public void Dispose()
