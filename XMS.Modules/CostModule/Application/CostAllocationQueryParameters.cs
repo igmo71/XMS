@@ -1,9 +1,12 @@
-﻿namespace XMS.Application.Common;
+﻿using XMS.Application.Common;
 
-public record struct QueryParameters(
+namespace XMS.Modules.CostModule.Application;
+
+public record struct CostAllocationQueryParameters(
     int? Skip = AppSettings.Default.Skip,
     int? Take = AppSettings.Default.Take,
     bool? IncludeDeleted = false,
     string? SearchTerm = null,
     DateTime? From = null,
-    DateTime? To = null);
+    DateTime? To = null,
+    int Type = -1);

@@ -10,8 +10,8 @@ public static class QueryableExtensions
     {
         query = query.OrderBy(e => e.Number);
 
-        if (!string.IsNullOrWhiteSpace(parameters.NumberTerm))
-            query = query.Where(d => !string.IsNullOrEmpty(d.Number) && EF.Functions.Like(d.Number, parameters.NumberTerm));
+        if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
+            query = query.Where(d => !string.IsNullOrEmpty(d.Number) && EF.Functions.Like(d.Number, parameters.SearchTerm));
 
         if (parameters.From.HasValue)
             query = query.Where(d => d.Date >= parameters.From.Value);
@@ -33,8 +33,8 @@ public static class QueryableExtensions
     {
         query = query.OrderBy(e => e.Description);
 
-        if (!string.IsNullOrWhiteSpace(parameters.DescriptionTerm))
-            query = query.Where(d => !string.IsNullOrEmpty(d.Description) && EF.Functions.Like(d.Description, parameters.DescriptionTerm));
+        if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
+            query = query.Where(d => !string.IsNullOrEmpty(d.Description) && EF.Functions.Like(d.Description, parameters.SearchTerm));
 
         if (parameters.IncludeDeleted == false)
             query = query.Where(e => e.DeletionMark == false);

@@ -74,7 +74,7 @@ public partial class OrininalDocs : IDisposable
             : $"%{_numberTerm.Trim()}%";
 
         return new DocumentQueryParameters(
-            NumberTerm: numberTerm,
+            SearchTerm: numberTerm,
             From: _from,
             To: _to,
             Skip: null,

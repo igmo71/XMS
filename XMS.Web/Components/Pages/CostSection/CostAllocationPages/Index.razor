@@ -5,45 +5,53 @@
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-4">
 	<MudPaper Class="pa-4">
-		<MudDataGrid T="CostAllocation"
-					 Items="@_items"
+		<MudDataGrid @ref="_dataGrid"
+					 T="CostAllocation"
+					 ServerData="ServerReload"
 					 Loading="@_isLoading"
 					 ReadOnly="false"
 					 EditMode="DataGridEditMode.Cell"
-					 SortMode="SortMode.Multiple"
-					 FilterMode="DataGridFilterMode.ColumnFilterRow"
-					 FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
-					 FixedHeader Dense Hover Striped Bordered Filterable Groupable>
+					 Filterable="false" SortMode="SortMode.None"
+					 FixedHeader Dense Hover Striped Bordered>
 			<ToolBarContent>
-				<MudText Typo="Typo.h5">Распределение затрат</MudText>
-				<MudSpacer />
-				<MudChip T="string" Color="Color.Warning" Variant="Variant.Outlined" Size="Size.Medium">
-					Внимание: есть нераспределенные затраты (Город, Локация или Отдел)
-				</MudChip>
+				<MudStack Row="true" Justify="Justify.SpaceEvenly" Class="w-100">
+					<MudText Typo="Typo.h5" Class="mt-3">Распределение затрат</MudText>
+					<MudSwitch T="bool" Class="mt-3" ValueChanged="ToggleIncludeDelete" Color="Color.Primary">Показать все</MudSwitch>
+					<MudSelect @bind-Value="_queryParameters.Type" Label="Тип">
+						<MudSelectItem T="int" Value="-1">Любой</MudSelectItem>
+						<MudSelectItem T="int" Value="0">Банк</MudSelectItem>
+						<MudSelectItem T="int" Value="1">РКО</MudSelectItem>
+					</MudSelect>
+					<MudTextField @bind-Value="_queryParameters.SearchTerm" Label="Номер документа" Clearable="true"></MudTextField>
+					<MudDatePicker Label="С" @bind-Date="_queryParameters.From" Clearable="true" />
+					<MudDatePicker Label="По" @bind-Date="_queryParameters.To" Clearable="true" />
+					<MudButton Class="ms-5" StartIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Color="Color.Primary" OnClick="OnSearch">
+						Поиск
+					</MudButton>
+				</MudStack>
 			</ToolBarContent>
 			<Columns>
 				<PropertyColumn Property="x => x.Name" Title="Тип документа" Editable="false" />
 				<PropertyColumn Property="x => x.Number" Title="Номер" Editable="false" StickyLeft="true" CellClassFunc="@(x => GetCellClass(x))" />
 				<PropertyColumn Property="x => x.Date" Title="Дата" Format="dd.MM.yyyy" Editable="false" />
 				<PropertyColumn Property="x => x.TotalAmount" Title="Сумма" Format="N2" Editable="false" />
-				<PropertyColumn Property="x => x.BusinessOperation" Title="Операция" Editable="false" />
 				<PropertyColumn Property="x => x.CostCategory == null ? string.Empty : x.CostCategory.Name" Title="Категория затрат" Editable="false" />
 				<PropertyColumn Property="x => x.CostItem == null ? string.Empty : x.CostItem.Name" Title="Статья затрат" Editable="false" />
-				<PropertyColumn Property="x => x.Manager == null ? string.Empty : x.Manager.Name" Title="Менеджер" Editable="false" />
-				<PropertyColumn Property="x => x.Department == null ? string.Empty : x.Department.Name" Title="Отдел">
+				<PropertyColumn Property="x => x.City == null ? string.Empty : x.City.Name" Title="Город">
 					<CellTemplate>
-						@context.Item.Department?.Name
+						@context.Item.City?.Name
 					</CellTemplate>
 					<EditTemplate>
 						<MudSelect T="Guid?"
-								   Value="context.Item.DepartmentId"
-								   ValueChanged="@(value => OnDepartmentChangedAsync(context.Item, value))"
+								   Value="context.Item.CityId"
+								   ValueChanged="@(value => OnCityChangedAsync(context.Item, value))"
+								   RelativeWidth="DropdownWidth.Ignore"
 								   Variant="Variant.Outlined"
 								   Dense="true"
 								   Clearable="true">
-							@foreach (var department in _departments)
+							@foreach (var city in _cities)
 							{
-								<MudSelectItem T="Guid?" Value="@((Guid?)department.Id)">@department.Name</MudSelectItem>
+								<MudSelectItem T="Guid?" Value="@((Guid?)city.Id)">@city.Name</MudSelectItem>
 							}
 						</MudSelect>
 					</EditTemplate>
@@ -56,6 +64,7 @@
 						<MudSelect T="Guid?"
 								   Value="context.Item.LocationId"
 								   ValueChanged="@(value => OnLocationChangedAsync(context.Item, value))"
+								   RelativeWidth="DropdownWidth.Ignore"
 								   Variant="Variant.Outlined"
 								   Dense="true"
 								   Clearable="true">
@@ -66,24 +75,27 @@
 						</MudSelect>
 					</EditTemplate>
 				</PropertyColumn>
-				<PropertyColumn Property="x => x.City == null ? string.Empty : x.City.Name" Title="Город">
+				<PropertyColumn Property="x => x.Department == null ? string.Empty : x.Department.Name" Title="Отдел">
 					<CellTemplate>
-						@context.Item.City?.Name
+						@context.Item.Department?.Name
 					</CellTemplate>
 					<EditTemplate>
 						<MudSelect T="Guid?"
-								   Value="context.Item.CityId"
-								   ValueChanged="@(value => OnCityChangedAsync(context.Item, value))"
+								   Value="context.Item.DepartmentId"
+								   ValueChanged="@(value => OnDepartmentChangedAsync(context.Item, value))"
+								   RelativeWidth="DropdownWidth.Ignore"
 								   Variant="Variant.Outlined"
 								   Dense="true"
 								   Clearable="true">
-							@foreach (var city in _cities)
+							@foreach (var department in _departments)
 							{
-								<MudSelectItem T="Guid?" Value="@((Guid?)city.Id)">@city.Name</MudSelectItem>
+								<MudSelectItem T="Guid?" Value="@((Guid?)department.Id)">@department.Name</MudSelectItem>
 							}
 						</MudSelect>
 					</EditTemplate>
 				</PropertyColumn>
+				<PropertyColumn Property="x => x.Manager == null ? string.Empty : x.Manager.Name" Title="Менеджер" Editable="false" />
+				@* <PropertyColumn Property="x => x.BusinessOperation" Title="Операция" Editable="false" /> *@
 				<PropertyColumn Property="x => x.PaymentPurpose" Title="Назначение платежа" Editable="false">
 					<CellTemplate>
 						<div title="@(context.Item.PaymentPurpose)">
@@ -124,9 +136,3 @@
 		</MudDataGrid>
 	</MudPaper>
 </MudContainer>
-
-<style>
-	.cost-allocation-warning-row td {
-		background-color: rgba(255, 152, 0, 0.12) !important;
-	}
-</style>

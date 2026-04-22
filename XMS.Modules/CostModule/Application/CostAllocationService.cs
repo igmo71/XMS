@@ -13,12 +13,13 @@ internal class CostAllocationService(
     IOneCUtService utService,
     IDbContextFactoryProxy dbFactory) : ICostAllocationService
 {
-    public async Task<IReadOnlyList<CostAllocation>> GetListAsync(bool includeDeleted = false, CancellationToken ct = default)
+    public async Task<CostAllocationDto> GetListAsync(CostAllocationQueryParameters queryParameters, CancellationToken ct = default)
     {
         using var dbContext = dbFactory.CreateDbContext();
 
-        var query = dbContext.Set<CostAllocation>()
+        var items = await dbContext.Set<CostAllocation>()
             .AsNoTracking()
+            .HandleCostAllocationQuery(queryParameters)
             .Include(x => x.Author)
             .Include(x => x.Manager)
             .Include(x => x.Department)
@@ -26,15 +27,12 @@ internal class CostAllocationService(
             .Include(x => x.City)
             .Include(x => x.CostCategory)
             .Include(x => x.CostItem)
-            .AsQueryable();
-
-        if (!includeDeleted)
-            query = query.Where(x => !x.IsDeleted);
-
-        return await query
-            .OrderByDescending(x => x.Date)
-            .ThenByDescending(x => x.Number)
             .ToListAsync(ct);
+
+        var totalItems = await dbContext.Set<CostAllocation>()
+            .CountAsync(ct);
+
+        return CostAllocationDto.FromEntities(items, totalItems);
     }
 
     public async Task UpdateAsync(CostAllocation item, CancellationToken ct = default)
