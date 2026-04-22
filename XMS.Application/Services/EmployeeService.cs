@@ -245,6 +245,17 @@ internal class EmployeeService(IDbContextFactoryProxy dbFactory) : IEmployeeServ
         return result;
     }
 
+    public async Task<Employee?> GetByUserAdId(string? userAdId)
+    {
+        using var dbContext = dbFactory.CreateDbContext();
+
+        var employee = await dbContext.Set<Employee>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.UserAdId == userAdId);
+
+        return employee;
+    }
+
     //// Gemini //
     //public static List<Employee> GetAllSubordinates(Guid managerId, List<Employee> employees)
     //{

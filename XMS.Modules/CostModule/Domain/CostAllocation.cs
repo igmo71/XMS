@@ -28,9 +28,6 @@ public class CostAllocation : BaseEntity, ISoftDeletable
     public Guid? AuthorId { get; set; }
     public UserUt? Author { get; set; }
 
-    public Guid? ManagerId { get; set; }
-    public UserUt? Manager { get; set; }
-
     public Guid? DepartmentId { get; set; }
     public Department? Department { get; set; }
 

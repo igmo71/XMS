@@ -128,7 +128,7 @@ internal class CostCategoryService(
             //.Include(e => e.Children)
             .Include(e => e.Items)
             .Include(e => e.Department)
-            .Include(e => e.Employee)
+            .Include(e => e.Manager)
             .OrderBy(x => x.Name)
             .ToListAsync(ct);
 
@@ -143,7 +143,7 @@ internal class CostCategoryService(
             .HandleQuery(queryParameters)
             .Include(e => e.Items)
             .Include(e => e.Department)
-            .Include(e => e.Employee)
+            .Include(e => e.Manager)
             .ToListAsync(ct);
 
         return result;

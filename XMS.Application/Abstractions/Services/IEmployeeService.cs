@@ -5,6 +5,7 @@ namespace XMS.Application.Abstractions.Services;
 
 public interface IEmployeeService : ICrudService<Employee>
 {
+    Task<Employee?> GetByUserAdId(string? userAdId);
     Task<Employee?> GetByAdLoginAsync(string login, CancellationToken ct = default);
     Task<Employee?> GetByUtRefKeyAsync(string refKey, CancellationToken ct = default);
     Task<ServiceResult<IReadOnlyList<Employee>>> GetEmployeesByManagerIdAsync(Guid id, CancellationToken ct = default);

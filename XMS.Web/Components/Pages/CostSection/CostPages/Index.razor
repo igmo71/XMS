@@ -56,7 +56,7 @@
 									</MudMenu>
 									@if (_showDetailsCategoryIds.Contains(category.Id))
 									{
-										<MudText Typo="Typo.body2" Class="ml-3">@category.Employee?.Name</MudText>
+										<MudText Typo="Typo.body2" Class="ml-3">@category.Manager?.Name</MudText>
 										<MudText Typo="Typo.body2" Class="ml-3">@category.Department?.Name</MudText>
 									}
 

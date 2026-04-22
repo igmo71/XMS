@@ -7,4 +7,5 @@ public interface IUserAdService
     Task<IReadOnlyList<UserAd>> GetListAsync(CancellationToken ct = default);
     Task<IReadOnlyList<UserAd>> LoadListAsync(CancellationToken ct = default);
     Task ReloadListAsync(CancellationToken ct = default);
+    Task<UserAd?> GetByLogin(string login);
 }

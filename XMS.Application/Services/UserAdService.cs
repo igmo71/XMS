@@ -9,6 +9,14 @@ namespace XMS.Application.Services;
 
 internal class UserAdService(IAdService adService, IDbContextFactoryProxy dbFactory) : BaseService, IUserAdService
 {
+    public async Task<UserAd?> GetByLogin(string login)
+    {
+        using var dbContext = dbFactory.CreateDbContext();
+        return await dbContext.Set<UserAd>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Login == login);
+    }
+
     public async Task<IReadOnlyList<UserAd>> GetListAsync(CancellationToken ct = default)
     {
         using var dbContext = dbFactory.CreateDbContext();

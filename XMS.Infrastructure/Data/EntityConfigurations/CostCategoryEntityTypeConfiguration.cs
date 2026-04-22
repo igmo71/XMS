@@ -21,7 +21,7 @@ public class CostCategoryEntityTypeConfiguration : BaseEntityTypeConfiguration<C
                 r => r.HasOne<CostItem>().WithMany(e => e.CategoryItems).HasForeignKey(e => e.ItemId),
                 l => l.HasOne<CostCategory>().WithMany(e => e.CategoryItems).HasForeignKey(e => e.CategoryId));
 
-        builder.HasOne(e => e.Employee).WithMany().HasForeignKey(e => e.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(e => e.Manager).WithMany().HasForeignKey(e => e.ManagerId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(e => e.Department).WithMany().HasForeignKey(e => e.DepartmentId).OnDelete(DeleteBehavior.Restrict);
     }
 }

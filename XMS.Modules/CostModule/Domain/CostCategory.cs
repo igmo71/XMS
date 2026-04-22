@@ -24,8 +24,8 @@ public class CostCategory : BaseEntity, IHasName, ITreeNode<CostCategory>, ISoft
     public Guid? DepartmentId { get; set; }
     public Department? Department { get; set; }
 
-    public Guid? EmployeeId { get; set; }
-    public Employee? Employee { get; set; }
+    public Guid? ManagerId { get; set; }
+    public Employee? Manager { get; set; }
 
     public CostCategory ClearCollections()
     {

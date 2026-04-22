@@ -15,6 +15,7 @@ public partial class Index : IDisposable
     [Inject] public ILocationService LocationService { get; set; } = default!;
     [Inject] public IDepartmentService DepartmentService { get; set; } = default!;
     [Inject] public ISnackbar Snackbar { get; set; } = default!;
+    [Inject] public IWebUserAccessor UserAccessor { get; set; } = default!;
 
     private readonly CancellationTokenSource _cts = new();
     private IReadOnlyList<CostAllocation> _items = [];
@@ -25,10 +26,24 @@ public partial class Index : IDisposable
     private bool _isSaving;
 
     private MudDataGrid<CostAllocation>? _dataGrid;
-    private CostAllocationQueryParameters _queryParameters = new() { Take = 10, IncludeDeleted = false, Type = -1 };
+    private CostAllocationQueryParameters _queryParameters = new()
+    {
+        Take = 10,
+        IncludeDeleted = false,
+        Type = -1
+    };
+    private ApplicationUser? _currentUser = default;
+    private Employee? _currentManager = default!;
 
     protected override async Task OnInitializedAsync()
     {
+        _currentUser = await UserAccessor.GetRequiredUserAsync();
+
+        if (_currentUser != null)
+            _currentManager = await UserAccessor.GetEmployeeByAppUserName(_currentUser.UserName);
+
+        _queryParameters.CurrentManagerId = _currentManager?.Id;
+
         await LoadDataAsync();
     }
 

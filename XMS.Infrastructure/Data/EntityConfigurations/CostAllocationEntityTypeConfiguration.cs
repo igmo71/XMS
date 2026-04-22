@@ -27,10 +27,6 @@ public class CostAllocationEntityTypeConfiguration : BaseEntityTypeConfiguration
             .HasForeignKey(e => e.AuthorId).HasPrincipalKey(e => e.Id)
             .OnDelete(DeleteBehavior.NoAction);
 
-        builder.HasOne(e => e.Manager).WithMany()
-            .HasForeignKey(e => e.ManagerId).HasPrincipalKey(e => e.Id)
-            .OnDelete(DeleteBehavior.NoAction);
-
         builder.HasOne(e => e.Department).WithMany()
             .HasForeignKey(e => e.DepartmentId).HasPrincipalKey(e => e.Id)
             .OnDelete(DeleteBehavior.SetNull);

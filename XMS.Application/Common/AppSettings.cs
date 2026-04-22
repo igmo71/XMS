@@ -17,4 +17,6 @@ public static class AppSettings
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         //WriteIndented = false // JSON с отступами
     };
+
+    public const string DefaultAdminRole = "Admin";
 }

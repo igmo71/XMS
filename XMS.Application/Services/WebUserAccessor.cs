@@ -1,27 +1,63 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
+using Microsoft.Extensions.Logging;
 using XMS.Application.Abstractions.Integration;
+using XMS.Application.Abstractions.Services;
 using XMS.Application.Integration.Bitrix;
 using XMS.Domain.Models;
 
-namespace XMS.Web.Components.Account;
+namespace XMS.Application.Services;
 
-public class AuthService(
-   AuthenticationStateProvider authStateProvider,
-   UserManager<ApplicationUser> userManager,
-   SignInManager<ApplicationUser> signInManager,
-   IUserStore<ApplicationUser> userStore,
-   IBitrixService bitrixService,
-   ILogger<AuthService> logger)
+public class WebUserAccessor(
+    AuthenticationStateProvider authStateProvider,
+    UserManager<ApplicationUser> userManager,
+    SignInManager<ApplicationUser> signInManager,
+    IUserStore<ApplicationUser> userStore,
+    IBitrixService bitrixService,
+    IEmployeeService employeeService,
+    IAdService adService,
+    ILogger<WebUserAccessor> logger) : IWebUserAccessor
 {
-    public async Task<string?> GetCurrentUserIdAsync()
+    public async Task<Employee?> GetEmployeeByAppUserName(string? appUserName)
+    {
+        var userAd = await adService.GetByLogin(appUserName);
+        if (userAd == null) return null;
+
+        var employee = await employeeService.GetByUserAdId(userAd.Sid);
+
+        return employee;
+    }
+
+    public Task<Employee> GetEmployeeByIdAsync(string Id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<ApplicationUser?> GetRequiredUserAsync()
+    {
+        var authState = await authStateProvider.GetAuthenticationStateAsync();
+        var claimsPrincipal = authState.User;
+
+        if (claimsPrincipal.Identity?.IsAuthenticated != true)
+            return null;
+
+        var userId = userManager.GetUserId(claimsPrincipal);
+
+        if (string.IsNullOrEmpty(userId))
+            return null;
+
+        var user = await userManager.FindByIdAsync(userId);
+
+        return user;
+    }
+
+    public async Task<bool> IsUserInRoleAsync(string roleName)
     {
         var authState = await authStateProvider.GetAuthenticationStateAsync();
 
-        var userId = authState?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var user = authState.User;
 
-        return userId;
+        return user.IsInRole(roleName);
     }
 
     public async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure = false)

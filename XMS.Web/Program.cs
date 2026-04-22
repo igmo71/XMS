@@ -8,7 +8,9 @@ using Serilog;
 using System.Globalization;
 using XMS.Application;
 using XMS.Application.Abstractions.EventBus;
+using XMS.Application.Abstractions.Services;
 using XMS.Application.EventBus;
+using XMS.Application.Services;
 using XMS.Domain.Models;
 using XMS.Infrastructure;
 using XMS.Infrastructure.Data;
@@ -101,7 +103,7 @@ public class Program
         builder.Services.AddApplicationServices();
         builder.Services.AddApplicationModules(builder.Configuration);
 
-        builder.Services.AddScoped<AuthService>();
+        builder.Services.AddScoped<IWebUserAccessor, WebUserAccessor>();
 
         builder.Services.AddAppSections();
 

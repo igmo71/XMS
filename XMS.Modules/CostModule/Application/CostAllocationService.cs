@@ -21,11 +21,11 @@ internal class CostAllocationService(
             .AsNoTracking()
             .HandleCostAllocationQuery(queryParameters)
             .Include(x => x.Author)
-            .Include(x => x.Manager)
             .Include(x => x.Department)
             .Include(x => x.Location)
             .Include(x => x.City)
             .Include(x => x.CostCategory)
+                .ThenInclude(c => c!.Manager)
             .Include(x => x.CostItem)
             .ToListAsync(ct);
 

@@ -3,7 +3,6 @@ using XMS.Application.Abstractions.Integration;
 
 namespace XMS.Application.Integration.Bitrix;
 
-
 internal class BitrixService(BitrixClient bitrixClient, IConfiguration configuration) : IBitrixService
 {
     public async Task<BitrixUser?> GetUserAsync(string userName, string password)

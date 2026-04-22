@@ -55,7 +55,7 @@
 					<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
 				}
 			</MudSelect>
-			<MudAutocomplete @bind-Value="CostCategory.EmployeeId"
+			<MudAutocomplete @bind-Value="CostCategory.ManagerId"
 							 T="Guid?"
 							 ToStringFunc="GetEmployeeName"
 							 SearchFunc="SearcEmployeeIds"

@@ -9,4 +9,5 @@ public record struct CostAllocationQueryParameters(
     string? SearchTerm = null,
     DateTime? From = null,
     DateTime? To = null,
-    int Type = -1);
+    int Type = -1,
+    Guid? CurrentManagerId = null);
