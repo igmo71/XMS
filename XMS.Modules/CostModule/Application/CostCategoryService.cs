@@ -3,6 +3,7 @@ using XMS.Application.Abstractions.Data;
 using XMS.Application.Abstractions.EventBus;
 using XMS.Application.Common;
 using XMS.Application.EventBus.Events;
+using XMS.Domain.Models;
 using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Domain;
 
@@ -145,6 +146,20 @@ internal class CostCategoryService(
             .Include(e => e.Department)
             .Include(e => e.Manager)
             .ToListAsync(ct);
+
+        return result;
+    }
+
+    public async Task<IReadOnlyList<Employee>> GetManagers(CancellationToken ct = default)
+    {
+        using var dbContext = dbFactory.CreateDbContext();
+
+        var result = await dbContext.Set<CostCategory>()
+            .AsNoTracking()
+            .Where(e => e.Manager != null)
+            .Select(e => e.Manager!).OrderBy(m => m.Name)
+            .Distinct()
+            .ToListAsync(cancellationToken: ct);
 
         return result;
     }

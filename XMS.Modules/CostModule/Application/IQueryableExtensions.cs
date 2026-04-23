@@ -32,8 +32,8 @@ internal static class IQueryableExtensions
         if (queryParameters.Type > -1)
             query = query.Where(e => (int)e.PaymentVoucherType == queryParameters.Type);
 
-        if (queryParameters.CurrentManagerId != null)
-            query = query.Where(e => e.)
+        if (queryParameters.ManagerId != null)
+            query = query.Where(e => e.CostCategory != null && e.CostCategory.ManagerId == queryParameters.ManagerId);
 
         return query;
     }

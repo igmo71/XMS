@@ -7,7 +7,7 @@
 	<MudPaper Class="pa-4">
 		<MudDataGrid @ref="_dataGrid"
 					 T="CostAllocation"
-					 ServerData="ServerReload"
+					 ServerData="LoadCostAllocation"
 					 Loading="@_isLoading"
 					 ReadOnly="false"
 					 EditMode="DataGridEditMode.Cell"
@@ -17,17 +17,34 @@
 				<MudStack Row="true" Justify="Justify.SpaceEvenly" Class="w-100">
 					<MudText Typo="Typo.h5" Class="mt-3">Распределение затрат</MudText>
 					<MudSwitch T="bool" Class="mt-3" ValueChanged="ToggleIncludeDelete" Color="Color.Primary">Показать все</MudSwitch>
-					<MudSelect @bind-Value="_queryParameters.Type" Label="Тип">
+					<MudSelect @bind-Value="_queryParameters.Type" @bind-Value:after="OnSearch" Label="Тип">
 						<MudSelectItem T="int" Value="-1">Любой</MudSelectItem>
 						<MudSelectItem T="int" Value="0">Банк</MudSelectItem>
 						<MudSelectItem T="int" Value="1">РКО</MudSelectItem>
 					</MudSelect>
-					<MudTextField @bind-Value="_queryParameters.SearchTerm" Label="Номер документа" Clearable="true"></MudTextField>
-					<MudDatePicker Label="С" @bind-Date="_queryParameters.From" Clearable="true" />
-					<MudDatePicker Label="По" @bind-Date="_queryParameters.To" Clearable="true" />
+					<MudDatePicker Label="С" @bind-Date="_queryParameters.From" @bind-Date:after="OnSearch" Clearable="true" />
+					<MudDatePicker Label="По" @bind-Date="_queryParameters.To" @bind-Date:after="OnSearch" Clearable="true" />
+					<MudTextField @bind-Value="_queryParameters.SearchTerm" @bind-Value:after="OnSearch" Label="Номер документа" Clearable="true"></MudTextField>
 					<MudButton Class="ms-5" StartIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Color="Color.Primary" OnClick="OnSearch">
 						Поиск
 					</MudButton>
+					<AuthorizeView Roles="@AppSettings.Roles.Admin">
+						<Authorized>
+							<MudSelect T="Guid?"
+									   Value="_queryParameters.ManagerId"
+									   ValueChanged="@(value => OnManagerSearch(value))"
+									   Label="Менеджер"
+									   RelativeWidth="DropdownWidth.Ignore"
+									   Variant="Variant.Text"
+									   Dense="true"
+									   Clearable="true">
+								@foreach (var employee in _managers)
+								{
+									<MudSelectItem T="Guid?" Value="@employee.Id">@employee.Name</MudSelectItem>
+								}
+							</MudSelect>
+						</Authorized>
+					</AuthorizeView>
 				</MudStack>
 			</ToolBarContent>
 			<Columns>
@@ -46,7 +63,7 @@
 								   Value="context.Item.CityId"
 								   ValueChanged="@(value => OnCityChangedAsync(context.Item, value))"
 								   RelativeWidth="DropdownWidth.Ignore"
-								   Variant="Variant.Outlined"
+								   Variant="Variant.Text"
 								   Dense="true"
 								   Clearable="true">
 							@foreach (var city in _cities)
@@ -65,7 +82,7 @@
 								   Value="context.Item.LocationId"
 								   ValueChanged="@(value => OnLocationChangedAsync(context.Item, value))"
 								   RelativeWidth="DropdownWidth.Ignore"
-								   Variant="Variant.Outlined"
+								   Variant="Variant.Text"
 								   Dense="true"
 								   Clearable="true">
 							@foreach (var location in _locations)
@@ -84,16 +101,16 @@
 								   Value="context.Item.DepartmentId"
 								   ValueChanged="@(value => OnDepartmentChangedAsync(context.Item, value))"
 								   RelativeWidth="DropdownWidth.Ignore"
-								   Variant="Variant.Outlined"
+								   Variant="Variant.Text"
 								   Dense="true"
 								   Clearable="true">
-							@foreach (var department in _departments)
+							@foreach (var department in _departmentsFlattenedTree)
 							{
 								<MudSelectItem T="Guid?" Value="@((Guid?)department.Id)">@department.Name</MudSelectItem>
 							}
 						</MudSelect>
 					</EditTemplate>
-				</PropertyColumn>				
+				</PropertyColumn>
 				@* <PropertyColumn Property="x => x.BusinessOperation" Title="Операция" Editable="false" /> *@
 				<PropertyColumn Property="x => x.PaymentPurpose" Title="Назначение платежа" Editable="false">
 					<CellTemplate>

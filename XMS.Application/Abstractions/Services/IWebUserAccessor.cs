@@ -6,10 +6,9 @@ namespace XMS.Application.Abstractions.Services;
 
 public interface IWebUserAccessor
 {
-    Task<ApplicationUser?> GetRequiredUserAsync();
+    Task<ApplicationUser?> GetCurrentAppUserAsync();
+    Task<Employee?> GetCurrentEmployeeAsync();
     Task<bool> IsUserInRoleAsync(string roleName);
     Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure = false);
     Task<ApplicationUser?> RegisterBitrixUserAsync(BitrixUser bitrixUser, string password);
-    Task<Employee> GetEmployeeByIdAsync(string Id);
-    Task<Employee?> GetEmployeeByAppUserName(string? bitrixLogin);
 }

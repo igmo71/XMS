@@ -30,8 +30,11 @@
 			<PropertyColumn Property="x => x.Name" Title="Роль" />
 			<TemplateColumn>
 				<CellTemplate>
-					<MudIconButton Size="@Size.Medium" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync" />
-					<MudIconButton Size="@Size.Medium" Icon="@Icons.Material.Outlined.Delete" OnClick="@(() => DeleteItem(context.Item))" />
+					@if(context.Item.Name != AppSettings.Roles.Admin)
+					{
+						<MudIconButton Size="@Size.Medium" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync" />
+					}
+					@* <MudIconButton Size="@Size.Medium" Icon="@Icons.Material.Outlined.Delete" OnClick="@(() => DeleteItem(context.Item))" /> *@
 				</CellTemplate>
 			</TemplateColumn>
 		</Columns>

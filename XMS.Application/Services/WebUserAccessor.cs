@@ -18,22 +18,7 @@ public class WebUserAccessor(
     IAdService adService,
     ILogger<WebUserAccessor> logger) : IWebUserAccessor
 {
-    public async Task<Employee?> GetEmployeeByAppUserName(string? appUserName)
-    {
-        var userAd = await adService.GetByLogin(appUserName);
-        if (userAd == null) return null;
-
-        var employee = await employeeService.GetByUserAdId(userAd.Sid);
-
-        return employee;
-    }
-
-    public Task<Employee> GetEmployeeByIdAsync(string Id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<ApplicationUser?> GetRequiredUserAsync()
+    public async Task<ApplicationUser?> GetCurrentAppUserAsync()
     {
         var authState = await authStateProvider.GetAuthenticationStateAsync();
         var claimsPrincipal = authState.User;
@@ -49,6 +34,18 @@ public class WebUserAccessor(
         var user = await userManager.FindByIdAsync(userId);
 
         return user;
+    }
+
+    public async Task<Employee?> GetCurrentEmployeeAsync()
+    {
+        var currentAppUser = await GetCurrentAppUserAsync();
+        if (currentAppUser == null) return null;
+
+        var currentUserAd = await adService.GetByLogin(currentAppUser.UserName);
+        if (currentUserAd == null) return null;
+
+        var currentEmployee = await employeeService.GetByUserAdId(currentUserAd.Sid);
+        return currentEmployee;
     }
 
     public async Task<bool> IsUserInRoleAsync(string roleName)

@@ -28,7 +28,7 @@
 					<MudSelectItem T="Guid?" Value="item.Id">@item.Name</MudSelectItem>
 				}
 			</MudSelect>
-			<MudSelect @bind-SelectedValues="_selectedItems" T="CostItem"
+			@* <MudSelect @bind-SelectedValues="_selectedItems" T="CostItem"
 					   Label="Выбор Статьи затрат"
 					   MultiSelection="true"
 					   AnchorOrigin="Origin.TopCenter"
@@ -41,7 +41,7 @@
 				{
 					<MudSelectItem Value="@item">@item.Name</MudSelectItem>
 				}
-			</MudSelect>
+			</MudSelect> *@
 			<MudSelect @bind-Value="CostCategory.DepartmentId"
 					   Label="Выбор Отдела"
 					   Required="false"
@@ -60,7 +60,7 @@
 							 ToStringFunc="GetEmployeeName"
 							 SearchFunc="SearcEmployeeIds"
 							 Variant="Variant.Outlined"
-							 Label="Подбор Сотрудника"
+							 Label="Подбор Менеджера"
 							 Clearable="true"
 							 Dense="true"
 							 RelativeWidth="DropdownWidth.Ignore">

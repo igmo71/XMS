@@ -5,6 +5,7 @@ using XMS.Domain.Models;
 using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Application;
 using XMS.Modules.CostModule.Domain;
+using XMS.Web.Components.Common;
 
 namespace XMS.Web.Components.Pages.CostSection.CostAllocationPages;
 
@@ -16,12 +17,15 @@ public partial class Index : IDisposable
     [Inject] public IDepartmentService DepartmentService { get; set; } = default!;
     [Inject] public ISnackbar Snackbar { get; set; } = default!;
     [Inject] public IWebUserAccessor UserAccessor { get; set; } = default!;
+    [Inject] public ICostCategoryService CostCategoryService { get; set; } = default!;
 
     private readonly CancellationTokenSource _cts = new();
     private IReadOnlyList<CostAllocation> _items = [];
     private IReadOnlyList<City> _cities = [];
     private IReadOnlyList<Location> _locations = [];
     private IReadOnlyList<Department> _departments = [];
+    private IEnumerable<Department> _departmentsFlattenedTree = [];
+    private IReadOnlyList<Employee> _managers = [];
     private bool _isLoading;
     private bool _isSaving;
 
@@ -32,19 +36,23 @@ public partial class Index : IDisposable
         IncludeDeleted = false,
         Type = -1
     };
-    private ApplicationUser? _currentUser = default;
     private Employee? _currentManager = default!;
+    private bool _isManagerLoaded = false;
 
     protected override async Task OnInitializedAsync()
     {
-        _currentUser = await UserAccessor.GetRequiredUserAsync();
+        _currentManager = await UserAccessor.GetCurrentEmployeeAsync();
 
-        if (_currentUser != null)
-            _currentManager = await UserAccessor.GetEmployeeByAppUserName(_currentUser.UserName);
+        _queryParameters.ManagerId = _currentManager?.Id;
 
-        _queryParameters.CurrentManagerId = _currentManager?.Id;
+        _isManagerLoaded = true;
+
+        if (_dataGrid != null)
+            await _dataGrid.ReloadServerData();
 
         await LoadDataAsync();
+
+        _departmentsFlattenedTree = TreeHelper.BuildFlattenedTree(_departments);
     }
 
     private async Task LoadDataAsync()
@@ -59,12 +67,14 @@ public partial class Index : IDisposable
             var citiesTask = CityService.GetListAsync(false, _cts.Token);
             var locationsTask = LocationService.GetListAsync(false, _cts.Token);
             var departmentsTask = DepartmentService.GetListAsync(false, _cts.Token);
+            var managersTask = CostCategoryService.GetManagers(_cts.Token);
 
-            await Task.WhenAll(citiesTask, locationsTask, departmentsTask);
+            await Task.WhenAll(citiesTask, locationsTask, departmentsTask, managersTask);
 
-            _cities = citiesTask.Result;
-            _locations = locationsTask.Result;
-            _departments = departmentsTask.Result;
+            _cities = await citiesTask;
+            _locations = await locationsTask;
+            _departments = await departmentsTask;
+            _managers = await managersTask;
         }
         finally
         {
@@ -73,8 +83,11 @@ public partial class Index : IDisposable
         }
     }
 
-    private async Task<GridData<CostAllocation>> ServerReload(GridState<CostAllocation> state, CancellationToken token)
+    private async Task<GridData<CostAllocation>> LoadCostAllocation(GridState<CostAllocation> state, CancellationToken token)
     {
+        if (!_isManagerLoaded)
+            return new GridData<CostAllocation> { TotalItems = 0, Items = [] };
+
         _queryParameters.Skip = state.Page * state.PageSize;
         _queryParameters.Take = state.Page;
 
@@ -97,16 +110,19 @@ public partial class Index : IDisposable
         return _dataGrid.ReloadServerData();
     }
 
+    private Task OnManagerSearch(Guid? managerId)
+    {
+        _queryParameters.ManagerId = managerId;
+
+        return OnSearch();
+    }
+
     private Task ToggleIncludeDelete(bool args)
     {
         _queryParameters.IncludeDeleted = args;
 
-        if (_dataGrid == null)
-            return Task.CompletedTask;
-
-        return _dataGrid.ReloadServerData();
+        return OnSearch();
     }
-
 
     private async Task OnCityChangedAsync(CostAllocation item, Guid? cityId)
     {
