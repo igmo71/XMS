@@ -30,20 +30,14 @@ public partial class Index : IDisposable
     private bool _isSaving;
 
     private MudDataGrid<CostAllocation>? _dataGrid;
-    private CostAllocationQueryParameters _queryParameters = new()
-    {
-        Take = 10,
-        IncludeDeleted = false,
-        Type = -1
-    };
-    private Employee? _currentManager = default!;
+    private CostAllocationQueryParameters _queryParameters = new();
     private bool _isManagerLoaded = false;
 
     protected override async Task OnInitializedAsync()
     {
-        _currentManager = await UserAccessor.GetCurrentEmployeeAsync();
+        var currentManager = await UserAccessor.GetCurrentEmployeeAsync();
 
-        _queryParameters.ManagerId = _currentManager?.Id;
+        _queryParameters.ManagerId = currentManager?.Id;
 
         _isManagerLoaded = true;
 
@@ -89,7 +83,7 @@ public partial class Index : IDisposable
             return new GridData<CostAllocation> { TotalItems = 0, Items = [] };
 
         _queryParameters.Skip = state.Page * state.PageSize;
-        _queryParameters.Take = state.Page;
+        _queryParameters.Take = state.PageSize;
 
         CostAllocationDto data = await CostAllocationService.GetListAsync(_queryParameters, _cts.Token);
 
@@ -102,26 +96,55 @@ public partial class Index : IDisposable
         };
     }
 
-    private Task OnSearch()
+    private async Task OnSearch()
     {
-        if (_dataGrid == null)
-            return Task.CompletedTask;
+        if (_dataGrid is null)
+            return;
 
-        return _dataGrid.ReloadServerData();
+        await _dataGrid.ReloadServerData();
     }
 
-    private Task OnManagerSearch(Guid? managerId)
+    private async Task ToggleAllocatedShow(bool args)
+    {
+        _queryParameters.IncludeAllocated = args;
+
+        await OnSearch();
+    }
+
+    private async Task OnDocTypeSearch(int? docType)
+    {
+        _queryParameters.DocType = docType;
+
+        await OnSearch();
+    }
+
+    private async Task OnDateFromSearch(DateTime? from)
+    {
+        _queryParameters.From = from;
+
+        await OnSearch();
+    }
+
+    private async Task OnDateToSearch(DateTime? to)
+    {
+        _queryParameters.To = to;
+
+        await OnSearch();
+    }
+
+
+    private async Task OnNumberSearch(string? searchTerm)
+    {
+        _queryParameters.SearchTerm = searchTerm;
+
+        await OnSearch();
+    }
+
+    private async Task OnManagerSearch(Guid? managerId)
     {
         _queryParameters.ManagerId = managerId;
 
-        return OnSearch();
-    }
-
-    private Task ToggleIncludeDelete(bool args)
-    {
-        _queryParameters.IncludeDeleted = args;
-
-        return OnSearch();
+        await OnSearch();
     }
 
     private async Task OnCityChangedAsync(CostAllocation item, Guid? cityId)

@@ -12,22 +12,32 @@
 					 ReadOnly="false"
 					 EditMode="DataGridEditMode.Cell"
 					 Filterable="false" SortMode="SortMode.None"
-					 FixedHeader Dense Hover Striped Bordered>
+					 FixedHeader Dense Hover Striped Bordered HorizontalScrollbar>
 			<ToolBarContent>
-				<MudStack Row="true" Justify="Justify.SpaceEvenly" Class="w-100">
-					<MudText Typo="Typo.h5" Class="mt-3">Распределение затрат</MudText>
-					<MudSwitch T="bool" Class="mt-3" ValueChanged="ToggleIncludeDelete" Color="Color.Primary">Показать все</MudSwitch>
-					<MudSelect @bind-Value="_queryParameters.Type" @bind-Value:after="OnSearch" Label="Тип">
-						<MudSelectItem T="int" Value="-1">Любой</MudSelectItem>
-						<MudSelectItem T="int" Value="0">Банк</MudSelectItem>
-						<MudSelectItem T="int" Value="1">РКО</MudSelectItem>
+				<MudStack Row="true" Justify="Justify.SpaceEvenly" AlignItems="AlignItems.Center" Class="w-100" Style="overflow: visible;">
+					<MudText Typo="Typo.h5">Распределение затрат</MudText>
+					<MudSwitch T="bool" ValueChanged="ToggleAllocatedShow" Color="Color.Primary">Показать все</MudSwitch>
+					<MudSelect T="int?"
+							   Value="_queryParameters.DocType"
+							   ValueChanged="@(value => OnDocTypeSearch(value))"
+							   Label="Тип"
+							   RelativeWidth="DropdownWidth.Ignore"
+							   Variant="Variant.Text"
+							   Dense="true"
+							   Clearable="true">
+						<MudSelectItem T="int?" Value="0">Банк</MudSelectItem>
+						<MudSelectItem T="int?" Value="1">Касса</MudSelectItem>
 					</MudSelect>
-					<MudDatePicker Label="С" @bind-Date="_queryParameters.From" @bind-Date:after="OnSearch" Clearable="true" />
-					<MudDatePicker Label="По" @bind-Date="_queryParameters.To" @bind-Date:after="OnSearch" Clearable="true" />
-					<MudTextField @bind-Value="_queryParameters.SearchTerm" @bind-Value:after="OnSearch" Label="Номер документа" Clearable="true"></MudTextField>
-					<MudButton Class="ms-5" StartIcon="@Icons.Material.Filled.Search" Variant="Variant.Filled" Color="Color.Primary" OnClick="OnSearch">
-						Поиск
-					</MudButton>
+					<MudDatePicker Label="C" Date="_queryParameters.From" DateChanged="@(value => OnDateFromSearch(value))" Clearable="true" />
+					<MudDatePicker Label="По" Date="_queryParameters.To" DateChanged="@(value => OnDateToSearch(value))" Clearable="true" />
+					<MudTextField T="string"
+								  Value="_queryParameters.SearchTerm"
+								  ValueChanged="@(value => OnNumberSearch(value))"
+								  Immediate="true"
+								  DebounceInterval="500"
+								  Label="Номер"
+								  Variant="Variant.Text"
+								  Clearable="true" />
 					<AuthorizeView Roles="@AppSettings.Roles.Admin">
 						<Authorized>
 							<MudSelect T="Guid?"

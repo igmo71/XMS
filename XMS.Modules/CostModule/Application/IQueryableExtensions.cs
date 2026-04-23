@@ -17,7 +17,7 @@ internal static class IQueryableExtensions
                 ? AppSettings.Default.MaxTake
                 : (int)queryParameters.Take);
 
-        if (queryParameters.IncludeDeleted == false)
+        if (queryParameters.IncludeAllocated == false)
             query = query.Where(x => x.CityId == null || x.LocationId == null || x.DepartmentId == null);
 
         if (queryParameters.From != null)
@@ -29,8 +29,8 @@ internal static class IQueryableExtensions
         if (!string.IsNullOrEmpty(queryParameters.SearchTerm))
             query = query.Where(e => !string.IsNullOrEmpty(e.Number) && e.Number.Contains(queryParameters.SearchTerm));
 
-        if (queryParameters.Type > -1)
-            query = query.Where(e => (int)e.PaymentVoucherType == queryParameters.Type);
+        if (queryParameters.DocType > -1)
+            query = query.Where(e => (int)e.PaymentVoucherType == queryParameters.DocType);
 
         if (queryParameters.ManagerId != null)
             query = query.Where(e => e.CostCategory != null && e.CostCategory.ManagerId == queryParameters.ManagerId);

@@ -46,7 +46,7 @@ public class CostAllocation : BaseEntity, ISoftDeletable
             return PaymentVoucherType switch
             {
                 PaymentVoucherType.Bank => "Банк",
-                PaymentVoucherType.Cash => "РКО",
+                PaymentVoucherType.Cash => "Касса",
                 _ => string.Empty
             };
         }
