@@ -11,6 +11,7 @@ using XMS.Application.Abstractions.Integration.OneC.Events;
 using XMS.Application.Abstractions.Integration.OneC.Ut;
 using XMS.Application.Abstractions.Services;
 using XMS.Application.Endpoints;
+using XMS.Application.EventBus;
 using XMS.Application.Integration.AD;
 using XMS.Application.Integration.Bitrix;
 using XMS.Application.Integration.OneC.Buh.Api;
@@ -66,6 +67,16 @@ public static class DependencyInjection
 
             services.AddScoped(interfaceType, handler);
         }
+
+        return services;
+    }
+
+    public static IServiceCollection AddAppEventBus(this IServiceCollection services)
+    {
+        services.AddSingleton<AppEventChannel>();
+        services.AddHostedService(sp => sp.GetRequiredService<AppEventChannel>());
+        services.AddSingleton<IAppEventPublisher, AppEventPublisher>();
+        services.AddAppEventHandlers();
 
         return services;
     }

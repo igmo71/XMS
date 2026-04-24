@@ -40,8 +40,7 @@ public class Program
         var integrationEventHandlers = builder.Services.AddIntegrationEventHandlers(assembliesWithHandlers);
         builder.Services.AddIntegrationEventConsumer(builder.Configuration, integrationEventHandlers);
 
-        builder.Services.AddSingleton<IAppEventPublisher, AppEventPublisher>();
-        builder.Services.AddAppEventHandlers();
+        builder.Services.AddAppEventBus();
 
         builder.Services.AddIntegrationServices(builder.Configuration);
         builder.Services.AddApplicationServices();

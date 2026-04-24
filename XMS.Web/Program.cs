@@ -94,8 +94,7 @@ public class Program
         builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
         builder.Services.AddSingleton<IEventNamingService, EventNamingService>();
-        builder.Services.AddSingleton<IAppEventPublisher, AppEventPublisher>();
-        builder.Services.AddAppEventHandlers();
+        builder.Services.AddAppEventBus();
         builder.Services.AddRabbitMqEventConnectionFactory(builder.Configuration);
         builder.Services.AddIntegrationEventPublisher(builder.Configuration);
         builder.Services.AddAppPersistenceInfrastructure(builder.Configuration);
