@@ -24,6 +24,13 @@ internal abstract class DocumentService<TEntity>(
         return result;
     }
 
+    public Task<TEntity?> GetByBarcodeAsync(string barcode, CancellationToken ct)
+    {
+        var refKey = BarcodeDecoder.ToRefKey(barcode);
+        var result = GetAsync(refKey, ct);
+        return result;
+    }
+
     public async Task<IReadOnlyList<TEntity>> GetListAsync(DocumentQueryParameters parameters, CancellationToken ct = default)
     {
         using var dbContext = dbFactory.CreateDbContext();

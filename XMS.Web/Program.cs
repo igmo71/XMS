@@ -1,4 +1,3 @@
-using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -17,6 +16,7 @@ using XMS.Infrastructure.Data;
 using XMS.Modules;
 using XMS.Web.Components;
 using XMS.Web.Components.Account;
+using XMS.Web.Components.Layout;
 using XMS.Web.Components.Layout.Sections;
 
 namespace XMS.Web;
@@ -44,8 +44,6 @@ public class Program
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
-        builder.Services.AddBlazoredLocalStorage();
-
         builder.Services.AddMudServices();
         builder.Services.AddMudTranslations();
 
@@ -63,6 +61,7 @@ public class Program
 
         builder.Services.AddHttpContextAccessor();
 
+        builder.Services.AddScoped<ThemeState>();
 
         builder.Services.AddIdentityCore<ApplicationUser>(options =>
             {
@@ -137,6 +136,25 @@ public class Program
 
         // Add additional endpoints required by the Identity /Account Razor components.
         app.MapAdditionalIdentityEndpoints();
+
+        app.MapPost("/ui/theme/{theme}", (string theme, HttpContext httpContext) =>
+        {
+            if (theme is not AppSettings.Theme.Light and not AppSettings.Theme.Dark)
+                return Results.BadRequest();
+
+            httpContext.Response.Cookies.Append(
+                AppSettings.Theme.CookieName,
+                theme,
+                new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddYears(1),
+                    HttpOnly = false,
+                    SameSite = SameSiteMode.Lax,
+                    Secure = httpContext.Request.IsHttps
+                });
+
+            return Results.Ok();
+        });
 
         app.Run();
     }

@@ -1,10 +1,7 @@
 ﻿@using XMS.Web.Components.Layout.Sections
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inherits LayoutComponentBase
-@inject IEnumerable<IAppSection> Sections
-@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
-<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" Theme="_myCustomTheme" />
+<MudThemeProvider IsDarkMode="@ThemeState.IsDarkMode" Theme="_myCustomTheme" />
 <MudSnackbarProvider />
 <MudDialogProvider />
 <MudPopoverProvider />
@@ -12,7 +9,7 @@
 	<MudAppBar Elevation="1" Class="mb-2">
 		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
 		<MudText Typo="Typo.h5" Class="ml-3 mr-3">Предприятие</MudText>
-		
+
 		<MudTabs ActivePanelIndex="_activeIndex"
 				 ActivePanelIndexChanged="SetSection"
 				 Elevation="0"
@@ -22,13 +19,15 @@
 				 Class="ml-5">
 			@foreach (var section in _sections)
 			{
-				string tabPanelBackground = _isDarkMode ? _myCustomTheme.PaletteDark.AppbarBackground.Value : _myCustomTheme.PaletteLight.AppbarBackground.Value;
-				<MudTabPanel Text="@(section.Title)" Icon="@(section.Icon)" Style="@($"background: {tabPanelBackground}")" />
+				<MudTabPanel Text="@(section.Title)" Icon="@(section.Icon)" />
 			}
 		</MudTabs>
 		<MudSpacer />
 		<AuthOnAppBar />
-		<MudIconButton Icon="@_themeIcon" Color="Color.Inherit" OnClick="@CycleTheme" title="@_themeTitle" />
+		<MudIconButton Icon="@(ThemeState.IsDarkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)"
+					   title="@(ThemeState.IsDarkMode ? "Включить светлую тему" : "Включить тёмную тему")"
+					   Color="Color.Inherit"
+					   OnClick="ToggleThemeClick" />
 		<MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
 	</MudAppBar>
 	<MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
@@ -40,18 +39,62 @@
 </MudLayout>
 
 @code {
+	[Inject] public IEnumerable<IAppSection> Sections { get; set; } = default!;
+	[Inject] public IHttpContextAccessor HttpContextAccessor { get; set; } = default!;
+	[Inject] public IJSRuntime JS { get; set; } = default!;
+	[Inject] public NavigationManager Navigation { get; set; } = default!;
+	[Inject] public ThemeState ThemeState { get; set; } = default!;
+
 	private bool _drawerOpen = true;
-	private bool _isDarkMode = false;
 
 	private List<IAppSection> _sections = new();
 	private IAppSection? _currentSection;
 	private int _activeIndex;
 
-	private MudThemeProvider _mudThemeProvider = default!;
 
-	private int _themeMode = 0;
-	private string _themeIcon = Icons.Material.Filled.LightMode;
-	private string _themeTitle = "Светлая тема";
+	protected override void OnInitialized()
+	{
+		var theme = HttpContextAccessor.HttpContext?
+			.Request
+			.Cookies[AppSettings.Theme.CookieName];
+
+		ThemeState.SetTheme(theme);
+
+		_sections = Sections.ToList();
+		_currentSection = _sections.FirstOrDefault();
+		_activeIndex = 0;
+	}
+
+	void DrawerToggle()
+	{
+		_drawerOpen = !_drawerOpen;
+	}
+
+	private void SetSection(int index)
+	{
+		if (index < 0 || index >= _sections.Count)
+			return;
+
+		_activeIndex = index;
+		_currentSection = _sections[index];
+		_drawerOpen = true;
+	}
+
+	private Task ToggleThemeClick(MouseEventArgs _)
+	{
+		return ToggleTheme(!ThemeState.IsDarkMode);
+	}
+
+	private async Task ToggleTheme(bool isDark)
+	{
+		var theme = isDark ? AppSettings.Theme.Dark : AppSettings.Theme.Light;
+
+		ThemeState.SetTheme(theme);
+
+		await JS.InvokeVoidAsync("appHttp.post", $"/ui/theme/{theme}");
+
+		Navigation.Refresh();
+	}
 
 	private MudTheme _myCustomTheme = new MudTheme()
 	{
@@ -110,66 +153,4 @@
 			DefaultBorderRadius = "8px"
 		}
 	};
-
-	protected override async Task OnInitializedAsync()
-	{
-		_sections = Sections.ToList();
-		_currentSection = _sections.First();
-		_activeIndex = 0;
-	}
-
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender)
-		{
-			_themeMode = await LocalStorage.GetItemAsync<int>(nameof(_themeMode));
-			await ApplyThemeMode();
-			StateHasChanged();
-		}
-	}
-
-	void DrawerToggle()
-	{
-		_drawerOpen = !_drawerOpen;
-	}
-
-	private void SetSection(int index)
-	{
-		if (index < 0 || index >= _sections.Count)
-			return;
-
-		_activeIndex = index;
-		_currentSection = _sections[index];
-		_drawerOpen = true;
-	}
-
-	private async Task CycleTheme()
-	{
-		_themeMode = (_themeMode + 1) % 3;
-		await ApplyThemeMode();
-	}
-
-	private async Task ApplyThemeMode()
-	{
-		switch (_themeMode)
-		{
-			case 0: // Системная
-				_isDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
-				_themeIcon = Icons.Material.Filled.LightMode;
-				_themeTitle = "Светлая тема";
-				break;
-			case 1: // Светлая
-				_isDarkMode = false;
-				_themeIcon = Icons.Material.Filled.DarkMode;
-				_themeTitle = "Темная тема";
-				break;
-			case 2: // Темная
-				_isDarkMode = true;
-				_themeIcon = Icons.Material.Filled.SettingsBrightness;
-				_themeTitle = "Системная тема";
-				break;
-		}
-		
-		await LocalStorage.SetItemAsync(nameof(_themeMode), _themeMode);
-	}
 }

@@ -14,4 +14,10 @@ public static class AppSettings
         public const string Basic = "Basic";
         public const string Bearer = "Bearer";
     }
+    public static class Theme
+    {
+        public const string CookieName = "xms-theme";
+        public const string Light = "light";
+        public const string Dark = "dark";
+    }
 }

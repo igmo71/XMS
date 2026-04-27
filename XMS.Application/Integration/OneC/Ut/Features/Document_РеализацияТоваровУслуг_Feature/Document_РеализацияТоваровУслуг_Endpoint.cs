@@ -28,6 +28,11 @@ public static class Document_РеализацияТоваровУслуг_Endpoi
             .WithSummary($"Get{feature}_ByRefKey")
             .WithDescription($"Get {feature} By Ref_Key from DB");
 
+        apiGroup.MapGet("/by-barcode/{barcode}", GetDocument_РеализацияТоваровУслуг_ByBarcode)
+            .WithName($"Get{feature}_ByBarcode")
+            .WithSummary($"Get{feature}_ByBarcode")
+            .WithDescription($"Get {feature} By Barcode from DB");
+
 
         var extGroup = builder.MapGroup("/ext/1c/ut/document-реализация-товаров-услуг")
             .WithTags($"1C UT {feature}");
@@ -54,6 +59,16 @@ public static class Document_РеализацияТоваровУслуг_Endpoi
 
         return result is null ? TypedResults.NotFound() : TypedResults.Ok(result);
     }
+    private static async Task<Results<Ok<Document_РеализацияТоваровУслуг>, NotFound>> GetDocument_РеализацияТоваровУслуг_ByBarcode(
+        [FromServices] IDocument_РеализацияТоваровУслуг_Service documentService,
+        [FromRoute] string barcode,
+        CancellationToken ct = default)
+    {
+        var result = await documentService.GetByBarcodeAsync(barcode, ct);
+
+        return result is null ? TypedResults.NotFound() : TypedResults.Ok(result);
+    }
+
 
     private static async Task<Results<Ok<IReadOnlyList<Document_РеализацияТоваровУслуг>>, BadRequest>> GetDocument_РеализацияТоваровУслуг_ByDate(
         [FromServices] IDocument_РеализацияТоваровУслуг_Service documentService,
