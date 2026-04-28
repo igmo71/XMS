@@ -4,16 +4,16 @@
 	<MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Главная</MudNavLink>
 	<AuthorizeView Roles="Admin">
 		<MudNavGroup Title="XMS" Icon="@Icons.Material.Filled.Api" Expanded="false">
-			<MudNavLink Href="@(Environment.IsDevelopment() ? "http://localhost:5152/scalar/#tag/xms-employees" : "http://vm-xms-dev:8201/scalar/#tag/xms-employees")"
+			<MudNavLink Href="@(Environment.IsDevelopment() ? "http://vm-xms-dev:8203/scalar/#tag/xms-employees" : "http://vm-xms-dev:8201/scalar/#tag/xms-employees")"
 						Target="_blank" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Api">Employees</MudNavLink>
-			<MudNavLink Href="@(Environment.IsDevelopment() ? "http://localhost:5152/scalar/#tag/integration-1c-ut" : "http://vm-xms-dev:8201/scalar/#tag/integration-1c-ut")"
+			<MudNavLink Href="@(Environment.IsDevelopment() ? "http://vm-xms-dev:8203/scalar/#tag/integration-1c-ut" : "http://vm-xms-dev:8201/scalar/#tag/integration-1c-ut")"
 						Target="_blank" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Api">Integration 1C UT</MudNavLink>
-			<MudNavLink Href="@(Environment.IsDevelopment() ? "http://localhost:5152/scalar/#tag/xms-testbody" : "http://vm-xms-dev:8201/scalar/#tag/xms-testbody")"
+			<MudNavLink Href="@(Environment.IsDevelopment() ? "http://vm-xms-dev:8203/scalar/#tag/xms-testbody" : "http://vm-xms-dev:8201/scalar/#tag/xms-testbody")"
 						Target="_blank" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Api">TestBody</MudNavLink>
 		</MudNavGroup>
-		<MudNavLink Href="@(Environment.IsDevelopment() ? "http://localhost:5152/scalar/#tag/godoo" : "http://vm-xms-dev:8201/scalar/#tag/godoo")"
+		<MudNavLink Href="@(Environment.IsDevelopment() ? "http://vm-xms-dev:8203/scalar/#tag/godoo" : "http://vm-xms-dev:8201/scalar/#tag/godoo")"
 					Target="_blank" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Api">Godoo</MudNavLink>
-		<MudNavLink Href="@(Environment.IsDevelopment() ? "http://localhost:5152/scalar/#tag/yunu" : "http://vm-xms-dev:8201/scalar/#tag/yunu")"
+		<MudNavLink Href="@(Environment.IsDevelopment() ? "http://vm-xms-dev:8203/scalar/#tag/yunu" : "http://vm-xms-dev:8201/scalar/#tag/yunu")"
 					Target="_blank" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Api">Yunu</MudNavLink>
 	</AuthorizeView>
 	<AuthInNavMenu />
