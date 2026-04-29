@@ -25,6 +25,7 @@ public static class XmsHostApplicationBuilderExtensions
             .AddXmsPersistence()
             .AddXmsMessaging()
             .AddXmsApplicationServices()
+            .AddXmsIntegrationServices()
             .AddXmsModules();
 
         return builder;
@@ -92,8 +93,14 @@ public static class XmsHostApplicationBuilderExtensions
 
     public static WebApplicationBuilder AddXmsApplicationServices(this WebApplicationBuilder builder)
     {
-        builder.Services.AddIntegrationServices(builder.Configuration);
         builder.Services.AddApplicationServices();
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddXmsIntegrationServices(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddIntegrationServices(builder.Configuration);
 
         return builder;
     }
