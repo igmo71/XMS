@@ -1,6 +1,6 @@
 using Scalar.AspNetCore;
 using XMS.Application;
-using XMS.Infrastructure.Hosting;
+using XMS.Hosting;
 using XMS.Modules;
 
 namespace XMS.Api;
