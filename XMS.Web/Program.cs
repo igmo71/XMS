@@ -5,15 +5,11 @@ using MudBlazor.Services;
 using MudBlazor.Translations;
 using Serilog;
 using System.Globalization;
-using XMS.Application;
-using XMS.Application.Abstractions.EventBus;
 using XMS.Application.Abstractions.Services;
-using XMS.Application.EventBus;
 using XMS.Application.Services;
 using XMS.Domain.Models;
-using XMS.Infrastructure;
 using XMS.Infrastructure.Data;
-using XMS.Modules;
+using XMS.Infrastructure.Hosting;
 using XMS.Web.Components;
 using XMS.Web.Components.Account;
 using XMS.Web.Components.Layout;
@@ -32,12 +28,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         Console.WriteLine($"XMS.Web Environment: {builder.Environment.EnvironmentName}");
 
-        builder.Host.UseSerilog((context, services, configuration) =>
-        {
-            configuration
-                .ReadFrom.Configuration(context.Configuration)
-                .ReadFrom.Services(services);
-        });
+        builder.AddXmsHostDefaults("XMS.Web");
 
         // Add services to the container.
 
@@ -91,15 +82,6 @@ public class Program
         });
 
         builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-
-        builder.Services.AddSingleton<IEventNamingService, EventNamingService>();
-        builder.Services.AddAppEventBus();
-        builder.Services.AddRabbitMqEventConnectionFactory(builder.Configuration);
-        builder.Services.AddIntegrationEventPublisher(builder.Configuration);
-        builder.Services.AddAppPersistenceInfrastructure(builder.Configuration);
-        builder.Services.AddIntegrationServices(builder.Configuration);
-        builder.Services.AddApplicationServices();
-        builder.Services.AddApplicationModules(builder.Configuration);
 
         builder.Services.AddScoped<IWebUserAccessor, WebUserAccessor>();
 
