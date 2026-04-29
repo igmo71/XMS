@@ -15,6 +15,7 @@ WORKDIR /src
 COPY ["XMS.Api/XMS.Api.csproj", "XMS.Api/"]
 COPY ["XMS.Application/XMS.Application.csproj", "XMS.Application/"]
 COPY ["XMS.Domain/XMS.Domain.csproj", "XMS.Domain/"]
+COPY ["XMS.Hosting/XMS.Hosting.csproj", "XMS.Hosting/"]
 COPY ["XMS.Infrastructure/XMS.Infrastructure.csproj", "XMS.Infrastructure/"]
 COPY ["XMS.Modules/XMS.Modules.csproj", "XMS.Modules/"]
 RUN dotnet restore "./XMS.Api/XMS.Api.csproj"

@@ -1,94 +1,153 @@
-# XMS Coding Rules for AI Agents
+# XMS Coding Rules (Strict)
 
-## General Rules
+## 1. General
 
-- Keep code explicit and readable.
-- Avoid unnecessary abstractions.
-- Avoid third-party libraries unless explicitly approved.
-- Do not introduce MediatR.
-- Do not introduce AutoMapper.
-- Prefer native .NET / ASP.NET Core / EF Core capabilities.
-- Keep behavior backward-compatible unless the task explicitly requires a breaking change.
+* Prefer explicit over implicit
+* No hidden magic
+* Minimal changes per task
+* Preserve existing behavior unless stated
 
-## Dependency Direction
+---
 
-Allowed direction:
+## 2. Forbidden Libraries
 
-Api/Web -> Application -> Domain
-Api/Web -> Infrastructure
-Infrastructure -> Application abstractions / Domain
-Modules -> Application / Domain / Infrastructure where currently required
+* MediatR ❌
+* AutoMapper ❌
+* Heavy frameworks without approval ❌
 
-Avoid:
-- Domain depending on Infrastructure
-- Domain depending on ASP.NET Core
-- Application depending directly on Web UI
-- Shared infrastructure becoming a dumping ground
+---
 
-## Startup / Hosting Rules
+## 3. Dependency Injection
 
-Shared startup configuration should be placed in hosting extensions when it is common to multiple applications.
+### Allowed
 
-Good examples:
-- Serilog setup
-- OpenTelemetry setup
-- EF Core persistence registration
-- RabbitMQ connection factory
-- Application services registration
-- Module registration
+* Explicit registrations
+* Clear lifetimes
 
-Do not move app-specific configuration into shared extensions.
+### Forbidden
 
-Keep in Program.cs:
-- Blazor / UI setup
-- Identity setup
-- OpenAPI / Scalar setup
-- Endpoint mapping
-- Middleware pipeline ordering when app-specific
+* Capturing scoped services in singleton ❌
+* Multiple registrations of same service (unless intentional) ❌
+* Hidden side effects in extension methods ❌
 
-Important:
-- Integration event consumers must not be registered in XMS.Web by default.
-- Consumers should be registered explicitly only in the process that is intended to consume messages.
+---
 
-## Naming
+## 4. Hosting / Startup
 
-Prefer names that describe intent, not implementation details.
+### Allowed in Hosting
 
-Examples:
-- AddXmsHostDefaults
-- AddXmsIntegrationConsumers
-- MapModulesEndpoints
-- AddApplicationModules
+* Serilog
+* OpenTelemetry
+* EF registration
+* RabbitMQ wiring
+* Application/Modules registration
 
-Avoid names like:
-- AddEverything
-- ConfigureAll
-- CommonStuff
-- Utils
+### Forbidden
 
-## EF Core
+* UI config (MudBlazor, Identity) ❌
+* Endpoint mapping ❌
+* Middleware ordering ❌
 
-- Prefer explicit configurations.
-- Be careful with tracking behavior.
-- Use DbContextFactory where the project already uses it.
-- Do not silently change persistence behavior.
-- Avoid enabling sensitive logging in production-specific code.
+---
 
-## Events / Integration
+## 5. Infrastructure
 
-Distinguish:
-- Domain events: internal business events
-- Integration events: cross-boundary / external messages
+### Allowed
 
-RabbitMQ consumers should be registered intentionally.
-Do not start duplicate consumers in multiple host applications unless the task explicitly requires scale-out behavior.
+* EF Core
+* RabbitMQ
+* External integrations
 
-## AI Agent Behavior
+### Forbidden
 
-Before changing code:
-1. Read relevant files.
-2. Preserve existing style.
-3. Make minimal necessary changes.
-4. Explain changed files.
-5. Mention risks or assumptions.
-6. Ensure code compiles logically.
+* WebApplicationBuilder usage ❌
+* ASP.NET Core pipeline ❌
+* Business logic ❌
+
+---
+
+## 6. Application Layer
+
+### Allowed
+
+* Use cases
+* Coordination logic
+* Abstractions
+
+### Forbidden
+
+* Direct DB access (через Infrastructure только) ❌
+* ASP.NET dependencies ❌
+
+---
+
+## 7. Domain Layer
+
+### Allowed
+
+* Entities
+* Value Objects
+* Domain rules
+
+### Forbidden
+
+* EF attributes (по возможности) ❌
+* External dependencies ❌
+* Logging ❌
+
+---
+
+## 8. Events
+
+### Rules
+
+* Domain events ≠ Integration events
+* Не смешивать
+
+### Forbidden
+
+* Publishing integration events из Domain ❌
+
+---
+
+## 9. Naming
+
+Good:
+
+* AddXmsHostDefaults
+* AddXmsIntegrationConsumers
+
+Bad:
+
+* AddEverything ❌
+* ConfigureAll ❌
+* Utils ❌
+
+---
+
+## 10. Anti-patterns (critical)
+
+* God-extension methods ❌
+* "Magic" auto-discovery without control ❌
+* Cross-module coupling ❌
+* Silent behavior changes ❌
+* Copy-paste DI ❌
+
+---
+
+## 11. AI Agent Rules
+
+Before coding:
+
+1. Read relevant files
+2. Follow existing style
+3. Make minimal change
+4. Explain changes
+5. Highlight risks
+
+Output must include:
+
+* Changed files
+* Reasoning
+* Risks
+* Assumptions

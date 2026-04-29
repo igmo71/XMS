@@ -1,70 +1,120 @@
-# XMS Architecture Context
+# XMS Architecture (Formal)
 
-XMS is a .NET 10 enterprise system.
+## 1. System Style
 
-Current architecture style:
-- Modular Monolith
-- DDD-oriented design
-- Clean Architecture principles
-- Vertical Slices where appropriate
-- Minimal API for backend endpoints
-- Blazor Server + MudBlazor for Web UI
-- No MediatR; use custom application patterns instead
+* Modular Monolith
+* DDD-oriented
+* Clean Architecture
+* Vertical Slices (без MediatR; собственный dispatcher/pipeline)
 
-## Projects
+## 2. Top-level Components
 
-- XMS.Api
-  - Backend HTTP API
-  - Minimal API endpoints
-  - OpenAPI / Scalar
-  - Integration endpoints
+* **XMS.Api** — HTTP API (Minimal API), integration endpoints
+* **XMS.Web** — Blazor Server UI (MudBlazor, Identity)
+* **XMS.Hosting** — composition root (startup, wiring, observability)
+* **XMS.Application** — use cases, application services, abstractions
+* **XMS.Domain** — domain model, invariants, domain events
+* **XMS.Infrastructure** — EF Core, RabbitMQ, external integrations
+* **XMS.Modules** — функциональные модули (feature boundaries)
 
-- XMS.Web
-  - Blazor Server UI
-  - MudBlazor
-  - ASP.NET Core Identity
-  - Should not run background integration consumers unless explicitly required
+---
 
-- XMS.Application
-  - Application services
-  - Use cases
-  - Interfaces / abstractions
-  - Event bus abstractions
+## 3. Dependency Rules (Allowed)
 
-- XMS.Domain
-  - Domain entities
-  - Value objects
-  - Domain rules
-  - Domain events
+```
+Api/Web -> Hosting
+Hosting -> Application
+Hosting -> Infrastructure
+Hosting -> Modules
 
-- XMS.Infrastructure
-  - EF Core
-  - SQL Server persistence
-  - RabbitMQ
-  - Serilog
-  - OpenTelemetry
-  - Seq integration
-  - External service implementations
+Application -> Domain
+Infrastructure -> Application (abstractions) + Domain
 
-- XMS.Modules
-  - Functional modules
-  - Module endpoint registration
-  - Module-specific application logic
+Modules -> Application + Domain (+ Infrastructure, если необходимо)
+```
 
-## Architectural Direction
+## 4. Forbidden Dependencies
 
-XMS should evolve toward a clean modular monolith where each functional area has clear boundaries.
+* Domain -> Infrastructure ❌
+* Domain -> ASP.NET Core ❌
+* Application -> Web/UI ❌
+* Infrastructure -> Web/UI ❌
+* Infrastructure -> Hosting ❌
 
-Potential future domain areas:
-- Warehouse topology
-- Receiving / inbound
-- Storage
-- Inventory
-- Putaway
-- Picking
-- Shipping
-- Cost allocation
-- 1C integration
-- Analytics
+---
 
-Important: LPN and UoM are planned domain concepts but are not implemented in this version yet.
+## 5. Composition Root
+
+**Only in XMS.Hosting:**
+
+* Serilog configuration
+* OpenTelemetry configuration
+* DI wiring (Application, Infrastructure, Modules)
+* RabbitMQ publisher/consumers registration (осознанно)
+
+**Program.cs (Api/Web):**
+
+* минимальный bootstrap
+* middleware pipeline
+* endpoint mapping
+* UI/Identity (только Web)
+
+---
+
+## 6. Modules (Bounded Contexts)
+
+Each module:
+
+* имеет свои endpoints (через `MapModulesEndpoints`)
+* использует Application слой
+* не шарит внутренние детали других модулей
+
+Примеры будущих модулей:
+
+* Receiving
+* Storage
+* Inventory
+* Picking
+* Shipping
+* Cost Allocation
+* Integration (1C)
+
+---
+
+## 7. Events
+
+* **Domain Events** — внутри Domain/Application
+* **Integration Events** — через RabbitMQ
+
+Consumers:
+
+* регистрируются ТОЛЬКО там, где это осознанно нужно (обычно Api/worker)
+* НЕ в Web по умолчанию
+
+---
+
+## 8. Observability
+
+* Конфигурация — в Hosting
+* Infrastructure содержит только low-level integration (если требуется)
+
+---
+
+## 9. Future Domain Concepts
+
+(пока не реализованы, но зарезервированы)
+
+* LPN (License Plate)
+* UoM (Units of Measure)
+* Inventory model
+* Slotting / routing
+
+---
+
+## 10. Design Principles
+
+* Явные зависимости
+* Минимум магии
+* Читаемый startup
+* Изоляция слоёв
+* Расширяемость без рефакторинга ядра
