@@ -18,26 +18,9 @@ public static class XmsHostApplicationBuilderExtensions
 {
     public static WebApplicationBuilder AddXmsHostDefaults(this WebApplicationBuilder builder, string serviceName)
     {
-        builder.Host.UseSerilog((context, services, configuration) =>
-        {
-            configuration
-                .ReadFrom.Configuration(context.Configuration)
-                .ReadFrom.Services(services);
-        });
-
-        builder.Services.AddAppPersistenceInfrastructure(builder.Configuration);
-
-        builder.Services.AddSingleton<IEventNamingService, EventNamingService>();
-        builder.Services.AddRabbitMqEventConnectionFactory(builder.Configuration);
-        builder.Services.AddIntegrationEventPublisher(builder.Configuration);
-
-        builder.Services.AddAppEventBus();
-
-        builder.Services.AddIntegrationServices(builder.Configuration);
-        builder.Services.AddApplicationServices();
-        builder.Services.AddApplicationModules(builder.Configuration);
-
-        builder.Services.AddAppOpenTelemetry(builder.Configuration, serviceName);
+        AddLogging(builder);
+        AddApplicationComposition(builder);
+        AddOpenTelemetry(builder, serviceName);
 
         return builder;
     }
@@ -55,10 +38,34 @@ public static class XmsHostApplicationBuilderExtensions
         return builder;
     }
 
-    private static IServiceCollection AddAppOpenTelemetry(this IServiceCollection services, IConfiguration configuration, string serviceName)
+    private static void AddLogging(WebApplicationBuilder builder)
     {
+        builder.Host.UseSerilog((context, services, configuration) =>
+        {
+            configuration
+                .ReadFrom.Configuration(context.Configuration)
+                .ReadFrom.Services(services);
+        });
+    }
 
-        services.AddOpenTelemetry()
+    private static void AddApplicationComposition(WebApplicationBuilder builder)
+    {
+        builder.Services.AddAppPersistenceInfrastructure(builder.Configuration);
+
+        builder.Services.AddSingleton<IEventNamingService, EventNamingService>();
+        builder.Services.AddRabbitMqEventConnectionFactory(builder.Configuration);
+        builder.Services.AddIntegrationEventPublisher(builder.Configuration);
+
+        builder.Services.AddAppEventBus();
+
+        builder.Services.AddIntegrationServices(builder.Configuration);
+        builder.Services.AddApplicationServices();
+        builder.Services.AddApplicationModules(builder.Configuration);
+    }
+
+    private static void AddOpenTelemetry(WebApplicationBuilder builder, string serviceName)
+    {
+        builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource =>
             {
                 resource.AddService(serviceName);
@@ -77,13 +84,11 @@ public static class XmsHostApplicationBuilderExtensions
                 .AddOtlpExporter(options =>
                 {
                     // http://vm-xms-dev:5341/ingest/otlp/v1/traces
-                    var seqServerUri = ResolveSeqServerUri(configuration);
+                    var seqServerUri = ResolveSeqServerUri(builder.Configuration);
                     options.Endpoint = new Uri(seqServerUri, "/ingest/otlp/v1/traces");
 
                     options.Protocol = OtlpExportProtocol.HttpProtobuf;
                 }));
-
-        return services;
     }
 
     private static Uri ResolveSeqServerUri(IConfiguration configuration)

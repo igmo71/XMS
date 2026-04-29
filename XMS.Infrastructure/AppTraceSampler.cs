@@ -1,6 +1,6 @@
 using OpenTelemetry.Trace;
 
-namespace XMS.Hosting;
+namespace XMS.Infrastructure;
 
 public class AppTraceSampler : Sampler
 {
