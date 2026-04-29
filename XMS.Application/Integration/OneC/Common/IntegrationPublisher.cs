@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using XMS.Application.Abstractions.Integration.OneC;
+using XMS.Integrations.OneC;
 using XMS.Application.Abstractions.Integration.OneC.Events;
 
-namespace XMS.Application.Integration.OneC.Common;
+namespace XMS.Integrations.OneC.Common;
 
 internal static class CatalogPublisher
 {

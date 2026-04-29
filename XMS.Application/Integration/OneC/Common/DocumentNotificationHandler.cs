@@ -1,14 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using XMS.Application.Abstractions.Data;
 using XMS.Application.Abstractions.EventBus;
-using XMS.Application.Abstractions.Integration.OneC;
+using XMS.Integrations.OneC;
 using XMS.Application.Abstractions.Integration.OneC.Events;
 using XMS.Application.Common;
-using XMS.Application.Integration.OneC.Ut.ODataClient;
+using XMS.Integrations.OneC.Ut.ODataClient;
 
-namespace XMS.Application.Integration.OneC.Common;
+namespace XMS.Integrations.OneC.Common;
 
 internal abstract class DocumentNotificationHandler<TEntity>(
     UtClient utClient,

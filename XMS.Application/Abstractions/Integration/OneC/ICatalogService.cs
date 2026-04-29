@@ -1,7 +1,7 @@
 using XMS.Application.Common;
-using XMS.Application.Integration.OneC.Common;
+using XMS.Integrations.OneC.Common;
 
-namespace XMS.Application.Abstractions.Integration.OneC;
+namespace XMS.Integrations.OneC;
 
 public interface ICatalogService<TEntity> where TEntity : Catalog
 {

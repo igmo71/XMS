@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Logging;
 using XMS.Application.Abstractions.Data;
-using XMS.Application.Abstractions.Integration.OneC.Ut;
-using XMS.Application.Integration.OneC.Common;
-using XMS.Application.Integration.OneC.Ut.ODataClient;
+using XMS.Integrations.OneC.Ut;
+using XMS.Integrations.OneC.Common;
+using XMS.Integrations.OneC.Ut.ODataClient;
 
 
-namespace XMS.Application.Integration.OneC.Ut.Features.Catalog_Контрагенты_Feature;
+namespace XMS.Integrations.OneC.Ut.Features.Catalog_Контрагенты_Feature;
 
 internal class Catalog_Контрагенты_Service(
     UtClient utClient,

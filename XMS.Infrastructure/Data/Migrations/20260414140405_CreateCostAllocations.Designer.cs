@@ -533,7 +533,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("UsersUt", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Catalog_КонтактныеЛицаПартнеров_Feature.Catalog_КонтактныеЛицаПартнеров", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Catalog_КонтактныеЛицаПартнеров_Feature.Catalog_КонтактныеЛицаПартнеров", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()
@@ -558,7 +558,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Catalog_КонтактныеЛицаПартнеров", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Catalog_Контрагенты_Feature.Catalog_Контрагенты", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Catalog_Контрагенты_Feature.Catalog_Контрагенты", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()
@@ -583,7 +583,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Catalog_Контрагенты", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Catalog_Номенклатура_Feature.Catalog_Номенклатура", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Catalog_Номенклатура_Feature.Catalog_Номенклатура", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()
@@ -615,7 +615,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Catalog_Номенклатура", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature.Catalog_Партнеры", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Catalog_Партнеры_Feature.Catalog_Партнеры", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()
@@ -672,7 +672,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Catalog_Партнеры", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Catalog_Пользователи_Feature.Catalog_Пользователи", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Catalog_Пользователи_Feature.Catalog_Пользователи", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()
@@ -694,7 +694,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Catalog_Пользователи", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature.Catalog_СтатьиДвиженияДенежныхСредств", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature.Catalog_СтатьиДвиженияДенежныхСредств", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()
@@ -726,7 +726,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Catalog_СтатьиДвиженияДенежныхСредств", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Document_ЗаказКлиента_Feature.Document_ЗаказКлиента", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Document_ЗаказКлиента_Feature.Document_ЗаказКлиента", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()
@@ -768,7 +768,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Document_ЗаказКлиента", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature.Document_РасходныйКассовыйОрдер", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature.Document_РасходныйКассовыйОрдер", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()
@@ -879,7 +879,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Document_РасходныйКассовыйОрдер", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature.Document_РасходныйКассовыйОрдер_РасшифровкаПлатежа", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature.Document_РасходныйКассовыйОрдер_РасшифровкаПлатежа", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .HasColumnType("uniqueidentifier");
@@ -946,7 +946,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Document_РасходныйКассовыйОрдер_РасшифровкаПлатежа", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Document_РеализацияТоваровУслуг_Feature.Document_РеализацияТоваровУслуг", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Document_РеализацияТоваровУслуг_Feature.Document_РеализацияТоваровУслуг", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()
@@ -988,7 +988,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Document_РеализацияТоваровУслуг", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()
@@ -1087,7 +1087,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Document_СписаниеБезналичныхДенежныхСредств", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .HasColumnType("uniqueidentifier");
@@ -1490,18 +1490,18 @@ namespace XMS.Web.Migrations
                     b.Navigation("Manager");
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature.Document_РасходныйКассовыйОрдер_РасшифровкаПлатежа", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature.Document_РасходныйКассовыйОрдер_РасшифровкаПлатежа", b =>
                 {
-                    b.HasOne("XMS.Application.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature.Document_РасходныйКассовыйОрдер", null)
+                    b.HasOne("XMS.Integrations.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature.Document_РасходныйКассовыйОрдер", null)
                         .WithMany("РасшифровкаПлатежа")
                         .HasForeignKey("Ref_Key")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств_РасшифровкаПлатежа", b =>
                 {
-                    b.HasOne("XMS.Application.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств", null)
+                    b.HasOne("XMS.Integrations.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств", null)
                         .WithMany("РасшифровкаПлатежа")
                         .HasForeignKey("Ref_Key")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1618,12 +1618,12 @@ namespace XMS.Web.Migrations
                     b.Navigation("Children");
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature.Document_РасходныйКассовыйОрдер", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature.Document_РасходныйКассовыйОрдер", b =>
                 {
                     b.Navigation("РасшифровкаПлатежа");
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature.Document_СписаниеБезналичныхДенежныхСредств", b =>
                 {
                     b.Navigation("РасшифровкаПлатежа");
                 });

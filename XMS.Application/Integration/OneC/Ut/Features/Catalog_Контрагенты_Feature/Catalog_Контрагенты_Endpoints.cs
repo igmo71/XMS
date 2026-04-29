@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using XMS.Application.Abstractions.Integration.OneC.Ut;
+using XMS.Integrations.OneC.Ut;
 using XMS.Application.Common;
-using XMS.Application.Integration.OneC.Common;
+using XMS.Integrations.OneC.Common;
 
-namespace XMS.Application.Integration.OneC.Ut.Features.Catalog_Контрагенты_Feature;
+namespace XMS.Integrations.OneC.Ut.Features.Catalog_Контрагенты_Feature;
 
 public static class Catalog_Контрагенты_Endpoints
 {

@@ -1,6 +1,6 @@
-﻿using XMS.Application.Integration.OneC.Common;
+using XMS.Integrations.OneC.Common;
 
-namespace XMS.Application.Integration.OneC.Buh.ODataClient;
+namespace XMS.Integrations.OneC.Buh.ODataClient;
 
 internal class BuhClientConfig : ODataClientConfig
 { }

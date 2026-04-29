@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using XMS.Application.Abstractions.Data;
 using XMS.Application.Abstractions.EventBus;
 using XMS.Application.Abstractions.Integration;
 using XMS.Application.Common;
-using XMS.Application.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
+using XMS.Integrations.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
 using XMS.Modules.CostModule.Domain;
 
 namespace XMS.Modules.CostModule.Integration;

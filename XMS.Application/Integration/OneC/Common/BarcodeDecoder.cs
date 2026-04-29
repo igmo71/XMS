@@ -1,7 +1,7 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Numerics;
 
-namespace XMS.Application.Integration.OneC.Common;
+namespace XMS.Integrations.OneC.Common;
 
 internal class BarcodeDecoder
 {

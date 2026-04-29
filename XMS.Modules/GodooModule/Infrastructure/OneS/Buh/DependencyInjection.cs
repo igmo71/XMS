@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
-using XMS.Application.Integration.OneC.Common;
+using XMS.Integrations.OneC.Common;
 using XMS.Modules.GodooModule.Abstractions;
 
 namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh;

@@ -1,10 +1,10 @@
 using Microsoft.Extensions.Logging;
 using XMS.Application.Abstractions.Data;
-using XMS.Application.Abstractions.Integration.OneC.Ut;
-using XMS.Application.Integration.OneC.Common;
-using XMS.Application.Integration.OneC.Ut.ODataClient;
+using XMS.Integrations.OneC.Ut;
+using XMS.Integrations.OneC.Common;
+using XMS.Integrations.OneC.Ut.ODataClient;
 
-namespace XMS.Application.Integration.OneC.Ut.Features.Document_ЗаказКлиента_Feature;
+namespace XMS.Integrations.OneC.Ut.Features.Document_ЗаказКлиента_Feature;
 
 internal class Document_ЗаказКлиента_Service(
     UtClient utClient,

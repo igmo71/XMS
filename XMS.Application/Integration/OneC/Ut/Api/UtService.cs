@@ -1,16 +1,16 @@
-﻿using XMS.Application.Abstractions.Integration;
-using XMS.Application.Abstractions.Integration.OneC.Ut;
+using XMS.Application.Abstractions.Integration;
+using XMS.Integrations.OneC.Ut;
 using XMS.Application.Common;
-using XMS.Application.Integration.OneC.Common;
-using XMS.Application.Integration.OneC.Ut.Features.AccumulationRegister_ТоварыНаСкладах_Balance_Feature;
-using XMS.Application.Integration.OneC.Ut.Features.Catalog_Пользователи_Feature;
-using XMS.Application.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
-using XMS.Application.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
-using XMS.Application.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
-using XMS.Application.Integration.OneC.Ut.ODataClient;
+using XMS.Integrations.OneC.Common;
+using XMS.Integrations.OneC.Ut.Features.AccumulationRegister_ТоварыНаСкладах_Balance_Feature;
+using XMS.Integrations.OneC.Ut.Features.Catalog_Пользователи_Feature;
+using XMS.Integrations.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
+using XMS.Integrations.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
+using XMS.Integrations.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
+using XMS.Integrations.OneC.Ut.ODataClient;
 using XMS.Domain.Models;
 
-namespace XMS.Application.Integration.OneC.Ut.Api;
+namespace XMS.Integrations.OneC.Ut.Api;
 
 internal class UtService(
     UtClient utClient,

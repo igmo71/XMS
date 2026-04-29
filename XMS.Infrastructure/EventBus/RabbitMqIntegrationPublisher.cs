@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using System.Text.Json;
 using XMS.Application.Abstractions.EventBus;
-using XMS.Application.Abstractions.Integration.OneC;
+using XMS.Integrations.OneC;
 using XMS.Application.Abstractions.Integration.OneC.Events;
 
 namespace XMS.Infrastructure.EventBus;

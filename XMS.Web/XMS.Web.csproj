@@ -20,6 +20,7 @@
 		<ProjectReference Include="..\XMS.Application\XMS.Application.csproj" />
 		<ProjectReference Include="..\XMS.Hosting\XMS.Hosting.csproj" />
 		<ProjectReference Include="..\XMS.Infrastructure\XMS.Infrastructure.csproj" />
+		<ProjectReference Include="..\XMS.Integrations\XMS.Integrations.csproj" />
 		<ProjectReference Include="..\XMS.Modules\XMS.Modules.csproj" />
 	</ItemGroup>
 

@@ -533,7 +533,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("UsersUt", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Catalog_КонтактныеЛицаПартнеров_Feature.Catalog_КонтактныеЛицаПартнеров", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Catalog_КонтактныеЛицаПартнеров_Feature.Catalog_КонтактныеЛицаПартнеров", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()
@@ -558,7 +558,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Catalog_КонтактныеЛицаПартнеров", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Catalog_Контрагенты_Feature.Catalog_Контрагенты", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Catalog_Контрагенты_Feature.Catalog_Контрагенты", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()
@@ -583,7 +583,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Catalog_Контрагенты", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Catalog_Номенклатура_Feature.Catalog_Номенклатура", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Catalog_Номенклатура_Feature.Catalog_Номенклатура", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()
@@ -615,7 +615,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Catalog_Номенклатура", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Catalog_Партнеры_Feature.Catalog_Партнеры", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Catalog_Партнеры_Feature.Catalog_Партнеры", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()
@@ -672,7 +672,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("1c_ut_Catalog_Партнеры", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature.Catalog_СтатьиДвиженияДенежныхСредств", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature.Catalog_СтатьиДвиженияДенежныхСредств", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()

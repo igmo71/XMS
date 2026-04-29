@@ -2,10 +2,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using XMS.Application.Abstractions.Data;
 using XMS.Application.Abstractions.EventBus;
-using XMS.Application.Integration.OneC.Common;
-using XMS.Application.Integration.OneC.Ut.ODataClient;
+using XMS.Integrations.OneC.Common;
+using XMS.Integrations.OneC.Ut.ODataClient;
 
-namespace XMS.Application.Integration.OneC.Ut.Features.Document_РеализацияТоваровУслуг_Feature;
+namespace XMS.Integrations.OneC.Ut.Features.Document_РеализацияТоваровУслуг_Feature;
 
 internal class Document_РеализацияТоваровУслуг_NotificationHandler(
     UtClient utClient,

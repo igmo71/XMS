@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using XMS.Application.Integration.OneC.Common;
+using Microsoft.Extensions.Logging;
+using XMS.Integrations.OneC.Common;
 using XMS.Modules.GodooModule.Abstractions;
 using XMS.Modules.GodooModule.Application;
 using XMS.Modules.GodooModule.Application.Mapping;

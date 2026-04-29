@@ -1,10 +1,10 @@
 using XMS.Application.Abstractions.Integration;
-using XMS.Application.Integration.OneC.Common;
-using XMS.Application.Integration.OneC.Zup.Models;
-using XMS.Application.Integration.OneC.Zup.ODataClient;
+using XMS.Integrations.OneC.Common;
+using XMS.Integrations.OneC.Zup.Models;
+using XMS.Integrations.OneC.Zup.ODataClient;
 using XMS.Domain.Models;
 
-namespace XMS.Application.Integration.OneC.Zup.Api;
+namespace XMS.Integrations.OneC.Zup.Api;
 
 internal class ZupService(ZupClient client) : IOneCZupService
 {

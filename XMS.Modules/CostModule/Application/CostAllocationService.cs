@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using XMS.Application.Abstractions.Data;
 using XMS.Application.Abstractions.Integration;
-using XMS.Application.Integration.OneC.Common;
-using XMS.Application.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
-using XMS.Application.Integration.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
+using XMS.Integrations.OneC.Common;
+using XMS.Integrations.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
+using XMS.Integrations.OneC.Ut.Features.Document_СписаниеБезналичныхДенежныхСредств_Feature;
 using XMS.Modules.CostModule.Abstractions;
 using XMS.Modules.CostModule.Domain;
 

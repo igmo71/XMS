@@ -1,6 +1,6 @@
-﻿using XMS.Application.Abstractions.Integration.OneC;
+using XMS.Integrations.OneC;
 
-namespace XMS.Application.Integration.OneC.Common;
+namespace XMS.Integrations.OneC.Common;
 
 public class IntegrationHelper
 {

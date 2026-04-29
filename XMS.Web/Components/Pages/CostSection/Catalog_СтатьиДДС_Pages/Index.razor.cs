@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using MudBlazor;
 using XMS.Application.Abstractions.Integration;
-using XMS.Application.Integration.OneC.Common;
-using XMS.Application.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
+using XMS.Integrations.OneC.Common;
+using XMS.Integrations.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
 using XMS.Web.Components.Common;
 
 namespace XMS.Web.Components.Pages.CostSection.Catalog_СтатьиДДС_Pages;

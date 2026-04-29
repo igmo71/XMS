@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using XMS.Application.Integration.OneC.Common;
+using XMS.Integrations.OneC.Common;
 
 namespace XMS.Modules.GodooModule.Infrastructure.OneS.Buh;
 

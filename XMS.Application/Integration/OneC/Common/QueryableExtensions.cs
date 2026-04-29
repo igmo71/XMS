@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using XMS.Application.Abstractions.Integration.OneC;
+using Microsoft.EntityFrameworkCore;
+using XMS.Integrations.OneC;
 
-namespace XMS.Application.Integration.OneC.Common;
+namespace XMS.Integrations.OneC.Common;
 
 public static class QueryableExtensions
 {

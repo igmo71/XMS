@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using XMS.Application.Integration.OneC.Common;
+using XMS.Integrations.OneC.Common;
 
-namespace XMS.Application.Integration.OneC.Ut.ODataClient;
+namespace XMS.Integrations.OneC.Ut.ODataClient;
 
 internal class UtClient(HttpClient httpClient, IOptions<UtClientConfig> options, ILogger<UtClient> logger)
     : ODataClient<UtClientConfig>(httpClient, options, logger)

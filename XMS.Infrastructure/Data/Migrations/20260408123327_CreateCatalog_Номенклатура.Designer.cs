@@ -533,7 +533,7 @@ namespace XMS.Web.Migrations
                     b.ToTable("UsersUt", (string)null);
                 });
 
-            modelBuilder.Entity("XMS.Application.Integration.OneC.Ut.Features.Catalog_Номенклатура_Feature.Catalog_Номенклатура", b =>
+            modelBuilder.Entity("XMS.Integrations.OneC.Ut.Features.Catalog_Номенклатура_Feature.Catalog_Номенклатура", b =>
                 {
                     b.Property<Guid>("Ref_Key")
                         .ValueGeneratedOnAdd()
