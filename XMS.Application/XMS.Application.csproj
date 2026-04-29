@@ -15,6 +15,32 @@
     <ProjectReference Include="..\XMS.Domain\XMS.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\XMS.Integrations\Abstractions\Integration\OneC\Catalog.cs" Link="Abstractions\Integration\OneC\Catalog.cs" />
+    <Compile Include="..\XMS.Integrations\Abstractions\Integration\OneC\Document.cs" Link="Abstractions\Integration\OneC\Document.cs" />
+    <Compile Include="..\XMS.Integrations\Abstractions\Integration\OneC\IOdataEntity.cs" Link="Abstractions\Integration\OneC\IOdataEntity.cs" />
+    <Compile Include="..\XMS.Integrations\Abstractions\Integration\OneC\ISelectable.cs" Link="Abstractions\Integration\OneC\ISelectable.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Common\RootObject.cs" Link="Integration\OneC\Common\RootObject.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Common\QueryParameters.cs" Link="Integration\OneC\Common\QueryParameters.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Common\OneCError.cs" Link="Integration\OneC\Common\OneCError.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Common\OneCSettings.cs" Link="Integration\OneC\Common\OneCSettings.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Common\ODataClientConfig.cs" Link="Integration\OneC\Common\ODataClientConfig.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Buh\Models\Catalog_Сотрудники.cs" Link="Integration\OneC\Buh\Models\Catalog_Сотрудники.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Zup\Models\Catalog_Сотрудники.cs" Link="Integration\OneC\Zup\Models\Catalog_Сотрудники.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Ut\Features\AccumulationRegister_ТоварыНаСкладах_Balance_Feature\AccumulationRegister_ТоварыНаСкладах_Balance.cs" Link="Integration\OneC\Ut\Features\AccumulationRegister_ТоварыНаСкладах_Balance_Feature\AccumulationRegister_ТоварыНаСкладах_Balance.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Ut\Features\Catalog_КонтактныеЛицаПартнеров_Feature\Catalog_КонтактныеЛицаПартнеров.cs" Link="Integration\OneC\Ut\Features\Catalog_КонтактныеЛицаПартнеров_Feature\Catalog_КонтактныеЛицаПартнеров.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Ut\Features\Catalog_Контрагенты_Feature\Catalog_Контрагенты.cs" Link="Integration\OneC\Ut\Features\Catalog_Контрагенты_Feature\Catalog_Контрагенты.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Ut\Features\Catalog_КСЗ_КатегорииЗатрат_Feature\Catalog_КСЗ_КатегорииЗатрат.cs" Link="Integration\OneC\Ut\Features\Catalog_КСЗ_КатегорииЗатрат_Feature\Catalog_КСЗ_КатегорииЗатрат.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Ut\Features\Catalog_Номенклатура_Feature\Catalog_Номенклатура.cs" Link="Integration\OneC\Ut\Features\Catalog_Номенклатура_Feature\Catalog_Номенклатура.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Ut\Features\Catalog_Партнеры_Feature\Catalog_Партнеры.cs" Link="Integration\OneC\Ut\Features\Catalog_Партнеры_Feature\Catalog_Партнеры.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Ut\Features\Catalog_Пользователи_Feature\Catalog_Пользователи.cs" Link="Integration\OneC\Ut\Features\Catalog_Пользователи_Feature\Catalog_Пользователи.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Ut\Features\Catalog_СтатьиДвиженияДенежныхСредств_Feature\Catalog_СтатьиДвиженияДенежныхСредств.cs" Link="Integration\OneC\Ut\Features\Catalog_СтатьиДвиженияДенежныхСредств_Feature\Catalog_СтатьиДвиженияДенежныхСредств.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Ut\Features\Document_ЗаказКлиента_Feature\Document_ЗаказКлиента.cs" Link="Integration\OneC\Ut\Features\Document_ЗаказКлиента_Feature\Document_ЗаказКлиента.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Ut\Features\Document_РасходныйКассовыйОрдер_Feature\Document_РасходныйКассовыйОрдер.cs" Link="Integration\OneC\Ut\Features\Document_РасходныйКассовыйОрдер_Feature\Document_РасходныйКассовыйОрдер.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Ut\Features\Document_РеализацияТоваровУслуг_Feature\Document_РеализацияТоваровУслуг.cs" Link="Integration\OneC\Ut\Features\Document_РеализацияТоваровУслуг_Feature\Document_РеализацияТоваровУслуг.cs" />
+    <Compile Include="..\XMS.Integrations\Integration\OneC\Ut\Features\Document_СписаниеБезналичныхДенежныхСредств_Feature\Document_СписаниеБезналичныхДенежныхСредств.cs" Link="Integration\OneC\Ut\Features\Document_СписаниеБезналичныхДенежныхСредств_Feature\Document_СписаниеБезналичныхДенежныхСредств.cs" />
+  </ItemGroup>
+
 </Project>
 
 
