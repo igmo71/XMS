@@ -9,6 +9,7 @@ using XMS.Application;
 using XMS.Application.Abstractions.EventBus;
 using XMS.Application.Common;
 using XMS.Application.EventBus;
+using XMS.Hosting.Observability;
 using XMS.Infrastructure;
 using XMS.Modules;
 
@@ -18,6 +19,20 @@ public static class XmsHostApplicationBuilderExtensions
 {
     public static WebApplicationBuilder AddXmsHostDefaults(this WebApplicationBuilder builder, string serviceName)
     {
+        builder
+            .AddXmsLogging()
+            .AddXmsObservability(serviceName)
+            .AddXmsPersistence()
+            .AddXmsMessaging()
+            .AddXmsApplicationServices()
+            .AddXmsIntegrationServices()
+            .AddXmsModules();
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddXmsLogging(this WebApplicationBuilder builder)
+    {
         builder.Host.UseSerilog((context, services, configuration) =>
         {
             configuration
@@ -25,40 +40,12 @@ public static class XmsHostApplicationBuilderExtensions
                 .ReadFrom.Services(services);
         });
 
-        builder.Services.AddAppPersistenceInfrastructure(builder.Configuration);
-
-        builder.Services.AddSingleton<IEventNamingService, EventNamingService>();
-        builder.Services.AddRabbitMqEventConnectionFactory(builder.Configuration);
-        builder.Services.AddIntegrationEventPublisher(builder.Configuration);
-
-        builder.Services.AddAppEventBus();
-
-        builder.Services.AddIntegrationServices(builder.Configuration);
-        builder.Services.AddApplicationServices();
-        builder.Services.AddApplicationModules(builder.Configuration);
-
-        builder.Services.AddAppOpenTelemetry(builder.Configuration, serviceName);
-
         return builder;
     }
 
-    public static WebApplicationBuilder AddXmsIntegrationConsumers(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddXmsObservability(this WebApplicationBuilder builder, string serviceName)
     {
-        var assembliesWithHandlers = AppDomain.CurrentDomain
-            .GetAssemblies()
-            .Where(a => a.FullName?.StartsWith("XMS.", StringComparison.Ordinal) == true)
-            .ToArray();
-
-        var integrationEventHandlers = builder.Services.AddIntegrationEventHandlers(assembliesWithHandlers);
-        builder.Services.AddIntegrationEventConsumer(builder.Configuration, integrationEventHandlers);
-
-        return builder;
-    }
-
-    private static IServiceCollection AddAppOpenTelemetry(this IServiceCollection services, IConfiguration configuration, string serviceName)
-    {
-
-        services.AddOpenTelemetry()
+        builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource =>
             {
                 resource.AddService(serviceName);
@@ -77,13 +64,65 @@ public static class XmsHostApplicationBuilderExtensions
                 .AddOtlpExporter(options =>
                 {
                     // http://vm-xms-dev:5341/ingest/otlp/v1/traces
-                    var seqServerUri = ResolveSeqServerUri(configuration);
+                    var seqServerUri = ResolveSeqServerUri(builder.Configuration);
                     options.Endpoint = new Uri(seqServerUri, "/ingest/otlp/v1/traces");
 
                     options.Protocol = OtlpExportProtocol.HttpProtobuf;
                 }));
 
-        return services;
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddXmsPersistence(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddAppPersistenceInfrastructure(builder.Configuration);
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddXmsMessaging(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddSingleton<IEventNamingService, EventNamingService>();
+        builder.Services.AddRabbitMqEventConnectionFactory(builder.Configuration);
+        builder.Services.AddIntegrationEventPublisher(builder.Configuration);
+
+        builder.Services.AddAppEventBus();
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddXmsApplicationServices(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddApplicationServices();
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddXmsIntegrationServices(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddIntegrationServices(builder.Configuration);
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddXmsModules(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddApplicationModules(builder.Configuration);
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder AddXmsIntegrationConsumers(this WebApplicationBuilder builder)
+    {
+        var assembliesWithHandlers = AppDomain.CurrentDomain
+            .GetAssemblies()
+            .Where(a => a.FullName?.StartsWith("XMS.", StringComparison.Ordinal) == true)
+            .ToArray();
+
+        var integrationEventHandlers = builder.Services.AddIntegrationEventHandlers(assembliesWithHandlers);
+        builder.Services.AddIntegrationEventConsumer(builder.Configuration, integrationEventHandlers);
+
+        return builder;
     }
 
     private static Uri ResolveSeqServerUri(IConfiguration configuration)
