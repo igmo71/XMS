@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using XMS.Application.Abstractions.Data;
 using XMS.Application.Abstractions.EventBus;
@@ -24,24 +24,25 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
 
         using var dbContext = dbFactory.CreateDbContext();
 
-        List<Guid> catalog_СтатьяДДС_RefKeys = [];
+        Dictionary<Guid, decimal> paymentDetails = [];
 
         if (documentEvent.СтатьяДвиженияДенежныхСредств_Key != null && documentEvent.СтатьяДвиженияДенежныхСредств_Key != Guid.Empty)
-            catalog_СтатьяДДС_RefKeys.Add((Guid)documentEvent.СтатьяДвиженияДенежныхСредств_Key);
+        {
+            paymentDetails.Add((Guid)documentEvent.СтатьяДвиженияДенежныхСредств_Key, documentEvent.СуммаДокумента);
+        }
         else
         {
-            catalog_СтатьяДДС_RefKeys = documentEvent.РасшифровкаПлатежа?
-                .Where(e => e.СтатьяДвиженияДенежныхСредств_Key != null && e.СтатьяДвиженияДенежныхСредств_Key != Guid.Empty)
-                .Select(e => (Guid)e.СтатьяДвиженияДенежныхСредств_Key!)
-                .ToList() ?? [];
+            paymentDetails = documentEvent.РасшифровкаПлатежа?
+                .Where(e => e.СтатьяДвиженияДенежныхСредств_Key.HasValue && e.СтатьяДвиженияДенежныхСредств_Key != Guid.Empty)
+                .ToDictionary(e => e.СтатьяДвиженияДенежныхСредств_Key!.Value, e => e.Сумма) ?? [];
         }
 
         if (logger.IsEnabled(LogLevel.Debug))
-            logger.LogDebug("{Source} - RefKeys: {@catalog_СтатьяДДС_RefKeys} {@documentEvent}", nameof(HandleAsync), catalog_СтатьяДДС_RefKeys, documentEvent);
+            logger.LogDebug("{Source} - RefKeys: {@paymentDetails} {@documentEvent}", nameof(HandleAsync), paymentDetails, documentEvent);
 
-        foreach (var key in catalog_СтатьяДДС_RefKeys)
+        foreach (var paymentDetail in paymentDetails)
         {
-            var catalog_СтатьяДДС = await oneCUtService.GetCatalog_СтатьиДвиженияДенежныхСредств_Async(key, ct);
+            var catalog_СтатьяДДС = await oneCUtService.GetCatalog_СтатьиДвиженияДенежныхСредств_Async(paymentDetail.Key, ct);
 
             if (catalog_СтатьяДДС != null)
             {
@@ -104,9 +105,9 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
                             PaymentVoucherType = PaymentVoucherType.Cash,
                             Number = documentEvent.Number,
                             Date = documentEvent.Date,
-                            TotalAmount = documentEvent.СуммаДокумента,
                             CostCategoryId = documentEvent.КСЗ_КатегорияЗатрат_Key == Guid.Empty ? null : documentEvent.КСЗ_КатегорияЗатрат_Key,
                             CostItemId = catalog_СтатьяДДС.Ref_Key,
+                            TotalAmount = paymentDetail.Value,
                             BusinessOperation = documentEvent.ХозяйственнаяОперация,
                             PaymentPurpose = null,
                             AuthorId = documentEvent.Автор_Key,
@@ -124,9 +125,9 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
                         existingCostAllocation.PaymentVoucherType = PaymentVoucherType.Cash;
                         existingCostAllocation.Number = documentEvent.Number;
                         existingCostAllocation.Date = documentEvent.Date;
-                        existingCostAllocation.TotalAmount = documentEvent.СуммаДокумента;
                         existingCostAllocation.CostCategoryId = documentEvent.КСЗ_КатегорияЗатрат_Key == Guid.Empty ? null : documentEvent.КСЗ_КатегорияЗатрат_Key;
                         existingCostAllocation.CostItemId = catalog_СтатьяДДС.Ref_Key;
+                        existingCostAllocation.TotalAmount = paymentDetail.Value;
                         existingCostAllocation.BusinessOperation = documentEvent.ХозяйственнаяОперация;
                         existingCostAllocation.PaymentPurpose = null;
                         existingCostAllocation.AuthorId = documentEvent.Автор_Key;
