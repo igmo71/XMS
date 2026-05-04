@@ -4,6 +4,7 @@ using XMS.Application.Abstractions.Data;
 using XMS.Application.Abstractions.EventBus;
 using XMS.Application.Abstractions.Integration;
 using XMS.Application.Common;
+using XMS.Application.Integration.OneC.Ut.Features.Catalog_СтатьиДвиженияДенежныхСредств_Feature;
 using XMS.Application.Integration.OneC.Ut.Features.Document_РасходныйКассовыйОрдер_Feature;
 using XMS.Modules.CostModule.Domain;
 
@@ -17,129 +18,188 @@ internal class Document_РасходныйКассовыйОрдер_Handler(
 {
     public async Task HandleAsync(Document_РасходныйКассовыйОрдер documentEvent, CancellationToken ct = default)
     {
-        using var activity = this.StartActivity();
+        using var activity = StartActivity();
 
         if (logger.IsEnabled(LogLevel.Debug))
             logger.LogDebug("{Source} - Start {@documentEvent}", nameof(HandleAsync), documentEvent);
 
         using var dbContext = dbFactory.CreateDbContext();
 
-        Dictionary<Guid, decimal> paymentDetails = [];
-
-        if (documentEvent.СтатьяДвиженияДенежныхСредств_Key != null && documentEvent.СтатьяДвиженияДенежныхСредств_Key != Guid.Empty)
-        {
-            paymentDetails.Add((Guid)documentEvent.СтатьяДвиженияДенежныхСредств_Key, documentEvent.СуммаДокумента);
-        }
-        else
-        {
-            paymentDetails = documentEvent.РасшифровкаПлатежа?
-                .Where(e => e.СтатьяДвиженияДенежныхСредств_Key.HasValue && e.СтатьяДвиженияДенежныхСредств_Key != Guid.Empty)
-                .ToDictionary(e => e.СтатьяДвиженияДенежныхСредств_Key!.Value, e => e.Сумма) ?? [];
-        }
-
-        if (logger.IsEnabled(LogLevel.Debug))
-            logger.LogDebug("{Source} - RefKeys: {@paymentDetails} {@documentEvent}", nameof(HandleAsync), paymentDetails, documentEvent);
+        var paymentDetails = GetPaymentDetails(documentEvent);
 
         foreach (var paymentDetail in paymentDetails)
         {
-            var catalog_СтатьяДДС = await oneCUtService.GetCatalog_СтатьиДвиженияДенежныхСредств_Async(paymentDetail.Key, ct);
-
-            if (catalog_СтатьяДДС != null)
+            if (paymentDetail.Value.СтатьяДвиженияДенежныхСредств_Key is null)
             {
-                var existingCostItem = await dbContext.Set<CostItem>()
-                    .FirstOrDefaultAsync(e => e.Id == catalog_СтатьяДДС.Ref_Key, cancellationToken: ct);
-
-                if (logger.IsEnabled(LogLevel.Debug))
-                    logger.LogDebug("{Source} - existingCostItem: {@existingCostItem} {@documentEvent}", nameof(HandleAsync), existingCostItem, documentEvent);
-
-                if (existingCostItem == null)
-                {
-                    var createdCostItem = dbContext.Set<CostItem>().Add(new CostItem
-                    {
-                        Id = catalog_СтатьяДДС.Ref_Key,
-                        Name = catalog_СтатьяДДС.Description ?? string.Empty
-                    }).Entity;
-
-                    if (logger.IsEnabled(LogLevel.Debug))
-                        logger.LogDebug("{Source} - createdCostItem: {@createdCostItem} {@documentEvent}", nameof(HandleAsync), createdCostItem, documentEvent);
-                }
-                else
-                {
-                    existingCostItem.Name = catalog_СтатьяДДС.Description ?? string.Empty;
-                }
-
-                if (documentEvent.КСЗ_КатегорияЗатрат_Key != null && documentEvent.КСЗ_КатегорияЗатрат_Key != Guid.Empty)
-                {
-                    var existingCostCategoryItem = await dbContext.Set<CostCategoryItem>()
-                        .FirstOrDefaultAsync(e => e.CategoryId == documentEvent.КСЗ_КатегорияЗатрат_Key && e.ItemId == catalog_СтатьяДДС.Ref_Key, ct);
-
-                    if (logger.IsEnabled(LogLevel.Debug))
-                        logger.LogDebug("{Source} - existingCostCategoryItem: {@existingCostCategoryItem} {@documentEvent}", nameof(HandleAsync), existingCostCategoryItem, documentEvent);
-
-                    if (existingCostCategoryItem == null)
-                    {
-                        var createdCostCategoryItem = dbContext.Set<CostCategoryItem>().Add(new CostCategoryItem
-                        {
-                            CategoryId = (Guid)documentEvent.КСЗ_КатегорияЗатрат_Key,
-                            ItemId = catalog_СтатьяДДС.Ref_Key
-                        }).Entity;
-
-                        if (logger.IsEnabled(LogLevel.Debug))
-                            logger.LogDebug("{Source} - createdCostCategoryItem: {@createdCostCategoryItem} {@documentEvent}", nameof(HandleAsync), createdCostCategoryItem, documentEvent);
-                    }
-
-                    var existingCostAllocation = await dbContext.Set<CostAllocation>()
-                        .FirstOrDefaultAsync(e => e.PaymentVoucherId == documentEvent.Ref_Key, ct);
-
-                    if (logger.IsEnabled(LogLevel.Debug))
-                        logger.LogDebug("{Source} - existingCostAllocation: {@existingCostAllocation} {@documentEvent}", nameof(HandleAsync), existingCostAllocation, documentEvent);
-
-                    if (existingCostAllocation is null)
-                    {
-                        var createdCostAllocation = dbContext.Set<CostAllocation>().Add(new CostAllocation
-                        {
-                            IsAllocated = false,
-                            IsDeleted = documentEvent.DeletionMark || !documentEvent.Posted,
-                            DeletedAt = documentEvent.DeletionMark || !documentEvent.Posted ? DateTime.UtcNow : null,
-                            PaymentVoucherId = documentEvent.Ref_Key,
-                            PaymentVoucherType = PaymentVoucherType.Cash,
-                            Number = documentEvent.Number,
-                            Date = documentEvent.Date,
-                            CostCategoryId = documentEvent.КСЗ_КатегорияЗатрат_Key == Guid.Empty ? null : documentEvent.КСЗ_КатегорияЗатрат_Key,
-                            CostItemId = catalog_СтатьяДДС.Ref_Key,
-                            TotalAmount = paymentDetail.Value,
-                            BusinessOperation = documentEvent.ХозяйственнаяОперация,
-                            PaymentPurpose = null,
-                            AuthorId = documentEvent.Автор_Key,
-                            Comment = documentEvent.Комментарий
-                        }).Entity;
-
-                        if (logger.IsEnabled(LogLevel.Debug))
-                            logger.LogDebug("{Source} - createdCostAllocation: {@createdCostAllocation} {@documentEvent}", nameof(HandleAsync), createdCostAllocation, documentEvent);
-                    }
-                    else
-                    {
-                        //existingCostAllocation.IsAllocated = false;
-                        existingCostAllocation.IsDeleted = documentEvent.DeletionMark || !documentEvent.Posted;
-                        existingCostAllocation.DeletedAt = documentEvent.DeletionMark || !documentEvent.Posted ? DateTime.UtcNow : null;
-                        existingCostAllocation.PaymentVoucherType = PaymentVoucherType.Cash;
-                        existingCostAllocation.Number = documentEvent.Number;
-                        existingCostAllocation.Date = documentEvent.Date;
-                        existingCostAllocation.CostCategoryId = documentEvent.КСЗ_КатегорияЗатрат_Key == Guid.Empty ? null : documentEvent.КСЗ_КатегорияЗатрат_Key;
-                        existingCostAllocation.CostItemId = catalog_СтатьяДДС.Ref_Key;
-                        existingCostAllocation.TotalAmount = paymentDetail.Value;
-                        existingCostAllocation.BusinessOperation = documentEvent.ХозяйственнаяОперация;
-                        existingCostAllocation.PaymentPurpose = null;
-                        existingCostAllocation.AuthorId = documentEvent.Автор_Key;
-                        existingCostAllocation.Comment = documentEvent.Комментарий;
-                    }
-                }
+                if (logger.IsEnabled(LogLevel.Error))
+                    logger.LogError("{Source} - PaymentDetail СтатьяДвиженияДенежныхСредств_Key is null {@documentEvent}", nameof(HandleAsync), documentEvent);
+                continue;
             }
+
+            var catalog_СтатьяДДС = await oneCUtService.GetCatalog_СтатьиДвиженияДенежныхСредств_Async((Guid)paymentDetail.Value.СтатьяДвиженияДенежныхСредств_Key, ct);
+
+            if (catalog_СтатьяДДС is null)
+            {
+                if (logger.IsEnabled(LogLevel.Error))
+                    logger.LogError("{Source} - Catalog_СтатьяДДС nor found {@documentEvent}", nameof(HandleAsync), documentEvent);
+                continue;
+            }
+
+            await CreateOrUpdateCostItem(dbContext, catalog_СтатьяДДС, ct);
+
+            if (documentEvent.КСЗ_КатегорияЗатрат_Key is null || documentEvent.КСЗ_КатегорияЗатрат_Key == Guid.Empty)
+            {
+                if (logger.IsEnabled(LogLevel.Error))
+                    logger.LogError("{Source} - КатегорияЗатрат_Key is null or Empty {@documentEvent}", nameof(HandleAsync), documentEvent);
+                continue;
+            }
+
+            await CreateCostCategoryItemIfNotExists(dbContext, (Guid)documentEvent.КСЗ_КатегорияЗатрат_Key, catalog_СтатьяДДС.Ref_Key, ct);
+
+            await CreateOrUpdateCostAllocation(dbContext, documentEvent, paymentDetail, ct);
         }
 
         await dbContext.SaveChangesAsync(ct);
 
         if (logger.IsEnabled(LogLevel.Debug))
             logger.LogDebug("{Source} - Ok {@documentEvent}", nameof(HandleAsync), documentEvent);
+    }
+
+    private Dictionary<int, Document_РасходныйКассовыйОрдер_РасшифровкаПлатежа> GetPaymentDetails(Document_РасходныйКассовыйОрдер documentEvent)
+    {
+        Dictionary<int, Document_РасходныйКассовыйОрдер_РасшифровкаПлатежа> paymentDetails = [];
+
+        if (documentEvent.СтатьяДвиженияДенежныхСредств_Key != null && documentEvent.СтатьяДвиженияДенежныхСредств_Key != Guid.Empty)
+        {
+            paymentDetails.Add(0, new Document_РасходныйКассовыйОрдер_РасшифровкаПлатежа
+            {
+                LineNumber = 0,
+                СтатьяДвиженияДенежныхСредств_Key = documentEvent.СтатьяДвиженияДенежныхСредств_Key,
+                Сумма = documentEvent.СуммаДокумента
+            });
+        }
+        else
+        {
+            paymentDetails = documentEvent.РасшифровкаПлатежа?
+                .ToDictionary(e => e.LineNumber) ?? [];
+        }
+
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - RefKeys: {@paymentDetails} {@documentEvent}", nameof(HandleAsync), paymentDetails, documentEvent);
+        return paymentDetails;
+    }
+
+    private async Task CreateOrUpdateCostItem(
+        IApplicationDbContext dbContext,
+        Catalog_СтатьиДвиженияДенежныхСредств catalog_СтатьяДДС,
+        CancellationToken ct)
+    {
+        var existingCostItem = await dbContext.Set<CostItem>()
+                        .FirstOrDefaultAsync(e => e.Id == catalog_СтатьяДДС.Ref_Key, cancellationToken: ct);
+
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - existingCostItem: {@existingCostItem}", nameof(HandleAsync), existingCostItem);
+
+        if (existingCostItem == null)
+        {
+            var createdCostItem = dbContext.Set<CostItem>().Add(new CostItem
+            {
+                Id = catalog_СтатьяДДС.Ref_Key,
+                Name = catalog_СтатьяДДС.Description ?? string.Empty
+            }).Entity;
+
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug("{Source} - createdCostItem: {@createdCostItem}", nameof(HandleAsync), createdCostItem);
+        }
+        else
+        {
+            existingCostItem.Name = catalog_СтатьяДДС.Description ?? string.Empty;
+        }
+    }
+
+    private async Task CreateCostCategoryItemIfNotExists(
+        IApplicationDbContext dbContext,
+        Guid КатегорияЗатрат_Key,
+        Guid СтатьяДДС_Key,
+        CancellationToken ct)
+    {
+        var existingCostCategoryItem = await dbContext.Set<CostCategoryItem>()
+                        .FirstOrDefaultAsync(e => e.CategoryId == КатегорияЗатрат_Key && e.ItemId == СтатьяДДС_Key, ct);
+
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - existingCostCategoryItem: {@existingCostCategoryItem}", nameof(HandleAsync), existingCostCategoryItem);
+
+        if (existingCostCategoryItem == null)
+        {
+            var createdCostCategoryItem = dbContext.Set<CostCategoryItem>().Add(new CostCategoryItem
+            {
+                CategoryId = КатегорияЗатрат_Key,
+                ItemId = СтатьяДДС_Key
+            }).Entity;
+
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug("{Source} - createdCostCategoryItem: {@createdCostCategoryItem}", nameof(HandleAsync), createdCostCategoryItem);
+        }
+    }
+
+    private async Task CreateOrUpdateCostAllocation(
+        IApplicationDbContext dbContext,
+        Document_РасходныйКассовыйОрдер documentEvent,
+        KeyValuePair<int, Document_РасходныйКассовыйОрдер_РасшифровкаПлатежа> paymentDetail,
+        CancellationToken ct)
+    {
+        var existingCostAllocations = await dbContext.Set<CostAllocation>()
+                        .Where(e => e.PaymentVoucherId == documentEvent.Ref_Key && e.PaymentDetailLineNumber == paymentDetail.Value.LineNumber)
+                        .ToListAsync(ct);
+
+        if (logger.IsEnabled(LogLevel.Debug))
+            logger.LogDebug("{Source} - existingCostAllocations: {@existingCostAllocation} {@documentEvent} {@paymentDetail}",
+                nameof(HandleAsync), existingCostAllocations, documentEvent, paymentDetail);
+
+        if (existingCostAllocations.Count == 0)
+        {
+            var createdCostAllocation = dbContext.Set<CostAllocation>().Add(new CostAllocation
+            {
+                IsDeleted = documentEvent.DeletionMark || !documentEvent.Posted,
+                DeletedAt = documentEvent.DeletionMark || !documentEvent.Posted ? DateTime.UtcNow : null,
+                PaymentVoucherId = documentEvent.Ref_Key,
+                PaymentVoucherType = PaymentVoucherType.Cash,
+                Number = documentEvent.Number,
+                Date = documentEvent.Date,
+                CostCategoryId = documentEvent.КСЗ_КатегорияЗатрат_Key == Guid.Empty ? null : documentEvent.КСЗ_КатегорияЗатрат_Key,
+                BusinessOperation = documentEvent.ХозяйственнаяОперация,
+                AuthorId = documentEvent.Автор_Key,
+                Comment = documentEvent.Комментарий,
+                PaymentPurpose = null,
+                CostItemId = paymentDetail.Value.СтатьяДвиженияДенежныхСредств_Key,
+                TotalAmount = paymentDetail.Value.Сумма,
+                PaymentDetailLineNumber = paymentDetail.Value.LineNumber
+            }).Entity;
+
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug("{Source} - createdCostAllocation: {@createdCostAllocation} {@documentEvent} {@paymentDetail}",
+                    nameof(HandleAsync), createdCostAllocation, documentEvent, paymentDetail);
+        }
+        else if (existingCostAllocations.Count == 1)
+        {
+            existingCostAllocations[0].IsDeleted = documentEvent.DeletionMark || !documentEvent.Posted;
+            existingCostAllocations[0].DeletedAt = documentEvent.DeletionMark || !documentEvent.Posted ? DateTime.UtcNow : null;
+            existingCostAllocations[0].PaymentVoucherType = PaymentVoucherType.Cash;
+            existingCostAllocations[0].Number = documentEvent.Number;
+            existingCostAllocations[0].Date = documentEvent.Date;
+            existingCostAllocations[0].CostCategoryId = documentEvent.КСЗ_КатегорияЗатрат_Key == Guid.Empty ? null : documentEvent.КСЗ_КатегорияЗатрат_Key;
+            existingCostAllocations[0].BusinessOperation = documentEvent.ХозяйственнаяОперация;
+            existingCostAllocations[0].AuthorId = documentEvent.Автор_Key;
+            existingCostAllocations[0].Comment = documentEvent.Комментарий;
+            existingCostAllocations[0].PaymentPurpose = null;
+            existingCostAllocations[0].CostItemId = paymentDetail.Value.СтатьяДвиженияДенежныхСредств_Key;
+            existingCostAllocations[0].TotalAmount = paymentDetail.Value.Сумма;
+            existingCostAllocations[0].PaymentDetailLineNumber = paymentDetail.Value.LineNumber;
+        }
+        else
+        {
+            if (logger.IsEnabled(LogLevel.Error))
+                logger.LogError("{Source} - createdCostAllocations too much for one paymentDetail {@documentEvent}", nameof(HandleAsync), documentEvent);
+        }
     }
 }

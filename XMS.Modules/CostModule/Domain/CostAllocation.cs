@@ -1,4 +1,4 @@
-﻿using XMS.Domain.Abstractions;
+using XMS.Domain.Abstractions;
 using XMS.Domain.Models;
 
 namespace XMS.Modules.CostModule.Domain;
@@ -8,7 +8,7 @@ public class CostAllocation : BaseEntity, ISoftDeletable
     public bool IsDeleted { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
 
-    public bool IsAllocated { get; set; }
+
 
     public Guid? PaymentVoucherId { get; set; }
     public PaymentVoucherType PaymentVoucherType { get; set; }
@@ -38,6 +38,10 @@ public class CostAllocation : BaseEntity, ISoftDeletable
     public City? City { get; set; }
 
     public string? Comment { get; set; }
+
+    public int PaymentDetailLineNumber { get; set; }
+
+    public bool IsAllocated => DepartmentId is not null && LocationId is not null && CityId is not null;
 
     public string? Name
     {
