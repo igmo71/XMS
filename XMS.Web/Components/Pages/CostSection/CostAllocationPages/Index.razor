@@ -1,18 +1,18 @@
-﻿@page "/cost-section/cost-allocation"
+@page "/cost-section/cost-allocation"
 @using Microsoft.AspNetCore.Authorization
 @using XMS.Modules.CostModule.Domain
+@using System.Globalization
 @attribute [Authorize]
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-4">
-	<MudPaper Class="pa-4">
-		<MudDataGrid @ref="_dataGrid"
-					 T="CostAllocation"
-					 ServerData="LoadCostAllocation"
+	<MudPaper>
+		<MudDataGrid @ref="_dataGrid" T="CostAllocation" ServerData="LoadCostAllocation" Culture="@(new CultureInfo("ru-RU", false))"
 					 Loading="@_isLoading"
 					 ReadOnly="false"
 					 EditMode="DataGridEditMode.Cell"
 					 Filterable="false" SortMode="SortMode.None"
-					 FixedHeader Dense Hover Striped Bordered HorizontalScrollbar>
+					 Height="calc(100vh - 220px)"
+					 FixedHeader Dense Hover Striped Bordered Groupable HorizontalScrollbar>
 			<ToolBarContent>
 				<MudStack Row="true" Justify="Justify.SpaceEvenly" AlignItems="AlignItems.Center" Class="w-100" Style="overflow: visible;">
 					<MudText Typo="Typo.h5">Распределение затрат</MudText>
@@ -125,7 +125,7 @@
 				<PropertyColumn Property="x => x.PaymentPurpose" Title="Назначение платежа" Editable="false">
 					<CellTemplate>
 						<div title="@(context.Item.PaymentPurpose)">
-							@(context.Item.PaymentPurpose is string s ? $"{s.Substring(0, Math.Min(12, s.Length))}..." : string.Empty)
+							@(context.Item.PaymentPurpose is string s ? $"{s.Substring(0, Math.Min(24, s.Length))}..." : string.Empty)
 						</div>
 					</CellTemplate>
 				</PropertyColumn>

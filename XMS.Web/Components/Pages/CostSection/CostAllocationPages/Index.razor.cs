@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using XMS.Application.Abstractions.Services;
 using XMS.Domain.Models;
@@ -20,7 +20,7 @@ public partial class Index : IDisposable
     [Inject] public ICostCategoryService CostCategoryService { get; set; } = default!;
 
     private readonly CancellationTokenSource _cts = new();
-    private IReadOnlyList<CostAllocation> _items = [];
+    //private IReadOnlyList<CostAllocation> _items = [];
     private IReadOnlyList<City> _cities = [];
     private IReadOnlyList<Location> _locations = [];
     private IReadOnlyList<Department> _departments = [];

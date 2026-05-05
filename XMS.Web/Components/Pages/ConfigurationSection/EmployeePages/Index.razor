@@ -1,4 +1,4 @@
-﻿@page "/employees"
+@page "/employees"
 @using System.Globalization
 @using Microsoft.AspNetCore.Authorization
 @using XMS.Domain.Models
@@ -9,7 +9,6 @@
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-4">
 	<MudPaper>
 		<MudDataGrid @ref="_employeeGrid" T="Employee" Items="@_employees" Culture="@(new CultureInfo("ru-RU", false))"
-					 Style="max-height: calc(100vh - 96px); overflow-y: auto;"					 
 					 Loading="@_isLoading"
 					 ReadOnly="false"
 					 CommittedItemChanges="@((item) => CommittedItemChanges(item))"	
@@ -18,10 +17,11 @@
 					 EditTrigger="@DataGridEditTrigger.Manual"
 					 FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
 					 FilterMode="DataGridFilterMode.ColumnFilterRow"
-					 ColumnResizeMode="ResizeMode.Container"
-					 FixedHeader Dense Hover Striped Bordered Filterable Groupable
-					 DragDropColumnReordering ApplyDropClassesOnDragStarted HorizontalScrollbar
-					 DragIndicatorIcon="@Icons.Material.Filled.DragIndicator">
+					 ColumnResizeMode="ResizeMode.Container"	
+					 DragDropColumnReordering ApplyDropClassesOnDragStarted 
+					 DragIndicatorIcon="@Icons.Material.Filled.DragIndicator"	
+					 Style="max-height: calc(100vh - 96px); overflow-y: auto;"
+					 FixedHeader Dense Hover Striped Bordered Filterable Groupable HorizontalScrollbar>
 			<ToolBarContent>
 				<MudText Typo="Typo.h5">Сотрудники</MudText>
 				<MudSpacer />
